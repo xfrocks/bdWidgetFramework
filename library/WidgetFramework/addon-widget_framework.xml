@@ -1,0 +1,659 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.2.2.2" version_id="24" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+  <admin_navigation>
+    <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
+    <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
+    <navigation navigation_id="widgetFramework_list" parent_navigation_id="widgetFramework" display_order="1" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
+  </admin_navigation>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="wf_widget_delete"><![CDATA[<xen:title>{xen:phrase wf_confirm_removal_of_widget}: {$widget.rendererName}</xen:title>
+<xen:h1>{xen:phrase wf_confirm_removal_of_widget}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:adminlink 'widgets/edit', $widget}">{$widget.rendererName}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:require css="delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink 'widgets/delete', $widget}" class="deleteConfirmForm formOverlay">
+
+	<p>{xen:phrase wf_please_confirm_that_you_want_to_delete_following_widget}:</p>
+	<strong><a href="{xen:adminlink 'widgets/edit', $widget}">{$widget.rendererName} ({$widget.position})</a></strong>
+
+	<xen:submitunit save="{xen:phrase wf_delete_widget}" />
+	
+	<input type="hidden" name="_xfConfirm" value="1" />
+</xen:form>]]></template>
+    <template title="wf_widget_edit"><![CDATA[<xen:title>{xen:if '{$widget.widget_id}', '{xen:phrase wf_edit_widget}', '{xen:phrase wf_add_widget}'}</xen:title>
+
+<xen:require js="js/WidgetFramework/functions.js" />
+
+<xen:form id="widgetEditor" action="{xen:adminlink 'widgets/save'}">
+	<xen:selectunit label="{xen:phrase wf_renderer}:" name="class" value="{$widget.class}"
+		inputclass="WidgetRendererOptions" data-optionsUrl="{xen:adminlink widgets/options}" data-optionsTarget="#OptionsTarget" data-widgetId="{$widget.widget_id}">
+		<xen:option value=""></xen:option>
+		<xen:options source="$renderers" />
+		<xen:explain>{xen:phrase wf_renderer_explain}</xen:explain>
+	</xen:selectunit>
+	
+	<div id="OptionsTarget">
+	<xen:include template="wf_widget_options" />
+	</div>
+	
+	<fieldset>
+		<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}">
+			<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
+		</xen:textboxunit>
+		
+		<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}" placeholder="{xen:phrase wf_public_template_name}">
+			<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
+		</xen:textboxunit>
+		
+		<xen:textboxunit label="{xen:phrase wf_display_order}:" name="display_order" value="{$widget.display_order}"/>
+		
+		<xen:checkboxunit label="">
+			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
+		</xen:checkboxunit>
+	</fieldset>
+
+	<xen:submitunit>
+		<input type="submit" name="reload" value="{xen:phrase wf_save_widget}" accesskey="s" class="button primary" id="saveReloadButton" data-ajaxvalue="{xen:phrase save_all_changes}" />
+		<input type="submit" name="saveexit" value="{xen:phrase save_and_exit}" accesskey="e" class="button" id="saveExitButton" />
+		<input type="button" name="delete" value="{xen:phrase wf_delete_widget}..." accesskey="d" class="button OverlayTrigger"
+			data-href="{xen:adminlink widgets/delete, $widget}"
+			id="deleteButton" {xen:if '!{$widget.widget_id}', 'style="display: none"'}
+		/>
+	</xen:submitunit>
+	
+	<input id="widgetId" type="hidden" name="widget_id" value="{$widget.widget_id}" />
+</xen:form>]]></template>
+    <template title="wf_widget_list"><![CDATA[<xen:title>{xen:phrase wf_widgets}</xen:title>
+
+<xen:topctrl>
+	<a href="{xen:adminlink 'widgets/add'}" class="button" accesskey="a">+ {xen:phrase wf_add_widget}</a>
+</xen:topctrl>
+
+<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+<xen:require css="widget_framework.css" />
+
+<xen:form action="{xen:adminlink widgets}" class="section AutoValidator">
+
+	<h2 class="subHeading">
+		<xen:include template="filter_list_controls" />
+		{xen:phrase wf_widgets}
+	</h2>
+	
+	<ul class="FilterList">
+		<xen:foreach loop="$positions" value="$position">
+		<li>
+			<h3 class="textHeading">{$position.position} <span class="count">({xen:count $position.widgets})</span></h3>
+			<ol>
+				<xen:foreach loop="$position.widgets" value="$widget">
+					<xen:if is="{$widget.widgets}">
+						<li class="widget-list-tab-group">
+							<h3 class="textHeading">{xen:phrase wf_tab_group}: {$position.position}/{$widget.tabGroup} <span class="count">({xen:count $widget.widgets})</span></h3>
+							<ol>
+								<xen:foreach loop="$widget.widgets" value="$tabWidget">
+									<xen:include template="wf_widget_list_item">
+										<xen:map from="$tabWidget" to="$widget" />
+									</xen:include>
+								</xen:foreach>
+							</ol>
+						</li>
+					<xen:else />
+						<xen:include template="wf_widget_list_item" />
+					</xen:if>
+				</xen:foreach>
+			</ol>
+		</xen:foreach>
+	</ul>
+
+	<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $widgets}</span>', 'total={xen:count $widgets}'}</p>
+</xen:form>]]></template>
+    <template title="wf_widget_list_item"><![CDATA[<xen:listitem
+	id="widget-{$widget.widget_id}"
+	href="{xen:adminlink 'widgets/edit', $widget}"
+	delete="{xen:adminlink 'widgets/delete', $widget}"
+	label="{$widget.title}"
+	labelclass="{xen:if '!{$widget.active}', 'disabled'}"
+	snippet="{$widget.rendererName} / {$widget.display_order}">
+	<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
+		<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
+		<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active}">{xen:phrase enable}</xen:link>
+		<xen:link href="{xen:adminlink 'widgets/delete', $widget}">{xen:phrase delete}</xen:link>
+		<xen:link href="{xen:adminlink 'widgets/edit', $widget}">{xen:phrase edit}</xen:link>
+	</xen:popup>
+</xen:listitem>]]></template>
+    <template title="wf_widget_options"><![CDATA[<input type="hidden" name="options_loaded" value="{$options_loaded}" />
+
+{xen:raw {$optionsRendered}}
+
+<xen:if is="{$rendererConfiguration.useWrapper}">
+<!-- tab group - added 02-02-2011 -->
+<xen:textboxunit label="{xen:phrase wf_tab_group}:" name="{$namePrefix}tab_group" value="{$options.tab_group}">
+	<xen:explain>{xen:phrase wf_tab_group_explain}</xen:explain>
+</xen:textboxunit>
+</xen:if>
+
+<xen:if is="{$options_loaded}">
+<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="5" inputclass="Elastic">
+	<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
+</xen:textboxunit>
+
+<xen:checkboxunit label="">
+	<xen:option name="{$namePrefix}expression_debug" value="1" selected="{$options.expression_debug}">{xen:phrase wf_print_error_message}</xen:option>
+</xen:checkboxunit>
+</xen:if>]]></template>
+    <template title="wf_widget_options_birthday"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
+</xen:textboxunit>]]></template>
+    <template title="wf_widget_options_callback"><![CDATA[<xen:controlunit label="{xen:phrase php_callback}:" explain="{xen:phrase wf_widget_callback_callback_explain}">
+	<xen:textbox placeholder="{xen:phrase class}" name="{$namePrefix}callback_class" value="{$options.callback_class}" size="25" />
+	::
+	<xen:textbox placeholder="{xen:phrase method}" name="{$namePrefix}callback_method" value="{$options.callback_method}" size="25" />
+</xen:controlunit>]]></template>
+    <template title="wf_widget_options_empty"><![CDATA[<xen:checkboxunit label="" value="">
+	<xen:option name="{$namePrefix}noVisitorPanel" value="1" selected="{$options.noVisitorPanel}">{xen:phrase wf_widget_empty_hide_visitor_panel}</xen:option>
+</xen:checkboxunit>]]></template>
+    <template title="wf_widget_options_html"><![CDATA[<xen:textboxunit name="{$namePrefix}html" label="HTML" value="{$options.html}" rows="5" inputclass="Elastic">
+	<xen:explain>{xen:phrase wf_html_explain}</xen:explain>
+</xen:textboxunit>]]></template>
+    <template title="wf_widget_options_poll"><![CDATA[<xen:textboxunit label="{xen:phrase wf_poll_thread_id}:" name="{$namePrefix}thread_id" value="{$options.thread_id}">
+	<xen:explain>{xen:phrase wf_poll_thread_id_explain}</xen:explain>
+</xen:textboxunit>]]></template>
+    <template title="wf_widget_options_recent_status"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_profile_posts}"}</xen:explain>
+</xen:textboxunit>
+
+<xen:radiounit label="{xen:phrase wf_recent_status_friends_only}:" name="{$namePrefix}friends_only">
+	<xen:option value="1" selected="{$options.friends_only}">{xen:phrase yes}</xen:option>
+	<xen:option value="0" selected="!{$options.friends_only}">{xen:phrase no}</xen:option>
+	<xen:explain>{xen:phrase wf_recent_status_friends_only_explain}</xen:explain>
+</xen:radiounit>
+
+<xen:radiounit label="{xen:phrase wf_recent_status_show_update_form}:" name="{$namePrefix}show_update_form">
+	<xen:option value="1" selected="{$options.show_update_form}">{xen:phrase yes}</xen:option>
+	<xen:option value="0" selected="!{$options.show_update_form}">{xen:phrase no}</xen:option>
+	<xen:explain>{xen:phrase wf_recent_status_show_update_form_explain}</xen:explain>
+</xen:radiounit>]]></template>
+    <template title="wf_widget_options_template"><![CDATA[<xen:textboxunit name="{$namePrefix}template" label="Template" value="{$options.template}">
+	<xen:explain>{xen:phrase wf_template_explain}</xen:explain>
+</xen:textboxunit>]]></template>
+    <template title="wf_widget_options_threads"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_threads}"}</xen:explain>
+</xen:textboxunit>
+
+<xen:selectunit label="{xen:phrase wf_widget_threads_type}:" name="{$namePrefix}type" value="{$options.type}">
+	<xen:option value="new">{xen:phrase wf_widget_threads_type_new}</xen:option>
+	<xen:option value="recent">{xen:phrase wf_widget_threads_type_recent}</xen:option>
+	<xen:option value="popular">{xen:phrase wf_widget_threads_type_popular}</xen:option>
+	<xen:option value="polls">{xen:phrase polls}</xen:option>
+</xen:selectunit>
+
+<xen:textboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{$options.cutoff}">
+	<xen:explain>{xen:phrase wf_widget_threads_popular_cutoff_explain}</xen:explain>
+</xen:textboxunit>
+
+<xen:selectunit label="{xen:phrase wf_threads_forums}:" name="{$namePrefix}forums" value="" size="5" multiple="true" inputclass="textCtrl">
+	<xen:options source="$forums" />
+	<xen:explain>{xen:phrase wf_threads_forums_explain}</xen:explain>
+</xen:selectunit>]]></template>
+    <template title="wf_widget_options_users"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
+</xen:textboxunit>
+
+<xen:selectunit label="{xen:phrase wf_order_factor}:" name="{$namePrefix}order" value="{$options.order}">
+	<xen:option value="register_date">{xen:phrase wf_register_date}</xen:option>
+	<xen:option value="message_count">{xen:phrase wf_message_count}</xen:option>
+</xen:selectunit>
+
+<xen:selectunit label="{xen:phrase wf_order_direction}:" name="{$namePrefix}direction" value="{$options.direction}">
+	<xen:option value="DESC">{xen:phrase wf_descending}</xen:option>
+	<xen:option value="ASC">{xen:phrase wf_ascending}</xen:option>
+</xen:selectunit>]]></template>
+    <template title="wf_widget_options_xfshout"><![CDATA[<xen:textboxunit label="{xen:phrase wf_xfshout_instance_id}:" name="{$namePrefix}instance_id" value="{$options.instance_id}">
+	<xen:explain>{xen:phrase wf_xfshout_instance_id_explain}</xen:explain>
+</xen:textboxunit>]]></template>
+    <template title="widget_framework.css"><![CDATA[.widget-list-tab-group h3 {
+	padding-left: 20px !important;
+}
+.widget-list-tab-group h4 a {
+	padding-left: 40px !important;
+}]]></template>
+  </admin_templates>
+  <code_events>
+    <event event_id="widget_framework_ready"><![CDATA[<p>Called after the framework is loaded and ready in both front-end and back-end. You should use this to register your renderers.</p>
+
+Arguments:
+<ol>
+<li><code>array &$renderers</code> - an array of widget renderer class names.</li>
+</ol>]]></event>
+  </code_events>
+  <code_event_listeners>
+    <listener event_id="file_health_check" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="file_health_check" active="1" description=""/>
+    <listener event_id="front_controller_post_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_post_view" active="1" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" description=""/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
+    <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" description=""/>
+    <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" description=""/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <optiongroups/>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="admin_navigation_widgetFramework" version_id="1" version_string="0.9"><![CDATA[Widget Framework]]></phrase>
+    <phrase title="admin_navigation_widgetFramework_add" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
+    <phrase title="admin_navigation_widgetFramework_list" version_id="1" version_string="0.9"><![CDATA[List Widgets]]></phrase>
+    <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
+    <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
+    <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
+    <phrase title="wf_delete_widget" version_id="1" version_string="0.9"><![CDATA[Delete Widget]]></phrase>
+    <phrase title="wf_descending" version_id="1" version_string="0.9"><![CDATA[Descending]]></phrase>
+    <phrase title="wf_display_order" version_id="1" version_string="0.9"><![CDATA[Display Order]]></phrase>
+    <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
+    <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>
+    <phrase title="wf_expression_explain" version_id="1" version_string="0.9"><![CDATA[Enter your expression here. Please use the correct PHP syntax and make sure you know 100% which variables are available for the target template (position).]]></phrase>
+    <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
+    <phrase title="wf_invalid_position_x" version_id="7" version_string="0.9.5"><![CDATA[Invalid Widget Position specified: {position}. The position must be a list of existing templates' name (separate by comma).]]></phrase>
+    <phrase title="wf_invalid_widget_renderer_x" version_id="1" version_string="0.9"><![CDATA[Invalid WIdget Renderer specified: {renderer}.]]></phrase>
+    <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
+    <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
+    <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
+    <phrase title="wf_new" version_id="1" version_string="0.9"><![CDATA[New]]></phrase>
+    <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
+    <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
+    <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget" version_id="1" version_string="0.9"><![CDATA[Please confirm that you want to delete the following widget]]></phrase>
+    <phrase title="wf_poll_thread_id" version_id="5" version_string="0.9.3"><![CDATA[Thread ID]]></phrase>
+    <phrase title="wf_poll_thread_id_explain" version_id="5" version_string="0.9.3"><![CDATA[Enter the thread ID of the thread you want to display. Leave it blank to always get the latest poll.]]></phrase>
+    <phrase title="wf_popular" version_id="1" version_string="0.9"><![CDATA[Popular]]></phrase>
+    <phrase title="wf_position" version_id="1" version_string="0.9"><![CDATA[Position]]></phrase>
+    <phrase title="wf_position_can_not_be_empty" version_id="22" version_string="1.2.2"><![CDATA[Widget position can not be empty.]]></phrase>
+    <phrase title="wf_position_explain" version_id="7" version_string="0.9.5"><![CDATA[The widget will be displayed on the sidebar when this template is rendered. Not all templates can be used as position, please contact <a href="mailto:pony@xfrocks.com">me</a> if your template of choice doesn't work. Popular positions: forum_list (index page), forum_view (forum page), thread_view (thread page). You can also use "all" to display a widget all the time.]]></phrase>
+    <phrase title="wf_print_error_message" version_id="1" version_string="0.9"><![CDATA[Print error message instead of ignoring it]]></phrase>
+    <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
+    <phrase title="wf_public_template_name" version_id="1" version_string="0.9"><![CDATA[Public Template Name]]></phrase>
+    <phrase title="wf_recent" version_id="1" version_string="0.9"><![CDATA[Recent]]></phrase>
+    <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
+    <phrase title="wf_recent_status_friends_only_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show statuses from user's friend list only. It will display from all users if current user is not logged in.]]></phrase>
+    <phrase title="wf_recent_status_show_update_form" version_id="17" version_string="1.0.9"><![CDATA[Show Update Form]]></phrase>
+    <phrase title="wf_recent_status_show_update_form_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show an update form if the current user has permission to do so.]]></phrase>
+    <phrase title="wf_register_date" version_id="1" version_string="0.9"><![CDATA[Register Date]]></phrase>
+    <phrase title="wf_renderer" version_id="1" version_string="0.9"><![CDATA[Renderer]]></phrase>
+    <phrase title="wf_renderer_explain" version_id="1" version_string="0.9"><![CDATA[Select the renderer engine for this widget. There are some default renderer packed with Widget Framework. It's easy to develop widget renderer so I hope other developers will eventually release some in the near future. ]]></phrase>
+    <phrase title="wf_requested_thread_does_not_have_poll" version_id="5" version_string="0.9.3"><![CDATA[The requested thread doesn't have a poll attached.]]></phrase>
+    <phrase title="wf_requested_widget_not_found" version_id="1" version_string="0.9"><![CDATA[The requested Widget could not be found.]]></phrase>
+    <phrase title="wf_save_widget" version_id="1" version_string="0.9"><![CDATA[Save Widget]]></phrase>
+    <phrase title="wf_tab_group" version_id="7" version_string="0.9.5"><![CDATA[Tab Group]]></phrase>
+    <phrase title="wf_tab_group_explain" version_id="14" version_string="1.0.6"><![CDATA[You can group several widgets into one tabbed widget by pointing them to the same tab group. The group will be displayed with the highest display order of member widget's. This option has one advanced feature: if you name it "random" (without quote), only one of its widgets will be rendered, totally random!]]></phrase>
+    <phrase title="wf_template_explain" version_id="19" version_string="1.1.1"><![CDATA[Enter the title of the template you want to use here. It will be parsed and displayed just like using <xen:include /> in normal templates.]]></phrase>
+    <phrase title="wf_threads" version_id="1" version_string="0.9"><![CDATA[threads]]></phrase>
+    <phrase title="wf_threads_forums" version_id="7" version_string="0.9.5"><![CDATA[Forums]]></phrase>
+    <phrase title="wf_threads_forums_explain" version_id="7" version_string="0.9.5"><![CDATA[Select the forums you want to search for threads (ignore all viewing permissions). Leave nothing selected to include all viewable forums.]]></phrase>
+    <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
+    <phrase title="wf_title_explain" version_id="1" version_string="0.9"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer instead.]]></phrase>
+    <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
+    <phrase title="wf_widgets" version_id="1" version_string="0.9"><![CDATA[Widgets]]></phrase>
+    <phrase title="wf_widget_birthday_today_is_xs_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {username}'s birthday.]]></phrase>
+    <phrase title="wf_widget_birthday_today_is_x_peoples_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {count} people's birthday.]]></phrase>
+    <phrase title="wf_widget_callback_callback_explain" version_id="17" version_string="1.0.9"><![CDATA[Enter the callback to render this widget. Callback signature:<br/>
+array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject]]></phrase>
+    <phrase title="wf_widget_empty_hide_visitor_panel" version_id="13" version_string="1.0.5"><![CDATA[hide visitor panel too?]]></phrase>
+    <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
+    <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
+    <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
+    <phrase title="wf_widget_threads_popular_cutoff" version_id="1" version_string="0.9"><![CDATA[Popular Cutoff]]></phrase>
+    <phrase title="wf_widget_threads_popular_cutoff_explain" version_id="1" version_string="0.9"><![CDATA[Threads older than this number of days won't make it to the Popular list.]]></phrase>
+    <phrase title="wf_widget_threads_type" version_id="1" version_string="0.9"><![CDATA[Widget Type]]></phrase>
+    <phrase title="wf_widget_threads_type_new" version_id="1" version_string="0.9"><![CDATA[New Threads]]></phrase>
+    <phrase title="wf_widget_threads_type_popular" version_id="1" version_string="0.9"><![CDATA[Popular Theads (top viewed)]]></phrase>
+    <phrase title="wf_widget_threads_type_recent" version_id="1" version_string="0.9"><![CDATA[Recent Threads (new reply)]]></phrase>
+    <phrase title="wf_xfshout_instance_id" version_id="7" version_string="0.9.5"><![CDATA[Instance ID]]></phrase>
+    <phrase title="wf_xfshout_instance_id_explain" version_id="7" version_string="0.9.5"><![CDATA[Enter the instance ID of the xfShout instance that you want to put to the sidebar.]]></phrase>
+    <phrase title="wf_xfshout_instance_id_invalid" version_id="7" version_string="0.9.5"><![CDATA[No xfShout instance is found with the ID of {id}.]]></phrase>
+    <phrase title="wf_x_not_installed" version_id="7" version_string="0.9.5"><![CDATA[Oops, it looks like you haven't got {target} installed.]]></phrase>
+    <phrase title="wf_x_posted" version_id="1" version_string="0.9"><![CDATA[{user} posted]]></phrase>
+    <phrase title="wf_x_replied" version_id="1" version_string="0.9"><![CDATA[{user} replied]]></phrase>
+  </phrases>
+  <route_prefixes>
+    <route_type type="admin">
+      <prefix original_prefix="widgets" class="WidgetFramework_Route_PrefixAdmin_Widgets" build_link="data_only"/>
+    </route_type>
+  </route_prefixes>
+  <style_properties/>
+  <templates>
+    <template title="wf_default.css" version_id="17" version_string="1.0.9"><![CDATA[<xen:comment>
+Please do not edit this template.
+All customization should go to wf_default_EXTRA.css
+</xen:comment>
+
+.widget-tabs .tabs {
+	height: 25px;
+	background: none;
+	border: 0;
+}
+
+.widget-tabs .tabs li a {
+	height: 24px;
+}
+
+.widget-tabs .primaryContent {
+	padding: 0;
+	background: none;
+	border: 0;
+}
+
+.widget-tabs h3 {
+	padding: 3px 6px;
+	border-bottom: 0 !important;
+}
+
+.widget-poll .pollContent {
+	padding-left: 0 !important;
+	width: auto !important;
+}
+
+.widget-poll. .pollResults {
+	border-top: 0 !important;
+	border-bottom: 0 !important;
+}
+
+.widget-poll .barCell {
+	display: none;
+}
+
+.avatarList .WidgetFramework_nextToAvatar {
+	margin-left: 41px;
+}
+	.avatarList .WidgetFramework_nextToAvatar .username {
+		margin-top: 0;
+	}
+
+.WidgetFramework_Widget_RecentStatus .statusPoster textarea {
+	width: 100%;
+	margin: 0;
+	resize: vertical;
+	overflow: hidden;
+}
+
+<xen:include template="wf_default_EXTRA.css" />
+
+<xen:comment>
+Please do not edit this template.
+All customization should go to wf_default_EXTRA.css
+</xen:comment>]]></template>
+    <template title="wf_default_EXTRA.css" version_id="9" version_string="1.0.1"><![CDATA[<xen:comment>Customization should go here</xen:comment>]]></template>
+    <template title="wf_widget_birthday" version_id="17" version_string="1.0.9"><![CDATA[<xen:if is="{xen:count $users} == 1">
+	<h4 class="minorHeading">{xen:phrase wf_widget_birthday_today_is_xs_birthday, 'username={$users.0.username}'}</h4>
+	<div class="avatarList">
+		<ul>
+			<xen:foreach loop="$users" value="$user">
+				<li>
+					<xen:avatar user="$user" size="s" img="true" />
+					<xen:username user="$user" rich="true" />
+					<div class="userTitle">{xen:helper usertitle, $user}<xen:if is="{$user.age}">, {$user.age}</xen:if></div>
+				</li>
+			</xen:foreach>
+		</ul>
+	</div>
+<xen:elseif is="{xen:count $users} > 1" />
+	<h4 class="minorHeading">{xen:phrase wf_widget_birthday_today_is_x_peoples_birthday, 'count={xen:count $users}'}</h4>
+	<ul class="followedOnline">
+		<xen:foreach loop="$users" value="$user">
+			<li title="{$user.username}<xen:if is="{$user.age}">, {$user.age}</xen:if>" class="Tooltip">
+				<xen:avatar user="$user" size="s" img="true" class="_plainImage" />
+			</li>
+		</xen:foreach>
+	</ul>
+</xen:if>]]></template>
+    <template title="wf_widget_online_staff" version_id="1" version_string="0.9"><![CDATA[<xen:if hascontent="true">
+<div class="avatarList">
+	<ul>
+		<xen:contentcheck>
+			<xen:foreach loop="$onlineUsers.records" value="$user">
+				<xen:if is="{$user.is_moderator} OR {$user.is_admin}">
+					<li>
+						<xen:avatar user="$user" size="s" img="true" />
+						<xen:username user="$user" rich="true" />
+						<div class="userTitle">{xen:helper userTitle, $user}</div>
+					</li>
+				</xen:if>
+			</xen:foreach>
+		</xen:contentcheck>
+	</ul>
+</div>
+</xen:if>]]></template>
+    <template title="wf_widget_online_users" version_id="1" version_string="0.9"><![CDATA[<div class="userList">
+	<xen:if is="{$onlineUsers.records}">
+		<xen:if is="{$visitor.user_id}">
+			<xen:if hascontent="true">
+			<h4 class="minorHeading"><a href="{xen:link account/following}">{xen:phrase people_you_follow}:</a></h4>
+			<ul class="followedOnline">
+				<xen:contentcheck>
+					<xen:foreach loop="$onlineUsers.records" value="$user">
+						<xen:if is="{$user.followed}">
+							<li title="{$user.username}" class="Tooltip"><xen:avatar user="$user" size="s" img="true" class="_plainImage" /></li>
+						</xen:if>
+					</xen:foreach>
+				</xen:contentcheck>
+			</ul>
+			<h4 class="minorHeading"><a href="{xen:link members}">{xen:phrase members}:</a></h4>
+			</xen:if>
+		</xen:if>
+		
+		<ol class="listInline">
+			<xen:foreach loop="$onlineUsers.records" value="$user" i="$i">
+				<xen:if is="{$i} <= {$onlineUsers.limit}">
+					<li>
+					<xen:if is="{$user.user_id}">
+						<a href="{xen:link members, $user}"
+							class="username{xen:if '!{$user.visible}', ' invisible'}{xen:if {$user.followed}, ' followed'}">{$user.username}</a><xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
+					<xen:else />
+						{xen:phrase guest}<xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
+					</xen:if>
+					</li>
+				</xen:if>
+			</xen:foreach>
+			<xen:if is="{$onlineUsers.recordsUnseen}">
+				<li class="moreLink">... <a href="{xen:link online}" title="{xen:phrase see_all_visitors}">{xen:phrase and_x_more, 'count={xen:number $onlineUsers.recordsUnseen}'}</a></li>
+			</xen:if>
+		</ol>
+	</xen:if>
+	
+	<div class="footnote">
+		{xen:phrase online_now_x_members_y_guests_z, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}'}
+	</div>
+</div>]]></template>
+    <template title="wf_widget_poll" version_id="5" version_string="0.9.3"><![CDATA[<xen:if is="{$poll}">
+	<xen:include template="wf_widget_poll_block">
+		<xen:set var="$options">
+			<xen:if is="{$poll.canVote}">
+				<xen:include template="poll_block_vote" />
+			<xen:else />
+				<xen:include template="poll_block_result" />
+			</xen:if>
+		</xen:set>
+	</xen:include>
+</xen:if>]]></template>
+    <template title="wf_widget_poll_block" version_id="5" version_string="0.9.3"><![CDATA[<xen:if is="{$poll}">
+	<xen:require css="wf_default.css" />
+	<xen:require css="polls.css" />
+	<xen:require js="js/xenforo/discussion.js" />
+	<div id="PollContainer" class="NoAutoHeader widget-poll">
+		<form action="{xen:link threads/poll/vote, $thread}" method="post" class="pollBlock AutoValidator PollVoteForm" data-container="#PollContainer">
+			<div class="pollContent">
+				<div class="question">
+					<a href="{xen:link threads, $thread}" class="questionText">{$poll.question}</a>
+					
+					<xen:if is="{$poll.close_date}">
+						<div class="pollNotes closeDate muted">{xen:phrase this_poll_will_close_on_x, 'close_date={xen:datetime $poll.close_date, absolute}'}</div>
+					</xen:if>
+				</div>
+					
+				{xen:raw $options}
+			</div>
+		
+			<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+			<input type="hidden" name="_fromWidget" value="1" />
+		</form>
+	</div>
+</xen:if>]]></template>
+    <template title="wf_widget_poll_thread_results" version_id="5" version_string="0.9.3"><![CDATA[<xen:include template="wf_widget_poll_block">
+	<xen:set var="$options">
+		<xen:include template="poll_block_result" />
+	</xen:set>
+</xen:include>]]></template>
+    <template title="wf_widget_recent_status" version_id="17" version_string="1.0.9"><![CDATA[<xen:if is="{$users}">
+<xen:require css="wf_default.css" />
+
+<div class="avatarList WidgetFramework_Widget_RecentStatus">
+<ul>
+	<xen:foreach loop="$users" value="$user">
+	<li>
+		<xen:avatar user="$user" size="s" img="true" />
+		<div class="WidgetFramework_nextToAvatar">
+			<xen:username user="$user" />
+			<div>{$user.status}</div>
+			<div class="userTitle"><xen:datetime time="$user.status_date" /></div>
+		</div>
+	</li>
+	</xen:foreach>
+</ul>
+<xen:comment>The below block of status posting form was copied from `navigation_visitor_tab`</xen:comment>
+<xen:if is="{$canUpdateStatus}">
+	<form action="{xen:link members/post, $visitor}" method="post" class="statusPoster AutoValidator" data-optInOut="OptIn">
+		<textarea name="message" class="textCtrl StatusEditor Elastic" placeholder="{xen:phrase update_your_status}..." rows="1" cols="40" style="height:14px" data-statusEditorCounter="#visMenuSEdCount" data-nofocus="true"></textarea>
+		<div class="submitUnit">
+			<span id="visMenuSEdCount" title="{xen:phrase characters_remaining}"></span>
+			<input type="submit" class="button primary MenuCloser" value="{xen:phrase post_verb}" accesskey="s" />
+			<input type="hidden" name="_xfToken" value="CSRF_TOKEN_PAGE" /><xen:comment>This will be updated in WidgetFramework_WidgetRenderer_RecentStatus::extraPrepare()</xen:comment>
+			<input type="hidden" name="return" value="1" /> 
+		</div>
+	</form>
+</xen:if>
+</div>
+</xen:if>]]></template>
+    <template title="wf_widget_stats" version_id="1" version_string="0.9"><![CDATA[<div class="pairsJustified">
+	<dl class="discussionCount"><dt>{xen:phrase discussions}:</dt>
+		<dd>{xen:number $boardTotals.discussions}</dd></dl>
+	<dl class="messageCount"><dt>{xen:phrase messages}:</dt>
+		<dd>{xen:number $boardTotals.messages}</dd></dl>
+	<dl class="memberCount"><dt>{xen:phrase members_count}:</dt>
+		<dd>{xen:number $boardTotals.users}</dd></dl>
+	<dl><dt>{xen:phrase latest_member}:</dt>
+		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
+	<!-- slot: forum_stats_extra -->
+</div>]]></template>
+    <template title="wf_widget_threads" version_id="16" version_string="1.0.8"><![CDATA[<xen:if is="{$new} OR {$recent} OR {$popular} OR {$polls}">
+<div class="avatarList">
+<ul>
+	<xen:foreach loop="$new" value="$thread">
+	<li>
+		<xen:avatar user="$thread" size="s" img="true" />
+		<a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
+	</li>
+	</xen:foreach>
+	<xen:foreach loop="$recent" value="$thread">
+	<li>
+		<xen:avatar user="$thread" size="s" img="true" />
+		<a href="{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}">{xen:helper snippet, $thread.title, 35}</a>
+		<div class="userTitle">{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" /></div>
+	</li>
+	</xen:foreach>
+	<xen:foreach loop="$popular" value="$thread">
+	<li>
+		<xen:avatar user="$thread" size="s" img="true" />
+		<a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
+	</li>
+	</xen:foreach>
+	<xen:foreach loop="$polls" value="$thread">
+	<li>
+		<xen:avatar user="$thread" size="s" img="true" />
+		<a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
+	</li>
+	</xen:foreach>
+</ul>
+</div>
+</xen:if>]]></template>
+    <template title="wf_widget_users" version_id="17" version_string="1.0.9"><![CDATA[<div class="avatarList">
+<ul>
+	<xen:foreach loop="$users" value="$user">
+		<li>
+			<xen:avatar user="$user" size="s" img="true" />
+			<xen:username user="$user" rich="true" />
+			<xen:if is="{$widget.options.order} == 'message_count'">
+				<div class="userTitle">{xen:phrase messages}: {$user.message_count}</div>
+			<xen:else />
+				<xen:if hascontent="true"><div class="userTitle"><xen:contentcheck>{xen:helper usertitle, $user}</xen:contentcheck></div></xen:if>
+			</xen:if>
+		</li>
+	</xen:foreach>
+</ul>
+</div>]]></template>
+    <template title="wf_widget_wrapper" version_id="17" version_string="1.0.9"><![CDATA[<xen:require css="wf_default.css" />
+
+<xen:if is="{xen:count $tabs} > 1">
+<xen:comment>We are rendering tabs</xen:comment>
+<div class="section widget-tabs">
+	<div class="primaryContent">
+	<ul class="tabs Tabs" data-panes="#widget-tabs-{$groupId} > li">
+		<xen:foreach loop="$tabs" value="$tab">
+		<xen:if is="{$tab.html}">
+		<li>
+			<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
+				<h3>{$tab.title}</h3>
+			</a>
+		</li>
+		</xen:if>
+		</xen:foreach>
+	</ul>
+	</div>
+	<div style="clear: both; height: 0px;">&nbsp;<!-- dirty fix, sorry --></div>
+	<div class="secondaryContent" id="widget-group-{$groupId}">
+		<ul id="widget-tabs-{$groupId}">
+			<xen:foreach loop="$tabs" value="$tab">
+			<xen:if is="{$tab.html}">
+			<li id="widget-tab-{$tab.widget_id}" class="{$tab.class}">
+				<ul>
+					{xen:raw $tab.html}
+				</ul>
+			</li>
+			</xen:if>
+			</xen:foreach>
+		</ul>
+	</div>
+</div>
+<xen:else />
+<xen:comment>Simpler case: just a single widget</xen:comment>
+<div class="section">
+	<xen:foreach loop="$tabs" value="$tab">
+		<div class="secondaryContent {$tab.class}" id="widget-{$tab.widget_id}">
+			<xen:if is="{$tab.html}">
+				<h3>
+					<xen:if is="{$tab.extraData.link}">
+						<a href="{$tab.extraData.link}">{$tab.title}</a>
+					<xen:else />
+						{$tab.title}
+					</xen:if>
+				</h3>
+				{xen:raw $tab.html}
+			</xen:if>
+		</div>
+	</xen:foreach>
+</div>
+</xen:if>]]></template>
+  </templates>
+  <bb_code_media_sites/>
+</addon>

@@ -42,6 +42,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/WidgetRenderer/Users.php' => 'ae4d58f1ae2fbe828360edc55f064040',
   'library/WidgetFramework/WidgetRenderer/VisitorPanel.php' => '20556af6bbaf48aeb954c504189601df',
   'library/WidgetFramework/WidgetRenderer.php' => 'a6f8fe767e46e23045098fe694abdb02',
+  'js/WidgetFramework/functions.js' => 'a6a6be5d27760a0ffa5aa1b821939447',
 );
 	}
 }
