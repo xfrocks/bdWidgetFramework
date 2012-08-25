@@ -10,12 +10,12 @@ class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetR
 		return false;
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'wf_widget_online_staff';
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
-		if ('forum_list' == $templateName) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+		if ('forum_list' == $positionCode) {
 			$renderTemplateObject->setParam('onlineUsers', $params['onlineUsers']);
 		} else {
 			if (empty($GLOBALS['WidgetFramework_onlineUsers'])) {

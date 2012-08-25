@@ -35,6 +35,10 @@ class WidgetFramework_Core {
 		// since 1.0.9
 		$renderers[] = 'WidgetFramework_WidgetRenderer_RecentStatus';
 		$renderers[] = 'WidgetFramework_WidgetRenderer_HtmlWithoutWrapper';
+		
+		// since 1.0.10
+		$renderers[] = 'WidgetFramework_WidgetRenderer_Callback';
+		$renderers[] = 'WidgetFramework_WidgetRenderer_Birthday';
 	}
 	
 	public function bootstrap() {

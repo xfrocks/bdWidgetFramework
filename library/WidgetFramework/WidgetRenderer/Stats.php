@@ -10,12 +10,12 @@ class WidgetFramework_WidgetRenderer_Stats extends WidgetFramework_WidgetRendere
 		return false;
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'wf_widget_stats';
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
-		if ('forum_list' == $templateName) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+		if ('forum_list' == $positionCode) {
 			$renderTemplateObject->setParam('boardTotals', $params['boardTotals']);
 		} else {
 			$core = WidgetFramework_Core::getInstance();

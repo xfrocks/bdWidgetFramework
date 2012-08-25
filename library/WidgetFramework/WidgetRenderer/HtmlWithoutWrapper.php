@@ -14,11 +14,11 @@ class WidgetFramework_WidgetRenderer_HtmlWithoutWrapper extends WidgetFramework_
 		return 'wf_widget_options_html';
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return false;
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $justAnTemplate) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $justAnTemplate) {
 		return $widget['options']['html'];
 	}
 }

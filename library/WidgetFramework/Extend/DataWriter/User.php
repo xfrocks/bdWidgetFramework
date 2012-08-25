@@ -4,11 +4,13 @@ class WidgetFramework_Extend_DataWriter_User extends XFCP_WidgetFramework_Extend
 		parent::_postSaveAfterTransaction();
 		
 		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Users');
+		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Birthday');
 	}
 	
 	protected function _postDelete() {
 		parent::_postDelete();
 		
 		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Users');
+		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Birthday');
 	}
 }

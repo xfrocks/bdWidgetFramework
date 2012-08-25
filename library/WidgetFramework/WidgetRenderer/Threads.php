@@ -50,11 +50,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		return true;
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'wf_widget_threads';
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$core = WidgetFramework_Core::getInstance();
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 		$nodeModel = $core->getModelFromCache('XenForo_Model_Node');

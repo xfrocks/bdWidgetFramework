@@ -29,7 +29,7 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 		return true;
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'wf_widget_poll';
 	}
 	
@@ -41,7 +41,7 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 		);
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$core = WidgetFramework_Core::getInstance();
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 		$pollModel = $core->getModelFromCache('XenForo_Model_Poll');

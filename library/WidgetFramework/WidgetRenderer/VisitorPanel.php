@@ -11,11 +11,11 @@ class WidgetFramework_WidgetRenderer_VisitorPanel extends WidgetFramework_Widget
 		return false;
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'sidebar_visitor_panel';
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$renderTemplateObject->setParams($params);
 
 		return $renderTemplateObject->render();		

@@ -17,15 +17,15 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 		return 'wf_widget_options_empty';
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return false;
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		return false;
 	}
 	
-	public function render(array $widget, $templateName, array $params, XenForo_Template_Abstract $template, &$output) {
+	public function render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template, &$output) {
 		$output = '';
 		
 		if (!empty($widget['options']['noVisitorPanel'])) {

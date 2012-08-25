@@ -25,11 +25,11 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 		return true;
 	}
 
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'wf_widget_recent_status';
 	}
 
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$core = WidgetFramework_Core::getInstance();
 		$userModel = $core->getModelFromCache('XenForo_Model_User');
 		$userProfileModel = $core->getModelFromCache('XenForo_Model_UserProfile');
@@ -38,12 +38,12 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			// get statuses from all users if friends_only option is not used
 			// also do it if current user is guest (guest has no friend list, lol)
 			$conditions = array(
-				'WidgetFramework_status_date' => array('>', 0),
+				WidgetFramework_Extend_Model_User::CONDITIONS_STATUS_DATE => array('>', 0),
 			);
 			$fetchOptions = array(
 				'join' => XenForo_Model_User::FETCH_USER_PROFILE,
 	
-				'order' => 'WidgetFramework_status_date',
+				'order' => WidgetFramework_Extend_Model_User::ORDER_STATUS_DATE,
 				'direction' => 'desc',
 	
 				'limit' => $widget['options']['limit'] * 2, // we have to check for permissions later

@@ -24,11 +24,11 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 		return true;
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'wf_widget_users';
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
 		$conditions = array();
 		$fetchOptions = array(
@@ -40,6 +40,6 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 
 		$renderTemplateObject->setParam('users', $users);
 		
-		return $renderTemplateObject->render();		
+		return $renderTemplateObject->render();
 	}
 }

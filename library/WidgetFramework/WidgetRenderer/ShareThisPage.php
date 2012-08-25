@@ -11,11 +11,11 @@ class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_Widge
 		return false;
 	}
 	
-	protected function _getRenderTemplate(array $widget, $templateName, array $params) {
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'sidebar_share_page';
 	}
 	
-	protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$renderTemplateObject->setParam('xenOptions', $params['xenOptions']);
 		if (isset($params['url'])) {
 			$renderTemplateObject->setParam('url', $params['url']);

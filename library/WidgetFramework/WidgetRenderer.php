@@ -2,8 +2,8 @@
 abstract class WidgetFramework_WidgetRenderer {
 	abstract protected function _getConfiguration();
 	abstract protected function _getOptionsTemplate();
-	abstract protected function _getRenderTemplate(array $widget, $templateName, array $params);
-	abstract protected function _render(array $widget, $templateName, array $params, XenForo_Template_Abstract $renderTemplateObject);
+	abstract protected function _getRenderTemplate(array $widget, $positionCode, array $params);
+	abstract protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject);
 	
 	protected function _renderOptions(XenForo_Template_Abstract $template) { return true; }
 	protected function _validateOptionValue($optionKey, &$optionValue) { return true; }
@@ -17,7 +17,7 @@ abstract class WidgetFramework_WidgetRenderer {
 			 * */
 		);
 	}
-	protected function _prepare(array $widget, $templateName, array $params) { return true; }
+	protected function _prepare(array $widget, $positionCode, array $params) { return true; }
 	protected function _getExtraDataLink(array $widget) { return false; }
 	
 	protected static $_widgetTemplates = array();
@@ -96,13 +96,13 @@ abstract class WidgetFramework_WidgetRenderer {
 		return $options;
 	}
 	
-	public function prepare(array $widget, $templateName, array $params, XenForo_Template_Abstract $template) {
+	public function prepare(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template) {
 		if ($this->useWrapper()) {
 			$template->preloadTemplate('wf_widget_wrapper');
 			self::$_widgetTemplates['wf_widget_wrapper'] = true;
 		}
 		
-		$renderTemplate = $this->_getRenderTemplate($widget, $templateName, $params);
+		$renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
 		if (!empty($renderTemplate)) {
 			$template->preloadTemplate($renderTemplate);
 			self::$_widgetTemplates[$renderTemplate] = true;
@@ -115,7 +115,7 @@ abstract class WidgetFramework_WidgetRenderer {
 			}	
 		}
 		
-		$this->_prepare($widget, $templateName, $params);
+		$this->_prepare($widget, $positionCode, $params);
 	}
 	
 	protected function _executeExpression($expression, array $params) {
@@ -131,7 +131,7 @@ abstract class WidgetFramework_WidgetRenderer {
 		}				
 	}
 	
-	public function render(array $widget, $templateName, array $params, XenForo_Template_Abstract $template, &$output) {
+	public function render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template, &$output) {
 		$html = false;
 		 
 		if ($this->useCache()) {
@@ -160,13 +160,13 @@ abstract class WidgetFramework_WidgetRenderer {
 		
 		// expression executed just fine
 		if ($html === false) {
-			$renderTemplate = $this->_getRenderTemplate($widget, $templateName, $params);
+			$renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
 			if (!empty($renderTemplate)) {
 				$renderTemplateObject = $template->create($renderTemplate, $params);
 				$renderTemplateObject->setParam('widget', $widget);
-				$html = $this->_render($widget, $templateName, $params, $renderTemplateObject);
+				$html = $this->_render($widget, $positionCode, $params, $renderTemplateObject);
 			} else {
-				$html = $this->_render($widget, $templateName, $params, $template);
+				$html = $this->_render($widget, $positionCode, $params, $template);
 			}
 			$html = trim($html);
 			
