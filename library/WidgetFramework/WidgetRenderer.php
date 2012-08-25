@@ -428,15 +428,8 @@ abstract class WidgetFramework_WidgetRenderer {
 				WidgetFramework_Core::saveCachedWidget($cacheId, $html, $useUserCache, $useLiveCache);
 			}
 		}
-
-		if ($this->useWrapper($widget)) {
-			// only return html if this renderer use wrapper
-			return trim($html);
-		} else {
-			// directly send output
-			$output .= $html;
-			return false;
-		}
+		
+		return trim($html);
 	}
 	
 	public function extraPrepare(array $widget, &$html) {

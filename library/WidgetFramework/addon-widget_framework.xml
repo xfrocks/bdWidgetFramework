@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.5.4" version_id="37" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.0.0-dev" version_id="38" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -48,11 +48,13 @@
 			<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
 		</xen:textboxunit>
 		
-		<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}" placeholder="{xen:phrase wf_public_template_name}">
+		<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
 			<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
 		</xen:textboxunit>
 		
-		<xen:textboxunit label="{xen:phrase wf_display_order}:" name="display_order" value="{$widget.display_order}"/>
+		<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
+			<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
+		</xen:spinboxunit>
 		
 		<xen:checkboxunit label="">
 			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
@@ -276,6 +278,7 @@ Arguments:
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
     <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
     <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" description=""/>
+    <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" description=""/>
     <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" description=""/>
   </code_event_listeners>
   <cron/>
@@ -307,19 +310,24 @@ Arguments:
     <phrase title="wf_delete_widget" version_id="1" version_string="0.9"><![CDATA[Delete Widget]]></phrase>
     <phrase title="wf_descending" version_id="1" version_string="0.9"><![CDATA[Descending]]></phrase>
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
-    <phrase title="wf_display_order" version_id="1" version_string="0.9"><![CDATA[Display Order]]></phrase>
+    <phrase title="wf_display_order_explain" version_id="37" version_string="1.5.4"><![CDATA[The position of this widget relative to other widgets in the same position. If the display order is negative, its contents will be inserted before the original contents of the position. Otherwise, it will be appended.]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
     <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>
-    <phrase title="wf_expression_explain" version_id="1" version_string="0.9"><![CDATA[Enter your expression here. Please use the correct PHP syntax and make sure you know 100% which variables are available for the target template (position).]]></phrase>
+    <phrase title="wf_expression_explain" version_id="37" version_string="1.5.4"><![CDATA[Enter your expression here. Please use the correct PHP syntax and make sure you know 100% which variables are available in target position. For template position, all template parameters will be accessible but for hook position, only hook parameters will be accessible. Some common used expressions:<br/>
+<br/>
+$visitor['user_id'] > 0 -- means: show the widget for logged in users only.<br/>
+<br/>
+XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the widget for users of user group #3 only.]]></phrase>
     <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
-    <phrase title="wf_invalid_position_x" version_id="7" version_string="0.9.5"><![CDATA[Invalid Widget Position specified: {position}. The position must be a list of existing templates' name (separate by comma).]]></phrase>
+    <phrase title="wf_invalid_position_x" version_id="37" version_string="1.5.4"><![CDATA[Invalid position specified: {position}. The position must be one of three types: "all", "template_name" or "hook:hook_name".]]></phrase>
     <phrase title="wf_invalid_widget_renderer_x" version_id="24" version_string="1.2.2.2"><![CDATA[Invalid Widget Renderer specified: {renderer}.]]></phrase>
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
     <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
     <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
     <phrase title="wf_new" version_id="1" version_string="0.9"><![CDATA[New]]></phrase>
+    <phrase title="wf_non_existent_hook_x" version_id="37" version_string="1.5.4"><![CDATA[The specified hook "{hook}" could not be found in any public templates.]]></phrase>
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
     <phrase title="wf_parent_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum (of the current one)]]></phrase>
@@ -330,11 +338,15 @@ Arguments:
     <phrase title="wf_popular" version_id="1" version_string="0.9"><![CDATA[Popular]]></phrase>
     <phrase title="wf_position" version_id="1" version_string="0.9"><![CDATA[Position]]></phrase>
     <phrase title="wf_position_can_not_be_empty" version_id="22" version_string="1.2.2"><![CDATA[Widget position can not be empty.]]></phrase>
-    <phrase title="wf_position_explain" version_id="24" version_string="1.2.2.2"><![CDATA[The widget will be displayed on the sidebar when this template is rendered. Not all templates can be used as position, please contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if your template of choice doesn't work. Popular positions: forum_list (index page), forum_view (forum page), thread_view (thread page). You can also use "all" to display a widget all the time.]]></phrase>
+    <phrase title="wf_position_explain" version_id="37" version_string="1.5.4"><![CDATA[There are three types of positions:<br/>
+- The "all" position will make the widget show up in the sidebar of all pages.<br/>
+- Or you can input a comma separated list of templates that need the widget. Popular templates: forum_list (the index page), forum_view (the individual forum page), thread_view (the thread page).<br/>
+- Or you can input a comma separated list in the format of "hook:hook_name" to render the widget directly to the hook. For example: "hook:page_container_content_top" will make the widget visible at the top of the page, on every page.<br/>
+<br/>
+Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if you have question about this.]]></phrase>
     <phrase title="wf_print_error_message" version_id="1" version_string="0.9"><![CDATA[Print error message instead of ignoring it]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
-    <phrase title="wf_public_template_name" version_id="1" version_string="0.9"><![CDATA[Public Template Name]]></phrase>
     <phrase title="wf_recent" version_id="1" version_string="0.9"><![CDATA[Recent]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
     <phrase title="wf_recent_status_friends_only_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show statuses from user's friend list only. It will display from all users if current user is not logged in.]]></phrase>

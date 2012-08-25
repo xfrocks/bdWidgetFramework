@@ -2,6 +2,7 @@
 class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter {
 	
 	const EXTRA_DATA_SKIP_REBUILD = 'skipRebuild';
+	const EXTRA_DATA_TEMPLATE_FOR_HOOKS = 'templateForHooks';
 	
 	protected function _getFields() {
 		return array(
@@ -11,11 +12,12 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter {
 				'title' => array('type' => self::TYPE_STRING, 'default' => ''),
 				'class' => array('type' => self::TYPE_STRING, 'required' => true,
 					'verification' => array('WidgetFramework_DataWriter_Helper_Widget', 'verifyClass')),
-				'options' => array('type' => self::TYPE_SERIALIZED, 'default' => ''),
+				'options' => array('type' => self::TYPE_SERIALIZED, 'default' => 'a:0:{}'),
 				'position' => array('type' => self::TYPE_STRING, 'required' => true,
 					'verification' => array('WidgetFramework_DataWriter_Helper_Widget', 'verifyPosition')),
-				'display_order' => array('type' => self::TYPE_UINT, 'default' => 1),
+				'display_order' => array('type' => self::TYPE_INT, 'default' => 0),
 				'active' => array('type' => self::TYPE_BOOLEAN, 'default' => 1),
+				'template_for_hooks' => array('type' => self::TYPE_SERIALIZED, 'default' => 'a:0:{}'),
 			)
 		);
 	}
@@ -26,6 +28,16 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter {
 		}
 
 		return array('xf_widget' => $this->_getWidgetModel()->getWidgetById($id));
+	}
+	
+	protected function _preSave() {
+		$templateForHooks = $this->getExtraData(self::EXTRA_DATA_TEMPLATE_FOR_HOOKS);
+		if ($templateForHooks !== null) {
+			// this extra data has been set somehow
+			$this->set('template_for_hooks', $templateForHooks);
+		}
+		
+		return parent::_preSave();
 	}
 	
 	protected function _postSaveAfterTransaction() {

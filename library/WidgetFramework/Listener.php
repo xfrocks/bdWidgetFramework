@@ -8,16 +8,22 @@ class WidgetFramework_Listener {
 	}
 	
 	public static function template_create(&$templateName, array &$params, XenForo_Template_Abstract $template) {
-		if (defined('WIDGET_FRAMEWORK_LOADED') AND $template instanceof XenForo_Template_Public) {
-			// we only work if the framework is ready AND this template is a public template
+		if (defined('WIDGET_FRAMEWORK_LOADED')) {
 			WidgetFramework_Core::getInstance()->prepareWidgetsFor($templateName, $params, $template);
+			
+			WidgetFramework_Core::getInstance()->prepareWidgetsForHooksIn($templateName, $params, $template);
 		}
 	}
 	
 	public static function template_post_render($templateName, &$output, array &$containerData, XenForo_Template_Abstract $template) {
-		if (defined('WIDGET_FRAMEWORK_LOADED') AND $template instanceof XenForo_Template_Public) {
-			// we only work if the framework is ready AND this template is a public template
+		if (defined('WIDGET_FRAMEWORK_LOADED')) {
 			WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
+		}
+	}
+	
+	public static function template_hook($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template) {
+		if (defined('WIDGET_FRAMEWORK_LOADED')) {
+			WidgetFramework_Core::getInstance()->renderWidgetsForHook($hookName, $hookParams, $template, $contents);
 		}
 	}
 	

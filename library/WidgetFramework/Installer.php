@@ -10,7 +10,7 @@ class WidgetFramework_Installer {
 				class VARCHAR(75) NOT NULL,
 				options MEDIUMBLOB,
 				position VARCHAR(50) NOT NULL,
-				display_order INT(10) UNSIGNED DEFAULT 1,
+				display_order INT(11) DEFAULT 0,
 				active TINYINT(3) UNSIGNED DEFAULT 1,
 				PRIMARY KEY (widget_id)
 			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
@@ -63,6 +63,16 @@ class WidgetFramework_Installer {
 		
 		// clear cache (in db only)
 		$db->query("DELETE FROM xf_data_registry WHERE data_key LIKE 'wf%'");
+		
+		// add template for hooks support in widget
+		// since 2.0
+		if (!$db->fetchOne("SHOW COLUMNS FROM `xf_widget` LIKE 'template_for_hooks'")) {
+			$db->query("ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB");
+		}
+		
+		// support negative display order
+		// since 2.0
+		$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `display_order` INT(11) DEFAULT 0");
 	}
 	
 	public static function uninstall() {

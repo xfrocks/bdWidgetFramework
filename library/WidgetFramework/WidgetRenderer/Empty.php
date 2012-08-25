@@ -38,6 +38,8 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 				define(self::NO_VISITOR_PANEL_FLAG, true);
 				$output .= self::NO_VISITOR_PANEL_MARKUP;
 			}
+			
+			return $output;
 		}
 	}
 }

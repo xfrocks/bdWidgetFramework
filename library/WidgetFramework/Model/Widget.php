@@ -83,6 +83,28 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 		return $widgets;
 	}
 	
+	public function reverseNegativeDisplayOrderWidgets(array &$widgets) {
+		$positiveWidgets = array();
+		
+		foreach (array_keys($widgets) as $widgetId) {
+			if ($widgets[$widgetId]['display_order'] >= 0) {
+				$positiveWidgets[$widgetId] = $widgets[$widgetId];
+				unset($widgets[$widgetId]);
+			}
+		}
+		
+		// at this point, widgets only contains negative display order widgets
+		// we will just reverse them all
+		$widgets = array_reverse($widgets, true /* preserves keys */);
+		
+		// new adding back the positive ones
+		foreach ($positiveWidgets as $widgetId => $widget) {
+			$widgets[$widgetId] = $widget;
+		}
+		
+		// done! I feel so smart. LOL
+	}
+	
 	public function getWidgetById($widgetId) {
 		$widget = $this->_getDb()->fetchRow("
 			SELECT *
@@ -101,7 +123,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 	}
 	
 	protected function _prepare(array &$widget) {
-		$widget['options'] = unserialize($widget['options']);
+		$widget['options'] = @unserialize($widget['options']);
+		if (empty($widget['options'])) $widget['options'] = array();
+		
+		$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
+		if (empty($widget['template_for_hooks'])) $widget['template_for_hooks'] = array();
 		
 		$renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
 		

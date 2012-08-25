@@ -19,30 +19,59 @@ class WidgetFramework_DataWriter_Helper_Widget {
 		}
 	}
 	
-	public static function verifyPosition($position, XenForo_DataWriter $dw, $fieldName = false) {
-		$position = trim($position);
+	public static function verifyPosition(&$positions, XenForo_DataWriter $dw, $fieldName = false) {
+		$positions = trim(strtolower($positions)); // template and hook should be all in lowercase, at least I hope so
 		
-		if (empty($position)) {
+		if (empty($positions)) {
 			$dw->error(new XenForo_Phrase('wf_position_can_not_be_empty'), $fieldName);
 		}
 		
-		if ('all' == $position) {
+		if ('all' == $positions) {
 			return true;
 		}
 		
-		$templateModel = XenForo_Model::create('XenForo_Model_Template');
-		$templates = explode(',', $position);
-		$foundAll = array();
+		$templateModel = $dw->getModelFromCache('XenForo_Model_Template');
+		$db = XenForo_Application::getDb();
+		$positionsArray = explode(',', $positions);
+		$positionsGood = array();
+		$templateForHooks = array();
 		
-		foreach ($templates as $template) {
-			$template = trim($template);
-			if (empty($template)) continue;
+		foreach ($positionsArray as $position) {
+			$position = trim($position);
+			if (empty($position)) continue;
 			
-			$found = $templateModel->getTemplateInStyleByTitle($template);
-			if (empty($found)) {
-				$dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
+			// sondh@2012-08-25
+			// added support for hook:hook_name
+			if (substr($position, 0, 5) == 'hook:') {
+				// accept all kind of hooks, just need to get parent templates for them
+				$templates = $db->fetchAll("
+					SELECT title
+					FROM `xf_template_compiled`
+					WHERE template_compiled LIKE " . XenForo_Db::quoteLike('callTemplateHook(\'' . substr($position, 5) . '\',', 'lr') . "
+				");
+				if (count($templates) > 0) {
+					$templateForHooks[$position] = array();
+					foreach ($templates as $template) {
+						$templateForHooks[$position][] = $template['title'];
+					}
+				} else {
+					$dw->error(new XenForo_Phrase('wf_non_existent_hook_x', array('hook' => substr($position, 5))), $fieldName);
+					return false;
+				}
+			} else {
+				$found = $templateModel->getTemplateInStyleByTitle($position);
+				if (!$found) {
+					$dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
+					return false;
+				}
 			}
+			
+			$positionsGood[] = $position;
 		}
+		
+		$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_TEMPLATE_FOR_HOOKS, array_unique($templateForHooks));
+		asort($positionsGood);
+		$positions = implode(', ', $positionsGood);
 		
 		return true;
 	}

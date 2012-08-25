@@ -31,8 +31,21 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base {
 			}
 		}
 		
-		usort($positions, create_function('$a, $b', 'return $a["position"] > $b["position"];'));
+		usort($positions, array($this, 'sort'));
 		
 		$this->_params['positions'] = $positions;
+	}
+	
+	protected function sort($a, $b) {
+		$aIsHook = (substr($a['position'], 0, 5) == 'hook:');
+		$bIsHook = (substr($b['position'], 0, 5) == 'hook:');
+		
+		if ($aIsHook AND !$bIsHook) {
+			return -1;
+		} elseif (!$aIsHook AND $bIsHook) {
+			return 1;
+		} else {
+			return strcmp($a['position'], $b['position']);
+		}
 	}
 }

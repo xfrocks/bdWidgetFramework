@@ -6,6 +6,7 @@ class WidgetFramework_Core {
 	protected $_renderers = array();
 	protected $_widgets = array();
 	protected $_positions = array();
+	protected $_templateForHooks = array();
 	protected $_models = array();
 	
 	public function __construct() {
@@ -51,7 +52,9 @@ class WidgetFramework_Core {
 	public function bootstrap() {
 		if (defined('WIDGET_FRAMEWORK_LOADED')) return false;
 		
-		$this->_widgets = $this->getModelFromCache('WidgetFramework_Model_Widget')->getAllWidgets();
+		$this->_widgets = $this->_getModelWidget()->getAllWidgets();
+		$this->_getModelWidget()->reverseNegativeDisplayOrderWidgets($this->_widgets);
+		
 		foreach ($this->_widgets as &$widget) {
 			if (empty($widget['active'])) continue;
 			
@@ -78,6 +81,7 @@ class WidgetFramework_Core {
 							'name' => $widget['options']['tab_group'],
 							'widgets' => array(),
 							'keys' => false,
+							'display_order' => $widget['display_order'], // the group uses the first widget's display order
 						);
 					}
 					
@@ -90,8 +94,29 @@ class WidgetFramework_Core {
 							$widget['widget_id'] => &$widget,
 						),
 						'keys' => array($widget['widget_id']),
+						'display_order' => $widget['display_order'],
 					);
-			}
+				}
+				
+				// get template for hooks data from the widget
+				// merge it to template for hook property of this object
+				// to use it later (prepare widgets in template creation)
+				// since 2.0
+				if (!empty($widget['template_for_hooks'])) {
+					foreach ($widget['template_for_hooks'] as $hookPositionCode => $templateForHooks) {
+						foreach ($templateForHooks as $templateName) {
+							if (!isset($this->_templateForHooks[$templateName])) {
+								$this->_templateForHooks[$templateName] = array();
+							}
+							
+							if (!isset($this->_templateForHooks[$templateName][$hookPositionCode])) {
+								$this->_templateForHooks[$templateName][$hookPositionCode] = 1;
+							} else {
+								$this->_templateForHooks[$templateName][$hookPositionCode]++;
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -115,25 +140,42 @@ class WidgetFramework_Core {
 			return false;
 		}
 		
-		if ('all' != $templateName) {
-			$this->prepareWidgetsFor('all', $params, $template);
+		$this->_prepareWidgetsFor($templateName, $params, $template);
+		$this->_prepareWidgetsFor('all', $params, $template);
+		
+		return true;
+	}
+	
+	public function prepareWidgetsForHooksIn($templateName, array $params, XenForo_Template_Abstract $template) {
+		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName)) {
+			return false;
 		}
 		
-		if (!isset($this->_positions[$templateName])) return false;
+		if (isset($this->_templateForHooks[$templateName])) {
+			foreach ($this->_templateForHooks[$templateName] as $hookPositionCode => $count) {
+				$this->_prepareWidgetsFor($hookPositionCode, $params, $template);
+			}
+		}
+	}
+	
+	protected function _prepareWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template) {
+		if (!isset($this->_positions[$positionCode])) return false;
 		
-		$position =& $this->_positions[$templateName];
+		$position =& $this->_positions[$positionCode];
 		if (!empty($position['prepared'])) return false; // prepared
 
 		foreach ($position['widgets'] as &$widgetGroup) {
 			foreach ($widgetGroup['widgets'] as &$widget) {
 				$renderer = self::getRenderer($widget['class'], false);
 				if ($renderer) {
-					$renderer->prepare($widget, $templateName, $params, $template);
+					$renderer->prepare($widget, $positionCode, $params, $template);
 				}
 			}
 		}
 		
 		$position['prepared'] = true;
+		
+		return true;
 	}
 	
 	public function renderWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template, array &$containerData) {
@@ -159,6 +201,14 @@ class WidgetFramework_Core {
 		if ($html != $originalHtml) {
 			$containerData['sidebar'] = $html;
 		}
+		
+		return true;
+	}
+	
+	public function renderWidgetsForHook($hookName, array $hookParams, XenForo_Template_Abstract $template, &$hookHtml) {
+		$hookHtml = $this->_renderWidgetsFor('hook:' . $hookName, $hookParams, $template, $hookHtml);
+		
+		return true;
 	}
 	
 	protected function _renderWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template, $html) {
@@ -219,24 +269,37 @@ class WidgetFramework_Core {
 
 			if ($count > 0) {
 				$tabs = array();
+				$noWrapper = array();
 				
 				foreach ($widgetGroup['keys'] as $key) {
 					$widget =& $widgetGroup['widgets'][$key];
+					$renderer = self::getRenderer($widget['class'], false);
 					
 					if (!empty($position['html'][$widget['widget_id']])) {
-						$tabs[$widget['widget_id']] = array(
-							'widget_id' => $widget['widget_id'],
-							'title' => $widget['title'],
-							'html' => $position['html'][$widget['widget_id']],
-							// since 1.0.9
-							'class' => $widget['class'],
-							'extraData' => $position['extraData'][$widget['widget_id']],
-							'options' => $widget['options'],
-						);
+						if ($renderer->useWrapper($widget)) {
+							$tabs[$widget['widget_id']] = array(
+								'widget_id' => $widget['widget_id'],
+								'title' => $widget['title'],
+								'html' => $position['html'][$widget['widget_id']],
+								// since 1.0.9
+								'class' => $widget['class'],
+								'extraData' => $position['extraData'][$widget['widget_id']],
+								'options' => $widget['options'],
+							);
+						} else {
+							$noWrapper[$widget['widget_id']] = $position['html'][$widget['widget_id']];
+						}
 					}
 				}
 				
-				$html .= WidgetFramework_WidgetRenderer::wrap($tabs, $template, $widgetGroup['name']);
+				$widgetGroupHtml = implode('', $noWrapper);
+				$widgetGroupHtml .= WidgetFramework_WidgetRenderer::wrap($tabs, $template, $widgetGroup['name']);
+				
+				if ($widgetGroup['display_order'] >= 0) {
+					$html .= $widgetGroupHtml;
+				} else {
+					$html = $widgetGroupHtml . $html;
+				}
 			}
 		}
 		
@@ -312,6 +375,15 @@ class WidgetFramework_Core {
 	protected function _getModelCache() {
 		return $this->getModelFromCache('WidgetFramework_Model_Cache');
 	}
+	
+	/**
+	 * @return WidgetFramework_Model_Widget
+	 */
+	protected function _getModelWidget() {
+		return $this->getModelFromCache('WidgetFramework_Model_Widget');
+	}
+	
+	/* ######################################## STATIC FUNCTIONS BELOW ######################################## */
 	
 	public static function loadCachedWidget($cacheId, $useUserCache, $useLiveCache) {
 		return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
