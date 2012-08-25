@@ -7,8 +7,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'type' => XenForo_Input::STRING,
 				'cutoff' => XenForo_Input::UINT,
 				'forums' => XenForo_Input::ARRAY_SIMPLE,
+				'prefixes' => XenForo_Input::ARRAY_SIMPLE,
 				'as_guest' => XenForo_Input::UINT,
 				'limit' => XenForo_Input::UINT,
+				'display' => XenForo_Input::ARRAY_SIMPLE,
 			),
 			'useCache' => true,
 			'useUserCache' => true,
@@ -28,7 +30,17 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			true
 		);
 		
+		$prefixes = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_ThreadPrefix')->getPrefixOptions();
+		foreach ($prefixes as $prefixGroupId => &$groupPrefixes) {
+			foreach ($groupPrefixes as &$prefix) {
+				if (in_array($prefix['value'], $params['options']['prefixes'])) {
+					$prefix['selected'] = true;
+				}
+			}
+		}
+		
 		$template->setParam('forums', $forums);
+		$template->setParam('prefixes', $prefixes);
 	}
 	
 	protected function _validateOptionValue($optionKey, &$optionValue) {
@@ -62,16 +74,21 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		
 		$conditions = array(
 			'node_id' => $forumIds,
-			'deleted' => $visitor->isSuperAdmin(),
-			'moderated' => $visitor->isSuperAdmin(),
+			'deleted' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
+			'moderated' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
 		);
 		$fetchOptions = array(
 			// 'readUserId' => XenForo_Visitor::getUserId(), -- disable this to save some headeach of db join
 			// 'includeForumReadDate' => true, -- this's not necessary too
 			'limit' => $widget['options']['limit'],
 			'join' => XenForo_Model_Thread::FETCH_AVATAR,
-			
 		);
+		
+		// process prefix
+		// since 1.3.4
+		if (!empty($widget['options']['prefixes'])) {
+			$conditions['prefix_id'] = $widget['options']['prefixes'];
+		}
 		
 		if (in_array($widget['options']['type'], array('new', 'all'))) {
 			$new = $threadModel->getThreads(
