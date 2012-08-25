@@ -33,7 +33,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		$prefixes = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_ThreadPrefix')->getPrefixOptions();
 		foreach ($prefixes as $prefixGroupId => &$groupPrefixes) {
 			foreach ($groupPrefixes as &$prefix) {
-				if (in_array($prefix['value'], $params['options']['prefixes'])) {
+				if (!empty($params['options']['prefixes']) AND in_array($prefix['value'], $params['options']['prefixes'])) {
 					$prefix['selected'] = true;
 				}
 			}
