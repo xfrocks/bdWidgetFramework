@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.4.2" version_id="32" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.5" version_id="33" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -44,7 +44,7 @@
 	</div>
 	
 	<fieldset>
-		<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}">
+		<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}" hint="{xen:phrase you_may_use_html}">
 			<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
 		</xen:textboxunit>
 		
@@ -248,6 +248,7 @@
 <xen:radiounit label="{xen:phrase wf_display_mode}:" name="{$namePrefix}displayMode" value="{xen:if '{$options.displayMode}', $options.displayMode, 'list'}">
 	<xen:option value="list">{xen:phrase wf_widget_users_display_mode_list}</xen:option>
 	<xen:option value="avatarOnly">{xen:phrase wf_widget_users_display_mode_avatar_only}</xen:option>
+	<xen:option value="avatarOnlyBigger">{xen:phrase wf_widget_users_display_mode_avatar_only_bigger}</xen:option>
 </xen:radiounit>]]></template>
     <template title="wf_widget_options_xfshout"><![CDATA[<xen:textboxunit label="{xen:phrase wf_xfshout_instance_id}:" name="{$namePrefix}instance_id" value="{$options.instance_id}">
 	<xen:explain>{xen:phrase wf_xfshout_instance_id_explain}</xen:explain>
@@ -371,6 +372,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_threads_type_popular" version_id="26" version_string="1.3.1"><![CDATA[Most Viewed Theads (supports cutoff)]]></phrase>
     <phrase title="wf_widget_threads_type_recent" version_id="26" version_string="1.3.1"><![CDATA[New Replies]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
+    <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
     <phrase title="wf_xfshout_instance_id" version_id="7" version_string="0.9.5"><![CDATA[Instance ID]]></phrase>
     <phrase title="wf_xfshout_instance_id_explain" version_id="7" version_string="0.9.5"><![CDATA[Enter the instance ID of the xfShout instance that you want to put to the sidebar.]]></phrase>
@@ -620,42 +622,47 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="28" version_string="1.3.3"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_threads" version_id="32" version_string="1.4.2"><![CDATA[<xen:if hascontent="true">
     <div class="avatarList">
         <ul>
             <xen:contentcheck>
             	<xen:foreach loop="$new" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if><a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
+						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
                 	</li>
             	</xen:foreach>
             	<xen:foreach loop="$recent" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if><a href="{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}">{xen:helper snippet, $thread.title, 35}</a>
+                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
+						<a href="{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
                 		<div class="userTitle">{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" /></div>
                 	</li>
             	</xen:foreach>
             	<xen:foreach loop="$popular" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if><a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
+						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
                 	</li>
             	</xen:foreach>
                 <xen:foreach loop="$mostReplied" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if><a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
+						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'}, {xen:phrase replies}: {xen:number $thread.reply_count}</div>
                 	</li>
             	</xen:foreach>
                 <xen:foreach loop="$mostLiked" value="$thread">
                     <li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if><a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
+						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
                 		<div class="userTitle">
                             {xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'},
                             {xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
@@ -665,7 +672,8 @@ All customization should go to wf_default_EXTRA.css
             	<xen:foreach loop="$polls" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if><a href="{xen:link threads, $thread}">{xen:helper snippet, $thread.title, 35}</a>
+                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
+						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
                 	</li>
             	</xen:foreach>
@@ -673,11 +681,19 @@ All customization should go to wf_default_EXTRA.css
         </ul>
     </div>
 </xen:if>]]></template>
-    <template title="wf_widget_users" version_id="24" version_string="1.2.2.2"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
+    <template title="wf_widget_users" version_id="32" version_string="1.4.2"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
     <ul class="followedOnline">
 		<xen:foreach loop="$users" value="$user">
 			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip">
 				<xen:avatar user="$user" size="s" img="true" class="_plainImage" />
+			</li>
+		</xen:foreach>
+	</ul>
+<xen:elseif is="{$widget.options.displayMode} == 'avatarOnlyBigger'" />
+    <ul class="avatarHeap">
+		<xen:foreach loop="$users" value="$user">
+			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip">
+				<xen:avatar user="$user" size="s" />
 			</li>
 		</xen:foreach>
 	</ul>
@@ -698,7 +714,17 @@ All customization should go to wf_default_EXTRA.css
         </ul>
     </div>
 </xen:if>]]></template>
-    <template title="wf_widget_wrapper" version_id="17" version_string="1.0.9"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_users_find" version_id="32" version_string="1.4.2"><![CDATA[<xen:require css="member_list.css" />
+
+<div class="section">
+	<form action="{xen:link members}" method="post" class="secondaryContent findMember">
+		<h3><a href="{xen:link online}" title="{xen:phrase see_all_online_users}">{xen:phrase find_member}</a></h3>
+
+		<input type="search" name="username" placeholder="{xen:phrase name}..." results="0" class="textCtrl AutoComplete" data-autoSubmit="true" />
+		<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+	</form>
+</div>]]></template>
+    <template title="wf_widget_wrapper" version_id="33" version_string="1.5"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $tabs} > 1">
 <xen:comment>We are rendering tabs</xen:comment>
@@ -709,7 +735,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:if is="{$tab.html}">
 		<li>
 			<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
-				<h3>{$tab.title}</h3>
+				<h3>{xen:raw $tab.title}</h3>
 			</a>
 		</li>
 		</xen:if>
@@ -739,9 +765,9 @@ All customization should go to wf_default_EXTRA.css
 			<xen:if is="{$tab.html}">
 				<h3>
 					<xen:if is="{$tab.extraData.link}">
-						<a href="{$tab.extraData.link}">{$tab.title}</a>
+						<a href="{$tab.extraData.link}">{xen:raw $tab.title}</a>
 					<xen:else />
-						{$tab.title}
+						{xen:raw $tab.title}
 					</xen:if>
 				</h3>
 				{xen:raw $tab.html}

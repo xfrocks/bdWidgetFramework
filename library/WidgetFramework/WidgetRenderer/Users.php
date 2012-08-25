@@ -33,14 +33,29 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 	}
 	
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
-		$userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
-		$conditions = array();
-		$fetchOptions = array(
-			'limit' => $widget['options']['limit'],
-			'order' => $widget['options']['order'],
-			'direction' => $widget['options']['direction'],
-		);
-		$users = $userModel->getUsers($conditions, $fetchOptions);
+		$users = false;
+		
+		// try to be smart and get the users data if they happen to be available
+		if ($positionCode == 'member_list') {
+			if ($widget['options']['limit'] == 12 && $widget['options']['order'] == 'message_count') {
+				$users = $params['activeUsers'];
+			}
+			
+			if ($widget['options']['limit'] == 8 && $widget['options']['order'] == 'register_date') {
+				$users = $params['latestUsers'];
+			}
+		}
+		
+		if ($users === false) {
+			$userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
+			$conditions = array();
+			$fetchOptions = array(
+				'limit' => $widget['options']['limit'],
+				'order' => $widget['options']['order'],
+				'direction' => $widget['options']['direction'],
+			);
+			$users = $userModel->getUsers($conditions, $fetchOptions);
+		}
 
 		$renderTemplateObject->setParam('users', $users);
 		

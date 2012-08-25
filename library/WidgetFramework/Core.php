@@ -43,6 +43,9 @@ class WidgetFramework_Core {
 		// since 1.2
 		$renderers[] = 'WidgetFramework_WidgetRenderer_Template';
 		$renderers[] = 'WidgetFramework_WidgetRenderer_TemplateWithoutWrapper';
+		
+		//since 1.5
+		$renderers[] = 'WidgetFramework_WidgetRenderer_UsersFind';
 	}
 	
 	public function bootstrap() {

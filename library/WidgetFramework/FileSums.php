@@ -6,7 +6,7 @@ class WidgetFramework_FileSums
 	{
 		return array (
   'library/WidgetFramework/ControllerAdmin/Widget.php' => 'c09344deaf45150980799dbbc5993392',
-  'library/WidgetFramework/Core.php' => '4a865ad09967fc21faa4bc991148e626',
+  'library/WidgetFramework/Core.php' => '84d48b59e7e03bdb12ddfc1844779cb8',
   'library/WidgetFramework/DataWriter/Helper/Widget.php' => 'f0011f536b50d64eda62c63eb56630a6',
   'library/WidgetFramework/DataWriter/Widget.php' => '1e95d05b278e6d7a51422df3698d6707',
   'library/WidgetFramework/Extend/ControllerPublic/Thread.php' => 'a3afcee4541f3d2b1d6c0f01c580e661',
@@ -16,7 +16,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/Extend/DataWriter/User.php' => '54c291242e8cc672f690c8f8112affef',
   'library/WidgetFramework/Extend/Model/Thread.php' => 'fe6e054850a2e4a8c07250e7ebd4638b',
   'library/WidgetFramework/Extend/Model/User.php' => '623b71a83d5be7bb1ecbed32498f2e66',
-  'library/WidgetFramework/Installer.php' => 'c2b1818abb942bb5cf6c05d206f31349',
+  'library/WidgetFramework/Installer.php' => '939f2e59a96f27684f172f3c648c403b',
   'library/WidgetFramework/Listener.php' => '0e85a27f96fc79ae178071ebd19db3af',
   'library/WidgetFramework/Model/Cache.php' => '5120db1ec5f6c30711f78bbac5051295',
   'library/WidgetFramework/Model/Widget.php' => 'f415e594b72e1668e3acc355786bb551',
@@ -41,7 +41,8 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/WidgetRenderer/Template.php' => '5ab8a01692b21ebbd689303efcab6b68',
   'library/WidgetFramework/WidgetRenderer/TemplateWithoutWrapper.php' => 'e9957fc0cc247b4d0f408f3ae2b3087a',
   'library/WidgetFramework/WidgetRenderer/Threads.php' => '0ea7aefdcc763a96c1503b5974694267',
-  'library/WidgetFramework/WidgetRenderer/Users.php' => '06ffec433ba8af1ac70bc1785645a42d',
+  'library/WidgetFramework/WidgetRenderer/Users.php' => '3ca52df8382daa530b318766d0c307b8',
+  'library/WidgetFramework/WidgetRenderer/UsersFind.php' => '15c205f5d87baa5ba97ef1d09dbdde33',
   'library/WidgetFramework/WidgetRenderer/VisitorPanel.php' => '20556af6bbaf48aeb954c504189601df',
   'library/WidgetFramework/WidgetRenderer.php' => 'df8e0728c2c0713a24fbe9221eda8359',
   'js/WidgetFramework/functions.js' => 'a6a6be5d27760a0ffa5aa1b821939447',
