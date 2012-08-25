@@ -6,7 +6,7 @@ class WidgetFramework_FileSums
 	{
 		return array (
   'library/WidgetFramework/ControllerAdmin/Widget.php' => 'c09344deaf45150980799dbbc5993392',
-  'library/WidgetFramework/Core.php' => '84d48b59e7e03bdb12ddfc1844779cb8',
+  'library/WidgetFramework/Core.php' => '2b753a8b99b71f91e7322b683a6565dd',
   'library/WidgetFramework/DataWriter/Helper/Widget.php' => 'f0011f536b50d64eda62c63eb56630a6',
   'library/WidgetFramework/DataWriter/Widget.php' => '1e95d05b278e6d7a51422df3698d6707',
   'library/WidgetFramework/Extend/ControllerPublic/Thread.php' => 'a3afcee4541f3d2b1d6c0f01c580e661',
@@ -19,7 +19,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/Installer.php' => '939f2e59a96f27684f172f3c648c403b',
   'library/WidgetFramework/Listener.php' => '0e85a27f96fc79ae178071ebd19db3af',
   'library/WidgetFramework/Model/Cache.php' => '5120db1ec5f6c30711f78bbac5051295',
-  'library/WidgetFramework/Model/Widget.php' => 'f415e594b72e1668e3acc355786bb551',
+  'library/WidgetFramework/Model/Widget.php' => 'a1e2c3e6a129b46c266f44c3aa47dd44',
   'library/WidgetFramework/Option.php' => 'b1050af34c18b49a878e312a27b53d61',
   'library/WidgetFramework/Route/PrefixAdmin/Widgets.php' => 'b1780af2708710c5844025dee3d79d64',
   'library/WidgetFramework/ViewAdmin/Widget/Edit.php' => '94501e70afbe3751bd3f3f707236ad9a',

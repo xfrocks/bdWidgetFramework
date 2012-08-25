@@ -359,7 +359,9 @@ class WidgetFramework_Core {
 				}
 				return self::$_rendererInstances[$class];
 			} else {
-				throw new XenForo_Exception(new XenForo_Phrase('wf_invalid_widget_renderer_x', array('renderer' => $class)), true);
+				if ($throw) {
+					throw new XenForo_Exception(new XenForo_Phrase('wf_invalid_widget_renderer_x', array('renderer' => $class)), true);
+				}
 			}
 		} catch (Exception $e) {
 			if ($throw) {

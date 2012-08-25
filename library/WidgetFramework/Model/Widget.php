@@ -103,7 +103,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 	protected function _prepare(array &$widget) {
 		$widget['options'] = unserialize($widget['options']);
 		
-		$renderer = WidgetFramework_Core::getRenderer($widget['class'], true);
+		$renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
 		
 		if ($renderer) {
 			$widget['rendererName'] = $renderer->getName();
