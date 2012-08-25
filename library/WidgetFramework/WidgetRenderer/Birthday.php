@@ -35,12 +35,14 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 		$todayStart = $todayStart['today'];
         $day = XenForo_Locale::getFormattedDate($todayStart, 'd');
         $month = XenForo_Locale::getFormattedDate($todayStart, 'm');
-        
-        $day = 29;
-        $month = 1;
 		
 		$conditions = array(
 			WidgetFramework_Extend_Model_User::CONDITIONS_DOB => array('d' => $day, 'm' => $month),
+			
+			// checks for user state and banned status
+			// since 1.1.2 
+			'user_state' => 'valid',
+			'is_banned' => false,
 		);
 		$fetchOptions = array(
 			'limit' => $widget['options']['limit'],

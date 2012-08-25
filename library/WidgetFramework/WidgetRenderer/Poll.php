@@ -2,7 +2,7 @@
 class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer {
 	protected function _getConfiguration() {
 		return array(
-			'name' => 'Poll',
+			'name' => 'Thread with Poll',
 			'options' => array(
 				'thread_id' => XenForo_Input::UINT,
 			),

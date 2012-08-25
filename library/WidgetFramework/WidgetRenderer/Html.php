@@ -2,7 +2,7 @@
 class WidgetFramework_WidgetRenderer_Html extends WidgetFramework_WidgetRenderer {
 	protected function _getConfiguration() {
 		return array(
-			'name' => 'HTML',
+			'name' => '[Advanced] HTML',
 			'options' => array(
 				'html' => XenForo_Input::STRING,
 			),

@@ -2,7 +2,7 @@
 class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_WidgetRenderer {
 	protected function _getConfiguration() {
 		return array(
-			'name' => 'Recent Status',
+			'name' => 'User Recent Status',
 			'options' => array(
 				'limit' => XenForo_Input::UINT,
 				'friends_only' => XenForo_Input::BINARY,

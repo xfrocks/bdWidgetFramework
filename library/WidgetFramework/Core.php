@@ -39,6 +39,10 @@ class WidgetFramework_Core {
 		// since 1.0.10
 		$renderers[] = 'WidgetFramework_WidgetRenderer_Callback';
 		$renderers[] = 'WidgetFramework_WidgetRenderer_Birthday';
+		
+		// since 1.2
+		$renderers[] = 'WidgetFramework_WidgetRenderer_Template';
+		$renderers[] = 'WidgetFramework_WidgetRenderer_TemplateWithoutWrapper';
 	}
 	
 	public function bootstrap() {

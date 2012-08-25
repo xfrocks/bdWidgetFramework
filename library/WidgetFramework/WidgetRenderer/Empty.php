@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 	
 	protected function _getConfiguration() {
 		return array(
-			'name' => 'Clear Sidebar',
+			'name' => ' Clear Sidebar',
 			'options' => array(
 				'noVisitorPanel' => XenForo_Input::UINT,
 			),

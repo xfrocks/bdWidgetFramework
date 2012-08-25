@@ -2,7 +2,7 @@
 class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetRenderer {
 	protected function _getConfiguration() {
 		return array(
-			'name' => 'Staff Online Now',
+			'name' => 'Users Online Now (Staff)',
 		);
 	}
 	

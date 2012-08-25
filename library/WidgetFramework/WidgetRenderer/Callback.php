@@ -2,7 +2,7 @@
 class WidgetFramework_WidgetRenderer_Callback extends WidgetFramework_WidgetRenderer {
 	protected function _getConfiguration() {
 		return array(
-			'name' => 'PHP Callback',
+			'name' => '[Advanced] PHP Callback',
 			'options' => array(
 				'callback_class' => XenForo_Input::STRING,
 				'callback_method' => XenForo_Input::STRING,
