@@ -1,5 +1,8 @@
 <?php
 class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter {
+	
+	const EXTRA_DATA_SKIP_REBUILD = 'skipRebuild';
+	
 	protected function _getFields() {
 		return array(
 			'xf_widget' => array(
@@ -26,12 +29,18 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter {
 	}
 	
 	protected function _postSaveAfterTransaction() {
-		$this->_getWidgetModel()->buildCache();
+		if (!$this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD)) {
+			$this->_getWidgetModel()->buildCache();
+		}
+		
 		WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
 	}
 	
 	protected function _postDelete() {
-		$this->_getWidgetModel()->buildCache();
+		if (!$this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD)) {
+			$this->_getWidgetModel()->buildCache();
+		}
+		
 		WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
 	}
 

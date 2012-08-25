@@ -12,7 +12,7 @@ class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_Widge
 	}
 	
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
-		return 'sidebar_share_page';
+		return 'wf_widget_share_page';
 	}
 	
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {

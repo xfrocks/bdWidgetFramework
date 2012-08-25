@@ -10,6 +10,7 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			),
 			'useCache' => true,
 			'useUserCache' => true,
+			'cacheSeconds' => 3600, // cache for 1 hour
 		);
 	}
 

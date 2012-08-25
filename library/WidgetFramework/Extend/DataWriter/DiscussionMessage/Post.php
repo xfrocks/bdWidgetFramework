@@ -4,8 +4,10 @@ class WidgetFramework_Extend_DataWriter_DiscussionMessage_Post extends XFCP_Widg
 		parent::_postSaveAfterTransaction();
 		
 		if  (!$this->isDiscussionFirstMessage()) {
-			WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
-			WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
+			// commented out due to problem with high traffic board
+			// since 1.3
+			// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
+			// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
 		}
 	}
 	

@@ -3,7 +3,9 @@ class WidgetFramework_Extend_DataWriter_DiscussionMessage_ProfilePost extends XF
 	protected function _postSaveAfterTransaction() {
 		parent::_postSaveAfterTransaction();
 		
-		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_RecentStatus');
+		// commented out due to problem with high traffic board
+		// since 1.3
+		// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_RecentStatus');
 	}
 	
 	protected function _messagePostDelete() {

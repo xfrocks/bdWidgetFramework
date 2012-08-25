@@ -11,6 +11,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			),
 			'useCache' => true,
 			'useUserCache' => true,
+			'cacheSeconds' => 300, // cache for 5 minutes
 		);
 	}
 	
@@ -19,19 +20,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 	}
 	
 	protected function _renderOptions(XenForo_Template_Abstract $template) {
-		$nodes = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Node')->getAllNodes();
-		$forums = array();
 		$params = $template->getParams();
-		$options = $params['options'];
-		$value = empty($options['forums'])?array():$options['forums'];
-		
-		foreach ($nodes as $node) {
-			$forums[] = array(
-				'value' => $node['node_id'],
-				'label' => str_repeat('--', $node['depth']) . ' ' . $node['title'],
-				'selected' => in_array($node['node_id'], $value),
-			);
-		}
+
+		$forums = $this->_helperPrepareForumsOptionSource(
+			empty($params['options']['forums']) ? array(): $params['options']['forums'],
+			true
+		);
 		
 		$template->setParam('forums', $forums);
 	}
@@ -57,18 +51,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$core = WidgetFramework_Core::getInstance();
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
-		$nodeModel = $core->getModelFromCache('XenForo_Model_Node');
 		$visitor = XenForo_Visitor::getInstance();
 
-		if (empty($widget['options']['forums'])) {
-			if (empty($GLOBALS['WidgetFramework_viewableNodeList'])) {
-				$GLOBALS['WidgetFramework_viewableNodeList'] = $nodeModel->getViewableNodeList();
-			}
-
-			$forumIds = array_keys($GLOBALS['WidgetFramework_viewableNodeList']);
-		} else {
-			$forumIds = $widget['options']['forums'];
-		}
+		$forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params);
 		
 		$conditions = array(
 			'forum_ids' => $forumIds,
@@ -148,5 +133,16 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		$renderTemplateObject->setParam('polls', $polls);
 		
 		return $renderTemplateObject->render();		
+	}
+	
+	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array()) {
+		if ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
+			// we have to use special cache id when special forum ids are used
+			if (isset($params['forum'])) {
+				$suffix[] = 'f' . $params['forum']['node_id'];
+			}
+		}
+		
+		return parent::_getCacheId($widget, $positionCode, $params, $suffix);
 	}
 }

@@ -181,6 +181,45 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		$widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
 		return $this->_switchWidgetActiveStateAndGetResponse($widgetId, 0);
 	}
+	
+	public function actionImport() {
+		if ($this->isConfirmedPost()) {
+			$fileTransfer = new Zend_File_Transfer_Adapter_Http();
+			if ($fileTransfer->isUploaded('upload_file')) {
+				$fileInfo = $fileTransfer->getFileInfo('upload_file');
+				$fileName = $fileInfo['upload_file']['tmp_name'];
+			} else {
+				$fileName = $this->_input->filterSingle('server_file', XenForo_Input::STRING);
+			}
+			
+			$deleteAll = $this->_input->filterSingle('delete_all', XenForo_Input::UINT);
+
+			$this->_getWidgetModel()->importFromFile($fileName, $deleteAll);
+
+			return $this->responseRedirect(
+				XenForo_ControllerResponse_Redirect::SUCCESS,
+				XenForo_Link::buildAdminLink('widgets')
+			);
+		} else {
+			return $this->responseView('WidgetFramework_ViewAdmin_Widget_Import', 'wf_widget_import');
+		}
+	}
+	
+	public function actionExport() {
+		$widgetModel = $this->_getWidgetModel();
+		$widgets = $widgetModel->getAllWidgets(false, false);
+		
+		$addOn = $this->getModelFromCache('XenForo_Model_AddOn')->getAddOnById('widget_framework');
+		
+		$this->_routeMatch->setResponseType('xml');
+
+		$viewParams = array(
+			'system' => $addOn,
+			'widgets' => $widgets,
+		);
+
+		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Export', '', $viewParams);
+	}
 
 	protected function _getWidgetOrError($widgetId) {
 		$info = $this->_getWidgetModel()->getWidgetById($widgetId);
@@ -191,6 +230,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		return $info;
 	}
 
+	/**
+	 * @return WidgetFramework_Model_Widget
+	 */
 	protected function _getWidgetModel() {
 		return $this->getModelFromCache('WidgetFramework_Model_Widget');
 	}

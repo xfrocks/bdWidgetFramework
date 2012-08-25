@@ -3,8 +3,10 @@ class WidgetFramework_Extend_DataWriter_Discussion_Thread extends XFCP_WidgetFra
 	protected function _postSaveAfterTransaction() {
 		parent::_postSaveAfterTransaction();
 		
-		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
-		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
+		// commented out due to problem with high traffic board
+		// since 1.3
+		// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
+		// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
 	}
 	
 	protected function _discussionPostDelete(array $messages) {

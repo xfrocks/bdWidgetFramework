@@ -7,8 +7,12 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 				'limit' => XenForo_Input::UINT,
 				'order' => XenForo_Input::STRING,
 				'direction' => XenForo_Input::STRING,
+				
+				// since 1.3
+				'displayMode' => XenForo_Input::STRING,
 			),
 			'useCache' => true,
+			'cacheSeconds' => 1800, // cache for 30 minutes
 		);
 	}
 	

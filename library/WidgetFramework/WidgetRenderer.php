@@ -1,8 +1,46 @@
 <?php
 abstract class WidgetFramework_WidgetRenderer {
+	/**
+	 * Required method: define basic configuration of the renderer.
+	 * Available configuration parameters:
+	 * 	- name: The display name of the renderer
+	 * 	- options: An array of renderer's options
+	 * 	- useCache: Flag to determine the renderer can be cached or not
+	 * 	- useUserCache: Flag to determine the renderer needs to be cached by an user-basis.
+	 * 					Internally, this is implemented by getting the current user permission
+	 * 					combination id (not the user id as normally expected). This is done to
+	 * 					make sure the cache is used effectively
+	 * 	- cacheSeconds: A numeric value to specify the maximum age of the cache (in seconds). 
+	 * 					If the cache is too old, the widget will be rendered from scratch
+	 * 	- useWrapper: Flag to determine the widget should be wrapped with a wrapper. Renderers
+	 * 					that support wrapper will have an additional benefits of tabs: only
+	 * 					wrapper-enabled widgets will be possible to use in tabbed interface
+	 */
 	abstract protected function _getConfiguration();
+	
+	/**
+	 * Required method: get the template title of the options template (to be used in AdminCP).
+	 * If this is not used, simply returns false.
+	 */
 	abstract protected function _getOptionsTemplate();
+	
+	/**
+	 * Required method: get the template title of the render template (to be used in front-end).
+	 * 
+	 * @param array $widget
+	 * @param string $positionCode
+	 * @param array $params
+	 */
 	abstract protected function _getRenderTemplate(array $widget, $positionCode, array $params);
+	
+	/**
+	 * Required method: prepare data or whatever to get the render template ready to be rendered.
+	 * 
+	 * @param array $widget
+	 * @param string $positionCode
+	 * @param array $params
+	 * @param XenForo_Template_Abstract $renderTemplateObject
+	 */
 	abstract protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject);
 	
 	protected function _renderOptions(XenForo_Template_Abstract $template) { return true; }
@@ -19,6 +57,167 @@ abstract class WidgetFramework_WidgetRenderer {
 	}
 	protected function _prepare(array $widget, $positionCode, array $params) { return true; }
 	protected function _getExtraDataLink(array $widget) { return false; }
+	
+	const FORUMS_OPTION_SPECIAL_CURRENT = 'current_forum';
+	const FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN = 'current_forum_and_children';
+	const FORUMS_OPTION_SPECIAL_PARENT = 'parent_forum';
+	const FORUMS_OPTION_SPECIAL_PARENT_AND_CHILDREN = 'parent_forum_and_children';
+	
+	/**
+	 * Helper method to prepare source array for <xen:select /> or similar tags
+	 * 
+	 * @param array $selected an array of selected values
+	 * @param bool $useSpecialForums flag to determine the usage of special forum indicator
+	 */
+	protected function _helperPrepareForumsOptionSource(array $selected = array(), $useSpecialForums = false) {
+		$forums = array();
+		$nodes = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Node')->getAllNodes();
+		
+		if ($useSpecialForums) {
+			foreach (array(
+					self::FORUMS_OPTION_SPECIAL_CURRENT,
+					self::FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN,
+					self::FORUMS_OPTION_SPECIAL_PARENT,
+					self::FORUMS_OPTION_SPECIAL_PARENT_AND_CHILDREN,
+				) as $specialId) {
+				$forums[] = array(
+					'value' => $specialId,
+					'label' => new XenForo_Phrase('wf_' . $specialId),
+					'selected' => in_array($specialId, $selected),
+				);
+			}
+		}
+		
+		foreach ($nodes as $node) {
+			if ($node['node_type_id'] != 'Forum') continue;
+			
+			$forums[] = array(
+				'value' => $node['node_id'],
+				'label' => str_repeat('--', $node['depth']) . ' ' . $node['title'],
+				'selected' => in_array($node['node_id'], $selected),
+			);
+		}
+		
+		return $forums;
+	}
+	
+	/**
+	 * Helper method to look for special forum ids in an array of forum ids
+	 * 
+	 * @param array $forumIds
+	 */
+	protected function _helperDetectSpecialForums($forumIds) {
+		if (!is_array($forumIds)) {
+			return false;
+		}
+		
+		foreach ($forumIds as $forumId) {
+			switch ($forumId) {
+			case self::FORUMS_OPTION_SPECIAL_CURRENT:
+			case self::FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN:
+			case self::FORUMS_OPTION_SPECIAL_PARENT:
+			case self::FORUMS_OPTION_SPECIAL_PARENT_AND_CHILDREN:
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Helper method to get an array of forum ids ready to be used.
+	 * The forum ids are taken after processing the `forums` option.
+	 * Look into the source code of built-in renderer to understand 
+	 * how to use this method.
+	 * 
+	 * @param array $forumsOption the `forums` option
+	 * @param array $templateParams depending on the option, this method
+	 * 				requires information from the template params.
+	 * 
+	 * @return array of forum ids
+	 */
+	protected function _helperGetForumIdsFromOption(array $forumsOption, array $templateParams = array()) {
+		if (empty($forumsOption)) {
+			$forumIds = array_keys($this->_helperGetViewableNodeList());
+		} else {
+			$forumIds = array_values($forumsOption);
+			$forumIds2 = array();
+			
+			foreach (array_keys($forumIds) as $i) {
+				switch ($forumIds[$i]) {
+					case self::FORUMS_OPTION_SPECIAL_CURRENT:
+						if (isset($templateParams['forum'])) {
+							$forumIds2[] = $templateParams['forum']['node_id'];
+						}
+						unset($forumIds[$i]); // remove because it's not a valid forum id anyway
+						break;
+					case self::FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN:
+						if (isset($templateParams['forum'])) {
+							$viewableNodeList = $this->_helperGetViewableNodeList();
+							$forumIds2[] = $templateParams['forum']['node_id'];
+							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateParams['forum']['node_id']);
+						}
+						unset($forumIds[$i]); // remove because it's not a valid forum id anyway
+						break;
+					case self::FORUMS_OPTION_SPECIAL_PARENT:
+						if (isset($templateParams['forum'])) {
+							$forumIds2[] = $templateParams['forum']['parent_node_id'];
+						}
+						unset($forumIds[$i]); // remove because it's not a valid forum id anyway
+						break;
+					case self::FORUMS_OPTION_SPECIAL_PARENT_AND_CHILDREN:
+						if (isset($templateParams['forum'])) {
+							$viewableNodeList = $this->_helperGetViewableNodeList();
+							$forumIds2[] = $templateParams['forum']['parent_node_id'];
+							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateParams['forum']['parent_node_id']);
+						}
+						unset($forumIds[$i]); // remove because it's not a valid forum id anyway
+						break;
+				}
+			}
+			
+			if (!empty($forumIds2)) {
+				// only merge 2 arrays if some new ids are found...
+				$forumIds = array_unique(array_merge($forumIds, $forumIds2));
+			}
+		}
+		
+		return $forumIds;
+	}
+	
+	/**
+	 * Helper method to traverse a list of nodes looking for 
+	 * children forums of a specified node
+	 * 
+	 * @param unknown_type $forumIds the result array (this array will be modified)
+	 * @param unknown_type $nodes the nodes array to process
+	 * @param unknown_type $parentNodeId the parent node id to use and check against
+	 */
+	protected function _helperMergeChildForumIds(array &$forumIds, array &$nodes, $parentNodeId) {
+		foreach ($nodes as $node) {
+			if ($node['parent_node_id'] == $parentNodeId) {
+				$forumIds[] = $node['node_id'];
+				$this->_helperMergeChildForumIds($forumIds, $nodes, $node['node_id']);
+			}
+		}
+	}
+	
+	/**
+	 * Helper method to get viewable node list. Renderers need this information
+	 * should use call this method to get it. The node list is queried and cached
+	 * to improve performance.
+	 * 
+	 * @return array of viewable node (node_id as array key)
+	 */
+	protected function _helperGetViewableNodeList() {
+		static $viewableNodeList = false;
+		
+		if ($viewableNodeList === false) {
+			$viewableNodeList = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Node')->getViewableNodeList(); 
+		}
+		
+		return $viewableNodeList;
+	}
 	
 	protected static $_widgetTemplates = array();
 	protected $_configuration = false;
@@ -52,17 +251,17 @@ abstract class WidgetFramework_WidgetRenderer {
 		return $configuration['name'];
 	}
 	
-	public function useWrapper() {
+	public function useWrapper(array $widget) {
 		$configuration = $this->getConfiguration();
 		return !empty($configuration['useWrapper']);
 	}
 	
-	public function useCache() {
+	public function useCache(array $widget) {
 		$configuration = $this->getConfiguration();
 		return !empty($configuration['useCache']);
 	}
 	
-	public function useUserCache() {
+	public function useUserCache(array $widget) {
 		$configuration = $this->getConfiguration();
 		return !empty($configuration['useUserCache']);
 	}
@@ -97,7 +296,7 @@ abstract class WidgetFramework_WidgetRenderer {
 	}
 	
 	public function prepare(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template) {
-		if ($this->useWrapper()) {
+		if ($this->useWrapper($widget)) {
 			$template->preloadTemplate('wf_widget_wrapper');
 			self::$_widgetTemplates['wf_widget_wrapper'] = true;
 		}
@@ -131,6 +330,14 @@ abstract class WidgetFramework_WidgetRenderer {
 		}				
 	}
 	
+	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array()) {
+		if (empty($suffix)) {
+			return $widget['widget_id'];
+		} else {
+			return $widget['widget_id'] . '|' . implode('_', $suffix);
+		}
+	}
+	
 	public function render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template, &$output) {
 		$html = false;
 
@@ -155,9 +362,18 @@ abstract class WidgetFramework_WidgetRenderer {
 		
 		// check for cache after expression test
 		// since 1.2.1
-		if ($html === false AND $this->useCache()) {
-			$cached = WidgetFramework_Core::loadCachedWidget($widget['widget_id'], $this->useUserCache());
-			if (!empty($cached) AND is_array($cached) AND $this->isCacheUsable($cached)) {
+		$cacheId = false;
+		$useUserCache = false;
+		if ($html === false AND $this->useCache($widget)) {
+			// get the cache id
+			// previously, the cache id is the same as the widget id
+			// but now it can be something else if the renderer wants to do that
+			// since 1.3
+			$cacheId = $this->_getCacheId($widget, $positionCode, $params);
+			$useUserCache = $this->useUserCache($widget);
+			
+			$cached = WidgetFramework_Core::loadCachedWidget($cacheId, $useUserCache);
+			if (!empty($cached) AND is_array($cached) AND $this->isCacheUsable($cached, $widget)) {
 				$html = $cached['html'];
 			}
 		}
@@ -174,12 +390,12 @@ abstract class WidgetFramework_WidgetRenderer {
 			}
 			$html = trim($html);
 			
-			if ($this->useCache()) {
-				WidgetFramework_Core::saveCachedWidget($widget['widget_id'], $html, $this->useUserCache());
+			if ($cacheId !== false) {
+				WidgetFramework_Core::saveCachedWidget($cacheId, $html, $useUserCache);
 			}
 		}
 
-		if ($this->useWrapper()) {
+		if ($this->useWrapper($widget)) {
 			// only return html if this renderer use wrapper
 			return trim($html);
 		} else {
@@ -197,7 +413,7 @@ abstract class WidgetFramework_WidgetRenderer {
 		);
 	}
 	
-	public function isCacheUsable(array &$cached) {
+	public function isCacheUsable(array &$cached, array $widget) {
 		$configuration = $this->getConfiguration();
 		if (empty($configuration['useCache'])) return false; // what?
 		if ($configuration['cacheSeconds'] <= 0) return true;

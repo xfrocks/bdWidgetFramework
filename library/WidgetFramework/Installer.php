@@ -37,6 +37,8 @@ class WidgetFramework_Installer {
 		
 		// cache by permission id
 		// since 1.0.9
+		// removed in 1.3
+		/*
 		$db->query("
 			CREATE TABLE IF NOT EXISTS `xf_widget_cached` (
 				data_id INT(10) UNSIGNED,
@@ -44,12 +46,14 @@ class WidgetFramework_Installer {
 				PRIMARY KEY (data_id)
 			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
 		");
+		*/
+		$db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
 	}
 	
 	public static function uninstall() {
 		$db = XenForo_Application::get('db');
 		
-		$db->query("DROP TABLE `xf_widget`");
-		$db->query("DROP TABLE `xf_widget_cached`");
+		$db->query("DROP TABLE IF EXISTS `xf_widget`");
+		$db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
 	}
 }

@@ -2,6 +2,60 @@
 class WidgetFramework_Model_Widget extends XenForo_Model {
 	const SIMPLE_CACHE_KEY = 'widgets';
 	
+	public function importFromFile($fileName, $deleteAll = false) {
+		if (!file_exists($fileName) || !is_readable($fileName)) {
+			throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'), true);
+		}
+
+		try {
+			$document = new SimpleXMLElement($fileName, 0, true);
+		} catch (Exception $e) {
+			throw new XenForo_Exception(
+				new XenForo_Phrase('provided_file_was_not_valid_xml_file'), true
+			);
+		}
+
+		if ($document->getName() != 'widget_framework') {
+			throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_not_an_widgets_xml_file'), true);
+		}
+		
+		$widgets = XenForo_Helper_DevelopmentXml::fixPhpBug50670($document->widget);
+		
+		XenForo_Db::beginTransaction();
+		
+		if ($deleteAll) {
+			// get widgets from database and delete them all!
+			$existingWidgets = $this->getAllWidgets(false, false);
+			foreach ($existingWidgets as $existingWidget) {
+				$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+				$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+				
+				$dw->setExistingData($existingWidget);
+				
+				$dw->delete();
+			}
+		}
+		
+		foreach ($widgets as $widget) {
+			$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+			$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+			
+			$dw->set('title', $widget['title']);
+			$dw->set('class', $widget['class']);
+			$dw->set('position', $widget['position']);
+			$dw->set('display_order', $widget['display_order']);
+			$dw->set('active', intval($widget['active']));
+			
+			$dw->set('options', unserialize(XenForo_Helper_DevelopmentXml::processSimpleXmlCdata($widget->options)));
+			
+			$dw->save();
+		}
+		
+		$this->buildCache();
+		
+		XenForo_Db::commit();
+	}
+	
 	public function getAllWidgets($useCached = true, $prepare = true) {
 		$widgets = false;
 		
@@ -49,7 +103,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 	protected function _prepare(array &$widget) {
 		$widget['options'] = unserialize($widget['options']);
 		
-		$renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
+		$renderer = WidgetFramework_Core::getRenderer($widget['class'], true);
+		
 		if ($renderer) {
 			$widget['rendererName'] = $renderer->getName();
 			$configuration = $renderer->getConfiguration();
@@ -60,7 +115,9 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 				}
 			}
 		} else {
-			$widget['rendererName'] = 'NOT FOUND';
+			$widget['rendererName'] = new XenForo_Phrase('xf_unknown_renderer', array('class' => $widget['class']));
+			$widget['rendererNotFound'] = true;
+			$widget['active'] = false;
 		}
 		
 		if (empty($widget['title'])) {

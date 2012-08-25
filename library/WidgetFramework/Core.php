@@ -141,14 +141,20 @@ class WidgetFramework_Core {
 		$originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
 		$html = $this->_renderWidgetsFor($templateName, $params, $template, $originalHtml);
 		$html = $this->_renderWidgetsFor('all', $params, $template, $html);
-		
-		if ($html != $originalHtml) {
-			$containerData['sidebar'] = $html;
-		}
-		if (defined(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_FLAG) AND strpos($html, WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_MARKUP) !== false) {
+
+		if (defined(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_FLAG)) {
 			// the flag is used to avoid string searching as much as possible
 			// the string search is also required to confirm the noVisitorPanel request
-			$containerData['noVisitorPanel'] = true;
+			$count = 0;
+			$html = str_replace(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_MARKUP, '', $html, $count);
+			
+			if ($count > 0) {
+				$containerData['noVisitorPanel'] = true;
+			}
+		}
+
+		if ($html != $originalHtml) {
+			$containerData['sidebar'] = $html;
 		}
 	}
 	
@@ -242,45 +248,60 @@ class WidgetFramework_Core {
 		}
 	}
 	
-	protected function _loadCachedWidget($widgetId, $useUserCache = false) {
+	protected function _loadCachedWidget($cacheId, $useUserCache = false) {
+		// disable cache in debug environment...
+		if (self::debugMode()) {
+			return false;
+		}
+		
 		$cachedWidgets = $this->getModelFromCache('WidgetFramework_Model_Cache')->getCachedWidgets(
 			$this->_getPermissionCombinationId($useUserCache)
 		);
 		
-		if (isset($cachedWidgets[$widgetId])) {
-			return $cachedWidgets[$widgetId];
+		if (isset($cachedWidgets[$cacheId])) {
+			return $cachedWidgets[$cacheId];
 		} else {
 			return false;
 		}
 	}
 	
-	protected function _saveCachedWidget($widgetId, $html, $useUserCache = false) {
-		if (empty($html)) return;
+	protected function _saveCachedWidget($cacheId, $html, $useUserCache = false) {
+		// disable cache in debug environment...
+		if (self::debugMode()) {
+			return false;
+		}
 		
 		$permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
 		
-		$cachedWidgets = $this->getModelFromCache('WidgetFramework_Model_Cache')->getCachedWidgets($permissionCombinationId);
-		$cachedWidgets[$widgetId] = array(
+		$cachedWidgets = $this->_getModelCache()->getCachedWidgets($permissionCombinationId);
+		$cachedWidgets[$cacheId] = array(
 			WidgetFramework_Model_Cache::KEY_HTML => $html,
 			WidgetFramework_Model_Cache::KEY_TIME => XenForo_Application::$time,
 		);
 		
-		$this->getModelFromCache('WidgetFramework_Model_Cache')->setCachedWidgets(
+		$this->_getModelCache()->setCachedWidgets(
 			$cachedWidgets,
 			$permissionCombinationId
 		);
 	}
 	
 	protected function _removeCachedWidget($widgetId) {
-		$this->getModelFromCache('WidgetFramework_Model_Cache')->invalidateCache($widgetId);
+		$this->_getModelCache()->invalidateCache($widgetId);
 	}
 	
-	public static function loadCachedWidget($widgetId, $useUserCache = false) {
-		return self::getInstance()->_loadCachedWidget($widgetId, $useUserCache);
+	/**
+	 * @return WidgetFramework_Model_Cache
+	 */
+	protected function _getModelCache() {
+		return $this->getModelFromCache('WidgetFramework_Model_Cache');
 	}
 	
-	public static function saveCachedWidget($widgetId, $html, $useUserCache = false) {
-		self::getInstance()->_saveCachedWidget($widgetId, $html, $useUserCache); 
+	public static function loadCachedWidget($cacheId, $useUserCache = false) {
+		return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache);
+	}
+	
+	public static function saveCachedWidget($cacheId, $html, $useUserCache = false) {
+		self::getInstance()->_saveCachedWidget($cacheId, $html, $useUserCache); 
 	}
 	
 	public static function clearCachedWidgetById($widgetId) {
@@ -330,5 +351,9 @@ class WidgetFramework_Core {
 	
 	public static function getRenderers() {
 		return self::getInstance()->_renderers;
+	}
+	
+	public static function debugMode() {
+		return XenForo_Application::debugMode();
 	}
 }

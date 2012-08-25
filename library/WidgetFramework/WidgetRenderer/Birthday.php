@@ -7,7 +7,7 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 				'limit' => XenForo_Input::UINT,
 			),
 			'useCache' => true,
-			'cacheSeconds' => 8640, // cache for 6 hours
+			'cacheSeconds' => 3600, // cache for 1 hour
 		);
 	}
 	
