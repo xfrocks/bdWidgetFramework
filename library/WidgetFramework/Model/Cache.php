@@ -102,6 +102,14 @@ class WidgetFramework_Model_Cache extends XenForo_Model {
 	public function getLiveCache($cacheId, $permissionCombinationId) {
 		$cache = $this->_getCache(true);
 		$cacheKey = $this->_getLiveCacheKey($cacheId, $permissionCombinationId);
+		
+		// sondh@2012-08-14
+		// randomly return false to keep the cache fresh
+		// so we can avoid db peak when the cache is invalid
+		// and all the requests start quering db for data (very bad)
+		if (rand(1, 15000) == 296) {
+			return false;
+		}
 
 		$cacheData = ($cache ? $cache->load($cacheKey) : false);
 		if ($cacheData !== false)

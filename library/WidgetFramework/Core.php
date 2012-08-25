@@ -111,7 +111,7 @@ class WidgetFramework_Core {
 	}
 	
 	public function prepareWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template) {
-		if (WidgetFramework_WidgetRenderer::isWidgetTemplate($templateName)) {
+		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName)) {
 			return false;
 		}
 		
@@ -137,7 +137,7 @@ class WidgetFramework_Core {
 	}
 	
 	public function renderWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template, array &$containerData) {
-		if (WidgetFramework_WidgetRenderer::isWidgetTemplate($templateName)) {
+		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName)) {
 			return false;
 		}
 		

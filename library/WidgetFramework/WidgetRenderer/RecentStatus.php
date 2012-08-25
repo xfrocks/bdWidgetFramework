@@ -83,7 +83,9 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 	}
 	
 	public function extraPrepare(array $widget, &$html) {
-		$html = str_replace('CSRF_TOKEN_PAGE', XenForo_Visitor::getInstance()->get('csrf_token_page'), $html);
+		$visitor = XenForo_Visitor::getInstance();
+		$html = str_replace('CSRF_TOKEN_PAGE', $visitor->get('csrf_token_page'), $html);
+		$html = str_replace('LINK_MEMBER_POST_VISITOR', XenForo_Link::buildPublicLink('members/post', $visitor), $html);
 		
 		return parent::extraPrepare($widget, $html);
 	}

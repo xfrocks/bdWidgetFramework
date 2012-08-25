@@ -488,7 +488,15 @@ abstract class WidgetFramework_WidgetRenderer {
 		return 'options_';
 	}
 	
-	public static function isWidgetTemplate($templateName) {
-		return !empty(self::$_widgetTemplates[$templateName]);
+	public static function isIgnoredTemplate($templateName) {
+		if (!empty(self::$_widgetTemplates[$templateName])) {
+			return true;
+		} elseif (strtolower(substr($templateName, -4)) == '.css') {
+			// sondh@2012-08-20
+			// do not prepare for CSS templates
+			return true;
+		}
+		
+		return false;
 	}
 }

@@ -31,7 +31,7 @@ class WidgetFramework_WidgetRenderer_OnlineUsers extends WidgetFramework_WidgetR
 			}
 			
 			$renderTemplateObject->setParam('onlineUsers', $GLOBALS['WidgetFramework_onlineUsers']);
-			$renderTemplateObject->setParam('visitor', $params['visitor']);
+			$renderTemplateObject->setParam('visitor', $visitor);
 		}
 		
 		return $renderTemplateObject->render();		
