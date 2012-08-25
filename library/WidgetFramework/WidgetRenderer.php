@@ -133,16 +133,11 @@ abstract class WidgetFramework_WidgetRenderer {
 	
 	public function render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template, &$output) {
 		$html = false;
-		 
-		if ($this->useCache()) {
-			$cached = WidgetFramework_Core::loadCachedWidget($widget['widget_id'], $this->useUserCache());
-			if (!empty($cached) AND is_array($cached) AND $this->isCacheUsable($cached)) {
-				$html = $cached['html'];
-			}
-		}
 
-		// cache was not hit
-		if ($html === false AND isset($widget['options']['expression'])) {
+		// always check for expression if it's available
+		// otherwise the cached widget will show up every where... (the cache test also moved down below this)
+		// since 1.2.1
+		if (isset($widget['options']['expression'])) {
 			try {
 				if (!$this->_executeExpression($widget['options']['expression'], $params)) {
 					// exepression failed, stop rendering...
@@ -155,6 +150,15 @@ abstract class WidgetFramework_WidgetRenderer {
 				} else {
 					$html = '';
 				}
+			}
+		}
+		
+		// check for cache after expression test
+		// since 1.2.1
+		if ($html === false AND $this->useCache()) {
+			$cached = WidgetFramework_Core::loadCachedWidget($widget['widget_id'], $this->useUserCache());
+			if (!empty($cached) AND is_array($cached) AND $this->isCacheUsable($cached)) {
+				$html = $cached['html'];
 			}
 		}
 		

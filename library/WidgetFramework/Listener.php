@@ -44,4 +44,9 @@ class WidgetFramework_Listener {
 			$extend[] = str_replace('XenForo_', 'WidgetFramework_Extend_', $class);
 		}
 	}
+	
+	public static function file_health_check(XenForo_ControllerAdmin_Abstract $controller, array &$hashes) {
+		$ourHashes = WidgetFramework_FileSums::getHashes();
+		$hashes = array_merge($hashes, $ourHashes);
+	}
 }
