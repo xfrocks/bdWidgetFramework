@@ -36,7 +36,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/WidgetRenderer/OnlineUsers.php' => '64e90d24c1ee44164e8391ef0e8e8be7',
   'library/WidgetFramework/WidgetRenderer/Poll.php' => 'a0c3085e63a688c200a0388874ffc335',
   'library/WidgetFramework/WidgetRenderer/RecentStatus.php' => '6e9e256ead69127857ad937e3d2303fe',
-  'library/WidgetFramework/WidgetRenderer/ShareThisPage.php' => 'd9328d0849aba73daf31676516f7f9ca',
+  'library/WidgetFramework/WidgetRenderer/ShareThisPage.php' => 'ce55e72834dc5298ca1d25f2afc2ecfc',
   'library/WidgetFramework/WidgetRenderer/Stats.php' => '2b70ca3e9a710c3c6b7f4b00a5730baf',
   'library/WidgetFramework/WidgetRenderer/Template.php' => '5ab8a01692b21ebbd689303efcab6b68',
   'library/WidgetFramework/WidgetRenderer/TemplateWithoutWrapper.php' => 'e9957fc0cc247b4d0f408f3ae2b3087a',
