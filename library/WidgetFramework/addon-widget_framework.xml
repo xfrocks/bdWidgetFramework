@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.5" version_id="33" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.5.2" version_id="35" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -291,6 +291,12 @@ Arguments:
     <phrase title="admin_navigation_widgetFramework_add" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="admin_navigation_widgetFramework_import" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
     <phrase title="admin_navigation_widgetFramework_list" version_id="1" version_string="0.9"><![CDATA[List Widgets]]></phrase>
+    <phrase title="style_property_group_widget_framework_master" version_id="33" version_string="1.5"><![CDATA[[bd] Widget Framework]]></phrase>
+    <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
+    <phrase title="style_property_wf_recent_status_statusMaxLength_description_master" version_id="33" version_string="1.5"><![CDATA[This property will be applied to User Recent Status widgets.]]></phrase>
+    <phrase title="style_property_wf_recent_status_statusMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Status Maximum Length]]></phrase>
+    <phrase title="style_property_wf_threads_titleMaxLength_description_master" version_id="33" version_string="1.5"><![CDATA[This property will be applied with all Threads widgets.]]></phrase>
+    <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
     <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
@@ -387,7 +393,14 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
       <prefix original_prefix="widgets" class="WidgetFramework_Route_PrefixAdmin_Widgets" build_link="data_only"/>
     </route_type>
   </route_prefixes>
-  <style_properties/>
+  <style_properties>
+    <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Title Maximum Length" description="This property will be applied with all Threads widgets." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="Threads"><![CDATA[35]]></property>
+    <property property_name="wf_recent_status_statusMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Status Maximum Length" description="This property will be applied to User Recent Status widgets." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="RecentStatus"><![CDATA[150]]></property>
+    <group group_name="widget_framework" display_order="9999">
+      <title>[bd] Widget Framework</title>
+      <description>Widget display settings for this style.</description>
+    </group>
+  </style_properties>
   <templates>
     <template title="wf_default.css" version_id="24" version_string="1.2.2.2"><![CDATA[<xen:comment>
 Please do not edit this template.
@@ -574,7 +587,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_recent_status" version_id="24" version_string="1.2.2.2"><![CDATA[<xen:if is="{$users}">
+    <template title="wf_widget_recent_status" version_id="33" version_string="1.5"><![CDATA[<xen:if is="{$users}">
     <xen:require css="wf_default.css" />
     
     <div class="avatarList">
@@ -584,8 +597,7 @@ All customization should go to wf_default_EXTRA.css
         		<xen:avatar user="$user" size="s" img="true" />
         		<div class="WidgetFramework_nextToAvatar">
         			<xen:username user="$user" />
-        			<div>{xen:helper snippet, $user.status, 150}</div>
-                    <xen:comment>150 characters is enough because status is limited to 140 characters</xen:comment>
+        			<div>{xen:helper snippet, $user.status, {xen:property wf_recent_status_statusMaxLength}}</div>
         			<div class="userTitle"><xen:datetime time="$user.status_date" /></div>
         		</div>
         	</li>
@@ -622,47 +634,63 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="32" version_string="1.4.2"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_threads" version_id="33" version_string="1.5"><![CDATA[<xen:if hascontent="true">
     <div class="avatarList">
         <ul>
             <xen:contentcheck>
             	<xen:foreach loop="$new" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
-						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
+
+						<xen:include template="wf_widget_threads_thread_title">
+							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
+						</xen:include>
+
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
                 	</li>
             	</xen:foreach>
             	<xen:foreach loop="$recent" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
-						<a href="{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
+
+						<xen:include template="wf_widget_threads_thread_title">
+							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
+							<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
+						</xen:include>
+
                 		<div class="userTitle">{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" /></div>
                 	</li>
             	</xen:foreach>
             	<xen:foreach loop="$popular" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
-						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
+
+						<xen:include template="wf_widget_threads_thread_title">
+							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
+						</xen:include>
+
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
                 	</li>
             	</xen:foreach>
                 <xen:foreach loop="$mostReplied" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
-						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
+
+						<xen:include template="wf_widget_threads_thread_title">
+							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
+						</xen:include>
+
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'}, {xen:phrase replies}: {xen:number $thread.reply_count}</div>
                 	</li>
             	</xen:foreach>
                 <xen:foreach loop="$mostLiked" value="$thread">
                     <li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
-						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
+
+						<xen:include template="wf_widget_threads_thread_title">
+							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
+						</xen:include>
+
                 		<div class="userTitle">
                             {xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'},
                             {xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
@@ -672,8 +700,11 @@ All customization should go to wf_default_EXTRA.css
             	<xen:foreach loop="$polls" value="$thread">
                 	<li>
                 		<xen:avatar user="$thread" size="s" img="true" />
-                		<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
-						<a href="{xen:link threads, $thread}" title="{$thread.title}" class="Tooltip">{xen:helper snippet, $thread.title, 35}</a>
+
+						<xen:include template="wf_widget_threads_thread_title">
+							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
+						</xen:include>
+
                 		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
                 	</li>
             	</xen:foreach>
@@ -681,6 +712,16 @@ All customization should go to wf_default_EXTRA.css
         </ul>
     </div>
 </xen:if>]]></template>
+    <template title="wf_widget_threads_thread_title" version_id="33" version_string="1.5"><![CDATA[<xen:if is="{$_showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
+<a href="{xen:if '{$_threadLink}', {xen:raw $_threadLink}, {xen:link threads, $thread}}"
+	<xen:if is="{$thread.title} != {xen:helper snippet, $thread.title, {xen:property wf_threads_titleMaxLength}}">
+	title="{$thread.title}"
+	class="Tooltip"
+	</xen:if>
+	>
+	{xen:helper snippet, $thread.title, {xen:property wf_threads_titleMaxLength}}
+</a>
+<xen:include template="preview_tooltip" />]]></template>
     <template title="wf_widget_users" version_id="32" version_string="1.4.2"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
     <ul class="followedOnline">
 		<xen:foreach loop="$users" value="$user">

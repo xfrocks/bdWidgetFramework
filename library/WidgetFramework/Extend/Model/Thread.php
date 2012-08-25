@@ -16,7 +16,8 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 		
 		if (!empty($conditions['forum_ids'])) {
 			// $sqlConditions[] = 'thread.node_id IN (' . $this->_getDb()->quote($conditions['forum_ids']) . ')';
-			throw new XenForo_Exception('forum_ids has been deprecated, please use forum_id OR node_id in $conditions');
+			// throw new XenForo_Exception('forum_ids has been deprecated, please use forum_id OR node_id in $conditions');
+			// throwing exception no more... (conflicted with XenPorta)
 		}
 		
 		if (!empty($conditions['post_date']) && is_array($conditions['post_date'])) {
