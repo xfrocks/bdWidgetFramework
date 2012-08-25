@@ -321,6 +321,9 @@ class WidgetFramework_Core {
 		}
 	}
 	
+	/**
+	 * @return WidgetFramework_Core
+	 */
 	public static function getInstance() {
 		if (!self::$_instance) {
 			self::$_instance = new self();

@@ -6,7 +6,7 @@ class WidgetFramework_FileSums
 	{
 		return array (
   'library/WidgetFramework/ControllerAdmin/Widget.php' => 'c09344deaf45150980799dbbc5993392',
-  'library/WidgetFramework/Core.php' => 'a84aa53ef3e5abc3ec5d7e071f136eb2',
+  'library/WidgetFramework/Core.php' => 'b3122c9ec8e66785b38daa4afffb5f77',
   'library/WidgetFramework/DataWriter/Helper/Widget.php' => 'f0011f536b50d64eda62c63eb56630a6',
   'library/WidgetFramework/DataWriter/Widget.php' => '1e95d05b278e6d7a51422df3698d6707',
   'library/WidgetFramework/Extend/ControllerPublic/Thread.php' => 'a3afcee4541f3d2b1d6c0f01c580e661',
@@ -14,7 +14,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/Extend/DataWriter/DiscussionMessage/Post.php' => '13e410815919ca4346c9e854fc126d67',
   'library/WidgetFramework/Extend/DataWriter/DiscussionMessage/ProfilePost.php' => 'bd11a88031d14779a5fb0c260c5e5d94',
   'library/WidgetFramework/Extend/DataWriter/User.php' => '54c291242e8cc672f690c8f8112affef',
-  'library/WidgetFramework/Extend/Model/Thread.php' => '4e6324c216444d000a9b9902e8634bbf',
+  'library/WidgetFramework/Extend/Model/Thread.php' => 'fe6e054850a2e4a8c07250e7ebd4638b',
   'library/WidgetFramework/Extend/Model/User.php' => '623b71a83d5be7bb1ecbed32498f2e66',
   'library/WidgetFramework/Installer.php' => '08516e3e4d5a1ae06ee41ffd26e1b834',
   'library/WidgetFramework/Listener.php' => '0e85a27f96fc79ae178071ebd19db3af',
@@ -34,16 +34,16 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/WidgetRenderer/HtmlWithoutWrapper.php' => '4a2dc7b8aec5ec6a71f4ff8127289120',
   'library/WidgetFramework/WidgetRenderer/OnlineStaff.php' => 'a9f8ffa6090b2b3f33b3f85d811f68a6',
   'library/WidgetFramework/WidgetRenderer/OnlineUsers.php' => '64e90d24c1ee44164e8391ef0e8e8be7',
-  'library/WidgetFramework/WidgetRenderer/Poll.php' => 'a361e4d109c6d5b1a43295f52be55a37',
+  'library/WidgetFramework/WidgetRenderer/Poll.php' => 'a0c3085e63a688c200a0388874ffc335',
   'library/WidgetFramework/WidgetRenderer/RecentStatus.php' => '6e9e256ead69127857ad937e3d2303fe',
   'library/WidgetFramework/WidgetRenderer/ShareThisPage.php' => 'd9328d0849aba73daf31676516f7f9ca',
   'library/WidgetFramework/WidgetRenderer/Stats.php' => '2b70ca3e9a710c3c6b7f4b00a5730baf',
   'library/WidgetFramework/WidgetRenderer/Template.php' => '5ab8a01692b21ebbd689303efcab6b68',
   'library/WidgetFramework/WidgetRenderer/TemplateWithoutWrapper.php' => 'e9957fc0cc247b4d0f408f3ae2b3087a',
-  'library/WidgetFramework/WidgetRenderer/Threads.php' => 'f11bb0926a6bc770fbc67ae88ddba554',
+  'library/WidgetFramework/WidgetRenderer/Threads.php' => '1e82dc563a29ef43da19efadfb26ea3d',
   'library/WidgetFramework/WidgetRenderer/Users.php' => '06ffec433ba8af1ac70bc1785645a42d',
   'library/WidgetFramework/WidgetRenderer/VisitorPanel.php' => '20556af6bbaf48aeb954c504189601df',
-  'library/WidgetFramework/WidgetRenderer.php' => '5dfe12330d96f3a03f70c789835e0a8f',
+  'library/WidgetFramework/WidgetRenderer.php' => '757fcf38b4570bbdcfa4e6e7894022ab',
   'js/WidgetFramework/functions.js' => 'a6a6be5d27760a0ffa5aa1b821939447',
 );
 	}

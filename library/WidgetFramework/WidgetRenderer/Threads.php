@@ -7,6 +7,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'type' => XenForo_Input::STRING,
 				'cutoff' => XenForo_Input::UINT,
 				'forums' => XenForo_Input::ARRAY_SIMPLE,
+				'as_guest' => XenForo_Input::UINT,
 				'limit' => XenForo_Input::UINT,
 			),
 			'useCache' => true,
@@ -32,7 +33,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 	
 	protected function _validateOptionValue($optionKey, &$optionValue) {
 		if ('type' == $optionKey) {
-			if (!in_array($optionValue, array('new', 'recent', 'popular', 'polls'))) {
+			if (!in_array($optionValue, array('new', 'recent', 'popular', 'most_replied', 'most_liked', 'polls'))) {
 				throw new XenForo_Exception(new XenForo_Phrase('wf_widget_threads_invalid_type'), true);
 			}
 		} elseif ('limit' == $optionKey) {
@@ -53,10 +54,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 		$visitor = XenForo_Visitor::getInstance();
 
-		$forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params);
+		$forumIds = $this->_helperGetForumIdsFromOption(
+			$widget['options']['forums'],
+			$params,
+			empty($widget['options']['as_guest']) ? false : true
+		);
 		
 		$conditions = array(
-			'forum_ids' => $forumIds,
+			'node_id' => $forumIds,
 			'deleted' => $visitor->isSuperAdmin(),
 			'moderated' => $visitor->isSuperAdmin(),
 		);
@@ -113,6 +118,48 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			$popular = array();
 		}
 		
+		if (in_array($widget['options']['type'], array('most_replied', 'all'))) {
+			$mostReplied = $threadModel->getThreads(
+				array_merge($conditions, array(
+					'post_date' => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
+				))
+				, array_merge($fetchOptions, array(
+					'order' => 'reply_count',
+					'orderDirection' => 'desc',
+				))
+			);
+			
+			foreach (array_keys($mostReplied) as $postId) {
+				if ($mostReplied[$postId]['reply_count'] == 0) {
+					// remove threads with zero reply_count
+					unset($mostReplied[$postId]);
+				}
+			}
+		} else {
+			$mostReplied = array();
+		}
+		
+		if (in_array($widget['options']['type'], array('most_liked', 'all'))) {
+			$mostLiked = $threadModel->getThreads(
+				array_merge($conditions, array(
+					'post_date' => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
+				))
+				, array_merge($fetchOptions, array(
+					'order' => 'first_post_likes',
+					'orderDirection' => 'desc',
+				))
+			);
+			
+			foreach (array_keys($mostLiked) as $postId) {
+				if ($mostLiked[$postId]['first_post_likes'] == 0) {
+					// remove threads with zero first_post_likes
+					unset($mostLiked[$postId]);
+				}
+			}
+		} else {
+			$mostLiked = array();
+		}
+		
 		if (in_array($widget['options']['type'], array('polls', 'all'))) {
 			$polls = $threadModel->getThreads(
 				array_merge($conditions, array(
@@ -130,9 +177,21 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		$renderTemplateObject->setParam('new', $new);
 		$renderTemplateObject->setParam('recent', $recent);
 		$renderTemplateObject->setParam('popular', $popular);
+		$renderTemplateObject->setParam('mostReplied', $mostReplied);
+		$renderTemplateObject->setParam('mostLiked', $mostLiked);
 		$renderTemplateObject->setParam('polls', $polls);
 		
 		return $renderTemplateObject->render();		
+	}
+	
+	public function useUserCache(array $widget) {
+		if (!empty($widget['options']['as_guest'])) {
+			// using guest permission
+			// there is no reason to use the user cache
+			return false;
+		}
+		
+		return parent::useUserCache($widget);
 	}
 	
 	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array()) {

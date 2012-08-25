@@ -59,7 +59,7 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 			
 			$thread = $threadModel->getThreads(
 				array(
-					'forum_ids' => $forumIds,
+					'node_id' => $forumIds,
 					'discussion_type' => 'poll',
 				)
 				,array(

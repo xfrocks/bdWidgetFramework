@@ -133,12 +133,14 @@ abstract class WidgetFramework_WidgetRenderer {
 	 * @param array $forumsOption the `forums` option
 	 * @param array $templateParams depending on the option, this method
 	 * 				requires information from the template params.
+	 * @param bool $asGuest flag to use guest permissions instead of 
+	 * 				current user permissions
 	 * 
 	 * @return array of forum ids
 	 */
-	protected function _helperGetForumIdsFromOption(array $forumsOption, array $templateParams = array()) {
+	protected function _helperGetForumIdsFromOption(array $forumsOption, array $templateParams = array(), $asGuest = false) {
 		if (empty($forumsOption)) {
-			$forumIds = array_keys($this->_helperGetViewableNodeList());
+			$forumIds = array_keys($this->_helperGetViewableNodeList($asGuest));
 		} else {
 			$forumIds = array_values($forumsOption);
 			$forumIds2 = array();
@@ -153,7 +155,7 @@ abstract class WidgetFramework_WidgetRenderer {
 						break;
 					case self::FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN:
 						if (isset($templateParams['forum'])) {
-							$viewableNodeList = $this->_helperGetViewableNodeList();
+							$viewableNodeList = $this->_helperGetViewableNodeList($asGuest);
 							$forumIds2[] = $templateParams['forum']['node_id'];
 							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateParams['forum']['node_id']);
 						}
@@ -167,7 +169,7 @@ abstract class WidgetFramework_WidgetRenderer {
 						break;
 					case self::FORUMS_OPTION_SPECIAL_PARENT_AND_CHILDREN:
 						if (isset($templateParams['forum'])) {
-							$viewableNodeList = $this->_helperGetViewableNodeList();
+							$viewableNodeList = $this->_helperGetViewableNodeList($asGuest);
 							$forumIds2[] = $templateParams['forum']['parent_node_id'];
 							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateParams['forum']['parent_node_id']);
 						}
@@ -207,13 +209,33 @@ abstract class WidgetFramework_WidgetRenderer {
 	 * should use call this method to get it. The node list is queried and cached
 	 * to improve performance.
 	 * 
+	 * @param $asGuest flag to use guest permissions instead of current user permissions
+	 * 
 	 * @return array of viewable node (node_id as array key)
 	 */
-	protected function _helperGetViewableNodeList() {
+	protected function _helperGetViewableNodeList($asGuest) {
+		if ($asGuest) {
+			return $this->_helperGetViewableNodeListGuestOnly();
+		}
+		
 		static $viewableNodeList = false;
 		
 		if ($viewableNodeList === false) {
 			$viewableNodeList = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Node')->getViewableNodeList(); 
+		}
+		
+		return $viewableNodeList;
+	}
+	
+	protected function _helperGetViewableNodeListGuestOnly() {
+		static $viewableNodeList = false;
+		
+		if ($viewableNodeList === false) {
+			/* @var $nodeModel XenForo_Model_Node */
+			$nodeModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Node');
+			
+			$nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination(1);
+			$viewableNodeList = $nodeModel->getViewableNodeList($nodePermissions); 
 		}
 		
 		return $viewableNodeList;
