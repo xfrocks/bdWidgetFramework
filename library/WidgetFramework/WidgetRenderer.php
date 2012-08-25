@@ -10,6 +10,10 @@ abstract class WidgetFramework_WidgetRenderer {
 	 * 					Internally, this is implemented by getting the current user permission
 	 * 					combination id (not the user id as normally expected). This is done to
 	 * 					make sure the cache is used effectively
+	 * 	- useLiveCache: Flag to determine the renderer wants to by pass writing to database 
+	 * 					when it's being cached. This may be crucial if the renderer does a lot
+	 * 					of thing on a big board. It's recommended to use a option for this
+	 * 					because not all forum owner has a live cache system setup (XCache/memcached)
 	 * 	- cacheSeconds: A numeric value to specify the maximum age of the cache (in seconds). 
 	 * 					If the cache is too old, the widget will be rendered from scratch
 	 * 	- useWrapper: Flag to determine the widget should be wrapped with a wrapper. Renderers
@@ -251,6 +255,7 @@ abstract class WidgetFramework_WidgetRenderer {
 				'options' => array(),
 				'useCache' => false, // output of this widget can be cached
 				'useUserCache' => false,  // output should be cached by user permission (must have `useCache` enabled)
+				'useLiveCache' => false, // output will be cached with live cache only (bypass database completely)
 				'cacheSeconds' => 0, // cache older will be ignored, 0 means forever
 				'useWrapper' => true,
 			);
@@ -286,6 +291,11 @@ abstract class WidgetFramework_WidgetRenderer {
 	public function useUserCache(array $widget) {
 		$configuration = $this->getConfiguration();
 		return !empty($configuration['useUserCache']);
+	}
+	
+	public function useLiveCache(array $widget) {
+		$configuration = $this->getConfiguration();
+		return !empty($configuration['useLiveCache']);
 	}
 	
 	public function renderOptions(XenForo_ViewRenderer_Abstract $viewRenderer, array &$templateParams) {
@@ -356,7 +366,7 @@ abstract class WidgetFramework_WidgetRenderer {
 		if (empty($suffix)) {
 			return $widget['widget_id'];
 		} else {
-			return $widget['widget_id'] . '|' . implode('_', $suffix);
+			return $widget['widget_id'] . '__' . implode('_', $suffix);
 		}
 	}
 	
@@ -386,6 +396,7 @@ abstract class WidgetFramework_WidgetRenderer {
 		// since 1.2.1
 		$cacheId = false;
 		$useUserCache = false;
+		$useLiveCache = false;
 		if ($html === false AND $this->useCache($widget)) {
 			// get the cache id
 			// previously, the cache id is the same as the widget id
@@ -393,8 +404,9 @@ abstract class WidgetFramework_WidgetRenderer {
 			// since 1.3
 			$cacheId = $this->_getCacheId($widget, $positionCode, $params);
 			$useUserCache = $this->useUserCache($widget);
+			$useLiveCache = $this->useLiveCache($widget);
 			
-			$cached = WidgetFramework_Core::loadCachedWidget($cacheId, $useUserCache);
+			$cached = WidgetFramework_Core::loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
 			if (!empty($cached) AND is_array($cached) AND $this->isCacheUsable($cached, $widget)) {
 				$html = $cached['html'];
 			}
@@ -413,7 +425,7 @@ abstract class WidgetFramework_WidgetRenderer {
 			$html = trim($html);
 			
 			if ($cacheId !== false) {
-				WidgetFramework_Core::saveCachedWidget($cacheId, $html, $useUserCache);
+				WidgetFramework_Core::saveCachedWidget($cacheId, $html, $useUserCache, $useLiveCache);
 			}
 		}
 

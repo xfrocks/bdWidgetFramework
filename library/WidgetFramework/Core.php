@@ -248,41 +248,55 @@ class WidgetFramework_Core {
 		}
 	}
 	
-	protected function _loadCachedWidget($cacheId, $useUserCache = false) {
+	protected function _loadCachedWidget($cacheId, $useUserCache, $useLiveCache) {
 		// disable cache in debug environment...
 		if (self::debugMode()) {
 			return false;
 		}
 		
-		$cachedWidgets = $this->getModelFromCache('WidgetFramework_Model_Cache')->getCachedWidgets(
-			$this->_getPermissionCombinationId($useUserCache)
-		);
+		$cacheModel = $this->_getModelCache();
 		
-		if (isset($cachedWidgets[$cacheId])) {
-			return $cachedWidgets[$cacheId];
+		$permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
+
+		if ($useLiveCache) {
+			return $cacheModel->getLiveCache($cacheId, $permissionCombinationId);
 		} else {
-			return false;
+			$cachedWidgets = $cacheModel->getCachedWidgets($permissionCombinationId);
+			
+			if (isset($cachedWidgets[$cacheId])) {
+				return $cachedWidgets[$cacheId];
+			} else {
+				return false;
+			}
 		}
 	}
 	
-	protected function _saveCachedWidget($cacheId, $html, $useUserCache = false) {
+	protected function _saveCachedWidget($cacheId, $html, $useUserCache , $useLiveCache) {
 		// disable cache in debug environment...
 		if (self::debugMode()) {
 			return false;
 		}
 		
-		$permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
+		$cacheModel = $this->_getModelCache();
 		
-		$cachedWidgets = $this->_getModelCache()->getCachedWidgets($permissionCombinationId);
-		$cachedWidgets[$cacheId] = array(
+		$cacheData = array(
 			WidgetFramework_Model_Cache::KEY_HTML => $html,
 			WidgetFramework_Model_Cache::KEY_TIME => XenForo_Application::$time,
 		);
 		
-		$this->_getModelCache()->setCachedWidgets(
-			$cachedWidgets,
-			$permissionCombinationId
-		);
+		$permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
+		
+		if ($useLiveCache) {
+			$cacheModel->setLiveCache($cacheData, $cacheId, $permissionCombinationId);
+		} else {
+			$cachedWidgets = $cacheModel->getCachedWidgets($permissionCombinationId);
+			$cachedWidgets[$cacheId] = $cacheData;
+			
+			$cacheModel->setCachedWidgets(
+				$cachedWidgets,
+				$permissionCombinationId
+			);
+		}
 	}
 	
 	protected function _removeCachedWidget($widgetId) {
@@ -296,17 +310,18 @@ class WidgetFramework_Core {
 		return $this->getModelFromCache('WidgetFramework_Model_Cache');
 	}
 	
-	public static function loadCachedWidget($cacheId, $useUserCache = false) {
-		return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache);
+	public static function loadCachedWidget($cacheId, $useUserCache, $useLiveCache) {
+		return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
 	}
 	
-	public static function saveCachedWidget($cacheId, $html, $useUserCache = false) {
-		self::getInstance()->_saveCachedWidget($cacheId, $html, $useUserCache); 
+	public static function saveCachedWidget($cacheId, $html, $useUserCache, $useLiveCache) {
+		self::getInstance()->_saveCachedWidget($cacheId, $html, $useUserCache, $useLiveCache); 
 	}
 	
 	public static function clearCachedWidgetById($widgetId) {
 		$instance = self::getInstance();
 		$instance->bootstrap();
+		
 		$instance->_removeCachedWidget($widgetId);
 	}
 	

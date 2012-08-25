@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.3.4" version_id="29" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="1.4" version_id="30" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -352,6 +352,7 @@ Arguments:
     <phrase title="wf_title_explain" version_id="1" version_string="0.9"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer instead.]]></phrase>
     <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
+    <phrase title="wf_use_live_cache" version_id="29" version_string="1.3.4"><![CDATA[Use Live Cache]]></phrase>
     <phrase title="wf_widgets" version_id="1" version_string="0.9"><![CDATA[Widgets]]></phrase>
     <phrase title="wf_widget_birthday_today_is_xs_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {username}'s birthday.]]></phrase>
     <phrase title="wf_widget_birthday_today_is_x_peoples_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {count} people's birthday.]]></phrase>

@@ -48,6 +48,9 @@ class WidgetFramework_Installer {
 		");
 		*/
 		$db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
+		
+		// clear cache (in db only)
+		$db->query("DELETE FROM xf_data_registry WHERE data_key LIKE 'wf%'");
 	}
 	
 	public static function uninstall() {
