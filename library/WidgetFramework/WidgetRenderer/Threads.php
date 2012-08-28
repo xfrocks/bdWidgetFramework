@@ -197,6 +197,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		$renderTemplateObject->setParam('mostReplied', $mostReplied);
 		$renderTemplateObject->setParam('mostLiked', $mostLiked);
 		$renderTemplateObject->setParam('polls', $polls);
+		$renderTemplateObject->setParam('renderParams', $params);
 		
 		return $renderTemplateObject->render();		
 	}

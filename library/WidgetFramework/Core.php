@@ -184,7 +184,11 @@ class WidgetFramework_Core {
 		}
 		
 		$originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
+		
+		$params['_WidgetFramework_positionCode'] = $templateName;
 		$html = $this->_renderWidgetsFor($templateName, $params, $template, $originalHtml);
+		
+		$params['_WidgetFramework_positionCode'] = 'all';
 		$html = $this->_renderWidgetsFor('all', $params, $template, $html);
 
 		if (defined(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_FLAG)) {
@@ -206,6 +210,8 @@ class WidgetFramework_Core {
 	}
 	
 	public function renderWidgetsForHook($hookName, array $hookParams, XenForo_Template_Abstract $template, &$hookHtml) {
+		$hookParams['_WidgetFramework_positionCode'] = 'hook:' . $hookName;
+		$hookParams['_WidgetFramework_isHook'] = true;
 		$hookHtml = $this->_renderWidgetsFor('hook:' . $hookName, $hookParams, $template, $hookHtml);
 		
 		return true;
@@ -277,12 +283,17 @@ class WidgetFramework_Core {
 					
 					if (!empty($position['html'][$widget['widget_id']])) {
 						if ($renderer->useWrapper($widget)) {
+							$widgetClass = $widget['class'];
+							if (!empty($params['_WidgetFramework_isHook'])) {
+								$widgetClass .= ' non-sidebar-widget';
+							}
+							
 							$tabs[$widget['widget_id']] = array(
 								'widget_id' => $widget['widget_id'],
 								'title' => $widget['title'],
 								'html' => $position['html'][$widget['widget_id']],
 								// since 1.0.9
-								'class' => $widget['class'],
+								'class' => $widgetClass,
 								'extraData' => $position['extraData'][$widget['widget_id']],
 								'options' => $widget['options'],
 							);

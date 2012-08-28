@@ -6,7 +6,7 @@ class WidgetFramework_FileSums
 	{
 		return array (
   'library/WidgetFramework/ControllerAdmin/Widget.php' => '24efde3ef6df9954536ac0f4ea89de99',
-  'library/WidgetFramework/Core.php' => 'd61af1610f5ea809ed32425873a5fb1c',
+  'library/WidgetFramework/Core.php' => '17237222cf741e07d3294413e695a067',
   'library/WidgetFramework/DataWriter/Helper/Widget.php' => '1f4269a08ef89581769234bc31e02e23',
   'library/WidgetFramework/DataWriter/Widget.php' => 'def658a6f2121731641ebdd9667f98b4',
   'library/WidgetFramework/Extend/ControllerPublic/Thread.php' => 'a3afcee4541f3d2b1d6c0f01c580e661',
@@ -40,7 +40,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/WidgetRenderer/Stats.php' => '2b70ca3e9a710c3c6b7f4b00a5730baf',
   'library/WidgetFramework/WidgetRenderer/Template.php' => '5ab8a01692b21ebbd689303efcab6b68',
   'library/WidgetFramework/WidgetRenderer/TemplateWithoutWrapper.php' => 'e9957fc0cc247b4d0f408f3ae2b3087a',
-  'library/WidgetFramework/WidgetRenderer/Threads.php' => '0ea7aefdcc763a96c1503b5974694267',
+  'library/WidgetFramework/WidgetRenderer/Threads.php' => '64176a5cfa4aeabacd3ed6fedc31d68b',
   'library/WidgetFramework/WidgetRenderer/Users.php' => '3ca52df8382daa530b318766d0c307b8',
   'library/WidgetFramework/WidgetRenderer/UsersFind.php' => '15c205f5d87baa5ba97ef1d09dbdde33',
   'library/WidgetFramework/WidgetRenderer/VisitorPanel.php' => '20556af6bbaf48aeb954c504189601df',
