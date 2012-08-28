@@ -48,6 +48,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		$viewParams = array(
 			'widget' => array(
 				'active' => 1,
+				'position' => $this->_input->filterSingle('position', XenForo_Input::STRING),
+				'display_order' => $this->_input->filterSingle('display_order', XenForo_Input::INT),
 			),
 			'renderers' => $this->_getRenderersList(),
 		);
@@ -219,6 +221,23 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		);
 
 		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Export', '', $viewParams);
+	}
+	
+	public function actionReveal() {
+		$publicSession = new XenForo_Session();
+		$publicSession->start();
+		if ($publicSession->get('user_id') != XenForo_Visitor::getUserId())
+		{
+			return $this->responseError(new XenForo_Phrase('please_login_via_public_login_page_before_testing_permissions'));
+		}
+
+		$publicSession->set('_WidgetFramework_reveal', true);
+		$publicSession->save();
+
+		return $this->responseRedirect(
+			XenForo_ControllerResponse_Redirect::SUCCESS,
+			XenForo_Link::buildPublicLink('index')
+		);
 	}
 
 	protected function _getWidgetOrError($widgetId) {

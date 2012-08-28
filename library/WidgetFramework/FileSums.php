@@ -5,10 +5,11 @@ class WidgetFramework_FileSums
 	public static function getHashes()
 	{
 		return array (
-  'library/WidgetFramework/ControllerAdmin/Widget.php' => '24efde3ef6df9954536ac0f4ea89de99',
+  'library/WidgetFramework/ControllerAdmin/Widget.php' => 'c46f275b42bae04e31e40096b6e70d65',
   'library/WidgetFramework/Core.php' => '17237222cf741e07d3294413e695a067',
-  'library/WidgetFramework/DataWriter/Helper/Widget.php' => '1f4269a08ef89581769234bc31e02e23',
+  'library/WidgetFramework/DataWriter/Helper/Widget.php' => 'e71847fca633645ea43531a4ba962478',
   'library/WidgetFramework/DataWriter/Widget.php' => 'def658a6f2121731641ebdd9667f98b4',
+  'library/WidgetFramework/Extend/ControllerPublic/Misc.php' => 'ebe72fa5bd536c27c37141ff4d628104',
   'library/WidgetFramework/Extend/ControllerPublic/Thread.php' => 'a3afcee4541f3d2b1d6c0f01c580e661',
   'library/WidgetFramework/Extend/DataWriter/Discussion/Thread.php' => 'c47dca1b4d0def029ee8054944a33539',
   'library/WidgetFramework/Extend/DataWriter/DiscussionMessage/Post.php' => '13e410815919ca4346c9e854fc126d67',
@@ -17,10 +18,10 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/Extend/Model/Thread.php' => '01ef4382ee4a4127e24313f77e994db3',
   'library/WidgetFramework/Extend/Model/User.php' => '623b71a83d5be7bb1ecbed32498f2e66',
   'library/WidgetFramework/Installer.php' => 'f532eef147fcc9de14d5c5960ce2e1ee',
-  'library/WidgetFramework/Listener.php' => 'c27f26f3edc2873928abb1a87ff7eda5',
+  'library/WidgetFramework/Listener.php' => 'f9e6d3466042b5d9f6d4cd3606c94d5b',
   'library/WidgetFramework/Model/Cache.php' => 'e26442396c736f2899394ac1b797c517',
-  'library/WidgetFramework/Model/Widget.php' => 'f54c1231d6ca527204f207e12995f34f',
-  'library/WidgetFramework/Option.php' => 'b1050af34c18b49a878e312a27b53d61',
+  'library/WidgetFramework/Model/Widget.php' => 'a3a237ce00ecccc4f508a04d043d19e4',
+  'library/WidgetFramework/Option.php' => 'b070c1f4dce8deaa35ae48273b40e444',
   'library/WidgetFramework/Route/PrefixAdmin/Widgets.php' => 'b1780af2708710c5844025dee3d79d64',
   'library/WidgetFramework/ViewAdmin/Widget/Edit.php' => '94501e70afbe3751bd3f3f707236ad9a',
   'library/WidgetFramework/ViewAdmin/Widget/Export.php' => '3ef948395f2ddef7ec8e230bf8f59050',

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.0.1" version_id="39" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.0.3" version_id="41" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -49,7 +49,7 @@
 		</xen:textboxunit>
 		
 		<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
-			<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
+			<xen:explain>{xen:phrase wf_position_explain, 'reveal_link={xen:adminlink widgets/reveal}'}</xen:explain>
 		</xen:textboxunit>
 		
 		<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
@@ -309,6 +309,7 @@ Arguments:
     <phrase title="wf_delete_all_before_import_explain" version_id="24" version_string="1.2.2.2"><![CDATA[Select this option to make an exact copy of widgets from the XML file. All existing widgets will be deleted completely. This action can not be undone.]]></phrase>
     <phrase title="wf_delete_widget" version_id="1" version_string="0.9"><![CDATA[Delete Widget]]></phrase>
     <phrase title="wf_descending" version_id="1" version_string="0.9"><![CDATA[Descending]]></phrase>
+    <phrase title="wf_disable_reveal" version_id="39" version_string="2.0.1"><![CDATA[Disable Reveal Mode (Widget Framework)]]></phrase>
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
     <phrase title="wf_display_order_explain" version_id="37" version_string="1.5.4"><![CDATA[The position of this widget relative to other widgets in the same position. If the display order is negative, its contents will be inserted before the original contents of the position. Otherwise, it will be appended.]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
@@ -338,11 +339,12 @@ XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the w
     <phrase title="wf_popular" version_id="1" version_string="0.9"><![CDATA[Popular]]></phrase>
     <phrase title="wf_position" version_id="1" version_string="0.9"><![CDATA[Position]]></phrase>
     <phrase title="wf_position_can_not_be_empty" version_id="22" version_string="1.2.2"><![CDATA[Widget position can not be empty.]]></phrase>
-    <phrase title="wf_position_explain" version_id="37" version_string="1.5.4"><![CDATA[There are three types of positions:<br/>
+    <phrase title="wf_position_explain" version_id="39" version_string="2.0.1"><![CDATA[There are three types of positions:<br/>
 - The "all" position will make the widget show up in the sidebar of all pages.<br/>
 - Or you can input a comma separated list of templates that need the widget. Popular templates: forum_list (the index page), forum_view (the individual forum page), thread_view (the thread page).<br/>
 - Or you can input a comma separated list in the format of "hook:hook_name" to render the widget directly to the hook. For example: "hook:page_container_content_top" will make the widget visible at the top of the page, on every page.<br/>
 <br/>
+You can browse the site with templates and hooks information <a href="{reveal_link}" target="_blank" tabIndex="-1">here</a>.<br/>
 Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if you have question about this.]]></phrase>
     <phrase title="wf_print_error_message" version_id="1" version_string="0.9"><![CDATA[Print error message instead of ignoring it]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
@@ -528,6 +530,22 @@ All customization should go to wf_default_EXTRA.css
 	.non-sidebar-widget .userList .moreLink {
 		display: block;
 	}]]></template>
+    <template title="wf_hook_moderator_bar" version_id="39" version_string="2.0.1"><![CDATA[<xen:if is="{$visitor.is_admin}">			
+	<xen:if is="{$session._WidgetFramework_reveal}">
+		<a href="{xen:link misc/wf-disable-reveal}" class="permissionTest adminLink">
+			<span class="itemLabel">{xen:phrase wf_disable_reveal}</span>
+		</a>
+	</xen:if>
+</xen:if>]]></template>
+    <template title="wf_revealer" version_id="39" version_string="2.0.1"><![CDATA[<div style="display: block; padding: 3px; margin: 2px">
+	<a href="{xen:adminlink widgets/add, '', 'position={$positionCode}', 'display_order={$displayOrder}'}"
+		target="_blank"
+		title="{$positionCode}{xen:if '{xen:calc '{$displayOrder} + 0'} != 0', ' - {xen:phrase display_order}: {$displayOrder}'}"
+		class="Tooltip"
+		style="background: white; color: black; border: 1px solid black; padding: 3px">
+		{xen:phrase wf_add_widget}
+	</a>
+</div>]]></template>
     <template title="wf_widget_birthday" version_id="17" version_string="1.0.9"><![CDATA[<xen:if is="{xen:count $users} == 1">
 	<h4 class="minorHeading">{xen:phrase wf_widget_birthday_today_is_xs_birthday, 'username={$users.0.username}'}</h4>
 	<div class="avatarList">
