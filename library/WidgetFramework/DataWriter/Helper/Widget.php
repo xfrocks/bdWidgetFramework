@@ -20,7 +20,11 @@ class WidgetFramework_DataWriter_Helper_Widget {
 	}
 	
 	public static function verifyPosition(&$positions, XenForo_DataWriter $dw, $fieldName = false) {
-		$positions = trim(strtolower($positions)); // template and hook should be all in lowercase, at least I hope so
+		// sondh@2012-08-28
+		// it may be better to use strtolower with $positions (making it easier for admins)
+		// but some add-on developers decided to use template with mixed case characters so...
+		// no strtolower goodness for everyone.
+		$positions = trim($positions);
 		
 		if (empty($positions)) {
 			$dw->error(new XenForo_Phrase('wf_position_can_not_be_empty'), $fieldName);
