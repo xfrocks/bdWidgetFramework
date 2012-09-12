@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.0.3" version_id="41" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.0.4" version_id="42" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -416,7 +416,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="38" version_string="2.0.0-dev"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="41" version_string="2.0.3"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -472,6 +472,13 @@ All customization should go to wf_default_EXTRA.css
 
 .WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl {
     float: none;
+}
+
+.widget .avatarHeap {
+	<xen:comment>avatarHeap last avatar of a row will need some space at
+		the end, but because our avatarHeap doesn't have enough space, 
+		there will be only 3 columns in stead of 4 columns of avatars.</xen:comment>
+	margin-right: -10px;
 }
 
 <xen:include template="wf_default_non_sidebar.css" />

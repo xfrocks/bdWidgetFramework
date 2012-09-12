@@ -15,7 +15,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/Extend/DataWriter/DiscussionMessage/Post.php' => '13e410815919ca4346c9e854fc126d67',
   'library/WidgetFramework/Extend/DataWriter/DiscussionMessage/ProfilePost.php' => 'bd11a88031d14779a5fb0c260c5e5d94',
   'library/WidgetFramework/Extend/DataWriter/User.php' => '54c291242e8cc672f690c8f8112affef',
-  'library/WidgetFramework/Extend/Model/Thread.php' => '01ef4382ee4a4127e24313f77e994db3',
+  'library/WidgetFramework/Extend/Model/Thread.php' => '050aaf3b78e47a8f27b3d887040d536a',
   'library/WidgetFramework/Extend/Model/User.php' => '623b71a83d5be7bb1ecbed32498f2e66',
   'library/WidgetFramework/Installer.php' => 'f532eef147fcc9de14d5c5960ce2e1ee',
   'library/WidgetFramework/Listener.php' => 'f9e6d3466042b5d9f6d4cd3606c94d5b',
