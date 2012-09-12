@@ -48,7 +48,12 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 		
 		if ($users === false) {
 			$userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
-			$conditions = array();
+			$conditions = array(
+				// sondh@2012-09-13
+				// do not display not confirmed or banned users
+				'user_state' => 'valid',
+				'is_banned' => 0
+			);
 			$fetchOptions = array(
 				'limit' => $widget['options']['limit'],
 				'order' => $widget['options']['order'],
