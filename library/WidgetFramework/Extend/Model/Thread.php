@@ -67,7 +67,7 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 						(user.user_id = thread.last_post_user_id)';
 			} else if ($fetchOptions['last_post_join'] & self::FETCH_AVATAR) {
 				$selectFields .= ',
-					user.avatar_date, user.gravatar';
+					user.gender, user.avatar_date, user.gravatar';
 				$joinTables .= '
 					LEFT JOIN xf_user AS user ON
 						(user.user_id = thread.last_post_user_id)';
