@@ -10,6 +10,7 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 			'options' => array(
 				'noVisitorPanel' => XenForo_Input::UINT,
 			),
+			'useWrapper' => false,
 		);
 	}
 	
