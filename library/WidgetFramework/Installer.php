@@ -79,6 +79,5 @@ class WidgetFramework_Installer {
 		$db = XenForo_Application::get('db');
 		
 		$db->query("DROP TABLE IF EXISTS `xf_widget`");
-		$db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
 	}
 }

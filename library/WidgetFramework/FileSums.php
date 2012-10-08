@@ -6,7 +6,7 @@ class WidgetFramework_FileSums
 	{
 		return array (
   'library/WidgetFramework/ControllerAdmin/Widget.php' => 'c46f275b42bae04e31e40096b6e70d65',
-  'library/WidgetFramework/Core.php' => '17237222cf741e07d3294413e695a067',
+  'library/WidgetFramework/Core.php' => 'c0cfd39f949d93fd1831ee697ff4d53e',
   'library/WidgetFramework/DataWriter/Helper/Widget.php' => 'e71847fca633645ea43531a4ba962478',
   'library/WidgetFramework/DataWriter/Widget.php' => 'def658a6f2121731641ebdd9667f98b4',
   'library/WidgetFramework/Extend/ControllerPublic/Misc.php' => 'ebe72fa5bd536c27c37141ff4d628104',
@@ -17,7 +17,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/Extend/DataWriter/User.php' => '54c291242e8cc672f690c8f8112affef',
   'library/WidgetFramework/Extend/Model/Thread.php' => '050aaf3b78e47a8f27b3d887040d536a',
   'library/WidgetFramework/Extend/Model/User.php' => '623b71a83d5be7bb1ecbed32498f2e66',
-  'library/WidgetFramework/Installer.php' => 'f532eef147fcc9de14d5c5960ce2e1ee',
+  'library/WidgetFramework/Installer.php' => 'b54b08974b2293fb383a509dfab10c7f',
   'library/WidgetFramework/Listener.php' => 'f9e6d3466042b5d9f6d4cd3606c94d5b',
   'library/WidgetFramework/Model/Cache.php' => 'e26442396c736f2899394ac1b797c517',
   'library/WidgetFramework/Model/Widget.php' => 'a3a237ce00ecccc4f508a04d043d19e4',
@@ -31,6 +31,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/WidgetRenderer/Birthday.php' => '4a21d27805de596cd52767237ee113dc',
   'library/WidgetFramework/WidgetRenderer/Callback.php' => '2de773900c395cea0ce7fdf871ec9f88',
   'library/WidgetFramework/WidgetRenderer/Empty.php' => '2098e5af44390a4417f5626aaf5cc37f',
+  'library/WidgetFramework/WidgetRenderer/FeedReader.php' => 'a41072e7295808b110d62e85a4f5e40f',
   'library/WidgetFramework/WidgetRenderer/Html.php' => '1fd4f90bb5c94ae48cc7715886659b4c',
   'library/WidgetFramework/WidgetRenderer/HtmlWithoutWrapper.php' => '4a2dc7b8aec5ec6a71f4ff8127289120',
   'library/WidgetFramework/WidgetRenderer/OnlineStaff.php' => 'a9f8ffa6090b2b3f33b3f85d811f68a6',

@@ -47,6 +47,9 @@ class WidgetFramework_Core {
 		
 		//since 1.5
 		$renderers[] = 'WidgetFramework_WidgetRenderer_UsersFind';
+		
+		// since 2.1
+		$renderers[] = 'WidgetFramework_WidgetRenderer_FeedReader';
 	}
 	
 	public function bootstrap() {

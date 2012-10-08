@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.0.6" version_id="44" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.1" version_id="45" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -175,6 +175,17 @@
     <template title="wf_widget_options_empty"><![CDATA[<xen:checkboxunit label="" value="">
 	<xen:option name="{$namePrefix}noVisitorPanel" value="1" selected="{$options.noVisitorPanel}">{xen:phrase wf_widget_empty_hide_visitor_panel}</xen:option>
 </xen:checkboxunit>]]></template>
+    <template title="wf_widget_options_feed_reader"><![CDATA[<xen:textboxunit label="{xen:phrase url}:" name="{$namePrefix}url" value="{$options.url}" />
+
+<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_feed_entry}"}</xen:explain>
+</xen:textboxunit>
+
+<xen:radiounit label="{xen:phrase wf_display_mode}:" name="{$namePrefix}displayMode" value="{xen:if '{$options.displayMode}', $options.displayMode, 'plusImage'}">
+	<xen:option value="titleOnly">{xen:phrase wf_widget_feed_reader_display_mode_title_only}</xen:option>
+	<xen:option value="withContent">{xen:phrase wf_widget_feed_reader_display_mode_with_content}</xen:option>
+	<xen:option value="plusImage">{xen:phrase wf_widget_feed_reader_display_mode_plus_image}</xen:option>
+</xen:radiounit>]]></template>
     <template title="wf_widget_options_html"><![CDATA[<xen:textboxunit name="{$namePrefix}html" label="HTML" value="{$options.html}" rows="5" inputclass="Elastic">
 	<xen:explain>{xen:phrase wf_html_explain}</xen:explain>
 </xen:textboxunit>]]></template>
@@ -319,6 +330,7 @@ Arguments:
 $visitor['user_id'] > 0 -- means: show the widget for logged in users only.<br/>
 <br/>
 XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the widget for users of user group #3 only.]]></phrase>
+    <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
     <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
@@ -346,6 +358,7 @@ XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the w
 <br/>
 You can browse the site with templates and hooks information <a href="{reveal_link}" target="_blank" tabIndex="-1">here</a>.<br/>
 Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if you have question about this.]]></phrase>
+    <phrase title="wf_posted_by_lowercase" version_id="44" version_string="2.0.6"><![CDATA[posted by]]></phrase>
     <phrase title="wf_print_error_message" version_id="1" version_string="0.9"><![CDATA[Print error message instead of ignoring it]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
@@ -380,6 +393,9 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_widget_callback_callback_explain" version_id="17" version_string="1.0.9"><![CDATA[Enter the callback to render this widget. Callback signature:<br/>
 array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject]]></phrase>
     <phrase title="wf_widget_empty_hide_visitor_panel" version_id="13" version_string="1.0.5"><![CDATA[hide visitor panel too?]]></phrase>
+    <phrase title="wf_widget_feed_reader_display_mode_plus_image" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content + Image (if any)]]></phrase>
+    <phrase title="wf_widget_feed_reader_display_mode_title_only" version_id="44" version_string="2.0.6"><![CDATA[Title Only]]></phrase>
+    <phrase title="wf_widget_feed_reader_display_mode_with_content" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content]]></phrase>
     <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
@@ -416,7 +432,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="41" version_string="2.0.3"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="44" version_string="2.0.6"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -473,6 +489,26 @@ All customization should go to wf_default_EXTRA.css
 .WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl {
     float: none;
 }
+
+.WidgetFramework_WidgetRenderer_FeedReader_Entries {
+}
+	.WidgetFramework_WidgetRenderer_FeedReader_Entries .limitedHeight {
+		max-height: {xen:calc 'floor({xen:property sidebar.font-size} * 1.27 * 4) - 1'}px; <xen:comment>1.27 is the default line-height for body</xen:comment>
+	}
+
+	.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry {
+		text-align: justify;
+		display: block;
+		overflow: hidden;
+		margin-bottom: 3px;
+	}
+
+	.WidgetFramework_WidgetRenderer_FeedReader_Entries img.WidgetFramework_WidgetRenderer_FeedReader_Thumbnail {
+		width: auto;
+		float: right;
+		margin-left: 3px;
+	}
+		.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry:nth-child(2n) img.WidgetFramework_WidgetRenderer_FeedReader_Thumbnail { float: left; margin-right: 3px; }
 
 .widget .avatarHeap {
 	<xen:comment>avatarHeap last avatar of a row will need some space at
@@ -574,6 +610,33 @@ All customization should go to wf_default_EXTRA.css
 				<xen:avatar user="$user" size="s" img="true" class="_plainImage" />
 			</li>
 		</xen:foreach>
+	</ul>
+</xen:if>]]></template>
+    <template title="wf_widget_feed_reader" version_id="44" version_string="2.0.6"><![CDATA[<xen:require css="wf_default.css" />
+
+<xen:if hascontent="true">
+	<ul class="WidgetFramework_WidgetRenderer_FeedReader_Entries">
+		<xen:contentcheck>
+			<xen:foreach loop="$entries" value="$entry">
+				<li class="WidgetFramework_WidgetRenderer_FeedReader_Entry limitedHeight">
+					<xen:if is="{$widget.options.displayMode} == 'titleOnly'">
+						<a href="{xen:raw $entry.link}" target="_blank">{$entry.title}</a>
+					<xen:elseif is="{$widget.options.displayMode} == 'withContent'" />
+						<a href="{xen:raw $entry.link}" target="_blank">{$entry.title}</a><xen:if is="{$entry.author}"> {xen:phrase wf_posted_by_lowercase} {$entry.author}</xen:if>.
+						{xen:helper snippet, $entry.content, 200, {xen:array 'stripQuote=1'}}
+					<xen:else />
+						<xen:if is="{$entry.bdImage_image}">
+							<a href="{xen:raw $entry.link}" target="_blank">
+								<img src="{xen:helper bdImage_thumbnail, $entry.bdImage_image, 100}" class="WidgetFramework_WidgetRenderer_FeedReader_Thumbnail limitedHeight" />
+							</a>
+						</xen:if>
+						
+						<a href="{xen:raw $entry.link}" target="_blank">{$entry.title}</a><xen:if is="{$entry.author}"> {xen:phrase wf_posted_by_lowercase} {$entry.author}</xen:if>.
+						{xen:helper snippet, $entry.content, 200, {xen:array 'stripQuote=1'}}
+					</xen:if>
+				</li>
+			</xen:foreach>
+		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
     <template title="wf_widget_online_staff" version_id="24" version_string="1.2.2.2"><![CDATA[<xen:if hascontent="true">
@@ -798,7 +861,7 @@ All customization should go to wf_default_EXTRA.css
         </ul>
     </div>
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_title" version_id="38" version_string="2.0.0-dev"><![CDATA[<xen:if is="{$_showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
+    <template title="wf_widget_threads_thread_title" version_id="44" version_string="2.0.6"><![CDATA[<xen:if is="{$_showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
 
 <xen:if is="{$renderParams._WidgetFramework_isHook}">
 	<xen:comment>Show full thread title in non sidebar renders</xen:comment>
