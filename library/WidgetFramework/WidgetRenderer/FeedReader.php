@@ -58,6 +58,11 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
 				}
 				
 				$entries[] = $entry;
+				
+				if (count($entries) >= $widget['options']['limit']) {
+					// we have got enough entries, stop here
+					break;
+				}
 			}
 		}
 		
