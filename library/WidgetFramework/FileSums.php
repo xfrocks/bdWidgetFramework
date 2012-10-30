@@ -6,7 +6,7 @@ class WidgetFramework_FileSums
 	{
 		return array (
   'library/WidgetFramework/ControllerAdmin/Widget.php' => 'c46f275b42bae04e31e40096b6e70d65',
-  'library/WidgetFramework/Core.php' => 'c0cfd39f949d93fd1831ee697ff4d53e',
+  'library/WidgetFramework/Core.php' => 'cfa9fb91c2032aec3d16c49df7bda4a1',
   'library/WidgetFramework/DataWriter/Helper/Widget.php' => 'e71847fca633645ea43531a4ba962478',
   'library/WidgetFramework/DataWriter/Widget.php' => 'def658a6f2121731641ebdd9667f98b4',
   'library/WidgetFramework/Extend/ControllerPublic/Misc.php' => 'ebe72fa5bd536c27c37141ff4d628104',
