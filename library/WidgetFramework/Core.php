@@ -213,13 +213,13 @@ class WidgetFramework_Core {
 	}
 	
 	public function renderWidgetsForHook($hookName, array $hookParams, XenForo_Template_Abstract $template, &$hookHtml) {
+		$hookParams['_WidgetFramework_parentTemplate'] = $template->getTemplateName();
 		$hookParams['_WidgetFramework_positionCode'] = 'hook:' . $hookName;
 		$hookParams['_WidgetFramework_isHook'] = true;
 		
-		// sondh@2012-10-30
-		// added support for $visitor in hook positions
-		$visitor = XenForo_Visitor::getInstance();
-		$hookParams['visitor'] = $visitor->toArray();
+		// sondh@2013-04-02
+		// merge hook params with template's params
+		$hookParams = array_merge($template->getParams(), $hookParams);
 		
 		$hookHtml = $this->_renderWidgetsFor('hook:' . $hookName, $hookParams, $template, $hookHtml);
 		
