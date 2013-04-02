@@ -923,7 +923,7 @@ All customization should go to wf_default_EXTRA.css
 		<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 	</form>
 </div>]]></template>
-    <template title="wf_widget_wrapper" version_id="38" version_string="2.0.0-dev"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_wrapper" version_id="47" version_string="2.1.1"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $tabs} > 1">
 	<xen:comment>We are rendering tabs</xen:comment>
@@ -956,7 +956,7 @@ All customization should go to wf_default_EXTRA.css
 			</ul>
 		</div>
 	</div>
-<xen:else />
+<xen:elseif is="{xen:count $tabs} == 1" />
 	<xen:comment>Simpler case: just a single widget</xen:comment>
 	<div class="section widget-container">
 		<xen:foreach loop="$tabs" value="$tab">
