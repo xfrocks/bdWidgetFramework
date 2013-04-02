@@ -189,6 +189,12 @@
     <template title="wf_widget_options_html"><![CDATA[<xen:textboxunit name="{$namePrefix}html" label="HTML" value="{$options.html}" rows="5" inputclass="Elastic">
 	<xen:explain>{xen:phrase wf_html_explain}</xen:explain>
 </xen:textboxunit>]]></template>
+    <template title="wf_widget_options_online_users"><![CDATA[<input type="hidden" name="{$namePrefix}hide_following" value="1" />
+
+<xen:checkboxunit label="" value="">
+	<xen:option name="{$namePrefix}hide_following" value="0" selected="!{$options.hide_following}">{xen:phrase wf_widget_online_users_following}</xen:option>
+	<xen:option name="{$namePrefix}rich" value="1" selected="{$options.rich}">{xen:phrase wf_widget_online_users_rich}</xen:option>
+</xen:checkboxunit>]]></template>
     <template title="wf_widget_options_poll"><![CDATA[<xen:textboxunit label="{xen:phrase wf_poll_thread_id}:" name="{$namePrefix}thread_id" value="{$options.thread_id}">
 	<xen:explain>{xen:phrase wf_poll_thread_id_explain}</xen:explain>
 </xen:textboxunit>]]></template>
@@ -398,6 +404,8 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_feed_reader_display_mode_title_only" version_id="44" version_string="2.0.6"><![CDATA[Title Only]]></phrase>
     <phrase title="wf_widget_feed_reader_display_mode_with_content" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content]]></phrase>
     <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
+    <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
+    <phrase title="wf_widget_online_users_rich" version_id="47" version_string="2.1.1"><![CDATA[Show rich usernames]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
@@ -661,7 +669,7 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>]]></template>
     <template title="wf_widget_online_users" version_id="47" version_string="2.1.1"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
 	<xen:if is="{$onlineUsers.records}">
-		<xen:if is="{$visitor.user_id}">
+		<xen:if is="{$widget.options.hide_following} == 0 AND {$visitor.user_id}">
 			<xen:if hascontent="true">
 			<h4 class="minorHeading"><a href="{xen:link account/following}">{xen:phrase people_you_follow}:</a></h4>
 			<ul class="followedOnline">
@@ -682,8 +690,7 @@ All customization should go to wf_default_EXTRA.css
 				<xen:if is="{$i} <= {$onlineUsers.limit}">
 					<li class="user-{$user.user_id}">
 					<xen:if is="{$user.user_id}">
-						<a href="{xen:link members, $user}"
-							class="username{xen:if '!{$user.visible}', ' invisible'}{xen:if {$user.followed}, ' followed'}">{$user.username}</a><xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
+						<xen:username user="$user" rich="{$widget.options.rich}" class="{xen:if '!{$user.visible}', ' invisible'}{xen:if {$user.followed}, ' followed'}" /><xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
 					<xen:else />
 						{xen:phrase guest}<xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
 					</xen:if>

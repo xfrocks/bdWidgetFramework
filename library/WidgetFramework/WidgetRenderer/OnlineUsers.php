@@ -3,11 +3,15 @@ class WidgetFramework_WidgetRenderer_OnlineUsers extends WidgetFramework_WidgetR
 	protected function _getConfiguration() {
 		return array(
 			'name' => 'Users Online Now',
+			'options' => array(
+				'hide_following' => XenForo_Input::UINT,
+				'rich' => XenForo_Input::UINT,
+			),
 		);
 	}
 	
 	protected function _getOptionsTemplate() {
-		return false;
+		return 'wf_widget_options_online_users';
 	}
 	
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
