@@ -591,12 +591,12 @@ All customization should go to wf_default_EXTRA.css
 		{xen:phrase wf_add_widget}
 	</a>
 </div>]]></template>
-    <template title="wf_widget_birthday" version_id="17" version_string="1.0.9"><![CDATA[<xen:if is="{xen:count $users} == 1">
+    <template title="wf_widget_birthday" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{xen:count $users} == 1">
 	<h4 class="minorHeading">{xen:phrase wf_widget_birthday_today_is_xs_birthday, 'username={$users.0.username}'}</h4>
 	<div class="avatarList">
 		<ul>
 			<xen:foreach loop="$users" value="$user">
-				<li>
+				<li class="user-{$user.user_id}">
 					<xen:avatar user="$user" size="s" img="true" />
 					<xen:username user="$user" rich="true" />
 					<div class="userTitle">{xen:helper usertitle, $user}<xen:if is="{$user.age}">, {$user.age}</xen:if></div>
@@ -608,7 +608,7 @@ All customization should go to wf_default_EXTRA.css
 	<h4 class="minorHeading">{xen:phrase wf_widget_birthday_today_is_x_peoples_birthday, 'count={xen:count $users}'}</h4>
 	<ul class="followedOnline">
 		<xen:foreach loop="$users" value="$user">
-			<li title="{$user.username}<xen:if is="{$user.age}">, {$user.age}</xen:if>" class="Tooltip">
+			<li title="{$user.username}<xen:if is="{$user.age}">, {$user.age}</xen:if>" class="Tooltip user-{$user.user_id}">
 				<xen:avatar user="$user" size="s" img="true" class="_plainImage" />
 			</li>
 		</xen:foreach>
@@ -641,13 +641,13 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_online_staff" version_id="24" version_string="1.2.2.2"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_online_staff" version_id="47" version_string="2.1.1"><![CDATA[<xen:if hascontent="true">
 <div class="avatarList WidgetFramework_WidgetRenderer_OnlineStaff">
 	<ul>
 		<xen:contentcheck>
 			<xen:foreach loop="$onlineUsers.records" value="$user">
 				<xen:if is="{$user.is_moderator} OR {$user.is_admin}">
-					<li>
+					<li class="user-{$user.user_id}">
 						<xen:avatar user="$user" size="s" img="true" />
 						<xen:username user="$user" rich="true" />
 						<div class="userTitle">{xen:helper userTitle, $user}</div>
@@ -658,7 +658,7 @@ All customization should go to wf_default_EXTRA.css
 	</ul>
 </div>
 </xen:if>]]></template>
-    <template title="wf_widget_online_users" version_id="24" version_string="1.2.2.2"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
+    <template title="wf_widget_online_users" version_id="47" version_string="2.1.1"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
 	<xen:if is="{$onlineUsers.records}">
 		<xen:if is="{$visitor.user_id}">
 			<xen:if hascontent="true">
@@ -667,7 +667,7 @@ All customization should go to wf_default_EXTRA.css
 				<xen:contentcheck>
 					<xen:foreach loop="$onlineUsers.records" value="$user">
 						<xen:if is="{$user.followed}">
-							<li title="{$user.username}" class="Tooltip"><xen:avatar user="$user" size="s" img="true" class="_plainImage" /></li>
+							<li title="{$user.username}" class="Tooltip user-{$user.user_id}"><xen:avatar user="$user" size="s" img="true" class="_plainImage" /></li>
 						</xen:if>
 					</xen:foreach>
 				</xen:contentcheck>
@@ -679,7 +679,7 @@ All customization should go to wf_default_EXTRA.css
 		<ol class="listInline">
 			<xen:foreach loop="$onlineUsers.records" value="$user" i="$i">
 				<xen:if is="{$i} <= {$onlineUsers.limit}">
-					<li>
+					<li class="user-{$user.user_id}">
 					<xen:if is="{$user.user_id}">
 						<a href="{xen:link members, $user}"
 							class="username{xen:if '!{$user.visible}', ' invisible'}{xen:if {$user.followed}, ' followed'}">{$user.username}</a><xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
@@ -738,13 +738,13 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_recent_status" version_id="45" version_string="2.1"><![CDATA[<xen:if is="{$users}">
+    <template title="wf_widget_recent_status" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{$users}">
     <xen:require css="wf_default.css" />
     
     <div class="avatarList">
         <ul>
         	<xen:foreach loop="$users" value="$user">
-        	<li>
+			<li class="user-{$user.user_id} user-profile-post-{$user.status_profile_post_id}">
         		<xen:avatar user="$user" size="s" img="true" />
         		<div class="WidgetFramework_nextToAvatar">
         			<xen:username user="$user" rich="true" />
@@ -880,10 +880,10 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>
 
 <xen:include template="preview_tooltip" />]]></template>
-    <template title="wf_widget_users" version_id="32" version_string="1.4.2"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
+    <template title="wf_widget_users" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
     <ul class="followedOnline">
 		<xen:foreach loop="$users" value="$user">
-			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip">
+			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip user-{$user.user_id}">
 				<xen:avatar user="$user" size="s" img="true" class="_plainImage" />
 			</li>
 		</xen:foreach>
@@ -891,7 +891,7 @@ All customization should go to wf_default_EXTRA.css
 <xen:elseif is="{$widget.options.displayMode} == 'avatarOnlyBigger'" />
     <ul class="avatarHeap">
 		<xen:foreach loop="$users" value="$user">
-			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip">
+			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip user-{$user.user_id}">
 				<xen:avatar user="$user" size="s" />
 			</li>
 		</xen:foreach>
@@ -900,7 +900,7 @@ All customization should go to wf_default_EXTRA.css
     <div class="avatarList">
         <ul>
         	<xen:foreach loop="$users" value="$user">
-        		<li>
+        		<li class="user-{$user.user_id}">
         			<xen:avatar user="$user" size="s" img="true" />
         			<xen:username user="$user" rich="true" />
         			<xen:if is="{$widget.options.order} == 'message_count'">
