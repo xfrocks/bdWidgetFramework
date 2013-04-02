@@ -16,11 +16,9 @@ class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_Widge
 	}
 	
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
-		$renderTemplateObject->setParam('xenOptions', $params['xenOptions']);
+		$renderTemplateObject->setParams($params);
 		
-		if (isset($params['url'])) {
-			$renderTemplateObject->setParam('url', $params['url']);
-		} else {
+		if (!isset($params['url'])) {
 			// try to detect the correct url for different templates
 			$autoDetectedUrl = false;
 			
