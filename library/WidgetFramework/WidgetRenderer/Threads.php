@@ -109,7 +109,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 					'order' => 'last_post_date',
 					'orderDirection' => 'desc',
 					'join' => 0,
-					'last_post_join' => XenForo_Model_Thread::FETCH_AVATAR,
+					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_AVATAR,
 				))
 			);
 			
@@ -124,7 +124,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		if (in_array($widget['options']['type'], array('popular', 'all'))) {
 			$popular = $threadModel->getThreads(
 				array_merge($conditions, array(
-					'post_date' => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
+					WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
 				))
 				, array_merge($fetchOptions, array(
 					'order' => 'view_count',
@@ -138,7 +138,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		if (in_array($widget['options']['type'], array('most_replied', 'all'))) {
 			$mostReplied = $threadModel->getThreads(
 				array_merge($conditions, array(
-					'post_date' => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
+					WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
 				))
 				, array_merge($fetchOptions, array(
 					'order' => 'reply_count',
@@ -159,7 +159,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		if (in_array($widget['options']['type'], array('most_liked', 'all'))) {
 			$mostLiked = $threadModel->getThreads(
 				array_merge($conditions, array(
-					'post_date' => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
+					WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
 				))
 				, array_merge($fetchOptions, array(
 					'order' => 'first_post_likes',
@@ -180,7 +180,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		if (in_array($widget['options']['type'], array('polls', 'all'))) {
 			$polls = $threadModel->getThreads(
 				array_merge($conditions, array(
-					'discussion_type' => 'poll',
+					WidgetFramework_Extend_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
 				))
 				, array_merge($fetchOptions, array(
 					'order' => 'post_date',

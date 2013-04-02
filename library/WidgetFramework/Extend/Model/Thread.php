@@ -1,33 +1,27 @@
 <?php
 class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Model_Thread {
+	
+	const CONDITIONS_DISCUSSION_TYPE = 'WidgetFramework_discussion_type';
+	const CONDITIONS_POST_DATE = 'WidgetFramework_post_date';
+	
+	const FETCH_OPTIONS_FORUM_FULL_JOIN = 'WidgetFramework_forum_full_join';
+	const FETCH_OPTIONS_LAST_POST_JOIN = 'WidgetFramework_last_post_join';
+	const FETCH_OPTIONS_POLL_JOIN = 'WidgetFramework_poll_join';
+	
 	public function prepareThreadConditions(array $conditions, array &$fetchOptions) {
 		$result = parent::prepareThreadConditions($conditions, $fetchOptions);
 	
 		$sqlConditions = array($result);
 		$db = $this->_getDb();
 		
-		if (!empty($conditions['thread_id'])) {
-			if (is_array($conditions['thread_id'])) {
-				$sqlConditions[] = 'thread.thread_id IN (' . $db->quote($conditions['thread_id']) . ')';
-			} else {
-				$sqlConditions[] = 'thread.thread_id = ' . $db->quote($conditions['thread_id']);
-			}
-		}
-		
-		if (!empty($conditions['forum_ids'])) {
-			// $sqlConditions[] = 'thread.node_id IN (' . $this->_getDb()->quote($conditions['forum_ids']) . ')';
-			// throw new XenForo_Exception('forum_ids has been deprecated, please use forum_id OR node_id in $conditions');
-			// throwing exception no more... (conflicted with XenPorta)
-		}
-		
-		if (!empty($conditions['post_date']) && is_array($conditions['post_date'])) {
-			list($operator, $cutOff) = $conditions['post_date'];
+		if (!empty($conditions[self::CONDITIONS_POST_DATE]) && is_array($conditions[self::CONDITIONS_POST_DATE])) {
+			list($operator, $cutOff) = $conditions[self::CONDITIONS_POST_DATE];
 			$this->assertValidCutOffOperator($operator);
 			$sqlConditions[] = "thread.post_date $operator " . $this->_getDb()->quote($cutOff);
 		}
 		
-		if (!empty($conditions['discussion_type'])) {
-			$sqlConditions[] = "thread.discussion_type = " . $this->_getDb()->quote($conditions['discussion_type']);
+		if (!empty($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
+			$sqlConditions[] = "thread.discussion_type = " . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]);
 		}
 		
 		if (count($sqlConditions) > 1) {
@@ -42,7 +36,7 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 		$result = parent::prepareThreadFetchOptions($fetchOptions);
 		extract($result);
 		
-		if (!empty($fetchOptions['poll_join'])) {
+		if (!empty($fetchOptions[self::FETCH_OPTIONS_POLL_JOIN])) {
 			$selectFields .= ',
 				poll.*';
 			$joinTables .= '
@@ -50,7 +44,7 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 					(poll.content_type = \'thread\' AND content_id = thread.thread_id)';
 		}
 		
-		if (!empty($fetchOptions['forum_full_join']) AND empty($fetchOptions['join'])) {
+		if (!empty($fetchOptions[self::FETCH_OPTIONS_FORUM_FULL_JOIN]) AND empty($fetchOptions['join'])) {
 			$selectFields .= ',
 				forum.*';
 			$joinTables .= '
@@ -58,14 +52,14 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 					(forum.node_id = thread.node_id)';
 		}
 		
-		if (!empty($fetchOptions['last_post_join']) AND empty($fetchOptions['join'])) {
-			if ($fetchOptions['last_post_join'] & self::FETCH_USER) {
+		if (!empty($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN]) AND empty($fetchOptions['join'])) {
+			if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_USER) {
 				$selectFields .= ',
 					user.*';
 				$joinTables .= '
 					LEFT JOIN xf_user AS user ON
 						(user.user_id = thread.last_post_user_id)';
-			} else if ($fetchOptions['last_post_join'] & self::FETCH_AVATAR) {
+			} else if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_AVATAR) {
 				$selectFields .= ',
 					user.gender, user.avatar_date, user.gravatar';
 				$joinTables .= '

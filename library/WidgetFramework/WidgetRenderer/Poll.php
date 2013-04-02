@@ -60,13 +60,13 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 			$thread = $threadModel->getThreads(
 				array(
 					'node_id' => $forumIds,
-					'discussion_type' => 'poll',
+					WidgetFramework_Extend_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
 				)
 				,array(
 					'order' => 'post_date',
 					'orderDirection' => 'desc',
-					'poll_join' => true,
-					'forum_full_join' => true,
+					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
+					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
 					'limit' => 1,
 				)
 			);
@@ -79,8 +79,8 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 			$thread = $threadModel->getThreadById(
 				$widget['options']['thread_id']
 				,array(
-					'poll_join' => true,
-					'forum_full_join' => true,
+					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
+					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
 				)
 			);
 
