@@ -45,11 +45,16 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 	}
 
 	public function actionAdd() {
+		$displayOrder = $this->_input->filterSingle('display_order', XenForo_Input::INT, array('default' => 'na'));
+		if ($displayOrder == 'na') {
+			$displayOrder = 10;
+		}
+		
 		$viewParams = array(
 			'widget' => array(
 				'active' => 1,
 				'position' => $this->_input->filterSingle('position', XenForo_Input::STRING),
-				'display_order' => $this->_input->filterSingle('display_order', XenForo_Input::INT),
+				'display_order' => $displayOrder,
 			),
 			'renderers' => $this->_getRenderersList(),
 		);
