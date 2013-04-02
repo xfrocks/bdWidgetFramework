@@ -1,6 +1,7 @@
 <?php
 class WidgetFramework_Core {
 	protected static $_instance;
+	protected static $_debug;
 	protected static $_rendererInstances = array();
 	
 	protected $_renderers = array();
@@ -122,6 +123,13 @@ class WidgetFramework_Core {
 				}
 			}
 		}
+		
+		// sondh@2013-04-02
+		// detect if we are in debug mode
+		// previously, put WF in debug mode when XF is in debug mode
+		// it's no longer the case now, we will look for wfDebug flag in config.php
+		$wfDebug = XenForo_Application::getConfig()->get('wfDebug');
+		self::$_debug = !empty($wfDebug);
 
 		define('WIDGET_FRAMEWORK_LOADED', 1);
 	}
@@ -206,7 +214,15 @@ class WidgetFramework_Core {
 		}
 
 		if ($html != $originalHtml) {
-			$containerData['sidebar'] = $html;
+			$containerData['sidebar'] = utf8_trim($html);
+			
+			if (!empty($containerData['sidebar']) AND self::debugMode()) {
+				$containerData['sidebar'] .= sprintf(
+					'<div>Widget Framework is in debug mode<br/>Renderers: %d<br/>Widgets: %d<br/></div>',
+					count($this->_renderers),	
+					count($this->_widgets)
+				);
+			}
 		}
 		
 		return true;
@@ -469,6 +485,6 @@ class WidgetFramework_Core {
 	}
 	
 	public static function debugMode() {
-		return XenForo_Application::debugMode();
+		return self::$_debug;
 	}
 }
