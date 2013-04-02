@@ -524,7 +524,9 @@ All customization should go to wf_default_EXTRA.css
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>]]></template>
-    <template title="wf_default_EXTRA.css" version_id="9" version_string="1.0.1"><![CDATA[<xen:comment>Customization should go here</xen:comment>]]></template>
+    <template title="wf_default_EXTRA.css" version_id="47" version_string="2.1.1"><![CDATA[<xen:comment>Customization should go here</xen:comment>
+
+.Tinhte_XenTag_WidgetRenderer_Cloud h3 { display: none }]]></template>
     <template title="wf_default_non_sidebar.css" version_id="38" version_string="2.0.0-dev"><![CDATA[<xen:comment>Mimics sidebar style for non sidebar widgets</xen:comment>
 
 /* list of users with 32px avatars, username and user title */
@@ -783,12 +785,12 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="33" version_string="1.5"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_threads" version_id="47" version_string="2.1.1"><![CDATA[<xen:if hascontent="true">
     <div class="avatarList">
         <ul>
             <xen:contentcheck>
             	<xen:foreach loop="$new" value="$thread">
-                	<li>
+                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
                 		<xen:avatar user="$thread" size="s" img="true" />
 
 						<xen:include template="wf_widget_threads_thread_title">
@@ -799,7 +801,7 @@ All customization should go to wf_default_EXTRA.css
                 	</li>
             	</xen:foreach>
             	<xen:foreach loop="$recent" value="$thread">
-                	<li>
+                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
                 		<xen:avatar user="$thread" size="s" img="true" />
 
 						<xen:include template="wf_widget_threads_thread_title">
@@ -811,7 +813,7 @@ All customization should go to wf_default_EXTRA.css
                 	</li>
             	</xen:foreach>
             	<xen:foreach loop="$popular" value="$thread">
-                	<li>
+                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
                 		<xen:avatar user="$thread" size="s" img="true" />
 
 						<xen:include template="wf_widget_threads_thread_title">
@@ -822,7 +824,7 @@ All customization should go to wf_default_EXTRA.css
                 	</li>
             	</xen:foreach>
                 <xen:foreach loop="$mostReplied" value="$thread">
-                	<li>
+                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
                 		<xen:avatar user="$thread" size="s" img="true" />
 
 						<xen:include template="wf_widget_threads_thread_title">
@@ -833,7 +835,7 @@ All customization should go to wf_default_EXTRA.css
                 	</li>
             	</xen:foreach>
                 <xen:foreach loop="$mostLiked" value="$thread">
-                    <li>
+                    <li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
                 		<xen:avatar user="$thread" size="s" img="true" />
 
 						<xen:include template="wf_widget_threads_thread_title">
@@ -847,7 +849,7 @@ All customization should go to wf_default_EXTRA.css
                 	</li>
             	</xen:foreach>
             	<xen:foreach loop="$polls" value="$thread">
-                	<li>
+                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
                 		<xen:avatar user="$thread" size="s" img="true" />
 
 						<xen:include template="wf_widget_threads_thread_title">
