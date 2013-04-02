@@ -20,8 +20,12 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 			$sqlConditions[] = "thread.post_date $operator " . $this->_getDb()->quote($cutOff);
 		}
 		
-		if (!empty($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
-			$sqlConditions[] = "thread.discussion_type = " . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]);
+		if (isset($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
+			if (is_array($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
+				$sqlConditions[] = "thread.discussion_type IN (" . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]) . ")";
+			} else {
+				$sqlConditions[] = "thread.discussion_type = " . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]);
+			}
 		}
 		
 		if (count($sqlConditions) > 1) {

@@ -76,6 +76,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			'node_id' => $forumIds,
 			'deleted' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
 			'moderated' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
+			WidgetFramework_Extend_Model_Thread::CONDITIONS_DISCUSSION_TYPE => array(
+				'', // normal thread
+				'poll', // thread with poll
+				// TODO: anything else?
+			),
 		);
 		$fetchOptions = array(
 			// 'readUserId' => XenForo_Visitor::getUserId(), -- disable this to save some headeach of db join
