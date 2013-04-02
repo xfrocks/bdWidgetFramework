@@ -88,6 +88,14 @@ class WidgetFramework_Listener {
 		}
 	}
 	
+	public static function front_controller_pre_view(XenForo_FrontController $fc, XenForo_ControllerResponse_Abstract &$controllerResponse, XenForo_ViewRenderer_Abstract &$viewRenderer, array &$containerParams) {
+		if (defined('WIDGET_FRAMEWORK_LOADED')) {
+			if ($controllerResponse instanceof XenForo_ControllerResponse_View) {
+				WidgetFramework_WidgetRenderer::markTemplateToProcess($controllerResponse);
+			}
+		}
+	}
+	
 	public static function front_controller_post_view(XenForo_FrontController $fc, &$output) {
 		if (defined('WIDGET_FRAMEWORK_LOADED')) {
 			WidgetFramework_Core::getInstance()->shutdown();

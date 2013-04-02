@@ -147,7 +147,7 @@ class WidgetFramework_Core {
 	}
 	
 	public function prepareWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template) {
-		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName)) {
+		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName, $params)) {
 			return false;
 		}
 		
@@ -158,10 +158,6 @@ class WidgetFramework_Core {
 	}
 	
 	public function prepareWidgetsForHooksIn($templateName, array $params, XenForo_Template_Abstract $template) {
-		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName)) {
-			return false;
-		}
-		
 		if (isset($this->_templateForHooks[$templateName])) {
 			foreach ($this->_templateForHooks[$templateName] as $hookPositionCode => $count) {
 				$this->_prepareWidgetsFor($hookPositionCode, $params, $template);
@@ -190,7 +186,7 @@ class WidgetFramework_Core {
 	}
 	
 	public function renderWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template, array &$containerData) {
-		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName)) {
+		if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName, $params)) {
 			return false;
 		}
 		

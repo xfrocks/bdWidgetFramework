@@ -481,15 +481,26 @@ abstract class WidgetFramework_WidgetRenderer {
 		return 'options_';
 	}
 	
-	public static function isIgnoredTemplate($templateName) {
+	public static function markTemplateToProcess(XenForo_ControllerResponse_View $view) {
+		$view->params['_WidgetFramework_toBeProcessed'] = true;
+		
+		if (!empty($view->subView)) {
+			// also mark any direct sub view to be processed
+			self::markTemplateToProcess($view->subView);
+		}
+	}
+	
+	public static function isIgnoredTemplate($templateName, array $templateParams) {
 		if (!empty(self::$_widgetTemplates[$templateName])) {
-			return true;
-		} elseif (strtolower(substr($templateName, -4)) == '.css') {
-			// sondh@2012-08-20
-			// do not prepare for CSS templates
+			// our templates are ignored, of course
 			return true;
 		}
 		
-		return false;
+		// sondh@2013-04-02
+		// switch to use custom parameter set by markTemplateToProcess
+		// to determine which template to ignore
+		$ignored = empty($templateParams['_WidgetFramework_toBeProcessed']);
+		
+		return $ignored;
 	}
 }
