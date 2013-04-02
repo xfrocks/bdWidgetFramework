@@ -346,6 +346,24 @@ class WidgetFramework_Core {
 		}
 	}
 	
+	protected function _preloadCachedWidget($cacheId, $useUserCache, $useLiveCache) {
+		// disable cache in debug environment...
+		if (self::debugMode()) {
+			return false;
+		}
+		
+		if ($useLiveCache) {
+			// no preloading for live cache
+			return false;
+		}
+		
+		$cacheModel = $this->_getModelCache();
+		$permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
+		$cachedWidgets = $cacheModel->queueCachedWidgets($cacheId, $permissionCombinationId);
+		
+		return true;
+	}
+	
 	protected function _loadCachedWidget($cacheId, $useUserCache, $useLiveCache) {
 		// disable cache in debug environment...
 		if (self::debugMode()) {
@@ -359,7 +377,7 @@ class WidgetFramework_Core {
 		if ($useLiveCache) {
 			return $cacheModel->getLiveCache($cacheId, $permissionCombinationId);
 		} else {
-			$cachedWidgets = $cacheModel->getCachedWidgets($permissionCombinationId);
+			$cachedWidgets = $cacheModel->getCachedWidgets($cacheId, $permissionCombinationId);
 			
 			if (isset($cachedWidgets[$cacheId])) {
 				return $cachedWidgets[$cacheId];
@@ -387,11 +405,12 @@ class WidgetFramework_Core {
 		if ($useLiveCache) {
 			$cacheModel->setLiveCache($cacheData, $cacheId, $permissionCombinationId);
 		} else {
-			$cachedWidgets = $cacheModel->getCachedWidgets($permissionCombinationId);
+			$cachedWidgets = $cacheModel->getCachedWidgets($cacheId, $permissionCombinationId);
 			$cachedWidgets[$cacheId] = $cacheData;
 			
 			$cacheModel->setCachedWidgets(
 				$cachedWidgets,
+				$cacheId,
 				$permissionCombinationId
 			);
 		}
@@ -416,6 +435,10 @@ class WidgetFramework_Core {
 	}
 	
 	/* ######################################## STATIC FUNCTIONS BELOW ######################################## */
+	
+	public static function preloadCachedWidget($cacheId, $useUserCache, $useLiveCache) {
+		return self::getInstance()->_preloadCachedWidget($cacheId, $useUserCache, $useLiveCache);
+	}
 	
 	public static function loadCachedWidget($cacheId, $useUserCache, $useLiveCache) {
 		return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache, $useLiveCache);

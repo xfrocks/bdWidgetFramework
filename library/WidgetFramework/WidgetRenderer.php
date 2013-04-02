@@ -346,6 +346,17 @@ abstract class WidgetFramework_WidgetRenderer {
 			}	
 		}
 		
+		if ($this->useCache($widget)) {
+			// sondh@2013-04-02
+			// please keep this block of code in-sync'd with its original
+			// implemented in WidgetFramework_WidgetRenderer::render
+			$cacheId = $this->_getCacheId($widget, $positionCode, $params);
+			$useUserCache = $this->useUserCache($widget);
+			$useLiveCache = $this->useLiveCache($widget);
+			
+			WidgetFramework_Core::preloadCachedWidget($cacheId, $useUserCache, $useLiveCache);
+		}
+		
 		$this->_prepare($widget, $positionCode, $params);
 	}
 	
@@ -364,9 +375,9 @@ abstract class WidgetFramework_WidgetRenderer {
 	
 	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array()) {
 		if (empty($suffix)) {
-			return $widget['widget_id'];
+			return sprintf('%s_%s', $positionCode, $widget['widget_id']);
 		} else {
-			return $widget['widget_id'] . '__' . implode('_', $suffix);
+			return sprintf('%s_%s_%s', $positionCode, implode('_', $suffix), $widget['widget_id']);
 		}
 	}
 	
@@ -398,10 +409,9 @@ abstract class WidgetFramework_WidgetRenderer {
 		$useUserCache = false;
 		$useLiveCache = false;
 		if ($html === false AND $this->useCache($widget)) {
-			// get the cache id
-			// previously, the cache id is the same as the widget id
-			// but now it can be something else if the renderer wants to do that
-			// since 1.3
+			// sondh@2013-04-02
+			// please keep this block of code in-sync'd with its copycat
+			// implemented in WidgetFramework_WidgetRenderer::prepare
 			$cacheId = $this->_getCacheId($widget, $positionCode, $params);
 			$useUserCache = $this->useUserCache($widget);
 			$useLiveCache = $this->useLiveCache($widget);
