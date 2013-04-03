@@ -5,6 +5,7 @@ class WidgetFramework_Extend_Model_User extends XFCP_WidgetFramework_Extend_Mode
 	const CONDITIONS_STATUS_DATE = 'WidgetFramework_status_date';
 	const CONDITIONS_DOB = 'WidgetFramework_dob';
 	const ORDER_STATUS_DATE = 'WidgetFramework_status_date';
+	const ORDER_RESOURCE_COUNT = 'WidgetFramework_resource_count';
 	
 	public function prepareUserConditions(array $conditions, array &$fetchOptions) {
 		$result = parent::prepareUserConditions($conditions, $fetchOptions);

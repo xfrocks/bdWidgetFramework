@@ -20,6 +20,10 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 		return 'wf_widget_options_users';
 	}
 	
+	protected function _renderOptions(XenForo_Template_Abstract $template) {
+		$template->setParam('_xfrmFound', WidgetFramework_Core::xfrmFound());
+	}
+	
 	protected function _validateOptionValue($optionKey, &$optionValue) {
 		if ('limit' == $optionKey) {
 			if (empty($optionValue)) $optionValue = 5;

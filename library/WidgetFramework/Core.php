@@ -53,7 +53,7 @@ class WidgetFramework_Core {
 		$renderers[] = 'WidgetFramework_WidgetRenderer_FeedReader';
 		
 		// since 2.2
-		if (class_exists('XenResource_Listener_Proxy')) {
+		if (self::xfrmFound()) {
 			// XFRM is installed
 			$renderers[] = 'WidgetFramework_WidgetRenderer_XFRM_Resources';
 		}
@@ -511,5 +511,11 @@ class WidgetFramework_Core {
 	
 	public static function debugMode() {
 		return self::$_debug;
+	}
+	
+	public static function xfrmFound() {
+		$moderatorModel = XenForo_Model::create('XenForo_Model_Moderator');
+		$gmigi = $moderatorModel->getGeneralModeratorInterfaceGroupIds();
+		return in_array('resourceModeratorPermissions', $gmigi);
 	}
 }

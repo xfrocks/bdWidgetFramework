@@ -257,6 +257,7 @@
 <xen:selectunit label="{xen:phrase wf_order_factor}:" name="{$namePrefix}order" value="{$options.order}">
 	<xen:option value="register_date">{xen:phrase wf_register_date}</xen:option>
 	<xen:option value="message_count">{xen:phrase wf_message_count}</xen:option>
+	<xen:option value="WidgetFramework_resource_count" displayif="{$_xfrmFound}">{xen:phrase wf_resource_count}</xen:option>
 </xen:selectunit>
 
 <xen:selectunit label="{xen:phrase wf_order_direction}:" name="{$namePrefix}direction" value="{$options.direction}">
@@ -396,6 +397,7 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_requested_thread_does_not_have_poll" version_id="5" version_string="0.9.3"><![CDATA[The requested thread doesn't have a poll attached.]]></phrase>
     <phrase title="wf_requested_widget_not_found" version_id="1" version_string="0.9"><![CDATA[The requested Widget could not be found.]]></phrase>
     <phrase title="wf_resources" version_id="47" version_string="2.1.1"><![CDATA[resources]]></phrase>
+    <phrase title="wf_resource_count" version_id="47" version_string="2.1.1"><![CDATA[Resource Count]]></phrase>
     <phrase title="wf_save_widget" version_id="1" version_string="0.9"><![CDATA[Save Widget]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="24" version_string="1.2.2.2"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other templates.]]></phrase>
     <phrase title="wf_tab_group" version_id="7" version_string="0.9.5"><![CDATA[Tab Group]]></phrase>
