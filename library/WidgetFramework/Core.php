@@ -51,6 +51,12 @@ class WidgetFramework_Core {
 		
 		// since 2.1
 		$renderers[] = 'WidgetFramework_WidgetRenderer_FeedReader';
+		
+		// since 2.2
+		if (class_exists('XenResource_Listener_Proxy')) {
+			// XFRM is installed
+			$renderers[] = 'WidgetFramework_WidgetRenderer_XFRM_Resources';
+		}
 	}
 	
 	public function bootstrap() {
