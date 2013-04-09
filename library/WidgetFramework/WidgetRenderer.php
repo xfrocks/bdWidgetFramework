@@ -297,6 +297,13 @@ abstract class WidgetFramework_WidgetRenderer {
 		$configuration = $this->getConfiguration();
 		return !empty($configuration['useLiveCache']);
 	}
+
+	public function requireLock(array $widget) {
+		// sondh@2013-04-09
+		// if a renderer needs caching -> require lock all the time 
+		// TODO: separate configuration option?
+		return $this->useCache($widget);
+	}
 	
 	public function renderOptions(XenForo_ViewRenderer_Abstract $viewRenderer, array &$templateParams) {
 		$templateParams['namePrefix'] = self::getNamePrefix();
@@ -380,6 +387,33 @@ abstract class WidgetFramework_WidgetRenderer {
 			return sprintf('%s_%s_%s', $positionCode, implode('_', $suffix), $widget['widget_id']);
 		}
 	}
+
+	protected function _acquireLock(array $widget, $positionCode, array $param) {
+		if (!$this->requireLock($widget)) {
+			return '';
+		}
+
+		$lockId = $this->_getCacheId($widget, $positionCode, $param, array('lock'));
+
+		$isLocked = false;
+		$cached = WidgetFramework_Core::loadCachedWidget($lockId, false, true);
+		if (!empty($cached) AND is_array($cached)) {
+			$isLocked = !empty($cached[WidgetFramework_Model_Cache::KEY_HTML]) AND $cached[WidgetFramework_Model_Cache::KEY_HTML] === '1';
+		}
+		if ($isLocked) {
+			// locked by some other requests!
+			return false;
+		}
+
+		WidgetFramework_Core::saveCachedWidget($lockId, '1', false, true);
+		return $lockId;
+	}
+
+	protected function _releaseLock($lockId) {
+		if (!empty($lockId)) {
+			WidgetFramework_Core::saveCachedWidget($lockId, '0', false, true);
+		}
+	}
 	
 	public function render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template, &$output) {
 		$html = false;
@@ -408,6 +442,8 @@ abstract class WidgetFramework_WidgetRenderer {
 		$cacheId = false;
 		$useUserCache = false;
 		$useLiveCache = false;
+		$lockId = '';
+
 		if ($html === false AND $this->useCache($widget)) {
 			// sondh@2013-04-02
 			// please keep this block of code in-sync'd with its copycat
@@ -417,9 +453,30 @@ abstract class WidgetFramework_WidgetRenderer {
 			$useLiveCache = $this->useLiveCache($widget);
 			
 			$cached = WidgetFramework_Core::loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
-			if (!empty($cached) AND is_array($cached) AND $this->isCacheUsable($cached, $widget)) {
-				$html = $cached['html'];
+			if (!empty($cached) AND is_array($cached)) {
+				if ($this->isCacheUsable($cached, $widget)) {
+					// found fresh cached html, use it asap
+					$html = $cached[WidgetFramework_Model_Cache::KEY_HTML];
+				} else {
+					// cached html has expired: try to acquire lock
+					$lockId = $this->_acquireLock($widget, $positionCode, $params);
+
+					if ($lockId === false) {
+						// a lock cannot be acquired, an expired cached html is the second best choice
+						$html = $cached[WidgetFramework_Model_Cache::KEY_HTML];
+					}
+				}
+			} else {
+				// no cache found
+				$lockId = $this->_acquireLock($widget, $positionCode, $params);
 			}
+		}
+
+		if ($html === false AND $lockId === false) {
+			// a lock is required but we failed to acquired it
+			// also, a cached could not be found
+			// stop rendering
+			$html = '';
 		}
 		
 		// expression executed just fine
@@ -438,6 +495,8 @@ abstract class WidgetFramework_WidgetRenderer {
 				WidgetFramework_Core::saveCachedWidget($cacheId, $html, $useUserCache, $useLiveCache);
 			}
 		}
+
+		$this->_releaseLock($lockId);
 		
 		return trim($html);
 	}
