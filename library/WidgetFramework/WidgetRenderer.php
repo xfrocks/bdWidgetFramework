@@ -268,6 +268,7 @@ abstract class WidgetFramework_WidgetRenderer {
 			
 			$this->_configuration['options']['expression'] = XenForo_Input::STRING;
 			$this->_configuration['options']['expression_debug'] = XenForo_Input::UINT;
+			$this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
 		}
 		
 		return $this->_configuration;
@@ -437,6 +438,14 @@ abstract class WidgetFramework_WidgetRenderer {
 			}
 		}
 		
+		// add check for mobile (user agent spoofing) 
+		// since 2.2.2
+		if (!empty($widget['options']['deactivate_for_mobile'])) {
+			if (XenForo_Visitor::isBrowsingWith('mobile')) {
+				$html = '';
+			}
+		}
+
 		// check for cache after expression test
 		// since 1.2.1
 		$cacheId = false;

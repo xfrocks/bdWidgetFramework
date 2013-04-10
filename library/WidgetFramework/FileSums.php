@@ -47,7 +47,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/WidgetRenderer/UsersFind.php' => '15c205f5d87baa5ba97ef1d09dbdde33',
   'library/WidgetFramework/WidgetRenderer/VisitorPanel.php' => '20556af6bbaf48aeb954c504189601df',
   'library/WidgetFramework/WidgetRenderer/XFRM/Resources.php' => '8f25327a2672b9b0268ea3831579f1fa',
-  'library/WidgetFramework/WidgetRenderer.php' => '90d3e7b9cca4caf800a53ee79c5e0caf',
+  'library/WidgetFramework/WidgetRenderer.php' => '6adec5e06fc3ca66771b27edba55a183',
   'js/WidgetFramework/functions.js' => 'a6a6be5d27760a0ffa5aa1b821939447',
 );
 	}
