@@ -267,7 +267,6 @@ abstract class WidgetFramework_WidgetRenderer {
 			}
 			
 			$this->_configuration['options']['expression'] = XenForo_Input::STRING;
-			$this->_configuration['options']['expression_debug'] = XenForo_Input::UINT;
 			$this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
 		}
 		
@@ -430,7 +429,7 @@ abstract class WidgetFramework_WidgetRenderer {
 				}
 			} catch (Exception $e) {
 				// problem executing expression... Stop rendering anyway
-				if (!empty($widget['options']['expression_debug'])) {
+				if (WidgetFramework_Core::debugMode()) {
 					$html = $e->getMessage();
 				} else {
 					$html = '';

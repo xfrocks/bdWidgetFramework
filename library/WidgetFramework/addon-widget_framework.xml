@@ -391,7 +391,6 @@ XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the w
 You can browse the site with templates and hooks information <a href="{reveal_link}" target="_blank" tabIndex="-1">here</a>.<br/>
 Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if you have question about this.]]></phrase>
     <phrase title="wf_posted_by_lowercase" version_id="44" version_string="2.0.6"><![CDATA[posted by]]></phrase>
-    <phrase title="wf_print_error_message" version_id="1" version_string="0.9"><![CDATA[Print error message instead of ignoring it]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
     <phrase title="wf_recent" version_id="1" version_string="0.9"><![CDATA[Recent]]></phrase>
