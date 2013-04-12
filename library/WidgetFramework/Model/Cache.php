@@ -111,14 +111,8 @@ class WidgetFramework_Model_Cache extends XenForo_Model {
 		// since 1.3
 		$globalCacheCutoff = XenForo_Application::$time - WidgetFramework_Option::get('cacheCutoffDays') * 86400;
 		
-		$parts = explode('__', $cacheId);
-		if (count($parts) == 2) {
-			// this is a cache id with suffix
-			$widgetId = $parts[0];
-		} else {
-			// this is a normal cache id 
-			$widgetId = $cacheId;
-		}
+		$parts = explode('_', $cacheId);
+		$widgetId = array_pop($parts);
 		
 		if (isset($invalidatedCache[$widgetId])) {
 			if ($invalidatedCache[$widgetId] > $cacheData[self::KEY_TIME]) {

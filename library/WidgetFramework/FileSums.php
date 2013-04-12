@@ -19,7 +19,7 @@ class WidgetFramework_FileSums
   'library/WidgetFramework/Extend/Model/User.php' => '663e1490716240efad9ba2c78b627f51',
   'library/WidgetFramework/Installer.php' => 'b54b08974b2293fb383a509dfab10c7f',
   'library/WidgetFramework/Listener.php' => '9795a46d80bee1f05d8c36c862b92e1b',
-  'library/WidgetFramework/Model/Cache.php' => 'fbe76db5c2d27fadc957c2373fc828ba',
+  'library/WidgetFramework/Model/Cache.php' => 'a198cfa49022cd01b41c3b2285f1a8ba',
   'library/WidgetFramework/Model/Widget.php' => 'a3a237ce00ecccc4f508a04d043d19e4',
   'library/WidgetFramework/Option.php' => 'b070c1f4dce8deaa35ae48273b40e444',
   'library/WidgetFramework/Route/PrefixAdmin/Widgets.php' => 'b1780af2708710c5844025dee3d79d64',
