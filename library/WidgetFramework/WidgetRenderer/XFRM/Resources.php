@@ -93,7 +93,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 						$conditions,
 						array_merge($fetchOptions, array(
 							'order' => 'resource_date',
-							'orderDirection' => 'desc',
+							'direction' => 'desc',
 						))
 					);
 					break;
@@ -102,7 +102,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 						$conditions,
 						array_merge($fetchOptions, array(
 							'order' => 'last_update',
-							'orderDirection' => 'desc',
+							'direction' => 'desc',
 						))
 					);
 					break;
@@ -111,7 +111,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 						$conditions,
 						array_merge($fetchOptions, array(
 							'order' => 'rating_weighted',
-							'orderDirection' => 'desc',
+							'direction' => 'desc',
 						))
 					);
 					break;
@@ -120,7 +120,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 						$conditions,
 						array_merge($fetchOptions, array(
 							'order' => 'download_count',
-							'orderDirection' => 'desc',
+							'direction' => 'desc',
 						))
 					);
 					break;
