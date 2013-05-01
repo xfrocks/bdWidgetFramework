@@ -58,7 +58,9 @@ class _Layout_Vertical extends _Layout_Multiple {
 			default:
 				$html = '<ul class="WidgetFramework_WidgetPage_LayoutVertical">';
 
+				$i = 0;
 				foreach (array_keys($this->_subLayouts) as $layoutId) {
+					$i++;
 					$subLayout =& $this->_subLayouts[$layoutId];
 					$columns = $this->_subLayoutIndeces[$layoutId];
 
@@ -68,7 +70,13 @@ class _Layout_Vertical extends _Layout_Multiple {
 						$columnWidth = intval($this->_options['widgetPage']['options']['column_width']);
 						$columnGap = intval($this->_options['widgetPage']['options']['column_gap']);
 						$width = sprintf('%dpx', ($columnsCount * $columnWidth) + (($columnsCount - 1) * $columnGap));
-						$margin = sprintf('0 %dpx 0 0', $columnGap);
+						
+						if ($i == count($this->_subLayouts)) {
+							// last column
+							$margin = '0';
+						} else {
+							$margin = sprintf('0 %dpx 0 0', $columnGap);
+						}
 					} else {
 						$width = 'auto';
 						$margin = '0';
@@ -126,7 +134,7 @@ class _Layout_Horizontal extends _Layout_Multiple {
 						$margin = '0';
 					}
 
-					$html .= sprintf('<li class="WidgetFramework_WidgetPage_LayoutRow" style="margin: %s">', $width, $margin);
+					$html .= sprintf('<li class="WidgetFramework_WidgetPage_LayoutRow" style="margin: %s">', $margin);
 					$html .= $subLayout;
 					$html .= '</li>';
 				}
