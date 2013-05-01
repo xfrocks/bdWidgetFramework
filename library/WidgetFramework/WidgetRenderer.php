@@ -502,8 +502,9 @@ abstract class WidgetFramework_WidgetRenderer {
 		if ($html === false) {
 			$renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
 			if (!empty($renderTemplate)) {
-				$renderTemplateObject = $template->create($renderTemplate, $params);
-				$renderTemplateObject->setParam('widget', $widget);
+				$renderTemplateObject = $template->create($renderTemplate, array_merge($params, array(
+						'widget' => $widget,
+				)));
 				$html = $this->_render($widget, $positionCode, $params, $renderTemplateObject);
 			} else {
 				$html = $this->_render($widget, $positionCode, $params, $template);
