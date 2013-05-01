@@ -23,7 +23,7 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			if (empty($optionValue)) $optionValue = 5;
 		}
 
-		return true;
+		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
 
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {

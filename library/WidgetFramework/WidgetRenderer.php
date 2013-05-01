@@ -268,6 +268,10 @@ abstract class WidgetFramework_WidgetRenderer {
 			
 			$this->_configuration['options']['expression'] = XenForo_Input::STRING;
 			$this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
+			$this->_configuration['options']['layout_row'] = XenForo_Input::UINT;
+			$this->_configuration['options']['layout_col'] = XenForo_Input::UINT;
+			$this->_configuration['options']['layout_sizeRow'] = XenForo_Input::UINT;
+			$this->_configuration['options']['layout_sizeCol'] = XenForo_Input::UINT;
 		}
 		
 		return $this->_configuration;
@@ -329,6 +333,13 @@ abstract class WidgetFramework_WidgetRenderer {
 			if ($this->_validateOptionValue($optionKey, $optionValue) !== false) {
 				$options[$optionKey] = $optionValue;
 			}
+		}
+		
+		if (!empty($widget['widget_page_id']))
+		{
+			if (empty($options['layout_sizeRow'])) $options['layout_sizeRow'] = 1;
+			if (empty($options['layout_sizeCol'])) $options['layout_sizeCol'] = 1;
+			
 		}
 
 		return $options;

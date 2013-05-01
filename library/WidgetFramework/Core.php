@@ -62,73 +62,9 @@ class WidgetFramework_Core {
 	public function bootstrap() {
 		if (defined('WIDGET_FRAMEWORK_LOADED')) return false;
 		
-		$this->_widgets = $this->_getModelWidget()->getAllWidgets();
-		$this->_getModelWidget()->reverseNegativeDisplayOrderWidgets($this->_widgets);
-		
-		foreach ($this->_widgets as &$widget) {
-			if (empty($widget['active'])) continue;
-			
-			$widgetPositions = explode(',', $widget['position']);
-			
-			foreach ($widgetPositions as $position) {
-				$position = trim($position);
-				if (empty($position)) continue;
-				
-				if (!isset($this->_positions[$position])) {
-					$this->_positions[$position] = array(
-						'widgets' => array(),
-						'prepared' => false,
-						'html' => array(),
-						// since 1.0.9
-						'extraData' => array(),
-					);
-				}
-				
-				if (!empty($widget['options']['tab_group'])) {
-					// this widget belongs to a tab group
-					if (!isset($this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']])) {
-						$this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']] = array(
-							'name' => $widget['options']['tab_group'],
-							'widgets' => array(),
-							'keys' => false,
-							'display_order' => $widget['display_order'], // the group uses the first widget's display order
-						);
-					}
-					
-					$this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']]['widgets'][$widget['widget_id']] =& $widget;
-				} else {
-					// no tab group
-					$this->_positions[$position]['widgets']['widget_' . $widget['widget_id']] = array(
-						'name' => 'no-name',
-						'widgets' => array(
-							$widget['widget_id'] => &$widget,
-						),
-						'keys' => array($widget['widget_id']),
-						'display_order' => $widget['display_order'],
-					);
-				}
-				
-				// get template for hooks data from the widget
-				// merge it to template for hook property of this object
-				// to use it later (prepare widgets in template creation)
-				// since 2.0
-				if (!empty($widget['template_for_hooks'])) {
-					foreach ($widget['template_for_hooks'] as $hookPositionCode => $templateForHooks) {
-						foreach ($templateForHooks as $templateName) {
-							if (!isset($this->_templateForHooks[$templateName])) {
-								$this->_templateForHooks[$templateName] = array();
-							}
-							
-							if (!isset($this->_templateForHooks[$templateName][$hookPositionCode])) {
-								$this->_templateForHooks[$templateName][$hookPositionCode] = 1;
-							} else {
-								$this->_templateForHooks[$templateName][$hookPositionCode]++;
-							}
-						}
-					}
-				}
-			}
-		}
+		$globalWidgets = $this->_getModelWidget()->getGlobalWidgets();
+		$this->_getModelWidget()->reverseNegativeDisplayOrderWidgets($globalWidgets);
+		$this->addWidgets($globalWidgets);
 		
 		// sondh@2013-04-02
 		// detect if we are in debug mode
@@ -150,6 +86,75 @@ class WidgetFramework_Core {
 		}
 		
 		return $this->_models[$class];
+	}
+	
+	public function addWidgets(array $widgets) {
+		$this->_widgets = array_merge($this->_widgets, $widgets);
+		
+		foreach ($widgets as &$widget) {
+			if (empty($widget['active'])) continue;
+				
+			$widgetPositions = explode(',', $widget['position']);
+				
+			foreach ($widgetPositions as $position) {
+				$position = trim($position);
+				if (empty($position)) continue;
+		
+				if (!isset($this->_positions[$position])) {
+					$this->_positions[$position] = array(
+							'widgets' => array(),
+							'prepared' => false,
+							'html' => array(),
+							// since 1.0.9
+							'extraData' => array(),
+					);
+				}
+		
+				if (!empty($widget['options']['tab_group'])) {
+					// this widget belongs to a tab group
+					if (!isset($this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']])) {
+						$this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']] = array(
+								'name' => $widget['options']['tab_group'],
+								'widgets' => array(),
+								'keys' => false,
+								'display_order' => $widget['display_order'], // the group uses the first widget's display order
+						);
+					}
+						
+					$this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']]['widgets'][$widget['widget_id']] =& $widget;
+				} else {
+					// no tab group
+					$this->_positions[$position]['widgets']['widget_' . $widget['widget_id']] = array(
+							'name' => 'no-name',
+							'widgets' => array(
+									$widget['widget_id'] => &$widget,
+							),
+							'keys' => array($widget['widget_id']),
+							'display_order' => $widget['display_order'],
+					);
+				}
+		
+				// get template for hooks data from the widget
+				// merge it to template for hook property of this object
+				// to use it later (prepare widgets in template creation)
+				// since 2.0
+				if (!empty($widget['template_for_hooks'])) {
+					foreach ($widget['template_for_hooks'] as $hookPositionCode => $templateForHooks) {
+						foreach ($templateForHooks as $templateName) {
+							if (!isset($this->_templateForHooks[$templateName])) {
+								$this->_templateForHooks[$templateName] = array();
+							}
+								
+							if (!isset($this->_templateForHooks[$templateName][$hookPositionCode])) {
+								$this->_templateForHooks[$templateName][$hookPositionCode] = 1;
+							} else {
+								$this->_templateForHooks[$templateName][$hookPositionCode]++;
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 	
 	public function prepareWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template) {
@@ -491,6 +496,8 @@ class WidgetFramework_Core {
 					self::$_rendererInstances[$class] = WidgetFramework_WidgetRenderer::create($class);
 				}
 				return self::$_rendererInstances[$class];
+			} elseif ($class == 'WidgetFramework_WidgetRenderer_None') {
+				return WidgetFramework_WidgetRenderer::create($class);
 			} else {
 				if ($throw) {
 					throw new XenForo_Exception(new XenForo_Phrase('wf_invalid_widget_renderer_x', array('renderer' => $class)), true);

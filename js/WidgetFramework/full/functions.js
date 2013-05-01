@@ -4,8 +4,8 @@
 	XenForo.WidgetRendererOptions.prototype = {
 		__construct: function($select) {
 			this.$select = $select;
-			this.url = $select.data('optionsUrl');
-			this.$target = $($select.data('optionsTarget'));
+			this.url = $select.data('optionsurl');
+			this.$target = $($select.data('optionstarget'));
 			if (!this.url || !this.$target.length ) return;
 
 			$select.bind({
@@ -48,63 +48,10 @@
 			}
 		}
 	};
-	
-	XenForo.WidgetEditor = function($form) { this.__construct($form); };
-	XenForo.WidgetEditor.prototype = {
-		__construct: function($form) {
-			this.useAjaxSave = true;
-			this.$form = $form;
-			this.$saveReloadButton = $('#saveReloadButton');
-			this.$saveExitButton = $('#saveExitButton');
-			this.$widgetId    = $('#widgetId');
 
-			if (this.useAjaxSave && this.getSaveUrl('json')) {
-				this.$saveReloadButton
-					.val(this.$saveReloadButton.data('ajaxvalue'))
-					.click($.context(this, 'saveAjax'));
-
-				this.$saveExitButton
-					.click($.context(this, 'saveExit'));
-			}
-		},
-
-		saveAjax: function(e) {
-			var postParams, i, includeTitles;
-
-			if (e) e.preventDefault();
-
-			postParams = this.$form.serializeArray();
-
-			XenForo.ajax(
-				this.getSaveUrl('json'),
-				postParams,
-				$.context(this, 'ajaxSaveSuccess')
-			);
-
-			return true;
-		},
-
-		saveExit: function(e) {
-			return true;
-		},
-
-		ajaxSaveSuccess: function(ajaxData, textStatus) {
-			if (XenForo.hasResponseError(ajaxData)) return false;
-			
-			if (ajaxData.saveMessage) {
-				XenForo.alert(ajaxData.saveMessage, '', 1000);
-			}
-			
-			this.$widgetId.val(ajaxData.widgetId);
-		},
-
-		getSaveUrl: function(reqType) {
-			return this.$form.attr('action') + (reqType ? ('.' + reqType) : '');
-		}
-	};
+	// *********************************************************************
 
 	XenForo.register('select.WidgetRendererOptions', 'XenForo.WidgetRendererOptions');
-	XenForo.register('form#widgetEditor', 'XenForo.WidgetEditor');
 
 }
 (jQuery, this, document);

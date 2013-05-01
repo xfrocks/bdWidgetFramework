@@ -41,6 +41,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		
 		$template->setParam('forums', $forums);
 		$template->setParam('prefixes', $prefixes);
+		
+		return parent::_renderOptions($template);
 	}
 	
 	protected function _validateOptionValue($optionKey, &$optionValue) {
@@ -54,7 +56,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			if (empty($optionValue)) $optionValue = 5;
 		}
 		
-		return true;
+		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
 	
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {

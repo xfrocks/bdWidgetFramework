@@ -20,6 +20,12 @@ class WidgetFramework_DataWriter_Helper_Widget {
 	}
 	
 	public static function verifyPosition(&$positions, XenForo_DataWriter $dw, $fieldName = false) {
+		if ($dw->get('widget_page_id') > 0)
+		{
+			$positions = '';
+			return true;
+		}
+		
 		// sondh@2012-08-28
 		// it may be better to use strtolower with $positions (making it easier for admins)
 		// but some add-on developers decided to use template with mixed case characters so...

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.2.3" version_id="54" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.3" version_id="55" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -21,17 +21,25 @@
 <xen:form action="{xen:adminlink 'widgets/delete', $widget}" class="deleteConfirmForm formOverlay">
 
 	<p>{xen:phrase wf_please_confirm_that_you_want_to_delete_following_widget}:</p>
-	<strong><a href="{xen:adminlink 'widgets/edit', $widget}">{$widget.rendererName} ({$widget.position})</a></strong>
+	<strong>
+		<a href="{xen:adminlink 'widgets/edit', $widget}">
+			{$widget.rendererName}
+		</a>
+		<xen:if is="{$widget.position}">
+			({$widget.position})
+		</xen:if>
+	</strong>
 
 	<xen:submitunit save="{xen:phrase wf_delete_widget}" />
 	
 	<input type="hidden" name="_xfConfirm" value="1" />
 </xen:form>]]></template>
-    <template title="wf_widget_edit"><![CDATA[<xen:title>{xen:if '{$widget.widget_id}', '{xen:phrase wf_edit_widget}', '{xen:phrase wf_add_widget}'}</xen:title>
-
+    <template title="wf_widget_edit"><![CDATA[<xen:require css="widget_framework.css" />
 <xen:require js="js/WidgetFramework/functions.js" />
 
-<xen:form id="widgetEditor" action="{xen:adminlink 'widgets/save'}">
+<xen:title>{xen:if '{$widget.widget_id}', '{xen:phrase wf_edit_widget}', '{xen:phrase wf_add_widget}'}</xen:title>
+
+<xen:form action="{xen:adminlink 'widgets/save'}" class="AutoValidator WidgetFramework_Widget_EditForm" data-redirect="yes">
 	<xen:selectunit label="{xen:phrase wf_renderer}:" name="class" value="{$widget.class}"
 		inputclass="WidgetRendererOptions" data-optionsUrl="{xen:adminlink widgets/options}" data-optionsTarget="#OptionsTarget" data-widgetId="{$widget.widget_id}">
 		<xen:option value=""></xen:option>
@@ -44,17 +52,36 @@
 	</div>
 	
 	<fieldset>
-		<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}" hint="{xen:phrase you_may_use_html}">
-			<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
-		</xen:textboxunit>
-		
-		<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
-			<xen:explain>{xen:phrase wf_position_explain, 'reveal_link={xen:adminlink widgets/reveal}'}</xen:explain>
-		</xen:textboxunit>
-		
-		<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
-			<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
-		</xen:spinboxunit>
+		<xen:if is="!{$widget.widget_page_id}">
+			<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}" hint="{xen:phrase you_may_use_html}">
+				<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
+			</xen:textboxunit>
+
+			<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
+				<xen:explain>{xen:phrase wf_position_explain, 'reveal_link={xen:adminlink widgets/reveal}'}</xen:explain>
+			</xen:textboxunit>
+
+			<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
+				<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
+			</xen:spinboxunit>
+		<xen:else />
+			<input type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
+			<input type="hidden" name="title" value="{$widget.title}" />
+			<input type="hidden" name="position" value="{$widget.position}" />
+			<input type="hidden" name="display_order" value="{$widget.display_order}" />
+
+			<xen:controlunit label="{xen:phrase wf_layout_position}:">
+				<xen:spinbox name="{$namePrefix}layout_row" value="{$options.layout_row}" min="0" inputclass="WidgetFramework_Layout_Input" />
+				/
+				<xen:spinbox name="{$namePrefix}layout_col" value="{$options.layout_col}" min="0" inputclass="WidgetFramework_Layout_Input" />
+			</xen:controlunit>
+
+			<xen:controlunit label="{xen:phrase wf_layout_size}:">
+				<xen:spinbox name="{$namePrefix}layout_sizeRow" value="{$options.layout_sizeRow}" min="1" inputclass="WidgetFramework_Layout_Input" />
+				x
+				<xen:spinbox name="{$namePrefix}layout_sizeCol" value="{$options.layout_sizeCol}" min="1" inputclass="WidgetFramework_Layout_Input" />
+			</xen:controlunit>
+		</xen:if>
 		
 		<xen:checkboxunit label="">
 			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
@@ -63,8 +90,8 @@
 	</fieldset>
 
 	<xen:submitunit>
-		<input type="submit" name="reload" value="{xen:phrase wf_save_widget}" accesskey="s" class="button primary" id="saveReloadButton" data-ajaxvalue="{xen:phrase save_all_changes}" />
-		<input type="submit" name="saveexit" value="{xen:phrase save_and_exit}" accesskey="e" class="button" id="saveExitButton" />
+		<input type="submit" name="save" value="{xen:phrase wf_save_widget}" accesskey="s" class="button primary" />
+
 		<input type="button" name="delete" value="{xen:phrase wf_delete_widget}..." accesskey="d" class="button OverlayTrigger"
 			data-href="{xen:adminlink widgets/delete, $widget}"
 			id="deleteButton" {xen:if '!{$widget.widget_id}', 'style="display: none"'}
@@ -132,7 +159,7 @@
 	<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $widgets}</span>', 'total={xen:count $widgets}'}</p>
 </xen:form>]]></template>
     <template title="wf_widget_list_item"><![CDATA[<xen:listitem
-	id="widget-{$widget.widget_id}"
+	id="{$widget.widget_id}"
 	href="{xen:adminlink 'widgets/edit', $widget}"
 	delete="{xen:adminlink 'widgets/delete', $widget}"
 	label="{xen:if '!{$widget.rendererNotFound}', '{$widget.title}'}"
@@ -167,9 +194,6 @@
 	<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
 </xen:textboxunit>
 
-<xen:checkboxunit label="">
-	<xen:option name="{$namePrefix}expression_debug" value="1" selected="{$options.expression_debug}">{xen:phrase wf_print_error_message}</xen:option>
-</xen:checkboxunit>
 </xen:if>]]></template>
     <template title="wf_widget_options_birthday"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
@@ -295,11 +319,187 @@
     <template title="wf_widget_options_xfshout"><![CDATA[<xen:textboxunit label="{xen:phrase wf_xfshout_instance_id}:" name="{$namePrefix}instance_id" value="{$options.instance_id}">
 	<xen:explain>{xen:phrase wf_xfshout_instance_id_explain}</xen:explain>
 </xen:textboxunit>]]></template>
+    <template title="wf_widget_page_delete"><![CDATA[<xen:title>{xen:phrase wf_confirm_deletion_of_widget_page}: {$widgetPage.title}</xen:title>
+<xen:h1>{xen:phrase wf_confirm_deletion_of_widget_page}</xen:h1>
+
+<xen:navigation>
+	<xen:breadcrumb href="{xen:adminlink 'widget-pages/edit', $widgetPage}">{$widgetPage.title}</xen:breadcrumb>
+</xen:navigation>
+
+<xen:require css="delete_confirmation.css" />
+
+<xen:form action="{xen:adminlink 'widget-pages/delete', $widgetPage}" class="deleteConfirmForm formOverlay">
+
+	<p>{xen:phrase wf_please_confirm_that_you_want_to_delete_following_widget_page}:</p>
+	<strong><a href="{xen:adminlink 'widget-pages/edit', $widgetPage}">{$widgetPage.title}</a></strong>
+
+	<xen:include template="helper_node_delete_children" />
+
+	<xen:submitunit save="{xen:phrase wf_delete_widget_page}" />
+	<input type="hidden" name="_xfConfirm" value="1" />
+	
+</xen:form>]]></template>
+    <template title="wf_widget_page_edit"><![CDATA[<xen:require css="widget_framework.css" />
+
+<xen:title>{xen:if {$widgetPage.node_id}, '{xen:phrase wf_edit_widget_page}: {$widgetPage.title}', '{xen:phrase wf_create_new_widget_page}'}</xen:title>
+
+<xen:if is="{$widgetPage.node_id}">
+	<xen:navigation>
+		<xen:breadcrumb href="{xen:adminlink nodes}#{xen:helper listitemid, $widgetPage.node_id}">{$widgetPage.title}</xen:breadcrumb>
+	</xen:navigation>
+</xen:if>
+
+<xen:form action="{xen:adminlink 'widget-pages/save', $widgetPage}"
+	class="AutoValidator"
+	data-optInOut="OptIn"
+	data-fieldValidatorUrl="{xen:adminlink 'widget-pages/validate-field', $widgetPage}"
+	data-redirect="yes">
+
+	<ul class="tabs Tabs" data-panes="#widgetPagePanes > li">
+		<xen:hook name="wf_widget_page_edit_tabs">
+		<xen:if is="{$widgetPage.node_id}">
+			<li class="active"><a>{xen:phrase wf_widget_page_layout}</a></li>
+			<li><a>{xen:phrase basic_information}</a></li>
+		<xen:else />
+			<li class="active"><a>{xen:phrase basic_information}</a></li>
+		</xen:if>
+		</xen:hook>
+	</ul>
+
+	<ul id="widgetPagePanes">
+		<xen:hook name="wf_widget_page_edit_panes">
+		<xen:if is="{$widgetPage.node_id}">
+			<li>
+				<xen:hook name="wf_widget_page_edit_layout">
+					
+				<xen:textboxunit name="options[column_width]" value="{$widgetPage.options.column_width}" label="{xen:phrase wf_column_width}:" />
+				<xen:textboxunit name="options[column_gap]" value="{$widgetPage.options.column_gap}" label="{xen:phrase wf_column_gap}:" />
+				<xen:textboxunit name="options[row_gap]" value="{$widgetPage.options.row_gap}" label="{xen:phrase wf_row_gap}:" />
+
+				<div style="margin: 10px">
+					<xen:include template="wf_widget_page_layout" />
+				</div>
+				
+				<a href="{xen:adminlink widgets/add, '', 'widget_page_id={$widgetPage.node_id}'}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase wf_add_widget}</a>
+
+				</xen:hook>
+			</li>
+		</xen:if>
+		
+		<li>
+			<xen:hook name="wf_widget_page_edit_basic_information">
+
+			<xen:textboxunit name="node_name" value="{$widgetPage.node_name}" label="{xen:phrase url_portion}:" inputclass="OptIn" />
+
+			<xen:textboxunit name="title" value="{$widgetPage.title}" label="{xen:phrase title}:" inputclass="OptIn" data-liveTitleTemplate="{xen:if {$widgetPage.node_id},
+				'{xen:phrase wf_edit_widget_page}: <em>%s</em>',
+				'{xen:phrase wf_create_new_widget_page}: <em>%s</em>'}">
+			</xen:textboxunit>
+
+			<xen:textboxunit name="description" value="{$widgetPage.description}" label="{xen:phrase description}:" hint="{xen:phrase you_may_use_html}" explain="{xen:phrase node_description_explain}" rows="2" inputclass="Elastic OptIn">
+			</xen:textboxunit>
+
+			<fieldset>
+				<xen:selectunit name="parent_node_id" value="{$widgetPage.parent_node_id}" label="{xen:phrase parent_node}:" inputclass="OptIn">
+					<xen:options source="$nodeParentOptions" />
+				</xen:selectunit>
+
+				<xen:textboxunit name="display_order" value="{$widgetPage.display_order}" label="{xen:phrase display_order}:" inputclass="OptIn">
+					<xen:explain>{xen:phrase position_of_this_item_relative_to_other_nodes_with_same_parent}</xen:explain>
+				</xen:textboxunit>
+
+				<xen:checkboxunit label="">
+					<xen:option name="display_in_list" label="{xen:phrase display_in_node_list}" selected="{$widgetPage.display_in_list}" inputclass="OptIn">
+						<xen:hint>{xen:phrase if_unselected_users_will_not_see_this_node_in_list}</xen:hint>
+					</xen:option>
+				</xen:checkboxunit>
+			</fieldset>
+
+			<xen:checkboxunit label="{xen:phrase style}:">
+				<xen:option name="style_override" label="{xen:phrase override_user_style_choice}" selected="{$widgetPage.style_id}" inputclass="OptIn">
+					<xen:disabled>
+						<xen:select name="style_id" value="{$widgetPage.style_id}">
+							<xen:options source="$styleOptions" />
+						</xen:select>
+					</xen:disabled>
+				</xen:option>
+				<xen:explain>{xen:phrase if_specified_all_visitors_view_using_selected_style}</xen:explain>
+			</xen:checkboxunit>
+
+			</xen:hook>
+		</li>
+		</xen:hook>
+	</ul>
+
+	<input type="hidden" name="node_type_id" value="WF_WidgetPage" />
+
+	<xen:submitunit save="{xen:phrase wf_save_widget_page}">
+		<xen:if is="{$widgetPage.node_id}">
+			<input type="button" value="{xen:phrase delete_page}..." accesskey="d" class="button OverlayTrigger"
+				data-href="{xen:adminlink widget-pages/delete-confirm, $widgetPage}" />
+		</xen:if>
+	</xen:submitunit>
+
+</xen:form>]]></template>
+    <template title="wf_widget_page_layout"><![CDATA[<xen:require css="widget_framework.css" />
+<xen:require js="js/WidgetFramework/functions.js" />
+<xen:require js="js/WidgetFramework/widget_page_layout.js" />
+
+<ul class="WidgetFramework_WidgetPage_LayoutEditor" style="{xen:helper WidgetFramework_LayoutContainerSize, $widgets}">
+	<xen:foreach loop="$widgets" value="$widget">
+		<li style="{xen:helper WidgetFramework_LayoutWidgetPositionAndSize, $widget}">
+			<div class="WidgetFramework_WidgetPage_WidgetBlock">
+				<span>
+					<xen:if is="{$widget.title}">
+						{$widget.title}
+					<xen:else />
+						{$widget.class}
+					</xen:if>
+				</span><br />
+
+				{xen:phrase wf_layout_position}:<br />
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_row]" value="{$widget.options.layout_row}" min="0" inputclass="WidgetFramework_Layout_Input" />
+				/
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_col]" value="{$widget.options.layout_col}" min="0" inputclass="WidgetFramework_Layout_Input" /><br />
+				
+				{xen:phrase wf_layout_size}:<br />
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeRow]" value="{$widget.options.layout_sizeRow}" min="1" inputclass="WidgetFramework_Layout_Input" />
+				x
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeCol]" value="{$widget.options.layout_sizeCol}" min="1" inputclass="WidgetFramework_Layout_Input" /><br />
+				
+				<a href="{xen:adminlink widgets/edit, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase edit}</a>
+				|
+				<a href="{xen:adminlink widgets/delete, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase delete}</a><br />
+			</div>
+		</li>
+	</xen:foreach>
+</ul>]]></template>
     <template title="widget_framework.css"><![CDATA[.widget-list-tab-group h3 {
 	padding-left: 20px !important;
 }
 .widget-list-tab-group h4 a {
 	padding-left: 40px !important;
+}
+
+.xenOverlay .WidgetFramework_Widget_EditForm {
+	max-height: 400px;
+	overflow: auto;
+}
+
+.WidgetFramework_WidgetPage_LayoutEditor {
+	position: relative;
+}
+.WidgetFramework_WidgetPage_LayoutEditor li {
+	background: {xen:property primaryLightest};
+	border: 1px solid {xen:property primaryLightish};
+	position: absolute;
+}
+.WidgetFramework_WidgetPage_LayoutEditor li .WidgetFramework_WidgetPage_WidgetBlock {
+	margin: 2.5px;
+}
+.textCtrl.number.WidgetFramework_Layout_Input, 
+.xenForm .ctrlUnit dd .textCtrl.number.WidgetFramework_Layout_Input {
+	width: 20px;
 }]]></template>
   </admin_templates>
   <code_events>
@@ -326,7 +526,9 @@ Arguments:
   <email_templates/>
   <optiongroups/>
   <permissions>
-    <permission_groups/>
+    <permission_groups>
+      <permission_group permission_group_id="wfWidgetPage"/>
+    </permission_groups>
     <permissions/>
     <interface_groups/>
   </permissions>
@@ -335,6 +537,8 @@ Arguments:
     <phrase title="admin_navigation_widgetFramework_add" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="admin_navigation_widgetFramework_import" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
     <phrase title="admin_navigation_widgetFramework_list" version_id="1" version_string="0.9"><![CDATA[List Widgets]]></phrase>
+    <phrase title="node_type_WF_WidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page]]></phrase>
+    <phrase title="permission_group_wfWidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page Permissions]]></phrase>
     <phrase title="style_property_group_widget_framework_master" version_id="33" version_string="1.5"><![CDATA[[bd] Widget Framework]]></phrase>
     <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
     <phrase title="style_property_wf_recent_status_statusMaxLength_description_master" version_id="33" version_string="1.5"><![CDATA[This property will be applied to User Recent Status widgets.]]></phrase>
@@ -343,19 +547,25 @@ Arguments:
     <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
+    <phrase title="wf_column_gap" version_id="54" version_string="2.2.3"><![CDATA[Column Gap]]></phrase>
+    <phrase title="wf_column_width" version_id="54" version_string="2.2.3"><![CDATA[Column Width]]></phrase>
+    <phrase title="wf_confirm_deletion_of_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Confirm Deletion of Widget Page]]></phrase>
     <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
+    <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="wf_current_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum]]></phrase>
     <phrase title="wf_current_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum + its children]]></phrase>
     <phrase title="wf_deactivate_for_mobile" version_id="49" version_string="2.2.1"><![CDATA[Deactivate for mobile]]></phrase>
     <phrase title="wf_delete_all_before_import" version_id="24" version_string="1.2.2.2"><![CDATA[Delete all existing widgets before importing]]></phrase>
     <phrase title="wf_delete_all_before_import_explain" version_id="24" version_string="1.2.2.2"><![CDATA[Select this option to make an exact copy of widgets from the XML file. All existing widgets will be deleted completely. This action can not be undone.]]></phrase>
     <phrase title="wf_delete_widget" version_id="1" version_string="0.9"><![CDATA[Delete Widget]]></phrase>
+    <phrase title="wf_delete_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Delete Widget Page]]></phrase>
     <phrase title="wf_descending" version_id="1" version_string="0.9"><![CDATA[Descending]]></phrase>
     <phrase title="wf_disable_caching" version_id="47" version_string="2.1.1"><![CDATA[Disable Caching]]></phrase>
     <phrase title="wf_disable_reveal" version_id="39" version_string="2.0.1"><![CDATA[Disable Reveal Mode (Widget Framework)]]></phrase>
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
     <phrase title="wf_display_order_explain" version_id="37" version_string="1.5.4"><![CDATA[The position of this widget relative to other widgets in the same position. If the display order is negative, its contents will be inserted before the original contents of the position. Otherwise, it will be appended.]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
+    <phrase title="wf_edit_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Edit Widget Page]]></phrase>
     <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>
     <phrase title="wf_expression_explain" version_id="37" version_string="1.5.4"><![CDATA[Enter your expression here. Please use the correct PHP syntax and make sure you know 100% which variables are available in target position. For template position, all template parameters will be accessible but for hook position, only hook parameters will be accessible. Some common used expressions:<br/>
 <br/>
@@ -368,6 +578,8 @@ XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the w
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
     <phrase title="wf_invalid_position_x" version_id="37" version_string="1.5.4"><![CDATA[Invalid position specified: {position}. The position must be one of three types: "all", "template_name" or "hook:hook_name".]]></phrase>
     <phrase title="wf_invalid_widget_renderer_x" version_id="24" version_string="1.2.2.2"><![CDATA[Invalid Widget Renderer specified: {renderer}.]]></phrase>
+    <phrase title="wf_layout_position" version_id="54" version_string="2.2.3"><![CDATA[Position]]></phrase>
+    <phrase title="wf_layout_size" version_id="54" version_string="2.2.3"><![CDATA[Size]]></phrase>
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
     <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
     <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
@@ -378,6 +590,7 @@ XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the w
     <phrase title="wf_parent_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum (of the current one)]]></phrase>
     <phrase title="wf_parent_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum + its children]]></phrase>
     <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget" version_id="1" version_string="0.9"><![CDATA[Please confirm that you want to delete the following widget]]></phrase>
+    <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Please confirm that you want to delete the following widget page]]></phrase>
     <phrase title="wf_poll_thread_id" version_id="5" version_string="0.9.3"><![CDATA[Thread ID]]></phrase>
     <phrase title="wf_poll_thread_id_explain" version_id="5" version_string="0.9.3"><![CDATA[Enter the thread ID of the thread you want to display. Leave it blank to always get the latest poll.]]></phrase>
     <phrase title="wf_popular" version_id="1" version_string="0.9"><![CDATA[Popular]]></phrase>
@@ -403,9 +616,12 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_renderer_explain" version_id="1" version_string="0.9"><![CDATA[Select the renderer engine for this widget. There are some default renderer packed with Widget Framework. It's easy to develop widget renderer so I hope other developers will eventually release some in the near future. ]]></phrase>
     <phrase title="wf_requested_thread_does_not_have_poll" version_id="5" version_string="0.9.3"><![CDATA[The requested thread doesn't have a poll attached.]]></phrase>
     <phrase title="wf_requested_widget_not_found" version_id="1" version_string="0.9"><![CDATA[The requested Widget could not be found.]]></phrase>
+    <phrase title="wf_requested_widget_page_not_found" version_id="54" version_string="2.2.3"><![CDATA[The requested widget page could not be found.]]></phrase>
     <phrase title="wf_resources" version_id="47" version_string="2.1.1"><![CDATA[resources]]></phrase>
     <phrase title="wf_resource_count" version_id="47" version_string="2.1.1"><![CDATA[Resource Count]]></phrase>
+    <phrase title="wf_row_gap" version_id="54" version_string="2.2.3"><![CDATA[Row Gap]]></phrase>
     <phrase title="wf_save_widget" version_id="1" version_string="0.9"><![CDATA[Save Widget]]></phrase>
+    <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="24" version_string="1.2.2.2"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other templates.]]></phrase>
     <phrase title="wf_tab_group" version_id="7" version_string="0.9.5"><![CDATA[Tab Group]]></phrase>
     <phrase title="wf_tab_group_explain" version_id="14" version_string="1.0.6"><![CDATA[You can group several widgets into one tabbed widget by pointing them to the same tab group. The group will be displayed with the highest display order of member widget's. This option has one advanced feature: if you name it "random" (without quote), only one of its widgets will be rendered, totally random!]]></phrase>
@@ -432,6 +648,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
     <phrase title="wf_widget_online_users_rich" version_id="47" version_string="2.1.1"><![CDATA[Show rich usernames]]></phrase>
+    <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
@@ -463,7 +680,11 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
   </phrases>
   <route_prefixes>
     <route_type type="admin">
+      <prefix original_prefix="widget-pages" class="WidgetFramework_Route_PrefixAdmin_WidgetPages" build_link="data_only"/>
       <prefix original_prefix="widgets" class="WidgetFramework_Route_PrefixAdmin_Widgets" build_link="data_only"/>
+    </route_type>
+    <route_type type="public">
+      <prefix original_prefix="widget-pages" class="WidgetFramework_Route_Prefix_WidgetPages" build_link="data_only"/>
     </route_type>
   </route_prefixes>
   <style_properties>
@@ -625,6 +846,44 @@ All customization should go to wf_default_EXTRA.css
 		</a>
 	</xen:if>
 </xen:if>]]></template>
+    <template title="wf_node_widget_page_level_1" version_id="54" version_string="2.2.3"><![CDATA[<xen:include template="wf_node_widget_page_level_2" />]]></template>
+    <template title="wf_node_widget_page_level_2" version_id="54" version_string="2.2.3"><![CDATA[<xen:require css="node_list.css" />
+<xen:require css="node_page.css" />
+
+<li class="node page level_{$level} {xen:if '{$level} == 1 AND !{$renderedChildren}', 'groupNoChildren'} node_{$widgetPage.node_id}">
+
+	<xen:if is="{$level} == 1"><div class="categoryStrip"></div></xen:if>
+
+	<div class="nodeInfo pageNodeInfo">
+		<span class="nodeIcon"></span>
+
+		<div class="nodeText">
+			<h3 class="nodeTitle"><a href="{xen:link widget-pages, $widgetPage}">{$widgetPage.title}</a></h3>
+			<xen:if is="{$widgetPage.description}">
+				<blockquote class="nodeDescription baseHtml muted" id="nodeDescription-{$widgetPage.node_id}">{xen:raw $widgetPage.description}</blockquote>
+			</xen:if>
+		</div>
+	</div>
+	
+	<xen:if is="{$renderedChildren} AND {$level} == 1">		
+		<ol class="nodeList">
+			<xen:foreach loop="$renderedChildren" value="$child">{xen:raw $child}</xen:foreach>
+		</ol>
+	</xen:if>
+	
+</li>]]></template>
+    <template title="wf_node_widget_page_level_n" version_id="54" version_string="2.2.3"><![CDATA[<li class="node link level-n node_{$widgetPage.node_id}">
+	<div>
+		<h4 class="nodeTitle"><a href="{xen:link widget-pages, $widgetPage}" class="menuRow">{$widgetPage.title}</a></h4>
+	</div>
+	<xen:if is="{$renderedChildren}">
+		<ol>
+			<xen:foreach loop="$renderedChildren" value="$child">
+				{xen:raw $child}
+			</xen:foreach>
+		</ol>
+	</xen:if>
+</li>]]></template>
     <template title="wf_revealer" version_id="39" version_string="2.0.1"><![CDATA[<div style="display: block; padding: 3px; margin: 2px">
 	<a href="{xen:adminlink widgets/add, '', 'position={$positionCode}', 'display_order={$displayOrder}'}"
 		target="_blank"
@@ -740,6 +999,42 @@ All customization should go to wf_default_EXTRA.css
 	<div class="footnote">
 		{xen:phrase online_now_x_members_y_guests_z, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}'}
 	</div>
+</div>]]></template>
+    <template title="wf_widget_page.css" version_id="54" version_string="2.2.3"><![CDATA[.WidgetFramework_WidgetPage_LayoutVertical {
+}
+{xen:helper clearfix, '.WidgetFramework_WidgetPage_LayoutVertical'}
+
+.WidgetFramework_WidgetPage_LayoutVertical .WidgetFramework_WidgetPage_LayoutColumn {
+	float: left;
+}]]></template>
+    <template title="wf_widget_page_index" version_id="54" version_string="2.2.3"><![CDATA[<xen:require css="wf_widget_page.css" />
+
+<xen:title>{$widgetPage.title}</xen:title>
+
+<xen:navigation>
+	<xen:breadcrumb source="$nodeBreadCrumbs" />
+</xen:navigation>
+
+<xen:container var="$head.openGraph">
+	<xen:include template="open_graph_meta">
+		<xen:set var="$url">{xen:link canonical:widget-pages, $widgetPage, 'page={$page}'}</xen:set>
+		<xen:set var="$title">{$widgetPage.title}</xen:set>
+	</xen:include>
+</xen:container>
+
+<xen:container var="$quickNavSelected">node-{$widgetPage.node_id}</xen:container>
+
+<xen:container var="$bodyClasses">{xen:helper nodeClasses, $nodeBreadCrumbs, $widgetPage}</xen:container>
+
+<xen:container var="$head.canonical">
+	<link rel="canonical" href="{xen:link 'canonical:widget-pages', $widgetPage, 'page={$page}'}" /></xen:container>
+
+<xen:if is="{$widgetPage.description}">
+	<xen:description class="baseHtml">{xen:raw $widgetPage.description}</xen:description>
+</xen:if>
+
+<div id="WidgetPageContent">
+	{xen:raw $layoutTree}
 </div>]]></template>
     <template title="wf_widget_poll" version_id="5" version_string="0.9.3"><![CDATA[<xen:if is="{$poll}">
 	<xen:include template="wf_widget_poll_block">

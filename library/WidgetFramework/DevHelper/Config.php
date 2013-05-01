@@ -1,8 +1,36 @@
 <?php
 class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base {
-	protected $_dataClasses = array();
-	protected $_dataPatches = array();
+	protected $_dataClasses = array(
+		'widget_page' => array(
+			'name' => 'widget_page',
+			'camelCase' => 'WidgetPage',
+			'camelCasePlural' => 'WidgetPages',
+			'camelCaseWSpace' => 'Widget Page',
+			'fields' => array(
+				'node_id' => array('name' => 'node_id', 'type' => 'uint', 'required' => true),
+				'widgets' => array('name' => 'widgets', 'type' => 'serialized'),
+				'options' => array('name' => 'options', 'type' => 'serialized')
+			),
+			'phrases' => array(),
+			'id_field' => 'node_id',
+			'title_field' => false,
+			'primaryKey' => array('node_id'),
+			'indeces' => array(),
+			'files' => array(
+				'data_writer' => array('className' => 'WidgetFramework_DataWriter_WidgetPage', 'hash' => '8519e858a701bac5ff2aa3ac65c77246'),
+				'model' => array('className' => 'WidgetFramework_Model_WidgetPage', 'hash' => '7a86d6ed21bf412fef03eaa479c2dcc6'),
+				'route_prefix_admin' => false,
+				'controller_admin' => false
+			)
+		)
+	);
+	protected $_dataPatches = array(
+		'xf_widget' => array(
+			'widget_page_id' => array('name' => 'widget_page_id', 'type' => 'uint', 'required' => true, 'default' => 0)
+		)
+	);
 	protected $_exportPath = '/Users/sondh/Dropbox/XenForo/WidgetFramework';
+	protected $_exportIncludes = array();
 	
 	/**
 	 * Return false to trigger the upgrade!
@@ -24,6 +52,7 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base {
 					// 'required' => true,
 					// 'allowedValues' => array('value_1', 'value_2'), 
 					// 'default' => 0,
+					// 'autoIncrement' => true,
 				),
 				// other fields go here
 			),

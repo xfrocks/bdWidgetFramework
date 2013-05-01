@@ -22,6 +22,8 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 	
 	protected function _renderOptions(XenForo_Template_Abstract $template) {
 		$template->setParam('_xfrmFound', WidgetFramework_Core::xfrmFound());
+
+		return parent::_renderOptions($template);
 	}
 	
 	protected function _validateOptionValue($optionKey, &$optionValue) {
@@ -29,7 +31,7 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 			if (empty($optionValue)) $optionValue = 5;
 		}
 		
-		return true;
+		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
 	
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {

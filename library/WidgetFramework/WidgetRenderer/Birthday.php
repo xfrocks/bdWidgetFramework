@@ -20,7 +20,7 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 			if (empty($optionValue)) $optionValue = 0;
 		}
 		
-		return true;
+		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
 	
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {

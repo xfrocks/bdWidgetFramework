@@ -39,6 +39,8 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 		}
 
 		$template->setParam('categories', $categories);
+		
+		return parent::_renderOptions($template);
 	}
 
 	protected function _validateOptionValue($optionKey, &$optionValue) {
@@ -53,7 +55,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 				break;
 		}
 
-		return true;
+		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
 
 	protected function _getRequiredExternal(array $widget) {

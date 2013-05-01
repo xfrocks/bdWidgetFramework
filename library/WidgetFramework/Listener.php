@@ -9,6 +9,11 @@ class WidgetFramework_Listener {
 			}
 			
 			WidgetFramework_Core::getInstance()->bootstrap();
+		} elseif ($dependencies instanceof XenForo_Dependencies_Admin) {
+			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_layoutcontainersize'] =
+				array('WidgetFramework_Template_Helper_Layout', 'getContainerSize');
+			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_layoutwidgetpositionandsize'] =
+				array('WidgetFramework_Template_Helper_Layout', 'getWidgetPositionAndSize');
 		}
 	}
 	
