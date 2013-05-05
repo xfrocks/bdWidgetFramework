@@ -127,7 +127,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 		}
 
 		$link = XenForo_Link::buildAdminLink('nodes') . $this->getLastHash($nodeId);
-		if ($atLeastOneChanged) {
+		if (empty($nodeId) OR $atLeastOneChanged) {
 			$link = XenForo_Link::buildAdminLink('widget-pages/edit', $dw->getMergedData());
 		}
 
