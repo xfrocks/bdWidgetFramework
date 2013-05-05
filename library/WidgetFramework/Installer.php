@@ -13,6 +13,21 @@ class WidgetFramework_Installer {
 				
 			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
 			'dropQuery' => 'DROP TABLE IF EXISTS `xf_widgetframework_widget_page`'
+		),
+		'xf_widget' => array(
+			'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widget` (
+				`widget_id` INT(10) UNSIGNED AUTO_INCREMENT
+				,`title` VARCHAR(75)
+				,`class` VARCHAR(75) NOT NULL
+				,`position` TEXT
+				,`display_order` INT(11) NOT NULL DEFAULT \'0\'
+				,`active` INT(10) UNSIGNED NOT NULL DEFAULT \'1\'
+				,`options` MEDIUMBLOB
+				,`template_for_hooks` MEDIUMBLOB
+				, PRIMARY KEY (`widget_id`)
+				
+			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
+			'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`'
 		)
 	);
 	protected static $_patches = array(
@@ -73,21 +88,7 @@ class WidgetFramework_Installer {
 	/* End auto-generated lines of code. Feel free to make changes below */
 	
 	private static function installCustomized() {
-	$db = XenForo_Application::getDb();
-
-		$db->query("
-				CREATE TABLE IF NOT EXISTS `xf_widget` (
-				widget_id INT(10) UNSIGNED AUTO_INCREMENT,
-				title VARCHAR(75) DEFAULT NULL,
-				class VARCHAR(75) NOT NULL,
-				options MEDIUMBLOB,
-				position TEXT,
-				display_order INT(11) DEFAULT 0,
-				active TINYINT(3) UNSIGNED DEFAULT 1,
-				template_for_hooks MEDIUMBLOB,
-				PRIMARY KEY (widget_id)
-		) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;
-				");
+		$db = XenForo_Application::getDb();
 
 		$anything = $db->fetchOne("SELECT COUNT(*) FROM `xf_widget`");
 		if (empty($anything)) {
@@ -116,30 +117,10 @@ class WidgetFramework_Installer {
 			XenForo_Model::create('WidgetFramework_Model_Widget')->buildCache();
 		}
 
-		// support longer position
-		// since 1.0.9
-		$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `position` TEXT");
-
-		// cache by permission id
-		// since 1.0.9
-		// removed in 1.3
-		$db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
-
-		// add template for hooks support in widget
-		// since 2.0
-		if (!$db->fetchOne("SHOW COLUMNS FROM `xf_widget` LIKE 'template_for_hooks'")) {
-			$db->query("ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB");
-		}
-
-		// support negative display order
-		// since 2.0
-		$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `display_order` INT(11) DEFAULT 0");
-
 		// node type definition
 		// since 2.3
 		$anything = $db->fetchOne("SELECT COUNT(*) FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
-		if (empty($anything))
-		{
+		if (empty($anything)) {
 			$db->insert('xf_node_type', array(
 					'node_type_id' => 'WF_WidgetPage',
 					'handler_class' => 'WidgetFramework_NodeHandler_WidgetPage',

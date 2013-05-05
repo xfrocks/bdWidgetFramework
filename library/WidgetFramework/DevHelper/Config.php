@@ -22,6 +22,28 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base {
 				'route_prefix_admin' => false,
 				'controller_admin' => false
 			)
+		),
+		'widget' => array(
+			'name' => 'xf_widget',
+			'camelCase' => 'Widget',
+			'camelCasePlural' => false,
+			'camelCaseWSpace' => 'Widget',
+			'fields' => array(
+				'widget_id' => array('name' => 'widget_id', 'type' => 'uint', 'autoIncrement' => true),
+				'title' => array('name' => 'title', 'type' => 'string', 'length' => '75'),
+				'class' => array('name' => 'class', 'type' => 'string', 'length' => '75', 'required' => true),
+				'position' => array('name' => 'position', 'type' => 'string'),
+				'display_order' => array('name' => 'display_order', 'type' => 'int', 'required' => true, 'default' => 0),
+				'active' => array('name' => 'active', 'type' => 'uint', 'required' => true, 'default' => 1),
+				'options' => array('name' => 'options', 'type' => 'serialized'),
+				'template_for_hooks' => array('name' => 'template_for_hooks', 'type' => 'serialized')
+			),
+			'phrases' => array(),
+			'id_field' => 'widget_id',
+			'title_field' => 'title',
+			'primaryKey' => array('widget_id'),
+			'indeces' => array(),
+			'files' => array('data_writer' => false, 'model' => false, 'route_prefix_admin' => false, 'controller_admin' => false)
 		)
 	);
 	protected $_dataPatches = array(
