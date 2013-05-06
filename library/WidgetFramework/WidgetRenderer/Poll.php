@@ -34,14 +34,6 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 		return 'wf_widget_poll';
 	}
 	
-	protected function _getRequiredExternal(array $widget) {
-		return array(
-			array('css', 'wf_default'), 
-			array('css', 'polls'),
-			array('js', 'js/xenforo/discussion.js'),
-		);
-	}
-	
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
 		$core = WidgetFramework_Core::getInstance();
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');

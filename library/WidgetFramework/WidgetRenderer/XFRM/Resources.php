@@ -58,12 +58,6 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
 
-	protected function _getRequiredExternal(array $widget) {
-		return array(
-				array('css', 'rating'),
-		);
-	}
-
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
 		return 'wf_widget_xfrm_resources';
 	}

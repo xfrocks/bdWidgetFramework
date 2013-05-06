@@ -398,7 +398,7 @@ class WidgetFramework_Core {
 		}
 	}
 	
-	protected function _saveCachedWidget($cacheId, $html, $useUserCache , $useLiveCache) {
+	protected function _saveCachedWidget($cacheId, $html, array $extraData, $useUserCache , $useLiveCache) {
 		// disable cache in debug environment...
 		if (self::debugMode()) {
 			return false;
@@ -410,6 +410,9 @@ class WidgetFramework_Core {
 			WidgetFramework_Model_Cache::KEY_HTML => $html,
 			WidgetFramework_Model_Cache::KEY_TIME => XenForo_Application::$time,
 		);
+		if (!empty($extraData)) {
+			$cacheData[WidgetFramework_Model_Cache::KEY_EXTRA_DATA] = $extraData;
+		}
 		
 		$permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
 		
@@ -455,8 +458,8 @@ class WidgetFramework_Core {
 		return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
 	}
 	
-	public static function saveCachedWidget($cacheId, $html, $useUserCache, $useLiveCache) {
-		self::getInstance()->_saveCachedWidget($cacheId, $html, $useUserCache, $useLiveCache); 
+	public static function saveCachedWidget($cacheId, $html, array $extraData, $useUserCache, $useLiveCache) {
+		self::getInstance()->_saveCachedWidget($cacheId, $html, $extraData, $useUserCache, $useLiveCache); 
 	}
 	
 	public static function clearCachedWidgetById($widgetId) {

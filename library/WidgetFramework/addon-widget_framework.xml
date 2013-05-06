@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.3" version_id="55" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.3.1" version_id="56" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_import" parent_navigation_id="widgetFramework" display_order="100" link="widgets/import" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_list" parent_navigation_id="widgetFramework" display_order="1" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
+    <navigation navigation_id="widgetFramework_pageAdd" parent_navigation_id="nodeTree" display_order="9999" link="widget-pages/add" admin_permission_id="" debug_only="0" hide_no_children="0"/>
   </admin_navigation>
   <admin_permissions/>
   <admin_style_properties/>
@@ -537,6 +538,7 @@ Arguments:
     <phrase title="admin_navigation_widgetFramework_add" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="admin_navigation_widgetFramework_import" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
     <phrase title="admin_navigation_widgetFramework_list" version_id="1" version_string="0.9"><![CDATA[List Widgets]]></phrase>
+    <phrase title="admin_navigation_widgetFramework_pageAdd" version_id="55" version_string="2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="node_type_WF_WidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page]]></phrase>
     <phrase title="permission_group_wfWidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page Permissions]]></phrase>
     <phrase title="style_property_group_widget_framework_master" version_id="33" version_string="1.5"><![CDATA[[bd] Widget Framework]]></phrase>

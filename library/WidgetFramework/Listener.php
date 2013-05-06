@@ -33,6 +33,12 @@ class WidgetFramework_Listener {
 	public static function template_post_render($templateName, &$output, array &$containerData, XenForo_Template_Abstract $template) {
 		if (defined('WIDGET_FRAMEWORK_LOADED')) {
 			WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
+			
+			// get a copy of container data for widget rendered
+			$positionCode = $template->getParam('_WidgetFramework_positionCode');
+			if ($positionCode !== null) {
+				WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
+			}
 		}
 	}
 	

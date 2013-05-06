@@ -4,6 +4,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model {
 	const INVALIDED_CACHE_ITEM_NAME = 'invalidated_cache';
 	const KEY_TIME = 'time';
 	const KEY_HTML = 'html';
+	const KEY_EXTRA_DATA = 'extraData';
 	
 	protected static $_queuedCacheKeys = array();
 	protected static $_queriedData = array();
