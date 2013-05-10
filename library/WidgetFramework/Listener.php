@@ -125,10 +125,16 @@ class WidgetFramework_Listener {
 			
 			'XenForo_Model_Thread',
 			'XenForo_Model_User',
+
+			'bdCache_Model_Cache',
 		);
 		
 		if (in_array($class, $classesNeedsExtending)) {
-			$extend[] = str_replace('XenForo_', 'WidgetFramework_Extend_', $class);
+			if (strpos($class, 'XenForo_') === 0) {
+				$extend[] = str_replace('XenForo_', 'WidgetFramework_Extend_', $class);
+			} else {
+				$extend[] = 'WidgetFramework_Extend_' . $class;
+			}
 		}
 	}
 	

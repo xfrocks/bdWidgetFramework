@@ -23,6 +23,11 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 				'page' => $page,
 		);
 
+		if (class_exists('bdCache_ControllerHelper_Cache'))
+		{
+			$this->getHelper('bdCache_ControllerHelper_Cache')->markViewParamsAsCacheable($viewParams);
+		}
+
 		return $this->responseView('WidgetFramework_ViewPublic_WidgetPage_Index', 'wf_widget_page_index', $viewParams);
 	}
 
