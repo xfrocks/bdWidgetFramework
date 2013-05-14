@@ -6,7 +6,7 @@ class WidgetFramework_Extend_bdCache_Model_Cache extends XFCP_WidgetFramework_Ex
 		$supported = parent::isSupportedRoute($controllerName, $action);
 
 		if (!$supported) {
-			$this->normalizeControllerNameAndAction($controllerName, $action);
+			$this->_normalizeControllerNameAndAction($controllerName, $action);
 				
 			if ($controllerName === 'widgetframework_controllerpublic_widgetpage' AND $action === 'index') {
 				return true;
