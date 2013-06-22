@@ -1,3 +1,4 @@
 .DS_Store
 *.devhelper
 library/WidgetFramework/DevHelper/Generated/*
+library/WidgetFramework/FileSums.php
