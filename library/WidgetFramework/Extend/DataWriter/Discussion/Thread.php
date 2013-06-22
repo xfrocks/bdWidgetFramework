@@ -9,7 +9,7 @@ class WidgetFramework_Extend_DataWriter_Discussion_Thread extends XFCP_WidgetFra
 		// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
 	}
 	
-	protected function _discussionPostDelete(array $messages) {
+	protected function _discussionPostDelete(array $messages = null) {
 		parent::_discussionPostDelete($messages);
 		
 		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');

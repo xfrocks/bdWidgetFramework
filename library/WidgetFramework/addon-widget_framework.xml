@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.2.3" version_id="54" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.2.3b" version_id="55" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -302,6 +302,7 @@
 	padding-left: 40px !important;
 }]]></template>
   </admin_templates>
+  <admin_template_modifications/>
   <code_events>
     <event event_id="widget_framework_ready"><![CDATA[<p>Called after the framework is loaded and ready in both front-end and back-end. You should use this to register your renderers.</p>
 
@@ -311,19 +312,20 @@ Arguments:
 </ol>]]></event>
   </code_events>
   <code_event_listeners>
-    <listener event_id="file_health_check" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="file_health_check" active="1" description=""/>
-    <listener event_id="front_controller_post_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_post_view" active="1" description=""/>
-    <listener event_id="front_controller_pre_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_pre_view" active="1" description=""/>
-    <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" description=""/>
-    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
-    <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
-    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
-    <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" description=""/>
-    <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" description=""/>
-    <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
+    <listener event_id="front_controller_post_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_post_view" active="1" hint="" description=""/>
+    <listener event_id="front_controller_pre_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_pre_view" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" hint="" description=""/>
+    <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" hint="" description=""/>
+    <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
+  <email_template_modifications/>
   <optiongroups/>
   <permissions>
     <permission_groups/>
@@ -701,7 +703,7 @@ All customization should go to wf_default_EXTRA.css
 	</ul>
 </div>
 </xen:if>]]></template>
-    <template title="wf_widget_online_users" version_id="47" version_string="2.1.1"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
+    <template title="wf_widget_online_users" version_id="55" version_string="2.2.3b"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
 	<xen:if is="{$onlineUsers.records}">
 		<xen:if is="{$widget.options.hide_following} == 0 AND {$visitor.user_id}">
 			<xen:if hascontent="true">
@@ -738,7 +740,11 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 	
 	<div class="footnote">
-		{xen:phrase online_now_x_members_y_guests_z, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}'}
+		<xen:if is="isset({$onlineUsers.robots})">
+			{xen:phrase online_now_x_members_y_guests_z_robots_a, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}', 'robots={xen:number $onlineUsers.robots}'}
+		<xen:else />
+			{xen:phrase online_now_x_members_y_guests_z, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}'}
+		</xen:if>
 	</div>
 </div>]]></template>
     <template title="wf_widget_poll" version_id="5" version_string="0.9.3"><![CDATA[<xen:if is="{$poll}">
@@ -1047,5 +1053,6 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 </xen:if>]]></template>
   </templates>
+  <template_modifications/>
   <bb_code_media_sites/>
 </addon>
