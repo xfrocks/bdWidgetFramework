@@ -1,18 +1,40 @@
 <?php
-class WidgetFramework_Extend_DataWriter_Discussion_Thread extends XFCP_WidgetFramework_Extend_DataWriter_Discussion_Thread {
+
+class WidgetFramework_Extend_DataWriter_Discussion_Thread_Base extends XFCP_WidgetFramework_Extend_DataWriter_Discussion_Thread {
 	protected function _postSaveAfterTransaction() {
-		parent::_postSaveAfterTransaction();
-		
 		// commented out due to problem with high traffic board
 		// since 1.3
 		// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
 		// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
+
+		return parent::_postSaveAfterTransaction();
 	}
-	
-	protected function _discussionPostDelete(array $messages = null) {
-		parent::_discussionPostDelete($messages);
-		
+
+	protected function _WidgetFramework_clearCachedWidgets() {
 		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
 		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
+	}
+}
+
+if (XenForo_Application::$versionId < 1020000)
+{
+	// old versions
+	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base {
+		protected function _discussionPostDelete(array $messages) {
+			$this->_WidgetFramework_clearCachedWidgets();
+
+			return parent::_discussionPostDelete($messages);
+		}
+	}
+}
+else
+{
+	// v1.2+
+	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base {
+		protected function _discussionPostDelete() {
+			$this->_WidgetFramework_clearCachedWidgets();
+
+			return parent::_discussionPostDelete();
+		}
 	}
 }
