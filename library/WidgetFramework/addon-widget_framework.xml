@@ -962,7 +962,7 @@ All customization should go to wf_default_EXTRA.css
 	</ul>
 </div>
 </xen:if>]]></template>
-    <template title="wf_widget_online_users" version_id="47" version_string="2.1.1"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
+    <template title="wf_widget_online_users" version_id="58" version_string="2.3.2b"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
 	<xen:if is="{$onlineUsers.records}">
 		<xen:if is="{$widget.options.hide_following} == 0 AND {$visitor.user_id}">
 			<xen:if hascontent="true">
@@ -999,7 +999,11 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 	
 	<div class="footnote">
-		{xen:phrase online_now_x_members_y_guests_z, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}'}
+		<xen:if is="isset({$onlineUsers.robots})">
+			{xen:phrase online_now_x_members_y_guests_z_robots_a, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}', 'robots={xen:number $onlineUsers.robots}'}
+		<xen:else />
+			{xen:phrase online_now_x_members_y_guests_z, 'total={xen:number $onlineUsers.total}', 'members={xen:number $onlineUsers.members}', 'guests={xen:number $onlineUsers.guests}'}
+		</xen:if>
 	</div>
 </div>]]></template>
     <template title="wf_widget_page.css" version_id="54" version_string="2.2.3"><![CDATA[.WidgetFramework_WidgetPage_LayoutVertical {
