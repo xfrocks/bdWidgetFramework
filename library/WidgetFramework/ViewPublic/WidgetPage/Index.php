@@ -10,5 +10,7 @@ class WidgetFramework_ViewPublic_WidgetPage_Index extends XenForo_ViewPublic_Bas
 						'widgetPage' => $this->_params['widgetPage'],
 				)
 		);
+		
+		$this->_params['layoutTreeCssClasses'] = $this->_params['layoutTree']->getOption('cssClasses');
 	}
 }

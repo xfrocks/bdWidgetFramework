@@ -3,8 +3,13 @@
 class WidgetFramework_ViewPublic_Helper_Layout {
 
 	public static function buildLayoutTree(XenForo_ViewPublic_Base $view, array &$widgets, array $options = array()) {
+		$widgetPage =& $options['widgetPage'];
 		$rows = 0;
 		$cols = 0;
+		$cssClasses = array(
+				'cols' => array(),
+				'rows' => array(),
+		);
 		$widgetIds = array();
 
 		foreach ($widgets as $widget) {
@@ -13,15 +18,37 @@ class WidgetFramework_ViewPublic_Helper_Layout {
 			if (empty($widget['options']['layout_sizeRow'])) continue;
 			if (empty($widget['options']['layout_sizeCol'])) continue;
 
-			$rows = max($rows, $widget['options']['layout_row'] + $widget['options']['layout_sizeRow'] - 1);
-			$cols = max($cols, $widget['options']['layout_col'] + $widget['options']['layout_sizeCol'] - 1);
+			$rows = max($rows, $widget['options']['layout_row'] + $widget['options']['layout_sizeRow']);
+			$cols = max($cols, $widget['options']['layout_col'] + $widget['options']['layout_sizeCol']);
 			$widgetIds[] = $widget['widget_id'];
+		}
+
+		for ($col = 1; $col <= $cols; $col++)
+		{
+			$cssClasses['cols'][$col] = array(
+					'name' => sprintf('WF_Cols_%d_%d', $widgetPage['node_id'], $col),
+			);
+
+			if (!empty($widgetPage['options']['column_width']) AND !empty($widgetPage['options']['column_gap']))
+			{
+				$cssClasses['cols'][$col]['width'] = ($col * $widgetPage['options']['column_width']) + (($col - 1) * $widgetPage['options']['column_gap']);
+			}
+		}
+
+		for ($row = 1; $row <= $rows; $row++)
+		{
+			$cssClasses['rows'][$row] = array(
+					'name' => sprintf('WF_Rows_%d_%d', $widgetPage['node_id'], $row),
+			);
 		}
 
 		$options = XenForo_Application::mapMerge(array(
 				'params' => $view->getParams(),
 				'templateObj' => $view->createOwnTemplateObject(),
 				'positionCode' => md5(serialize($widgets)),
+				'rows' => $rows,
+				'cols' => $cols,
+				'cssClasses' => $cssClasses,
 		), $options);
 
 		return new _Layout_Vertical($view, $widgets, $options, $widgetIds);
@@ -43,6 +70,8 @@ class _Layout_Vertical extends _Layout_Multiple {
 	}
 
 	public function __toString() {
+		$cssClasses = $this->getOption('cssClasses');
+
 		switch (count($this->_subLayouts)) {
 			case 0:
 				$html = '';
@@ -62,27 +91,12 @@ class _Layout_Vertical extends _Layout_Multiple {
 				foreach (array_keys($this->_subLayouts) as $layoutId) {
 					$i++;
 					$subLayout =& $this->_subLayouts[$layoutId];
-					$columns = $this->_subLayoutIndeces[$layoutId];
+					$columnsCount = count($this->_subLayoutIndeces[$layoutId]);
 
-					if (!empty($this->_options['widgetPage']['options']['column_width'])
-					AND !empty($this->_options['widgetPage']['options']['column_gap'])) {
-						$columnsCount = count($columns);
-						$columnWidth = intval($this->_options['widgetPage']['options']['column_width']);
-						$columnGap = intval($this->_options['widgetPage']['options']['column_gap']);
-						$width = sprintf('%dpx', ($columnsCount * $columnWidth) + (($columnsCount - 1) * $columnGap));
-						
-						if ($i == count($this->_subLayouts)) {
-							// last column
-							$margin = '0';
-						} else {
-							$margin = sprintf('0 %dpx 0 0', $columnGap);
-						}
-					} else {
-						$width = 'auto';
-						$margin = '0';
-					}
+					$cssClassCols = $cssClasses['cols'][$columnsCount]['name'];
+					$cssClassIsLast = ($i == count($this->_subLayouts) ? 'WidgetFramework_WidgetPage_LayoutColumnLast' : '');
 
-					$html .= sprintf('<li class="WidgetFramework_WidgetPage_LayoutColumn" style="width: %s; margin: %s">', $width, $margin);
+					$html .= sprintf('<li class="WidgetFramework_WidgetPage_LayoutColumn %s %s">', $cssClassCols, $cssClassIsLast);
 					$html .= $subLayout;
 					$html .= '</li>';
 				}
@@ -109,6 +123,8 @@ class _Layout_Horizontal extends _Layout_Multiple {
 	}
 
 	public function __toString() {
+		$cssClasses = $this->getOption('cssClasses');
+
 		switch (count($this->_subLayouts)) {
 			case 0:
 				$html = '';
@@ -126,15 +142,12 @@ class _Layout_Horizontal extends _Layout_Multiple {
 
 				foreach (array_keys($this->_subLayouts) as $layoutId) {
 					$subLayout = strval($this->_subLayouts[$layoutId]);
+					$rowsCount = count($this->_subLayoutIndeces[$layoutId]);
 
-					if (!empty($this->_options['widgetPage']['options']['row_gap'])) {
-						$rowGap = intval($this->_options['widgetPage']['options']['row_gap']);
-						$margin = sprintf('0 0 %dpx 0', $rowGap);
-					} else {
-						$margin = '0';
-					}
+					$cssClassRows = $cssClasses['rows'][$rowsCount]['name'];
+					$cssClassIsLast = ($i == count($this->_subLayouts) ? 'WidgetFramework_WidgetPage_LayoutRowLast' : '');
 
-					$html .= sprintf('<li class="WidgetFramework_WidgetPage_LayoutRow" style="margin: %s">', $margin);
+					$html .= sprintf('<li class="WidgetFramework_WidgetPage_LayoutRow %s %s">', $cssClassRows, $cssClassIsLast);
 					$html .= $subLayout;
 					$html .= '</li>';
 				}
@@ -164,6 +177,16 @@ abstract class _Layout_Multiple {
 		if ($depth < 10) {
 			$this->_doLayout($widgetIds);
 		}
+	}
+
+	public function getOption($key)
+	{
+		if (isset($this->_options[$key]))
+		{
+			return $this->_options[$key];
+		}
+
+		return null;
 	}
 
 	protected function _doLayout(array $widgetIds) {
