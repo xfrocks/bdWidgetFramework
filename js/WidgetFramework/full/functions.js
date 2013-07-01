@@ -34,7 +34,11 @@
 
 			this.xhr = XenForo.ajax(
 				this.url,
-				{ 'class': this.$select.val(), 'widget_id': $('#widgetId').val() },
+				{
+					'class': this.$select.val(),
+					'widget_id': $('#widgetId').val(),
+					'widget_page_id': $('#widgetPageId').val(),
+				},
 				$.context(this, 'ajaxSuccess'),
 				{ error: false }
 			);

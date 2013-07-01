@@ -98,6 +98,12 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			$widget = array();
 		}
 
+		$widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
+		if (!empty($widgetPageId))
+		{
+			$widget['widget_page_id'] = $widgetPageId;
+		}
+
 		$class = $this->_input->filterSingle('class', XenForo_Input::STRING);
 
 		$viewParams = array(

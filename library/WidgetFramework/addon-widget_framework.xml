@@ -66,7 +66,7 @@
 				<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
 			</xen:spinboxunit>
 		<xen:else />
-			<input type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
+			<input id="widgetPageId" type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
 			<input type="hidden" name="title" value="{$widget.title}" />
 			<input type="hidden" name="position" value="{$widget.position}" />
 			<input type="hidden" name="display_order" value="{$widget.display_order}" />
@@ -176,25 +176,26 @@
     <template title="wf_widget_options"><![CDATA[<input type="hidden" name="options_loaded" value="{$options_loaded}" />
 
 <xen:if hascontent="true">
-<fieldset>
-	<xen:contentcheck>
-	{xen:raw {$optionsRendered}}
-	</xen:contentcheck>
-</fieldset>
+	<fieldset>
+		<xen:contentcheck>
+		{xen:raw {$optionsRendered}}
+		</xen:contentcheck>
+	</fieldset>
 </xen:if>
 
-<xen:if is="{$rendererConfiguration.useWrapper}">
-<!-- tab group - added 02-02-2011 -->
-<xen:textboxunit label="{xen:phrase wf_tab_group}:" name="{$namePrefix}tab_group" value="{$options.tab_group}">
-	<xen:explain>{xen:phrase wf_tab_group_explain}</xen:explain>
-</xen:textboxunit>
+<xen:if is="!{$widget.widget_page_id}">
+	<xen:if is="{$rendererConfiguration.useWrapper}">
+		<!-- tab group - added 02-02-2011 -->
+		<xen:textboxunit label="{xen:phrase wf_tab_group}:" name="{$namePrefix}tab_group" value="{$options.tab_group}">
+			<xen:explain>{xen:phrase wf_tab_group_explain}</xen:explain>
+		</xen:textboxunit>
+	</xen:if>
 </xen:if>
 
 <xen:if is="{$options_loaded}">
-<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="5" inputclass="Elastic">
-	<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
-</xen:textboxunit>
-
+	<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="5" inputclass="Elastic">
+		<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
+	</xen:textboxunit>
 </xen:if>]]></template>
     <template title="wf_widget_options_birthday"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
