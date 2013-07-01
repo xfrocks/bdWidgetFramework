@@ -304,6 +304,8 @@ class _Layout_Single {
 		if ($renderer) {
 			$html = '';
 			$widgetHtml = $renderer->render($this->_widget, $this->_options['positionCode'], $this->_options['params'], $this->_options['templateObj'], $html);
+
+			$renderer->extraPrepare($this->_widget, $widgetHtml);
 		} else {
 			$widgetHtml = '';
 		}
