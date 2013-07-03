@@ -276,10 +276,12 @@
 	<xen:explain>{xen:phrase wf_threads_forums_explain} {xen:phrase wf_special_forums_explain}</xen:explain>
 </xen:selectunit>
 
-<xen:selectunit label="{xen:phrase thread_prefixes}:" name="{$namePrefix}prefixes" value="" size="5" multiple="true" inputclass="textCtrl">
-	<xen:options source="$prefixes" />
-	<xen:explain>{xen:phrase wf_threads_prefixes_explain}</xen:explain>
-</xen:selectunit>
+<xen:if is="{$prefixes}">
+	<xen:selectunit label="{xen:phrase thread_prefixes}:" name="{$namePrefix}prefixes" value="" size="5" multiple="true" inputclass="textCtrl">
+		<xen:options source="$prefixes" />
+		<xen:explain>{xen:phrase wf_threads_prefixes_explain}</xen:explain>
+	</xen:selectunit>
+</xen:if>
 
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}as_guest" value="1" selected="{$options.as_guest}">{xen:phrase wf_use_guest_permissions}</xen:option>
@@ -589,6 +591,7 @@ XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the w
     <phrase title="wf_layout_size" version_id="54" version_string="2.2.3"><![CDATA[Size]]></phrase>
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
     <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
+    <phrase title="wf_limit_zero_explain" version_id="58" version_string="2.3.2b"><![CDATA[Enter 0 (zero) to set no limitation.]]></phrase>
     <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
     <phrase title="wf_new" version_id="1" version_string="0.9"><![CDATA[New]]></phrase>
     <phrase title="wf_non_existent_hook_x" version_id="37" version_string="1.5.4"><![CDATA[The specified hook "{hook}" could not be found in any public templates.]]></phrase>
@@ -629,7 +632,7 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_row_gap" version_id="54" version_string="2.2.3"><![CDATA[Row Gap]]></phrase>
     <phrase title="wf_save_widget" version_id="1" version_string="0.9"><![CDATA[Save Widget]]></phrase>
     <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
-    <phrase title="wf_special_forums_explain" version_id="24" version_string="1.2.2.2"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other templates.]]></phrase>
+    <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
     <phrase title="wf_tab_group" version_id="7" version_string="0.9.5"><![CDATA[Tab Group]]></phrase>
     <phrase title="wf_tab_group_explain" version_id="14" version_string="1.0.6"><![CDATA[You can group several widgets into one tabbed widget by pointing them to the same tab group. The group will be displayed with the highest display order of member widget's. This option has one advanced feature: if you name it "random" (without quote), only one of its widgets will be rendered, totally random!]]></phrase>
     <phrase title="wf_template_explain" version_id="19" version_string="1.1.1"><![CDATA[Enter the title of the template you want to use here. It will be parsed and displayed just like using <xen:include /> in normal templates.]]></phrase>
