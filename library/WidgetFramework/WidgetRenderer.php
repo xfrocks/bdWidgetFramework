@@ -587,11 +587,11 @@ abstract class WidgetFramework_WidgetRenderer {
 
 	protected static $_containerData = array();
 
-	public static function wrap(array $tabs, XenForo_Template_Abstract $template, $groupId = false) {
+	public static function wrap(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId = false) {
 		if ($groupId === false) $groupId = 'widget-rand-' . rand(1000,9999);
 		$groupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $groupId);
 
-		$wrapper = $template->create('wf_widget_wrapper', array('tabs' => $tabs, 'groupId' => $groupId));
+		$wrapper = $template->create('wf_widget_wrapper', $params + array('tabs' => $tabs, 'groupId' => $groupId));
 
 		return $wrapper->render();
 	}

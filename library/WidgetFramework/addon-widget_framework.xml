@@ -706,15 +706,30 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="44" version_string="2.0.6"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="58" version_string="2.3.2b"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
 
+.section.sectionMain.widget-container.widget-tabs {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+	.section.sectionMain.widget-container.widget-tabs .widget-panes {
+		{xen:property primaryContent.padding};
+		border-right: 1px solid {xen:property primaryLighter};
+		border-bottom: 1px solid {xen:property primaryLighter};
+		border-left: 1px solid {xen:property primaryLighter};
+
+		<xen:comment>should find a better way other than hardcoding border radius here</xen:comment>
+		border-bottom-left-radius: 10px;
+		border-bottom-right-radius: 10px;
+	}
+
 .widget-tabs .tabs {
 	height: 25px;
 	background: none;
-	border: 0;
 }
 
 .widget-tabs .tabs li a {
@@ -1182,101 +1197,129 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="47" version_string="2.1.1"><![CDATA[<xen:if hascontent="true">
-    <div class="avatarList">
-        <ul>
-            <xen:contentcheck>
-            	<xen:foreach loop="$new" value="$thread">
-                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
-                		<xen:avatar user="$thread" size="s" img="true" />
+    <template title="wf_widget_threads" version_id="58" version_string="2.3.2b"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
-						<xen:include template="wf_widget_threads_thread_title">
-							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
-						</xen:include>
+	<xen:if hascontent="true">
+		<div class="avatarList">
+			<ul>
+				<xen:contentcheck>
+					<xen:if is="{$widget.options.type} == 'new'">
+	
+						<xen:foreach loop="$threads" value="$thread">
+							<xen:include template="wf_widget_threads_thread_sidebar">
+								<xen:set var="$_secondRow">
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
+								</xen:set>
+							</xen:include>
+						</xen:foreach>
 
-                		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
-                	</li>
-            	</xen:foreach>
-            	<xen:foreach loop="$recent" value="$thread">
-                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
-                		<xen:avatar user="$thread" size="s" img="true" />
+					<xen:elseif is="{$widget.options.type} == 'recent'" />
 
-						<xen:include template="wf_widget_threads_thread_title">
-							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
-							<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
-						</xen:include>
+						<xen:foreach loop="$threads" value="$thread">
+							<xen:include template="wf_widget_threads_thread_sidebar">
+								<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
+								<xen:set var="$_secondRow">
+									{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" />
+								</xen:set>
+							</xen:include>
+						</xen:foreach>
 
-                		<div class="userTitle">{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" /></div>
-                	</li>
-            	</xen:foreach>
-            	<xen:foreach loop="$popular" value="$thread">
-                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
-                		<xen:avatar user="$thread" size="s" img="true" />
+					<xen:elseif is="{$widget.options.type} == 'popular'" />
 
-						<xen:include template="wf_widget_threads_thread_title">
-							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
-						</xen:include>
+						<xen:foreach loop="$threads" value="$thread">
+							<xen:include template="wf_widget_threads_thread_sidebar">
+								<xen:set var="$_secondRow">
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
+								</xen:set>
+							</xen:include>
+						</xen:foreach>
 
-                		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
-                	</li>
-            	</xen:foreach>
-                <xen:foreach loop="$mostReplied" value="$thread">
-                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
-                		<xen:avatar user="$thread" size="s" img="true" />
+					<xen:elseif is="{$widget.options.type} == 'most_replied'" />
 
-						<xen:include template="wf_widget_threads_thread_title">
-							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
-						</xen:include>
+						<xen:foreach loop="$threads" value="$thread">
+							<xen:include template="wf_widget_threads_thread_sidebar">
+								<xen:set var="$_secondRow">
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'}, {xen:phrase replies}: {xen:number $thread.reply_count}
+								</xen:set>
+							</xen:include>
+						</xen:foreach>
 
-                		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'}, {xen:phrase replies}: {xen:number $thread.reply_count}</div>
-                	</li>
-            	</xen:foreach>
-                <xen:foreach loop="$mostLiked" value="$thread">
-                    <li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
-                		<xen:avatar user="$thread" size="s" img="true" />
+					<xen:elseif is="{$widget.options.type} == 'most_liked'" />
 
-						<xen:include template="wf_widget_threads_thread_title">
-							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
-						</xen:include>
+						<xen:foreach loop="$threads" value="$thread">
+							<xen:include template="wf_widget_threads_thread_sidebar">
+								<xen:set var="$_secondRow">
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'},
+									{xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
+								</xen:set>
+							</xen:include>
+						</xen:foreach>
 
-                		<div class="userTitle">
-                            {xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'},
-                            {xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
-                        </div>
-                	</li>
-            	</xen:foreach>
-            	<xen:foreach loop="$polls" value="$thread">
-                	<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
-                		<xen:avatar user="$thread" size="s" img="true" />
+					<xen:elseif is="{$widget.options.type} == 'polls'" />
 
-						<xen:include template="wf_widget_threads_thread_title">
-							<xen:set var="$_showPrefix">{$widget.options.display.show_prefix}</xen:set>
-						</xen:include>
+						<xen:foreach loop="$threads" value="$thread">
+							<xen:include template="wf_widget_threads_thread_sidebar">
+								<xen:set var="$_secondRow">
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
+								</xen:set>
+							</xen:include>
+						</xen:foreach>
 
-                		<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" /></div>
-                	</li>
-            	</xen:foreach>
-            </xen:contentcheck>
-        </ul>
-    </div>
+					</xen:if>
+				</xen:contentcheck>
+			</ul>
+		</div>
+
+		<xen:include template="preview_tooltip" />
+	</xen:if>
+
+<xen:elseif is="{$layout} == 'list'" />
+	
+	<xen:if hascontent="true">
+		<div class="discussionList">
+			<div class="DiscussionList">
+
+				<dl class="sectionHeaders">
+					<dt class="posterAvatar"><a><span>&nbsp;</span></a></dt>
+					<dd class="main">
+						<a class="title"><span>{xen:phrase title}</span></a>
+						<a class="postDate"><span>{xen:phrase start_date}</span></a>
+					</dd>
+					<dd class="stats">
+						<a class="major"><span>{xen:phrase replies}</span></a>
+						<a class="minor"><span>{xen:phrase views}</span></a>
+					</dd>
+					<dd class="lastPost"><a><span>{xen:phrase last_message}</span></a></dd>
+				</dl>
+
+				<ol class="discussionListItems">
+					<xen:contentcheck>
+						<xen:foreach loop="$threads" value="$thread">
+							<xen:include template="thread_list_item" />
+						</xen:foreach>
+					</xen:contentcheck>
+				</ol>
+
+			</div>
+		</div>
+
+		<xen:include template="preview_tooltip" />
+	</xen:if>
+
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_title" version_id="44" version_string="2.0.6"><![CDATA[<xen:if is="{$_showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
+    <template title="wf_widget_threads_thread_sidebar" version_id="58" version_string="2.3.2b"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
+	<xen:avatar user="$thread" size="s" img="true" />
 
-<xen:if is="{$renderParams._WidgetFramework_isHook}">
-	<xen:comment>Show full thread title in non sidebar renders</xen:comment>
-	<a href="{xen:if '{$_threadLink}', {xen:raw $_threadLink}, {xen:link threads, $thread}}">{$thread.title}</a>
-<xen:else />
-	<a href="{xen:if '{$_threadLink}', {xen:raw $_threadLink}, {xen:link threads, $thread}}"
-		<xen:if is="{$thread.title} != {xen:helper snippet, $thread.title, {xen:property wf_threads_titleMaxLength}}">
-		title="{$thread.title}"
-		class="Tooltip"
-		</xen:if>
-		>
+	<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
+
+	<a {xen:if '{$thread.title} != {xen:helper snippet, $thread.title, {xen:property wf_threads_titleMaxLength}}', 'title="{$thread.title}" class="Tooltip"'}
+		href="{xen:if '{$_threadLink}', {xen:raw $_threadLink}, {xen:link threads, $thread}}">
 		{xen:helper snippet, $thread.title, {xen:property wf_threads_titleMaxLength}}
 	</a>
-</xen:if>
 
-<xen:include template="preview_tooltip" />]]></template>
+	<div class="userTitle">{xen:raw $_secondRow}</div>
+</li>
+]]></template>
     <template title="wf_widget_users" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
     <ul class="followedOnline">
 		<xen:foreach loop="$users" value="$user">
@@ -1320,11 +1363,20 @@ All customization should go to wf_default_EXTRA.css
 		<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 	</form>
 </div>]]></template>
-    <template title="wf_widget_wrapper" version_id="47" version_string="2.1.1"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_wrapper" version_id="58" version_string="2.3.2b"><![CDATA[<xen:require css="wf_default.css" />
+
+<xen:if is="{$_WidgetFramework_isHook}">
+	<xen:set var="$classSection">section sectionMain</xen:set>
+	<xen:set var="$classInnerSection"></xen:set>
+<xen:else />
+	<xen:set var="$classSection">section</xen:set>
+	<xen:set var="$classInnerSection">secondaryContent</xen:set>
+</xen:if>
+
 
 <xen:if is="{xen:count $tabs} > 1">
 	<xen:comment>We are rendering tabs</xen:comment>
-	<div class="section widget-container widget-tabs">
+	<div class="{$classSection} widget-container widget-tabs">
 		<div class="primaryContent">
 			<ul class="tabs Tabs" data-panes="#widget-tabs-{$groupId} > li">
 				<xen:foreach loop="$tabs" value="$tab">
@@ -1338,8 +1390,7 @@ All customization should go to wf_default_EXTRA.css
 				</xen:foreach>
 			</ul>
 		</div>
-		<div style="clear: both; height: 0px;">&nbsp;<!-- dirty fix, sorry --></div>
-		<div class="secondaryContent" id="widget-group-{$groupId}">
+		<div class="{$classInnerSection} widget-panes" id="widget-group-{$groupId}">
 			<ul id="widget-tabs-{$groupId}">
 				<xen:foreach loop="$tabs" value="$tab">
 					<xen:if is="{$tab.html}">
@@ -1355,9 +1406,9 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 <xen:elseif is="{xen:count $tabs} == 1" />
 	<xen:comment>Simpler case: just a single widget</xen:comment>
-	<div class="section widget-container">
+	<div class="{$classSection} widget-container">
 		<xen:foreach loop="$tabs" value="$tab">
-			<div class="secondaryContent widget {$tab.class}" id="widget-{$tab.widget_id}">
+			<div class="{$classInnerSection} widget {$tab.class}" id="widget-{$tab.widget_id}">
 				<xen:if is="{$tab.html}">
 					<h3>
 						<xen:if is="{$tab.extraData.link}">

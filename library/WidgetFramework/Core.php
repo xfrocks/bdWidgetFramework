@@ -336,7 +336,12 @@ class WidgetFramework_Core {
 				}
 				
 				$widgetGroupHtml = implode('', $noWrapper);
-				$widgetGroupHtml .= WidgetFramework_WidgetRenderer::wrap($tabs, $template, $widgetGroup['name']);
+				
+				if (!empty($tabs))
+				{
+					$groupId = $widgetGroup['name'] . substr(md5(serialize(array_keys($tabs))), 0, 5); 
+					$widgetGroupHtml .= WidgetFramework_WidgetRenderer::wrap($tabs, $params, $template, $groupId);
+				}
 				
 				if ($widgetGroup['display_order'] >= 0) {
 					$html .= $widgetGroupHtml;
