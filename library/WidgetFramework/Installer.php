@@ -139,7 +139,7 @@ class WidgetFramework_Installer {
 
 		$db->query("DROP TABLE IF EXISTS `xf_widget`");
 		$db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
-		$db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE '" + WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX + "%'");
+		$db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE '" . WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . "%'");
 		$db->query("DELETE FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
 		$db->query("DELETE FROM `xf_node` WHERE `node_type_id` = 'WF_WidgetPage'");
 	}
