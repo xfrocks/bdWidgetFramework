@@ -197,9 +197,12 @@
 		<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
 	</xen:textboxunit>
 </xen:if>]]></template>
-    <template title="wf_widget_options_birthday"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
-	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
-</xen:textboxunit>]]></template>
+    <template title="wf_widget_options_birthday"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 0}">
+	<xen:explain>
+		{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}
+		{xen:phrase wf_limit_zero_explain}
+	</xen:explain>
+</xen:spinboxunit>]]></template>
     <template title="wf_widget_options_callback"><![CDATA[<xen:controlunit label="{xen:phrase php_callback}:" explain="{xen:phrase wf_widget_callback_callback_explain}">
 	<xen:textbox placeholder="{xen:phrase class}" name="{$namePrefix}callback_class" value="{$options.callback_class}" size="25" />
 	::
@@ -210,9 +213,9 @@
 </xen:checkboxunit>]]></template>
     <template title="wf_widget_options_feed_reader"><![CDATA[<xen:textboxunit label="{xen:phrase url}:" name="{$namePrefix}url" value="{$options.url}" />
 
-<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_feed_entry}"}</xen:explain>
-</xen:textboxunit>
+</xen:spinboxunit>
 
 <xen:radiounit label="{xen:phrase wf_display_mode}:" name="{$namePrefix}displayMode" value="{xen:if '{$options.displayMode}', $options.displayMode, 'plusImage'}">
 	<xen:option value="titleOnly">{xen:phrase wf_widget_feed_reader_display_mode_title_only}</xen:option>
@@ -231,9 +234,9 @@
     <template title="wf_widget_options_poll"><![CDATA[<xen:textboxunit label="{xen:phrase wf_poll_thread_id}:" name="{$namePrefix}thread_id" value="{$options.thread_id}">
 	<xen:explain>{xen:phrase wf_poll_thread_id_explain}</xen:explain>
 </xen:textboxunit>]]></template>
-    <template title="wf_widget_options_recent_status"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+    <template title="wf_widget_options_recent_status"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_profile_posts}"}</xen:explain>
-</xen:textboxunit>
+</xen:spinboxunit>
 
 <xen:radiounit label="{xen:phrase wf_recent_status_friends_only}:" name="{$namePrefix}friends_only">
 	<xen:option value="1" selected="{$options.friends_only}">{xen:phrase yes}</xen:option>
@@ -249,9 +252,9 @@
     <template title="wf_widget_options_template"><![CDATA[<xen:textboxunit name="{$namePrefix}template" label="Template" value="{$options.template}">
 	<xen:explain>{xen:phrase wf_template_explain}</xen:explain>
 </xen:textboxunit>]]></template>
-    <template title="wf_widget_options_threads"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+    <template title="wf_widget_options_threads"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_threads}"}</xen:explain>
-</xen:textboxunit>
+</xen:spinboxunit>
 
 <xen:selectunit label="{xen:phrase wf_widget_threads_type}:" name="{$namePrefix}type" value="{$options.type}">
 	<xen:option value="new">{xen:phrase wf_widget_threads_type_new}</xen:option>
@@ -262,9 +265,9 @@
 	<xen:option value="polls">{xen:phrase polls}</xen:option>
 </xen:selectunit>
 
-<xen:textboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{$options.cutoff}">
+<xen:spinboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{xen:if '!empty({$options.cutoff})', $options.cutoff, 5}">
 	<xen:explain>{xen:phrase wf_widget_threads_popular_cutoff_explain}</xen:explain>
-</xen:textboxunit>
+</xen:spinboxunit>
 
 <xen:selectunit label="{xen:phrase wf_threads_forums}:" name="{$namePrefix}forums" value="" size="5" multiple="true" inputclass="textCtrl">
 	<xen:options source="$forums" />
@@ -283,9 +286,9 @@
 <xen:checkboxunit label="{xen:phrase display_styling}">
 	<xen:option name="{$namePrefix}display[show_prefix]" value="1" selected="{$options.display.show_prefix}">{xen:phrase wf_threads_display_show_prefix}</xen:option>
 </xen:checkboxunit>]]></template>
-    <template title="wf_widget_options_users"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+    <template title="wf_widget_options_users"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
-</xen:textboxunit>
+</xen:spinboxunit>
 
 <xen:selectunit label="{xen:phrase wf_order_factor}:" name="{$namePrefix}order" value="{$options.order}">
 	<xen:option value="register_date">{xen:phrase wf_register_date}</xen:option>
@@ -303,9 +306,9 @@
 	<xen:option value="avatarOnly">{xen:phrase wf_widget_users_display_mode_avatar_only}</xen:option>
 	<xen:option value="avatarOnlyBigger">{xen:phrase wf_widget_users_display_mode_avatar_only_bigger}</xen:option>
 </xen:radiounit>]]></template>
-    <template title="wf_widget_options_xfrm_resources"><![CDATA[<xen:textboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
+    <template title="wf_widget_options_xfrm_resources"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_resources}"}</xen:explain>
-</xen:textboxunit>
+</xen:spinboxunit>
 
 <xen:selectunit label="{xen:phrase wf_widget_xfrm_resources_type}:" name="{$namePrefix}type" value="{$options.type}">
 	<xen:option value="new">{xen:phrase wf_widget_xfrm_resources_type_new}</xen:option>
@@ -318,9 +321,6 @@
 	<xen:options source="$categories" />
 	<xen:explain>{xen:phrase wf_xfrm_resources_categories_explain}</xen:explain>
 </xen:selectunit>]]></template>
-    <template title="wf_widget_options_xfshout"><![CDATA[<xen:textboxunit label="{xen:phrase wf_xfshout_instance_id}:" name="{$namePrefix}instance_id" value="{$options.instance_id}">
-	<xen:explain>{xen:phrase wf_xfshout_instance_id_explain}</xen:explain>
-</xen:textboxunit>]]></template>
     <template title="wf_widget_page_delete"><![CDATA[<xen:title>{xen:phrase wf_confirm_deletion_of_widget_page}: {$widgetPage.title}</xen:title>
 <xen:h1>{xen:phrase wf_confirm_deletion_of_widget_page}</xen:h1>
 
@@ -504,6 +504,7 @@
 	width: 20px;
 }]]></template>
   </admin_templates>
+  <admin_template_modifications/>
   <code_events>
     <event event_id="widget_framework_ready"><![CDATA[<p>Called after the framework is loaded and ready in both front-end and back-end. You should use this to register your renderers.</p>
 
@@ -513,19 +514,20 @@ Arguments:
 </ol>]]></event>
   </code_events>
   <code_event_listeners>
-    <listener event_id="file_health_check" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="file_health_check" active="1" description=""/>
-    <listener event_id="front_controller_post_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_post_view" active="1" description=""/>
-    <listener event_id="front_controller_pre_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_pre_view" active="1" description=""/>
-    <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" description=""/>
-    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
-    <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
-    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" description=""/>
-    <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" description=""/>
-    <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" description=""/>
-    <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" description=""/>
+    <listener event_id="file_health_check" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="file_health_check" active="1" hint="" description=""/>
+    <listener event_id="front_controller_post_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_post_view" active="1" hint="" description=""/>
+    <listener event_id="front_controller_pre_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_pre_view" active="1" hint="" description=""/>
+    <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" hint="" description=""/>
+    <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" hint="" description=""/>
+    <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
   <email_templates/>
+  <email_template_modifications/>
   <optiongroups/>
   <permissions>
     <permission_groups>
@@ -1395,5 +1397,6 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 </xen:if>]]></template>
   </templates>
+  <template_modifications/>
   <bb_code_media_sites/>
 </addon>

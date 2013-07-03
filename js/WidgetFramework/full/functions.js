@@ -45,10 +45,14 @@
 		},
 
 		ajaxSuccess: function(ajaxData) {
-			if (ajaxData) {
-				this.$target.html(ajaxData.templateHtml);
-			} else {
-				this.$target.html('');
+			var $target = this.$target;
+			
+			$target.children().empty().remove();
+			
+			if (XenForo.hasTemplateHtml(ajaxData)) {
+				new XenForo.ExtLoader(ajaxData, function() {
+					$(ajaxData.templateHtml).xfInsert('appendTo', $target, 'show');
+				});
 			}
 		}
 	};
