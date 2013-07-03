@@ -125,7 +125,7 @@
 <xen:require js="js/xenforo/filter_list.js" />
 <xen:require css="widget_framework.css" />
 
-<xen:form action="{xen:adminlink widgets}" class="section AutoValidator">
+<xen:form action="{xen:adminlink widgets/toggle}" class="section AutoValidator">
 
 	<h2 class="subHeading">
 		<xen:include template="filter_list_controls" />
@@ -165,7 +165,9 @@
 	delete="{xen:adminlink 'widgets/delete', $widget}"
 	label="{xen:if '!{$widget.rendererNotFound}', '{$widget.title}'}"
 	labelclass="{xen:if '!{$widget.active}', 'disabled'}"
-	snippet="{$widget.rendererName} / {$widget.display_order}">
+	snippet="{$widget.rendererName} / {$widget.display_order}"
+	toggle="{$widget.active}"
+	toggletitle="{xen:phrase enable_disable_x, 'title={$widget.title}'}">>
 	<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
 		<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
 		<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>

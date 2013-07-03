@@ -7,32 +7,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 	public function actionIndex() {
 		$widgets = $this->_getWidgetModel()->getGlobalWidgets(false);
 
-		if ($this->_request->isPost()) {
-			// probably a toggle request
-			$widgetExists = $this->_input->filterSingle('widgetExists', array(XenForo_Input::UINT, 'array' => true));
-			$widgetInput = $this->_input->filterSingle('widget', array(XenForo_Input::UINT, 'array' => true));
-
-			if (!empty($widgetExists)) {
-				foreach ($widgets AS $widgetId => $widget) {
-					if (isset($widgetExists[$widgetId])) {
-						$widgetActive = (isset($widgetInput[$widgetId]) && $widgetInput[$widgetId] ? 1 : 0);
-
-						if ($widget['active'] != $widgetActive) {
-							$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-							$dw->setExistingData($widget, true);
-							$dw->set('active', $widgetActive);
-							$dw->save();
-						}
-					}
-				}
-
-				return $this->responseRedirect(
-						XenForo_ControllerResponse_Redirect::SUCCESS,
-						XenForo_Link::buildAdminLink('widgets')
-				);
-			}
-		}
-
 		$viewParams = array(
 				'widgets' => $widgets,
 		);
@@ -222,6 +196,14 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
 		$widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
 		return $this->_switchWidgetActiveStateAndGetResponse($widgetId, 0);
+	}
+
+	public function actionToggle()
+	{
+		return $this->_getToggleResponse(
+				$this->_getWidgetModel()->getGlobalWidgets(false),
+				'WidgetFramework_DataWriter_Widget',
+				'widgets');
 	}
 
 	public function actionImport() {
