@@ -203,11 +203,14 @@ class WidgetFramework_Core {
 		
 		$originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
 		
-		$params['_WidgetFramework_positionCode'] = $templateName;
-		$html = $this->_renderWidgetsFor($templateName, $params, $template, $originalHtml);
+		$html = $this->_renderWidgetsFor($templateName, $params + array(
+				'_WidgetFramework_positionCode' => $templateName,
+		), $template, $originalHtml);
 		
-		$params['_WidgetFramework_positionCode'] = 'all';
-		$html = $this->_renderWidgetsFor('all', $params, $template, $html);
+		$html = $this->_renderWidgetsFor('all', $params + array(
+				'_WidgetFramework_positionCode' => $templateName,
+				'_WidgetFramework_positionAll' => true,
+		), $template, $html);
 
 		if (defined(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_FLAG)) {
 			// the flag is used to avoid string searching as much as possible
