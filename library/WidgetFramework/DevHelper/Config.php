@@ -51,7 +51,7 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base {
 			'widget_page_id' => array('name' => 'widget_page_id', 'type' => 'uint', 'required' => true, 'default' => 0)
 		)
 	);
-	protected $_exportPath = '/Users/sondh/Dropbox/XenForo/WidgetFramework';
+	protected $_exportPath = '/Users/sondh/XenForo/WidgetFramework';
 	protected $_exportIncludes = array();
 	
 	/**
