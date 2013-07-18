@@ -618,7 +618,9 @@ abstract class WidgetFramework_WidgetRenderer {
 	}
 
 	public static function markTemplateToProcess(XenForo_ControllerResponse_View $view) {
-		$view->params['_WidgetFramework_toBeProcessed'] = true;
+		if (!empty($view->templateName)) {
+			$view->params['_WidgetFramework_toBeProcessed'] = $view->templateName;
+		}
 
 		if (!empty($view->subView)) {
 			// also mark any direct sub view to be processed
@@ -635,9 +637,11 @@ abstract class WidgetFramework_WidgetRenderer {
 		// sondh@2013-04-02
 		// switch to use custom parameter set by markTemplateToProcess
 		// to determine which template to ignore
-		$ignored = empty($templateParams['_WidgetFramework_toBeProcessed']);
+		if (empty($templateParams['_WidgetFramework_toBeProcessed']) OR $templateParams['_WidgetFramework_toBeProcessed'] != $templateName) {
+			return true;
+		}
 
-		return $ignored;
+		return false;
 	}
 
 	public static function setContainerData($widget, array $containerData) {
