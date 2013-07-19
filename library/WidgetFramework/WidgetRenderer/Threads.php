@@ -127,12 +127,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 		elseif ($widget['options']['type'] == 'recent')
 		{
-			$threads = $threadModel->getThreads($conditions, $fetchOptions + array(
+			$threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
 					'order' => 'last_post_date',
 					'orderDirection' => 'desc',
 					'join' => 0,
-					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_AVATAR,
-			));
+					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_USER,
+			)));
 		}
 		elseif ($widget['options']['type'] == 'popular')
 		{
