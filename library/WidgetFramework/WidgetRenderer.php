@@ -396,7 +396,9 @@ abstract class WidgetFramework_WidgetRenderer {
 		$isLocked = false;
 		$cached = WidgetFramework_Core::loadCachedWidget($lockId, false, true);
 		if (!empty($cached) AND is_array($cached)) {
-			$isLocked = !empty($cached[WidgetFramework_Model_Cache::KEY_HTML]) AND $cached[WidgetFramework_Model_Cache::KEY_HTML] === '1';
+			if (!empty($cached[WidgetFramework_Model_Cache::KEY_TIME]) AND XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME] < 10) {
+				$isLocked = !empty($cached[WidgetFramework_Model_Cache::KEY_HTML]) AND $cached[WidgetFramework_Model_Cache::KEY_HTML] === '1';
+			}
 		}
 		if ($isLocked) {
 			// locked by some other requests!
