@@ -6,9 +6,7 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 			'options' => array(
 				'thread_id' => XenForo_Input::UINT,
 			),
-			'useCache' => true,
-			'useUserCache' => true,
-			'cacheSeconds' => 300, // cache for 5 minutes
+			'useWrapper' => false,
 		);
 	}
 	

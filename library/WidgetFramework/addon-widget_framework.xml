@@ -706,7 +706,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="58" version_string="2.3.2b"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="62" version_string="2.3.3d"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -747,18 +747,25 @@ All customization should go to wf_default_EXTRA.css
 	border-bottom: 0 !important;
 }
 
-.widget-poll .pollContent {
-	padding-left: 0 !important;
-	width: auto !important;
+.widget-poll .pollBlock .pollContent {
+	padding-left: 0;
+	width: auto;
 }
 
-.widget-poll. .pollResults {
-	border-top: 0 !important;
-	border-bottom: 0 !important;
+.widget-poll .pollBlock .pollOptions,
+.widget-poll .pollBlock .pollResults {
+	border: 0;
 }
 
-.widget-poll .barCell {
-	display: none;
+.widget-poll .pollBlock .pollResult h3.optionText {
+	border: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.widget-poll .pollBlock .pollResult .count {
+	padding: 0;
 }
 
 .avatarList .WidgetFramework_nextToAvatar {
@@ -1111,43 +1118,70 @@ All customization should go to wf_default_EXTRA.css
 <div id="WidgetPageContent">
 	{xen:raw $layoutTree}
 </div>]]></template>
-    <template title="wf_widget_poll" version_id="5" version_string="0.9.3"><![CDATA[<xen:if is="{$poll}">
-	<xen:include template="wf_widget_poll_block">
-		<xen:set var="$options">
-			<xen:if is="{$poll.canVote}">
-				<xen:include template="poll_block_vote" />
-			<xen:else />
-				<xen:include template="poll_block_result" />
-			</xen:if>
-		</xen:set>
-	</xen:include>
-</xen:if>]]></template>
-    <template title="wf_widget_poll_block" version_id="5" version_string="0.9.3"><![CDATA[<xen:if is="{$poll}">
-	<xen:require css="wf_default.css" />
-	<xen:require css="polls.css" />
-	<xen:require js="js/xenforo/discussion.js" />
-	<div id="PollContainer" class="NoAutoHeader widget-poll">
-		<form action="{xen:link threads/poll/vote, $thread}" method="post" class="pollBlock AutoValidator PollVoteForm" data-container="#PollContainer">
-			<div class="pollContent">
-				<div class="question">
-					<a href="{xen:link threads, $thread}" class="questionText">{$poll.question}</a>
-					
-					<xen:if is="{$poll.close_date}">
-						<div class="pollNotes closeDate muted">{xen:phrase this_poll_will_close_on_x, 'close_date={xen:datetime $poll.close_date, absolute}'}</div>
+    <template title="wf_widget_poll" version_id="62" version_string="2.3.3d"><![CDATA[<xen:edithint template="wf_default.css" />
+
+<xen:if is="{$poll}">
+	<div class="section">
+		<div class="secondaryContent widget {$widget.class}" id="widget-{$widget.widget_id}">
+			<h3><a href="{xen:link threads, $thread}">{$poll.question}</a></h3>
+
+			<xen:include template="wf_widget_poll_block">
+				<xen:set var="$options">
+					<xen:if is="{$poll.canVote}">
+						<xen:include template="poll_block_vote" />
+					<xen:else />
+						<xen:include template="wf_widget_poll_block_result" />
 					</xen:if>
-				</div>
-					
-				{xen:raw $options}
-			</div>
-		
-			<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
-			<input type="hidden" name="_fromWidget" value="1" />
-		</form>
+				</xen:set>
+			</xen:include>
+		</div>
 	</div>
 </xen:if>]]></template>
-    <template title="wf_widget_poll_thread_results" version_id="5" version_string="0.9.3"><![CDATA[<xen:include template="wf_widget_poll_block">
+    <template title="wf_widget_poll_block" version_id="62" version_string="2.3.3d"><![CDATA[<xen:require css="wf_default.css" />
+<xen:require css="polls.css" />
+<xen:require js="js/xenforo/discussion.js" />
+
+<div id="PollContainer" class="NoAutoHeader widget-poll">
+	<form action="{xen:link threads/poll/vote, $thread}" method="post" class="pollBlock AutoValidator PollVoteForm" data-container="#PollContainer">
+		<div class="pollContent">
+			{xen:raw $options}
+		</div>
+
+		<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
+		<input type="hidden" name="_fromWidget" value="1" />
+	</form>
+</div>]]></template>
+    <template title="wf_widget_poll_block_result" version_id="62" version_string="2.3.3d"><![CDATA[<xen:edithint template="wf_default.css" />
+<xen:edithint template="polls.css" />
+
+<div class="overlayScroll pollResultsOverlay">
+
+	<ol class="pollResults">
+	<xen:foreach loop="$poll.responses" key="$pollResponseId" value="$response">
+		<li class="pollResult {xen:if $response.hasVoted, voted}">
+			<xen:if is="{$response.hasVoted}">
+				<div class="votedIconCell" title="{xen:phrase your_vote}">*</div>
+			<xen:else />
+				<div class="votedIconCell"></div>
+			</xen:if>
+			<h3 class="optionText" {xen:if $response.hasVoted, 'title="{xen:phrase your_vote}"'}>
+				{$response.response}
+			</h3>
+
+			<div class="count"{xen:if '{$poll.voter_count}', ' class="Tooltip" title="{xen:number {xen:calc "100 * {$response.response_vote_count} / {$poll.voter_count}"}, 1}%"'}>
+				<xen:if is="{$poll.public_votes} AND {$response.response_vote_count}">
+					<a href="{xen:link threads/poll/results, $thread, 'poll_response_id={$pollResponseId}'}" class="concealed OverlayTrigger">{xen:phrase x_votes, 'count={xen:number $response.response_vote_count}'}</a>
+				<xen:else />
+					{xen:phrase x_votes, 'count={xen:number $response.response_vote_count}'}
+				</xen:if>
+			</div>
+		</li>
+	</xen:foreach>
+	</ol>
+</div>]]></template>
+    <template title="wf_widget_poll_thread_results" version_id="62" version_string="2.3.3d"><![CDATA[<xen:include template="wf_widget_poll_block">
 	<xen:set var="$options">
-		<xen:include template="poll_block_result" />
+		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
     <template title="wf_widget_recent_status" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{$users}">
