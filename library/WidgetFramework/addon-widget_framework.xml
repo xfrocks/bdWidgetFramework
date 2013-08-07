@@ -1387,9 +1387,9 @@ All customization should go to wf_default_EXTRA.css
         </ul>
     </div>
 </xen:if>]]></template>
-    <template title="wf_widget_users_find" version_id="32" version_string="1.4.2"><![CDATA[<xen:require css="member_list.css" />
+    <template title="wf_widget_users_find" version_id="62" version_string="2.3.3d"><![CDATA[<xen:require css="member_list.css" />
 
-<div class="section">
+<div class="section widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<form action="{xen:link members}" method="post" class="secondaryContent findMember">
 		<h3><a href="{xen:link online}" title="{xen:phrase see_all_online_users}">{xen:phrase find_member}</a></h3>
 
