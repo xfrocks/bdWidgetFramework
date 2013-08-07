@@ -1215,9 +1215,9 @@ All customization should go to wf_default_EXTRA.css
         </xen:if>
     </div>
 </xen:if>]]></template>
-    <template title="wf_widget_share_page" version_id="31" version_string="1.4.1"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_share_page" version_id="62" version_string="2.3.3d"><![CDATA[<xen:require css="wf_default.css" />
 
-<div class="WidgetFramework_WidgetRenderer_ShareThisPage">
+<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
     <xen:include template="sidebar_share_page" />
 </div>]]></template>
     <template title="wf_widget_stats" version_id="1" version_string="0.9"><![CDATA[<div class="pairsJustified">
