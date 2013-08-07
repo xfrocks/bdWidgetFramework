@@ -69,7 +69,6 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 					(forum.node_id = thread.node_id)';
 		}
 
-
 		if (!empty($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN]) AND empty($fetchOptions['join']))
 		{
 			if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_USER)
@@ -89,10 +88,9 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 						(user.user_id = thread.last_post_user_id)';
 			}
 
-
 		}
 
-		return compact('selectFields' , 'joinTables', 'orderClause');
+		return compact('selectFields', 'joinTables', 'orderClause');
 	}
 
 	public function WidgetFramework_prepareThreadForRendererThreads(array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
@@ -104,4 +102,5 @@ class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Mo
 
 		return $thread;
 	}
+
 }

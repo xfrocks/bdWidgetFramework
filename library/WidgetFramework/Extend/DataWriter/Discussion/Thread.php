@@ -1,7 +1,9 @@
 <?php
 
-class WidgetFramework_Extend_DataWriter_Discussion_Thread_Base extends XFCP_WidgetFramework_Extend_DataWriter_Discussion_Thread {
-	protected function _postSaveAfterTransaction() {
+class WidgetFramework_Extend_DataWriter_Discussion_Thread_Base extends XFCP_WidgetFramework_Extend_DataWriter_Discussion_Thread
+{
+	protected function _postSaveAfterTransaction()
+	{
 		// commented out due to problem with high traffic board
 		// since 1.3
 		// WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
@@ -10,31 +12,41 @@ class WidgetFramework_Extend_DataWriter_Discussion_Thread_Base extends XFCP_Widg
 		return parent::_postSaveAfterTransaction();
 	}
 
-	protected function _WidgetFramework_clearCachedWidgets() {
+	protected function _WidgetFramework_clearCachedWidgets()
+	{
 		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Threads');
 		WidgetFramework_Core::clearCachedWidgetByClass('WidgetFramework_WidgetRenderer_Poll');
 	}
+
 }
 
 if (XenForo_Application::$versionId < 1020000)
 {
 	// old versions
-	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base {
-		protected function _discussionPostDelete(array $messages) {
+	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base
+	{
+		protected function _discussionPostDelete(array $messages)
+		{
 			$this->_WidgetFramework_clearCachedWidgets();
 
 			return parent::_discussionPostDelete($messages);
 		}
+
 	}
+
 }
 else
 {
 	// v1.2+
-	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base {
-		protected function _discussionPostDelete() {
+	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base
+	{
+		protected function _discussionPostDelete()
+		{
 			$this->_WidgetFramework_clearCachedWidgets();
 
 			return parent::_discussionPostDelete();
 		}
+
 	}
+
 }

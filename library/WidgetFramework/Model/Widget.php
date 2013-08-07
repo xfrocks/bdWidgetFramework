@@ -1,21 +1,27 @@
 <?php
-class WidgetFramework_Model_Widget extends XenForo_Model {
+
+class WidgetFramework_Model_Widget extends XenForo_Model
+{
 	const SIMPLE_CACHE_KEY = 'widgets';
 
-	public function importFromFile($fileName, $deleteAll = false) {
-		if (!file_exists($fileName) || !is_readable($fileName)) {
+	public function importFromFile($fileName, $deleteAll = false)
+	{
+		if (!file_exists($fileName) || !is_readable($fileName))
+		{
 			throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'), true);
 		}
 
-		try {
+		try
+		{
 			$document = new SimpleXMLElement($fileName, 0, true);
-		} catch (Exception $e) {
-			throw new XenForo_Exception(
-					new XenForo_Phrase('provided_file_was_not_valid_xml_file'), true
-			);
+		}
+		catch (Exception $e)
+		{
+			throw new XenForo_Exception(new XenForo_Phrase('provided_file_was_not_valid_xml_file'), true);
 		}
 
-		if ($document->getName() != 'widget_framework') {
+		if ($document->getName() != 'widget_framework')
+		{
 			throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_not_an_widgets_xml_file'), true);
 		}
 
@@ -23,11 +29,13 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 
 		XenForo_Db::beginTransaction();
 
-		if ($deleteAll) {
+		if ($deleteAll)
+		{
 			// get global widgets from database and delete them all!
 			// NOTE: ignore widget page widgets
 			$existingWidgets = $this->getGlobalWidgets(false, false);
-			foreach ($existingWidgets as $existingWidget) {
+			foreach ($existingWidgets as $existingWidget)
+			{
 				$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 				$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
 
@@ -37,7 +45,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 			}
 		}
 
-		foreach ($widgets as $widget) {
+		foreach ($widgets as $widget)
+		{
 			$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 			$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
 
@@ -57,16 +66,19 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 		XenForo_Db::commit();
 	}
 
-	public function getGlobalWidgets($useCached = true, $prepare = true) {
+	public function getGlobalWidgets($useCached = true, $prepare = true)
+	{
 		$widgets = false;
 
 		/* try to use cached data */
-		if ($useCached) {
+		if ($useCached)
+		{
 			$widgets = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY);
 		}
 
 		/* fallback to database */
-		if ($widgets === false) {
+		if ($widgets === false)
+		{
 			$widgets = $this->fetchAllKeyed("
 					SELECT *
 					FROM `xf_widget`
@@ -76,8 +88,10 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 		}
 
 		/* prepare information for widgets */
-		if ($prepare) {
-			foreach ($widgets as &$widget) {
+		if ($prepare)
+		{
+			foreach ($widgets as &$widget)
+			{
 				$this->_prepare($widget);
 			}
 		}
@@ -85,7 +99,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 		return $widgets;
 	}
 
-	public function getWidgetPageWidgets($widgetPageId) {
+	public function getWidgetPageWidgets($widgetPageId)
+	{
 		$widgets = false;
 		$widgets = $this->fetchAllKeyed("
 				SELECT *
@@ -94,18 +109,22 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 				ORDER BY display_order ASC
 				", 'widget_id', array($widgetPageId));
 
-		foreach ($widgets as &$widget) {
+		foreach ($widgets as &$widget)
+		{
 			$this->_prepare($widget);
 		}
-		
+
 		return $widgets;
 	}
 
-	public function reverseNegativeDisplayOrderWidgets(array &$widgets) {
+	public function reverseNegativeDisplayOrderWidgets(array &$widgets)
+	{
 		$positiveWidgets = array();
 
-		foreach (array_keys($widgets) as $widgetId) {
-			if ($widgets[$widgetId]['display_order'] >= 0) {
+		foreach (array_keys($widgets) as $widgetId)
+		{
+			if ($widgets[$widgetId]['display_order'] >= 0)
+			{
 				$positiveWidgets[$widgetId] = $widgets[$widgetId];
 				unset($widgets[$widgetId]);
 			}
@@ -116,58 +135,72 @@ class WidgetFramework_Model_Widget extends XenForo_Model {
 		$widgets = array_reverse($widgets, true /* preserves keys */);
 
 		// new adding back the positive ones
-		foreach ($positiveWidgets as $widgetId => $widget) {
+		foreach ($positiveWidgets as $widgetId => $widget)
+		{
 			$widgets[$widgetId] = $widget;
 		}
 
 		// done! I feel so smart. LOL
 	}
 
-	public function getWidgetById($widgetId) {
+	public function getWidgetById($widgetId)
+	{
 		$widget = $this->_getDb()->fetchRow("
 				SELECT *
 				FROM `xf_widget`
 				WHERE widget_id = ?
 				", array($widgetId));
 
-		if (!empty($widget)) {
+		if (!empty($widget))
+		{
 			$this->_prepare($widget);
 		}
 
 		return $widget;
 	}
 
-	public function buildCache() {
+	public function buildCache()
+	{
 		$widgets = $this->getGlobalWidgets(false, false);
 		XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
 	}
 
-	protected function _prepare(array &$widget) {
+	protected function _prepare(array &$widget)
+	{
 		$widget['options'] = @unserialize($widget['options']);
-		if (empty($widget['options'])) $widget['options'] = array();
+		if (empty($widget['options']))
+			$widget['options'] = array();
 
 		$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
-		if (empty($widget['template_for_hooks'])) $widget['template_for_hooks'] = array();
+		if (empty($widget['template_for_hooks']))
+			$widget['template_for_hooks'] = array();
 
 		$renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
 
-		if ($renderer) {
+		if ($renderer)
+		{
 			$widget['rendererName'] = $renderer->getName();
 			$configuration = $renderer->getConfiguration();
-			$options =& $configuration['options'];
-			foreach ($options as $optionKey => $optionType) {
-				if (!isset($widget['options'][$optionKey])) {
+			$options = &$configuration['options'];
+			foreach ($options as $optionKey => $optionType)
+			{
+				if (!isset($widget['options'][$optionKey]))
+				{
 					$widget['options'][$optionKey] = '';
 				}
 			}
-		} else {
+		}
+		else
+		{
 			$widget['rendererName'] = new XenForo_Phrase('xf_unknown_renderer', array('class' => $widget['class']));
 			$widget['rendererNotFound'] = true;
 			$widget['active'] = false;
 		}
 
-		if (empty($widget['title'])) {
+		if (empty($widget['title']))
+		{
 			$widget['title'] = $widget['rendererName'];
 		}
 	}
+
 }

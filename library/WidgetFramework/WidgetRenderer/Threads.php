@@ -5,19 +5,19 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 	protected function _getConfiguration()
 	{
 		return array(
-				'name' => 'Threads',
-				'options' => array(
-						'type' => XenForo_Input::STRING,
-						'cutoff' => XenForo_Input::UINT,
-						'forums' => XenForo_Input::ARRAY_SIMPLE,
-						'prefixes' => XenForo_Input::ARRAY_SIMPLE,
-						'as_guest' => XenForo_Input::UINT,
-						'limit' => XenForo_Input::UINT,
-						'display' => XenForo_Input::ARRAY_SIMPLE,
-				),
-				'useCache' => true,
-				'useUserCache' => true,
-				'cacheSeconds' => 300, // cache for 5 minutes
+			'name' => 'Threads',
+			'options' => array(
+				'type' => XenForo_Input::STRING,
+				'cutoff' => XenForo_Input::UINT,
+				'forums' => XenForo_Input::ARRAY_SIMPLE,
+				'prefixes' => XenForo_Input::ARRAY_SIMPLE,
+				'as_guest' => XenForo_Input::UINT,
+				'limit' => XenForo_Input::UINT,
+				'display' => XenForo_Input::ARRAY_SIMPLE,
+			),
+			'useCache' => true,
+			'useUserCache' => true,
+			'cacheSeconds' => 300, // cache for 5 minutes
 		);
 	}
 
@@ -30,10 +30,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 	{
 		$params = $template->getParams();
 
-		$forums = $this->_helperPrepareForumsOptionSource(
-				empty($params['options']['forums']) ? array(): $params['options']['forums'],
-				true
-		);
+		$forums = $this->_helperPrepareForumsOptionSource(empty($params['options']['forums']) ? array() : $params['options']['forums'], true);
 
 		$prefixes = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_ThreadPrefix')->getPrefixOptions();
 		foreach ($prefixes as $prefixGroupId => &$groupPrefixes)
@@ -57,7 +54,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 	{
 		if ('type' == $optionKey)
 		{
-			if (!in_array($optionValue, array('new', 'recent', 'popular', 'most_replied', 'most_liked', 'polls')))
+			if (!in_array($optionValue, array(
+				'new',
+				'recent',
+				'popular',
+				'most_replied',
+				'most_liked',
+				'polls'
+			)))
 			{
 				throw new XenForo_Exception(new XenForo_Phrase('wf_widget_threads_invalid_type'), true);
 			}
@@ -93,22 +97,19 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		/* @var $threadModel XenForo_Model_Thread */
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
-		$forumIds = $this->_helperGetForumIdsFromOption(
-				$widget['options']['forums'],
-				$params,
-				empty($widget['options']['as_guest']) ? false : true
-		);
+		$forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
 
 		$conditions = array(
-				'node_id' => $forumIds,
-				'deleted' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
-				'moderated' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
+			'node_id' => $forumIds,
+			'deleted' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
+			'moderated' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
 		);
 		$fetchOptions = array(
-				// 'readUserId' => XenForo_Visitor::getUserId(), -- disable this to save some headeach of db join
-				// 'includeForumReadDate' => true, -- this's not necessary too
-				'limit' => $widget['options']['limit'],
-				'join' => XenForo_Model_Thread::FETCH_AVATAR,
+			// 'readUserId' => XenForo_Visitor::getUserId(), -- disable this to save some
+			// headeach of db join
+			// 'includeForumReadDate' => true, -- this's not necessary too
+			'limit' => $widget['options']['limit'],
+			'join' => XenForo_Model_Thread::FETCH_AVATAR,
 		);
 
 		// process prefix
@@ -121,35 +122,37 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		if ($widget['options']['type'] == 'new')
 		{
 			$threads = $threadModel->getThreads($conditions, $fetchOptions + array(
-					'order' => 'post_date',
-					'orderDirection' => 'desc',
+				'order' => 'post_date',
+				'orderDirection' => 'desc',
 			));
 		}
 		elseif ($widget['options']['type'] == 'recent')
 		{
 			$threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
-					'order' => 'last_post_date',
-					'orderDirection' => 'desc',
-					'join' => 0,
-					WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_USER,
+				'order' => 'last_post_date',
+				'orderDirection' => 'desc',
+				'join' => 0,
+				WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_USER,
 			)));
 		}
 		elseif ($widget['options']['type'] == 'popular')
 		{
-			$threads = $threadModel->getThreads($conditions + array(
-					WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
-			), $fetchOptions + array(
-					'order' => 'view_count',
-					'orderDirection' => 'desc',
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array(
+					'>',
+					XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+				), ), $fetchOptions + array(
+				'order' => 'view_count',
+				'orderDirection' => 'desc',
 			));
 		}
 		elseif ($widget['options']['type'] == 'most_replied')
 		{
-			$threads = $threadModel->getThreads($conditions + array(
-					WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
-			), $fetchOptions + array(
-					'order' => 'reply_count',
-					'orderDirection' => 'desc',
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array(
+					'>',
+					XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+				), ), $fetchOptions + array(
+				'order' => 'reply_count',
+				'orderDirection' => 'desc',
 			));
 
 			foreach (array_keys($threads) as $threadId)
@@ -163,11 +166,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 		elseif ($widget['options']['type'] == 'most_liked')
 		{
-			$threads = $threadModel->getThreads($conditions + array(
-					WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array('>', XenForo_Application::$time - $widget['options']['cutoff']*86400),
-			), $fetchOptions + array(
-					'order' => 'first_post_likes',
-					'orderDirection' => 'desc',
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array(
+					'>',
+					XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+				), ), $fetchOptions + array(
+				'order' => 'first_post_likes',
+				'orderDirection' => 'desc',
 			));
 
 			foreach (array_keys($threads) as $threadId)
@@ -181,11 +185,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 		elseif ($widget['options']['type'] == 'polls')
 		{
-			$threads = $threadModel->getThreads($conditions + array(
-					WidgetFramework_Extend_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
-			), $fetchOptions + array(
-					'order' => 'post_date',
-					'orderDirection' => 'desc',
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll', ), $fetchOptions + array(
+				'order' => 'post_date',
+				'orderDirection' => 'desc',
 			));
 		}
 		else
@@ -238,8 +240,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		return $renderTemplateObject->render();
 	}
 
-	public function useUserCache(array $widget) {
-		if (!empty($widget['options']['as_guest'])) {
+	public function useUserCache(array $widget)
+	{
+		if (!empty($widget['options']['as_guest']))
+		{
 			// using guest permission
 			// there is no reason to use the user cache
 			return false;
@@ -248,14 +252,18 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		return parent::useUserCache($widget);
 	}
 
-	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array()) {
-		if ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
+	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
+	{
+		if ($this->_helperDetectSpecialForums($widget['options']['forums']))
+		{
 			// we have to use special cache id when special forum ids are used
-			if (isset($params['forum'])) {
+			if (isset($params['forum']))
+			{
 				$suffix[] = 'f' . $params['forum']['node_id'];
 			}
 		}
 
 		return parent::_getCacheId($widget, $positionCode, $params, $suffix);
 	}
+
 }
