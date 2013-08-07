@@ -12,7 +12,7 @@ class WidgetFramework_WidgetRenderer_VisitorPanel extends WidgetFramework_Widget
 	}
 	
 	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
-		return 'sidebar_visitor_panel';
+		return 'wf_widget_visitor_panel';
 	}
 	
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
