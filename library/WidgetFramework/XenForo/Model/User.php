@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_Model_User extends XFCP_WidgetFramework_Extend_Model_User
+class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Model_User
 {
 
 	const CONDITIONS_STATUS_DATE = 'WidgetFramework_status_date';

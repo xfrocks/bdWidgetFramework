@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_ControllerPublic_Thread extends XFCP_WidgetFramework_Extend_ControllerPublic_Thread
+class WidgetFramework_XenForo_ControllerPublic_Thread extends XFCP_WidgetFramework_XenForo_ControllerPublic_Thread
 {
 	public function actionPollResults()
 	{

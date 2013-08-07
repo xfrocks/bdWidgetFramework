@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_DataWriter_Discussion_Thread_Base extends XFCP_WidgetFramework_Extend_DataWriter_Discussion_Thread
+class WidgetFramework_XenForo_DataWriter_Discussion_Thread_Base extends XFCP_WidgetFramework_XenForo_DataWriter_Discussion_Thread
 {
 	protected function _postSaveAfterTransaction()
 	{
@@ -23,7 +23,7 @@ class WidgetFramework_Extend_DataWriter_Discussion_Thread_Base extends XFCP_Widg
 if (XenForo_Application::$versionId < 1020000)
 {
 	// old versions
-	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base
+	class WidgetFramework_XenForo_DataWriter_Discussion_Thread extends WidgetFramework_XenForo_DataWriter_Discussion_Thread_Base
 	{
 		protected function _discussionPostDelete(array $messages)
 		{
@@ -38,7 +38,7 @@ if (XenForo_Application::$versionId < 1020000)
 else
 {
 	// v1.2+
-	class WidgetFramework_Extend_DataWriter_Discussion_Thread extends WidgetFramework_Extend_DataWriter_Discussion_Thread_Base
+	class WidgetFramework_XenForo_DataWriter_Discussion_Thread extends WidgetFramework_XenForo_DataWriter_Discussion_Thread_Base
 	{
 		protected function _discussionPostDelete()
 		{

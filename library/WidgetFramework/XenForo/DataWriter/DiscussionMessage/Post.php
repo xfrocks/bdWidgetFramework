@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_DataWriter_DiscussionMessage_Post extends XFCP_WidgetFramework_Extend_DataWriter_DiscussionMessage_Post
+class WidgetFramework_XenForo_DataWriter_DiscussionMessage_Post extends XFCP_WidgetFramework_XenForo_DataWriter_DiscussionMessage_Post
 {
 	protected function _postSaveAfterTransaction()
 	{

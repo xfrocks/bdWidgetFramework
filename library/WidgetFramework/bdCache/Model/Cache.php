@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_bdCache_Model_Cache extends XFCP_WidgetFramework_Extend_bdCache_Model_Cache
+class WidgetFramework_bdCache_Model_Cache extends XFCP_WidgetFramework_bdCache_Model_Cache
 {
 
 	public function isSupportedRoute($controllerName, $action)

@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_ControllerPublic_Misc extends XFCP_WidgetFramework_Extend_ControllerPublic_Misc
+class WidgetFramework_XenForo_ControllerPublic_Misc extends XFCP_WidgetFramework_XenForo_ControllerPublic_Misc
 {
 	public function actionWfDisableReveal()
 	{

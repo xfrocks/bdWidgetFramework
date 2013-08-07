@@ -132,12 +132,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'order' => 'last_post_date',
 				'orderDirection' => 'desc',
 				'join' => 0,
-				WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_USER,
+				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_USER,
 			)));
 		}
 		elseif ($widget['options']['type'] == 'popular')
 		{
-			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array(
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
 					'>',
 					XenForo_Application::$time - $widget['options']['cutoff'] * 86400
 				), ), $fetchOptions + array(
@@ -147,7 +147,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 		elseif ($widget['options']['type'] == 'most_replied')
 		{
-			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array(
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
 					'>',
 					XenForo_Application::$time - $widget['options']['cutoff'] * 86400
 				), ), $fetchOptions + array(
@@ -166,7 +166,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 		elseif ($widget['options']['type'] == 'most_liked')
 		{
-			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_POST_DATE => array(
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
 					'>',
 					XenForo_Application::$time - $widget['options']['cutoff'] * 86400
 				), ), $fetchOptions + array(
@@ -185,7 +185,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 		elseif ($widget['options']['type'] == 'polls')
 		{
-			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_Extend_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll', ), $fetchOptions + array(
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll', ), $fetchOptions + array(
 				'order' => 'post_date',
 				'orderDirection' => 'desc',
 			));

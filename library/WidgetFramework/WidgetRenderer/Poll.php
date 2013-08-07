@@ -61,12 +61,12 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 
 			$thread = $threadModel->getThreads(array(
 				'node_id' => $forumIds,
-				WidgetFramework_Extend_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
+				WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
 			), array(
 				'order' => 'post_date',
 				'orderDirection' => 'desc',
-				WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
-				WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
+				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
+				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
 				'limit' => 1,
 			));
 
@@ -79,8 +79,8 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 		else
 		{
 			$thread = $threadModel->getThreadById($widget['options']['thread_id'], array(
-				WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
-				WidgetFramework_Extend_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
+				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
+				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
 			));
 
 			if ($thread['discussion_type'] != 'poll')

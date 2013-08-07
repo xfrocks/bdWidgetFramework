@@ -44,7 +44,7 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 		$month = XenForo_Locale::getFormattedDate($todayStart, 'm');
 
 		$conditions = array(
-			WidgetFramework_Extend_Model_User::CONDITIONS_DOB => array(
+			WidgetFramework_XenForo_Model_User::CONDITIONS_DOB => array(
 				'd' => $day,
 				'm' => $month
 			),

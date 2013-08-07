@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_DataWriter_User extends XFCP_WidgetFramework_Extend_DataWriter_User
+class WidgetFramework_XenForo_DataWriter_User extends XFCP_WidgetFramework_XenForo_DataWriter_User
 {
 	protected function _postSaveAfterTransaction()
 	{

@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_Extend_Model_Thread extends XFCP_WidgetFramework_Extend_Model_Thread
+class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_Model_Thread
 {
 	const CONDITIONS_DISCUSSION_TYPE = 'WidgetFramework_discussion_type';
 	const CONDITIONS_POST_DATE = 'WidgetFramework_post_date';

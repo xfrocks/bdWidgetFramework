@@ -161,14 +161,7 @@ class WidgetFramework_Listener
 
 		if (in_array($class, $classesNeedsExtending))
 		{
-			if (strpos($class, 'XenForo_') === 0)
-			{
-				$extend[] = str_replace('XenForo_', 'WidgetFramework_Extend_', $class);
-			}
-			else
-			{
-				$extend[] = 'WidgetFramework_Extend_' . $class;
-			}
+			$extend[] = 'WidgetFramework_' . $class;
 		}
 	}
 
