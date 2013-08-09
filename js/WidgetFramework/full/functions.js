@@ -51,7 +51,7 @@
 			
 			if (XenForo.hasTemplateHtml(ajaxData)) {
 				new XenForo.ExtLoader(ajaxData, function() {
-					$(ajaxData.templateHtml).xfInsert('appendTo', $target, 'show');
+					$('<div />').html(ajaxData.templateHtml).children().xfInsert('appendTo', $target, 'show');
 				});
 			}
 		}
