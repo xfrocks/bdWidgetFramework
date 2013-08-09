@@ -525,6 +525,7 @@ Arguments:
     <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="load_class_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_view" active="1" hint="" description=""/>
     <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" hint="" description=""/>
     <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" hint="" description=""/>
     <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" hint="" description=""/>
