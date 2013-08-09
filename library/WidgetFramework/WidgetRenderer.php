@@ -1,6 +1,13 @@
 <?php
 abstract class WidgetFramework_WidgetRenderer
 {
+	const PARAM_TO_BE_PROCESSED = '_WidgetFramework_toBeProcessed';
+	const PARAM_POSITION_CODE = '_WidgetFramework_positionCode';
+	const PARAM_POSITION_ALL = '_WidgetFramework_positionAll';
+	const PARAM_IS_HOOK = '_WidgetFramework_isHook';
+	const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
+	const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
+	
 	/**
 	 * Required method: define basic configuration of the renderer.
 	 * Available configuration parameters:
@@ -717,13 +724,15 @@ abstract class WidgetFramework_WidgetRenderer
 	public static function wrap(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId = false)
 	{
 		if ($groupId === false)
+		{
 			$groupId = 'widget-rand-' . rand(1000, 9999);
+		}
 		$groupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $groupId);
 
-		$wrapper = $template->create('wf_widget_wrapper', $params + array(
+		$wrapper = $template->create('wf_widget_wrapper', array_merge($params, array(
 			'tabs' => $tabs,
 			'groupId' => $groupId
-		));
+		)));
 
 		return $wrapper->render();
 	}
@@ -759,7 +768,7 @@ abstract class WidgetFramework_WidgetRenderer
 	{
 		if (!empty($view->templateName))
 		{
-			$view->params['_WidgetFramework_toBeProcessed'] = $view->templateName;
+			$view->params[self::PARAM_TO_BE_PROCESSED] = $view->templateName;
 		}
 
 		if (!empty($view->subView))
@@ -780,7 +789,7 @@ abstract class WidgetFramework_WidgetRenderer
 		// sondh@2013-04-02
 		// switch to use custom parameter set by markTemplateToProcess
 		// to determine which template to ignore
-		if (empty($templateParams['_WidgetFramework_toBeProcessed']) OR $templateParams['_WidgetFramework_toBeProcessed'] != $templateName)
+		if (empty($templateParams[self::PARAM_TO_BE_PROCESSED]) OR $templateParams[self::PARAM_TO_BE_PROCESSED] != $templateName)
 		{
 			return true;
 		}
