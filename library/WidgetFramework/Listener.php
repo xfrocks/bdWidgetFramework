@@ -1,4 +1,5 @@
 <?php
+
 class WidgetFramework_Listener
 {
 	public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
@@ -50,7 +51,7 @@ class WidgetFramework_Listener
 			WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
 
 			// get a copy of container data for widget rendered
-			$positionCode = $template->getParam('_WidgetFramework_positionCode');
+			$positionCode = $template->getParam(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE);
 			if ($positionCode !== null)
 			{
 				WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
@@ -162,6 +163,35 @@ class WidgetFramework_Listener
 		if (in_array($class, $classesNeedsExtending))
 		{
 			$extend[] = 'WidgetFramework_' . $class;
+		}
+	}
+
+	public static function load_class_view($class, array &$extend)
+	{
+		static $extended1 = false;
+		static $extended2 = false;
+
+		if (defined('WIDGET_FRAMEWORK_LOADED'))
+		{
+			if (empty($extended1))
+			{
+				$extend[] = 'WidgetFramework_XenForo_View1';
+				$extended1 = $class;
+			}
+			elseif (empty($extended2))
+			{
+				$extend[] = 'WidgetFramework_XenForo_View2';
+				$extended2 = $class;
+			}
+			else
+			{
+				// load_class_view got called again!?
+				if (XenForo_Application::debugMode())
+				{
+					// only throw exception in debug mode because I'm not quite sure
+					throw new XenForo_Exception(sprintf('[bd] Widget Framework: load_class_view is being called thrice (%s, %s, %s)', $extended1, $extended2, $class));
+				}
+			}
 		}
 	}
 

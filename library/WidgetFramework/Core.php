@@ -243,12 +243,12 @@ class WidgetFramework_Core
 
 		$originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
 
-		$html = $this->_renderWidgetsFor($templateName, $params + array('_WidgetFramework_positionCode' => $templateName, ), $template, $originalHtml);
+		$html = $this->_renderWidgetsFor($templateName, array_merge($params, array(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
 
-		$html = $this->_renderWidgetsFor('all', $params + array(
-			'_WidgetFramework_positionCode' => $templateName,
-			'_WidgetFramework_positionAll' => true,
-		), $template, $html);
+		$html = $this->_renderWidgetsFor('all', array_merge($params, array(
+			WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE => $templateName,
+			WidgetFramework_WidgetRenderer::PARAM_POSITION_ALL => true,
+		)), $template, $html);
 
 		if (defined(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_FLAG))
 		{
@@ -278,9 +278,9 @@ class WidgetFramework_Core
 
 	public function renderWidgetsForHook($hookName, array $hookParams, XenForo_Template_Abstract $template, &$hookHtml)
 	{
-		$hookParams['_WidgetFramework_parentTemplate'] = $template->getTemplateName();
-		$hookParams['_WidgetFramework_positionCode'] = 'hook:' . $hookName;
-		$hookParams['_WidgetFramework_isHook'] = true;
+		$hookParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_TEMPLATE] = $template->getTemplateName();
+		$hookParams[WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE] = 'hook:' . $hookName;
+		$hookParams[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK] = true;
 
 		// sondh@2013-04-02
 		// merge hook params with template's params
@@ -294,12 +294,18 @@ class WidgetFramework_Core
 	protected function _renderWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template, $html)
 	{
 		if (!isset($this->_positions[$positionCode]))
+		{
+			// stop rendering if no widget configured for this position
 			return $html;
+		}
 		$position = &$this->_positions[$positionCode];
 
 		if (empty($position['prepared']))
+		{
+			// stop rendering if not prepared
 			return $html;
-		// stop rendering if not prepared
+		}
+		
 
 		foreach ($position['widgets'] as &$widgetGroup)
 		{
@@ -383,7 +389,7 @@ class WidgetFramework_Core
 						if ($renderer->useWrapper($widget))
 						{
 							$widgetClass = $widget['class'];
-							if (!empty($params['_WidgetFramework_isHook']))
+							if (!empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]))
 							{
 								$widgetClass .= ' non-sidebar-widget';
 							}
