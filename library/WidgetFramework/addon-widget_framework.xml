@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.3.5" version_id="64" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.3.6" version_id="65" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -510,6 +510,27 @@
   </admin_templates>
   <admin_template_modifications/>
   <code_events>
+    <event event_id="load_class_widget_renderer"><![CDATA[<p>Called when instantiating a widget renderer. This event can be used to extend the class that will be instantiated dynamically.</p>
+
+<p>Callback signature:</p>
+<blockquote><code>$class, <em>array</em> &$extend</code></blockquote>
+
+<p>Arguments:</p>
+<ol>
+	<li><code><em>string</em> $class</code> - the name of the class to be created</li>
+	<li><code><em>array</em> &$extend</code> - a modifiable list of classes that wish to extend the class. See below.</li>
+</ol>
+
+<p>To use this event properly, determine if the class is one you want to extend. If so, add a new entry to $extend with the name of the class that should extend it. This class MUST be defined as follows:</p>
+
+<pre>class My_Class_Name extends XFCP_My_Class_Name
+{
+	// functionality to extend/override
+}</pre>
+
+<p>This class must extend the non-existent XFCP_x class. This will be resolved at run time.</p>
+
+<p><b>Event Hint:</b> Name of the class that is being loaded.</p>]]></event>
     <event event_id="widget_framework_ready"><![CDATA[<p>Called after the framework is loaded and ready in both front-end and back-end. You should use this to register your renderers.</p>
 
 Arguments:
@@ -1185,7 +1206,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_recent_status" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{$users}">
+    <template title="wf_widget_recent_status" version_id="64" version_string="2.3.5"><![CDATA[<xen:if is="{$users}">
     <xen:require css="wf_default.css" />
     
     <div class="avatarList">
@@ -1205,9 +1226,9 @@ All customization should go to wf_default_EXTRA.css
         <xen:comment>The below block of status posting form was copied from `navigation_visitor_tab`</xen:comment>
         <xen:if is="{$canUpdateStatus}">
         	<form action="LINK_MEMBER_POST_VISITOR" method="post" class="statusPoster AutoValidator" data-optInOut="OptIn">
-        		<textarea name="message" class="textCtrl StatusEditor Elastic" placeholder="{xen:phrase update_your_status}..." rows="1" cols="40" style="height:14px" data-statusEditorCounter="#visMenuSEdCount" data-nofocus="true"></textarea>
+        		<textarea name="message" class="textCtrl StatusEditor Elastic" placeholder="{xen:phrase update_your_status}..." rows="1" cols="40" style="height:14px" data-statusEditorCounter="#visMenuSEdCount-{$widget.widget_id}" data-nofocus="true"></textarea>
         		<div class="submitUnit">
-        			<span id="visMenuSEdCount" title="{xen:phrase characters_remaining}"></span>
+        			<span id="visMenuSEdCount-{$widget.widget_id}" title="{xen:phrase characters_remaining}"></span>
         			<input type="submit" class="button primary MenuCloser" value="{xen:phrase post_verb}" accesskey="s" />
         			<input type="hidden" name="_xfToken" value="CSRF_TOKEN_PAGE" /><xen:comment>This will be updated in WidgetFramework_WidgetRenderer_RecentStatus::extraPrepare()</xen:comment>
         			<input type="hidden" name="return" value="1" /> 

@@ -7,7 +7,7 @@ abstract class WidgetFramework_WidgetRenderer
 	const PARAM_IS_HOOK = '_WidgetFramework_isHook';
 	const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
 	const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
-	
+
 	/**
 	 * Required method: define basic configuration of the renderer.
 	 * Available configuration parameters:
@@ -739,24 +739,13 @@ abstract class WidgetFramework_WidgetRenderer
 
 	public static function create($class)
 	{
-		// TODO: do we need to resolve dynamic class?
-		/*
-		 $createClass = XenForo_Application::resolveDynamicClass($class,
-		'widget_renderer');
-		 if (!$createClass) {
-		 throw new XenForo_Exception("Invalid widget renderer '$class' specified");
-		 }
-		 */
-		$createClass = $class;
+		$createClass = XenForo_Application::resolveDynamicClass($class, 'widget_renderer');
+		if (!$createClass)
+		{
+			throw new XenForo_Exception("Invalid model '$class' specified");
+		}
 
-		if (class_exists($createClass))
-		{
-			return new $createClass;
-		}
-		else
-		{
-			throw new XenForo_Exception("Invalid widget renderer '$class' specified");
-		}
+		return new $createClass;
 	}
 
 	public static function getNamePrefix()

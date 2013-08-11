@@ -27,7 +27,9 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 		if ('limit' == $optionKey)
 		{
 			if (empty($optionValue))
+			{
 				$optionValue = 5;
+			}
 		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);

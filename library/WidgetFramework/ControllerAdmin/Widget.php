@@ -121,10 +121,10 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		}
 		$dw->bulkSet($dwInput);
 
-		if ($this->_input->filterSingle('options_loaded', XenForo_Input::STRING) == $dwInput['class'])
+		$renderer = WidgetFramework_Core::getRenderer($dwInput['class']);
+		if ($this->_input->filterSingle('options_loaded', XenForo_Input::STRING) == get_class($renderer))
 		{
 			// process options now
-			$renderer = WidgetFramework_Core::getRenderer($dwInput['class']);
 			$widgetOptions = $renderer->parseOptionsInput($this->_input, $dw->getMergedData());
 			$dw->set('options', $widgetOptions);
 		}
