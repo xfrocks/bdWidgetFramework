@@ -15,21 +15,21 @@ abstract class WidgetFramework_WidgetRenderer
 	 * 	- options: An array of renderer's options
 	 * 	- useCache: Flag to determine the renderer can be cached or not
 	 * 	- useUserCache: Flag to determine the renderer needs to be cached by an
-	 * user-basis.
+	 * 					user-basis.
 	 * 					Internally, this is implemented by getting the current user permission
 	 * 					combination id (not the user id as normally expected). This is done to
 	 * 					make sure the cache is used effectively
 	 * 	- useLiveCache: Flag to determine the renderer wants to by pass writing to
-	 * database
+	 * 					database
 	 * 					when it's being cached. This may be crucial if the renderer does a lot
 	 * 					of thing on a big board. It's recommended to use a option for this
 	 * 					because not all forum owner has a live cache system setup
-	 * (XCache/memcached)
+	 * 					(XCache/memcached)
 	 * 	- cacheSeconds: A numeric value to specify the maximum age of the cache (in
-	 * seconds).
+	 * 					seconds).
 	 * 					If the cache is too old, the widget will be rendered from scratch
 	 * 	- useWrapper: Flag to determine the widget should be wrapped with a wrapper.
-	 * Renderers
+	 * 					Renderers
 	 * 					that support wrapper will have an additional benefits of tabs: only
 	 * 					wrapper-enabled widgets will be possible to use in tabbed interface
 	 */

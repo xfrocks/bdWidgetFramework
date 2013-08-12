@@ -997,12 +997,12 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_online_staff" version_id="62" version_string="2.3.3d"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_online_staff" version_id="65" version_string="2.3.6"><![CDATA[<xen:if hascontent="true">
 <div class="avatarList WidgetFramework_WidgetRenderer_OnlineStaff">
 	<ul>
 		<xen:contentcheck>
 			<xen:foreach loop="$onlineUsers.records" value="$user">
-				<xen:if is="{$user.is_staff}">
+				<xen:if is="(isset({$user.is_staff}) AND {$user.is_staff}) OR (!isset({$user.is_staff}) AND ({$user.is_moderator} OR {$user.is_admin}))">
 					<li class="user-{$user.user_id}">
 						<xen:avatar user="$user" size="s" img="true" />
 						<xen:username user="$user" rich="true" />
