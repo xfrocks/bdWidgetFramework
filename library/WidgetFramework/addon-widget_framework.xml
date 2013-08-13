@@ -1422,7 +1422,7 @@ All customization should go to wf_default_EXTRA.css
     <template title="wf_widget_visitor_panel" version_id="62" version_string="2.3.3d"><![CDATA[<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<xen:include template="sidebar_visitor_panel" />
 </div>]]></template>
-    <template title="wf_widget_wrapper" version_id="58" version_string="2.3.2b"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_wrapper" version_id="65" version_string="2.3.6"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{$_WidgetFramework_isHook}">
 	<xen:set var="$classSection">section sectionMain</xen:set>
@@ -1454,9 +1454,7 @@ All customization should go to wf_default_EXTRA.css
 				<xen:foreach loop="$tabs" value="$tab">
 					<xen:if is="{$tab.html}">
 						<li id="widget-tab-{$tab.widget_id}" class="widget {$tab.class}">
-							<ul>
-								{xen:raw $tab.html}
-							</ul>
+							{xen:raw $tab.html}
 						</li>
 					</xen:if>
 				</xen:foreach>
