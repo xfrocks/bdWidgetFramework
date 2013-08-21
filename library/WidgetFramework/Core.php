@@ -469,7 +469,7 @@ class WidgetFramework_Core
 	protected function _loadCachedWidget($cacheId, $useUserCache, $useLiveCache)
 	{
 		// disable cache in debug environment...
-		if (self::debugMode())
+		if (self::debugMode() OR WidgetFramework_Option::get('revealEnabled'))
 		{
 			return false;
 		}

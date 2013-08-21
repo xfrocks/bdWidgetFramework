@@ -700,14 +700,19 @@ abstract class WidgetFramework_WidgetRenderer
 	{
 		$configuration = $this->getConfiguration();
 		if (empty($configuration['useCache']))
+		{
 			return false;
-		// what?
+		}
 		if ($configuration['cacheSeconds'] <= 0)
+		{
 			return true;
+		}
 
 		$seconds = XenForo_Application::$time - $cached['time'];
 		if ($seconds > $configuration['cacheSeconds'])
+		{
 			return false;
+		}
 
 		return true;
 	}
