@@ -224,13 +224,33 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			}
 			$threadForums = $forumModel->getForumsByIds($threadForumIds);
 
-			foreach ($threads as &$thread)
-			{
-				$threadPermissions = (isset($nodePermissions[$thread['node_id']]) ? $nodePermissions[$thread['node_id']] : array());
-				$threadForum = (isset($threadForums[$thread['node_id']]) ? $threadForums[$thread['node_id']] : array());
-				$viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
+			$viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
 
-				$thread = $threadModel->WidgetFramework_prepareThreadForRendererThreads($thread, $threadForum, $threadPermissions, $viewingUser);
+			foreach (array_keys($threads) as $threadId)
+			{
+				$threadRef = &$threads[$threadId];
+
+				if (empty($nodePermissions[$threadRef['node_id']]))
+				{
+					unset($threads[$threadId]);
+					continue;
+				}
+				$threadPermissionsRef = &$nodePermissions[$threadRef['node_id']];
+
+				if (empty($threadForums[$threadRef['node_id']]))
+				{
+					unset($threads[$threadId]);
+					continue;
+				}
+				$threadForumRef = &$threadForums[$thread['node_id']];
+
+				if (!$threadModel->canViewThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser))
+				{
+					unset($threads[$threadId]);
+					continue;
+				}
+
+				$threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
 			}
 		}
 
