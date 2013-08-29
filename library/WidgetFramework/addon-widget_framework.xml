@@ -163,9 +163,9 @@
 	id="{$widget.widget_id}"
 	href="{xen:adminlink 'widgets/edit', $widget}"
 	delete="{xen:adminlink 'widgets/delete', $widget}"
-	label="{xen:if '!{$widget.rendererNotFound}', '{$widget.title}'}"
+	label="{xen:if '{$widget.title}', '{$widget.title}', '{$widget.rendererName}'}"
 	labelclass="{xen:if '!{$widget.active}', 'disabled'}"
-	snippet="{$widget.rendererName} / {$widget.display_order}"
+	snippet="{xen:if '{$widget.title}', '{$widget.rendererName} ({xen:number $widget.display_order})', '({xen:number $widget.display_order})'}"
 	toggle="{$widget.active}"
 	toggletitle="{xen:phrase enable_disable_x, 'title={$widget.title}'}">>
 	<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
@@ -604,6 +604,7 @@ $visitor['user_id'] > 0 -- means: show the widget for logged in users only.<br/>
 <br/>
 XenForo_Template_Helper_Core::helperIsMemberOf($visitor, 3) -- means: show the widget for users of user group #3 only.]]></phrase>
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
+    <phrase title="wf_feed_reader" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
     <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
@@ -639,6 +640,7 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
     <phrase title="wf_recent" version_id="1" version_string="0.9"><![CDATA[Recent]]></phrase>
+    <phrase title="wf_recent_status" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
     <phrase title="wf_recent_status_friends_only_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show statuses from user's friend list only. It will display from all users if current user is not logged in.]]></phrase>
     <phrase title="wf_recent_status_show_update_form" version_id="17" version_string="1.0.9"><![CDATA[Show Update Form]]></phrase>
@@ -663,8 +665,9 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_threads_forums" version_id="7" version_string="0.9.5"><![CDATA[Forums]]></phrase>
     <phrase title="wf_threads_forums_explain" version_id="7" version_string="0.9.5"><![CDATA[Select the forums you want to search for threads (ignore all viewing permissions). Leave nothing selected to include all viewable forums.]]></phrase>
     <phrase title="wf_threads_prefixes_explain" version_id="47" version_string="2.1.1"><![CDATA[Select the prefixes you want to filter the threads against.]]></phrase>
+    <phrase title="wf_thread_with_poll" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
-    <phrase title="wf_title_explain" version_id="1" version_string="0.9"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer instead.]]></phrase>
+    <phrase title="wf_title_explain" version_id="65" version_string="2.3.6"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer. Or you can use a phrase by using {xen:phrase title} format.]]></phrase>
     <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
     <phrase title="wf_use_live_cache" version_id="29" version_string="1.3.4"><![CDATA[Use Live Cache]]></phrase>
@@ -686,19 +689,19 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff_explain" version_id="26" version_string="1.3.1"><![CDATA[Threads older than this number of days won't make it to the list that supports cutoff as noted above.]]></phrase>
     <phrase title="wf_widget_threads_type" version_id="1" version_string="0.9"><![CDATA[Widget Type]]></phrase>
-    <phrase title="wf_widget_threads_type_most_liked" version_id="26" version_string="1.3.1"><![CDATA[Most Liked Threads (supports cutoff)]]></phrase>
-    <phrase title="wf_widget_threads_type_most_replied" version_id="26" version_string="1.3.1"><![CDATA[Most Replied Thread (supports cutoff)]]></phrase>
+    <phrase title="wf_widget_threads_type_most_liked" version_id="65" version_string="2.3.6"><![CDATA[Most Liked Threads]]></phrase>
+    <phrase title="wf_widget_threads_type_most_replied" version_id="65" version_string="2.3.6"><![CDATA[Most Replied Thread]]></phrase>
     <phrase title="wf_widget_threads_type_new" version_id="1" version_string="0.9"><![CDATA[New Threads]]></phrase>
-    <phrase title="wf_widget_threads_type_popular" version_id="26" version_string="1.3.1"><![CDATA[Most Viewed Theads (supports cutoff)]]></phrase>
+    <phrase title="wf_widget_threads_type_popular" version_id="65" version_string="2.3.6"><![CDATA[Most Viewed Theads]]></phrase>
     <phrase title="wf_widget_threads_type_recent" version_id="26" version_string="1.3.1"><![CDATA[New Replies]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
     <phrase title="wf_widget_xfrm_resources_invalid_type" version_id="47" version_string="2.1.1"><![CDATA[Invalid type selected.]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type" version_id="47" version_string="2.1.1"><![CDATA[Widget Type]]></phrase>
-    <phrase title="wf_widget_xfrm_resources_type_highest_rating" version_id="47" version_string="2.1.1"><![CDATA[Top Resources (Highest Rating)]]></phrase>
+    <phrase title="wf_widget_xfrm_resources_type_highest_rating" version_id="65" version_string="2.3.6"><![CDATA[Top Resources]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_latest_update" version_id="47" version_string="2.1.1"><![CDATA[Recently Updated]]></phrase>
-    <phrase title="wf_widget_xfrm_resources_type_most_downloaded" version_id="47" version_string="2.1.1"><![CDATA[Popular Resources (Most Downloaded)]]></phrase>
+    <phrase title="wf_widget_xfrm_resources_type_most_downloaded" version_id="65" version_string="2.3.6"><![CDATA[Popular Resources]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_new" version_id="47" version_string="2.1.1"><![CDATA[New Resources]]></phrase>
     <phrase title="wf_xfrm_resources_categories_explain" version_id="47" version_string="2.1.1"><![CDATA[Select the categories you want to search for resources. Leave nothing selected to search in all of them.]]></phrase>
     <phrase title="wf_xfshout_instance_id" version_id="7" version_string="0.9.5"><![CDATA[Instance ID]]></phrase>

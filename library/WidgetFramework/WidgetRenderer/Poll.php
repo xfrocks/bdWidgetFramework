@@ -2,6 +2,16 @@
 
 class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 {
+	public function extraPrepareTitle(array $widget)
+	{
+		if (empty($widget['title']))
+		{
+			return new XenForo_Phrase('wf_thread_with_poll');
+		}
+
+		return parent::extraPrepareTitle($widget);
+	}
+
 	protected function _getConfiguration()
 	{
 		return array(

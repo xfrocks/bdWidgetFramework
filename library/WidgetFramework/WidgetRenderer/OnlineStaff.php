@@ -2,9 +2,19 @@
 
 class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetRenderer
 {
+	public function extraPrepareTitle(array $widget)
+	{
+		if (empty($widget['title']))
+		{
+			return new XenForo_Phrase('staff_online_now');
+		}
+
+		return parent::extraPrepareTitle($widget);
+	}
+
 	protected function _getConfiguration()
 	{
-		return array('name' => 'Users Online Now (Staff)', );
+		return array('name' => 'Users Online Now (Staff)');
 	}
 
 	protected function _getOptionsTemplate()

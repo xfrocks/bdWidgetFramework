@@ -690,10 +690,34 @@ abstract class WidgetFramework_WidgetRenderer
 
 	public function extraPrepare(array $widget, &$html)
 	{
-		return array('link' => $this->_getExtraDataLink($widget),
-			// want extra data here?
-			// simply override this method in sub-classes
-		);
+		$extra = array();
+
+		$link = $this->_getExtraDataLink($widget);
+		if (!empty($link))
+		{
+			$extra['link'] = $link;
+		}
+
+		return $extra;
+	}
+
+	public function extraPrepareTitle(array $widget)
+	{
+		if (!empty($widget['title']))
+		{
+			if (preg_match('/^{xen:phrase ([^}]+)}$/i', $widget['title'], $matches))
+			{
+				return new XenForo_Phrase($matches[1]);
+			}
+			else
+			{
+				return $widget['title'];
+			}
+		}
+		else
+		{
+			return $this->getName();
+		}
 	}
 
 	public function isCacheUsable(array &$cached, array $widget)
@@ -739,7 +763,7 @@ abstract class WidgetFramework_WidgetRenderer
 			'groupId' => $groupId
 		)));
 
-		return $wrapper->render();
+		return $wrapper;
 	}
 
 	public static function create($class)

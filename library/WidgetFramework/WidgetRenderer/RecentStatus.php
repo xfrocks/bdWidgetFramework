@@ -2,6 +2,16 @@
 
 class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_WidgetRenderer
 {
+	public function extraPrepareTitle(array $widget)
+	{
+		if (empty($widget['title']))
+		{
+			return new XenForo_Phrase('wf_recent_status');
+		}
+
+		return parent::extraPrepareTitle($widget);
+	}
+
 	protected function _getConfiguration()
 	{
 		return array(

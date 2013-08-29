@@ -40,6 +40,11 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base
 					$positions[$position]['widgets'][] = &$widget;
 				}
 			}
+			
+			if (!empty($widget['renderer']))
+			{
+				$widget['title'] = $widget['renderer']->extraPrepareTitle($widget);
+			}
 		}
 
 		usort($positions, array(

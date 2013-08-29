@@ -2,6 +2,16 @@
 
 class WidgetFramework_WidgetRenderer_Stats extends WidgetFramework_WidgetRenderer
 {
+	public function extraPrepareTitle(array $widget)
+	{
+		if (empty($widget['title']))
+		{
+			return new XenForo_Phrase('forum_statistics');
+		}
+
+		return parent::extraPrepareTitle($widget);
+	}
+
 	protected function _getConfiguration()
 	{
 		return array('name' => 'Forum Statistics');

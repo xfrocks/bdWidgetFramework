@@ -92,14 +92,14 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		{
 			foreach ($widgets as &$widget)
 			{
-				$this->_prepare($widget);
+				$this->prepareWidget($widget);
 			}
 		}
 
 		return $widgets;
 	}
 
-	public function getWidgetPageWidgets($widgetPageId)
+	public function getWidgetPageWidgets($widgetPageId, $prepare = true)
 	{
 		$widgets = false;
 		$widgets = $this->fetchAllKeyed("
@@ -109,9 +109,12 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 				ORDER BY display_order ASC
 				", 'widget_id', array($widgetPageId));
 
-		foreach ($widgets as &$widget)
+		if ($prepare)
 		{
-			$this->_prepare($widget);
+			foreach ($widgets as &$widget)
+			{
+				$this->prepareWidget($widget);
+			}
 		}
 
 		return $widgets;
@@ -151,11 +154,6 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 				WHERE widget_id = ?
 				", array($widgetId));
 
-		if (!empty($widget))
-		{
-			$this->_prepare($widget);
-		}
-
 		return $widget;
 	}
 
@@ -165,20 +163,30 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
 	}
 
-	protected function _prepare(array &$widget)
+	public function prepareWidget(array &$widget)
 	{
+		if (empty($widget))
+		{
+			return $widget;
+		}
+		
 		$widget['options'] = @unserialize($widget['options']);
 		if (empty($widget['options']))
+		{
 			$widget['options'] = array();
+		}
 
 		$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
 		if (empty($widget['template_for_hooks']))
+		{
 			$widget['template_for_hooks'] = array();
+		}
 
 		$renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
 
 		if ($renderer)
 		{
+			$widget['renderer'] =& $renderer;
 			$widget['rendererName'] = $renderer->getName();
 			$configuration = $renderer->getConfiguration();
 			$options = &$configuration['options'];
@@ -196,11 +204,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 			$widget['rendererNotFound'] = true;
 			$widget['active'] = false;
 		}
-
-		if (empty($widget['title']))
-		{
-			$widget['title'] = $widget['rendererName'];
-		}
+		
+		return $widget;
 	}
 
 }

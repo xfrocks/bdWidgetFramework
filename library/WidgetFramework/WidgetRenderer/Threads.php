@@ -2,6 +2,30 @@
 
 class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRenderer
 {
+	public function extraPrepareTitle(array $widget)
+	{
+		if (empty($widget['title']))
+		{
+			switch ($widget['options']['type'])
+			{
+				case 'new':
+					return new XenForo_Phrase('wf_widget_threads_type_new');
+				case 'recent':
+					return new XenForo_Phrase('wf_widget_threads_type_recent');
+				case 'popular':
+					return new XenForo_Phrase('wf_widget_threads_type_popular');
+				case 'most_replied':
+					return new XenForo_Phrase('wf_widget_threads_type_most_replied');
+				case 'most_liked':
+					return new XenForo_Phrase('wf_widget_threads_type_most_liked');
+				case 'polls':
+					return new XenForo_Phrase('wf_widget_threads_type_polls');
+			}
+		}
+
+		return parent::extraPrepareTitle($widget);
+	}
+
 	protected function _getConfiguration()
 	{
 		return array(

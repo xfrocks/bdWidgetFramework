@@ -11,7 +11,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 	{
 		$widgets = $this->_getWidgetModel()->getGlobalWidgets(false);
 
-		$viewParams = array('widgets' => $widgets, );
+		$viewParams = array('widgets' => $widgets);
 
 		return $this->responseView('WidgetFramework_ViewAdmin_Widget_List', 'wf_widget_list', $viewParams);
 	}
@@ -61,6 +61,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 	{
 		$widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
 		$widget = $this->_getWidgetOrError($widgetId);
+		$this->_getWidgetModel()->prepareWidget($widget);
 
 		$viewParams = array(
 			'widget' => $widget,
@@ -78,6 +79,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		if ($widgetId)
 		{
 			$widget = $this->_getWidgetModel()->getWidgetById($widgetId);
+			$this->_getWidgetModel()->prepareWidget($widget);
 		}
 		else
 		{
@@ -104,6 +106,15 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		$this->_assertPostOnly();
 
 		$widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
+		if (!empty($widgetId))
+		{
+			$widget = $this->_getWidgetOrError($widgetId);
+			$this->_getWidgetModel()->prepareWidget($widget);
+		}
+		else
+		{
+			$widget = array();
+		}
 
 		$dwInput = $this->_input->filter(array(
 			'widget_page_id' => XenForo_Input::UINT,
@@ -117,7 +128,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 		if ($widgetId)
 		{
-			$dw->setExistingData($widgetId);
+			$dw->setExistingData($widget, true);
 		}
 		$dw->bulkSet($dwInput);
 
@@ -125,7 +136,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		if ($this->_input->filterSingle('options_loaded', XenForo_Input::STRING) == get_class($renderer))
 		{
 			// process options now
-			$widgetOptions = $renderer->parseOptionsInput($this->_input, $dw->getMergedData());
+			$widgetOptions = $renderer->parseOptionsInput($this->_input, $widget);
 			$dw->set('options', $widgetOptions);
 		}
 		else

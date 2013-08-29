@@ -2,6 +2,26 @@
 
 class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_WidgetRenderer
 {
+	public function extraPrepareTitle(array $widget)
+	{
+		if (empty($widget['title']))
+		{
+			switch ($widget['options']['type'])
+			{
+				case 'new':
+					return new XenForo_Phrase('wf_widget_xfrm_resources_type_new');
+				case 'latest_update':
+					return new XenForo_Phrase('wf_widget_xfrm_resources_type_latest_update');
+				case 'highest_rating':
+					return new XenForo_Phrase('wf_widget_xfrm_resources_type_highest_rating');
+				case 'most_downloaded':
+					return new XenForo_Phrase('wf_widget_xfrm_resources_type_most_downloaded');
+			}
+		}
+
+		return parent::extraPrepareTitle($widget);
+	}
+
 	protected function _getConfiguration()
 	{
 		return array(

@@ -305,7 +305,6 @@ class WidgetFramework_Core
 			// stop rendering if not prepared
 			return $html;
 		}
-		
 
 		foreach ($position['widgets'] as &$widgetGroup)
 		{
@@ -332,7 +331,7 @@ class WidgetFramework_Core
 					// render the widget now
 					if ($renderer)
 					{
-						$widgetHtml = $renderer->render($widget, $positionCode, $params, $template, $html);
+						$widgetHtml = strval($renderer->render($widget, $positionCode, $params, $template, $html));
 					}
 					else
 					{
@@ -396,7 +395,7 @@ class WidgetFramework_Core
 
 							$tabs[$widget['widget_id']] = array(
 								'widget_id' => $widget['widget_id'],
-								'title' => $widget['title'],
+								'title' => WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget),
 								'html' => $position['html'][$widget['widget_id']],
 								// since 1.0.9
 								'class' => $widgetClass,
@@ -411,21 +410,26 @@ class WidgetFramework_Core
 					}
 				}
 
-				$widgetGroupHtml = implode('', $noWrapper);
+				$htmls = $noWrapper;
 
 				if (!empty($tabs))
 				{
 					$groupId = $widgetGroup['name'] . substr(md5(serialize(array_keys($tabs))), 0, 5);
-					$widgetGroupHtml .= WidgetFramework_WidgetRenderer::wrap($tabs, $params, $template, $groupId);
+					$htmls[] = WidgetFramework_WidgetRenderer::wrap($tabs, $params, $template, $groupId);
 				}
 
-				if ($widgetGroup['display_order'] >= 0)
+				if (count($htmls) > 0)
 				{
-					$html .= $widgetGroupHtml;
-				}
-				else
-				{
-					$html = $widgetGroupHtml . $html;
+					if ($widgetGroup['display_order'] >= 0)
+					{
+						array_unshift($htmls, $html);
+					}
+					else
+					{
+						$htmls[] = $html;
+					}
+
+					$html = WidgetFramework_Helper_String::createArrayOfStrings($htmls);
 				}
 			}
 		}
@@ -605,6 +609,9 @@ class WidgetFramework_Core
 		return self::$_instance;
 	}
 
+	/**
+	 * @return WidgetFramework_WidgetRenderer
+	 */
 	public static function getRenderer($class, $throw = true)
 	{
 		$instance = self::getInstance();
