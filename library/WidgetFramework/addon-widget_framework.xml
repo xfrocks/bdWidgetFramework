@@ -731,7 +731,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="62" version_string="2.3.3d"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="65" version_string="2.3.6"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -753,23 +753,17 @@ All customization should go to wf_default_EXTRA.css
 	}
 
 .widget-tabs .tabs {
-	height: 25px;
 	background: none;
 }
 
 .widget-tabs .tabs li a {
-	height: 24px;
+	font-weight: bold;
 }
 
 .widget-tabs .primaryContent {
 	padding: 0;
 	background: none;
 	border: 0;
-}
-
-.widget-tabs h3 {
-	padding: 3px 6px;
-	border-bottom: 0 !important;
 }
 
 .widget-poll .pollBlock .pollContent {
@@ -1445,7 +1439,7 @@ All customization should go to wf_default_EXTRA.css
 					<xen:if is="{$tab.html}">
 						<li>
 							<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
-								<h3>{xen:raw $tab.title}</h3>
+								{xen:raw $tab.title}
 							</a>
 						</li>
 					</xen:if>
