@@ -1,3 +1,6 @@
 .DS_Store
 *.devhelper
 library/WidgetFramework/DevHelper/Generated/*
+library/WidgetFramework/FileSums.php
+js/WidgetFramework/functions.js
+js/WidgetFramework/widget_page_layout.js

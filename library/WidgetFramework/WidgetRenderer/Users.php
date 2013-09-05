@@ -1,13 +1,26 @@
 <?php
-class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRenderer {
-	protected function _getConfiguration() {
+
+class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRenderer
+{
+	public function extraPrepareTitle(array $widget)
+	{
+		if (empty($widget['title']))
+		{
+			return new XenForo_Phrase('users');
+		}
+
+		return parent::extraPrepareTitle($widget);
+	}
+
+	protected function _getConfiguration()
+	{
 		return array(
 			'name' => 'Users',
 			'options' => array(
 				'limit' => XenForo_Input::UINT,
 				'order' => XenForo_Input::STRING,
 				'direction' => XenForo_Input::STRING,
-				
+
 				// since 1.3
 				'displayMode' => XenForo_Input::STRING,
 			),
@@ -15,42 +28,55 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 			'cacheSeconds' => 1800, // cache for 30 minutes
 		);
 	}
-	
-	protected function _getOptionsTemplate() {
+
+	protected function _getOptionsTemplate()
+	{
 		return 'wf_widget_options_users';
 	}
-	
-	protected function _renderOptions(XenForo_Template_Abstract $template) {
+
+	protected function _renderOptions(XenForo_Template_Abstract $template)
+	{
 		$template->setParam('_xfrmFound', WidgetFramework_Core::xfrmFound());
+
+		return parent::_renderOptions($template);
 	}
-	
-	protected function _validateOptionValue($optionKey, &$optionValue) {
-		if ('limit' == $optionKey) {
-			if (empty($optionValue)) $optionValue = 5;
+
+	protected function _validateOptionValue($optionKey, &$optionValue)
+	{
+		if ('limit' == $optionKey)
+		{
+			if (empty($optionValue))
+				$optionValue = 5;
 		}
-		
-		return true;
+
+		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
-	
-	protected function _getRenderTemplate(array $widget, $positionCode, array $params) {
+
+	protected function _getRenderTemplate(array $widget, $positionCode, array $params)
+	{
 		return 'wf_widget_users';
 	}
-	
-	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject) {
+
+	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+	{
 		$users = false;
-		
+
 		// try to be smart and get the users data if they happen to be available
-		if ($positionCode == 'member_list') {
-			if ($widget['options']['limit'] == 12 && $widget['options']['order'] == 'message_count') {
+		if ($positionCode == 'member_list')
+		{
+			if ($widget['options']['limit'] == 12 && $widget['options']['order'] == 'message_count')
+			{
 				$users = $params['activeUsers'];
 			}
-			
-			if ($widget['options']['limit'] == 8 && $widget['options']['order'] == 'register_date') {
+
+			if ($widget['options']['limit'] == 8 && $widget['options']['order'] == 'register_date')
+			{
 				$users = $params['latestUsers'];
 			}
 		}
-		
-		if ($users === false) {
+
+		if ($users === false)
+		{
 			$userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
 			$conditions = array(
 				// sondh@2012-09-13
@@ -67,7 +93,8 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 		}
 
 		$renderTemplateObject->setParam('users', $users);
-		
+
 		return $renderTemplateObject->render();
 	}
+
 }
