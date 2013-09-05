@@ -1477,7 +1477,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:foreach>
 	</div>
 </xen:if>]]></template>
-    <template title="wf_widget_xfrm_resources" version_id="47" version_string="2.1.1"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_xfrm_resources" version_id="65" version_string="2.3.6"><![CDATA[<xen:if hascontent="true">
 	<div class="avatarList">
 		<ul>
 			<xen:contentcheck>
@@ -1495,6 +1495,7 @@ All customization should go to wf_default_EXTRA.css
 							<xen:elseif is="{$widget.options.type} == 'highest_rating'" />
 								<xen:include template="rating">
 									<xen:set var="$rating">{$resource.rating_avg}</xen:set>
+									<xen:set var="$hint">({xen:if '{$resource.rating_count} == 1', {xen:phrase 1_vote}, {xen:phrase x_votes_plural, 'count={$resource.rating_count}'}})</xen:set>
 								</xen:include>
 							<xen:elseif is="{$widget.options.type} == 'most_downloaded'" />
 								{xen:phrase downloads}: {xen:number $resource.download_count}
