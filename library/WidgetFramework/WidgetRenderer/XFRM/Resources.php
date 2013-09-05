@@ -155,6 +155,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 			}
 		}
 
+		$resources = $resourceModel->prepareResources($resources);
 		$renderTemplateObject->setParam('resources', $resources);
 
 		return $renderTemplateObject->render();
