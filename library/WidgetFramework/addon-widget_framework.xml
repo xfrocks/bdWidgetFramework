@@ -825,6 +825,10 @@ All customization should go to wf_default_EXTRA.css
 	}
 		.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry:nth-child(2n) img.WidgetFramework_WidgetRenderer_FeedReader_Thumbnail { float: left; margin-right: 3px; }
 
+.WidgetFramework_WidgetRenderer_XFRM_Resources .Hint {
+	float: right;
+}
+
 .widget .avatarHeap {
 	<xen:comment>avatarHeap last avatar of a row will need some space at
 		the end, but because our avatarHeap doesn't have enough space, 
@@ -1478,6 +1482,8 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 </xen:if>]]></template>
     <template title="wf_widget_xfrm_resources" version_id="65" version_string="2.3.6"><![CDATA[<xen:if hascontent="true">
+	<xen:require css="wf_default.css" />
+
 	<div class="avatarList">
 		<ul>
 			<xen:contentcheck>
@@ -1487,20 +1493,18 @@ All customization should go to wf_default_EXTRA.css
 
 						<a href="{xen:link resources, $resource}">{$resource.title}</a>
 
-						<div class="userTitle">
-							<xen:if is="{$widget.options.type} == 'new'">
-								{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$resource}}">{$resource.username}</a>'} <xen:datetime time="{$resource.resource_date}" />
-							<xen:elseif is="{$widget.options.type} == 'latest_update'" />
-								{xen:phrase wf_x_updated, 'user=<a href="{xen:link 'members', {$resource}}">{$resource.username}</a>'} <xen:datetime time="{$resource.last_update}" />
-							<xen:elseif is="{$widget.options.type} == 'highest_rating'" />
-								<xen:include template="rating">
-									<xen:set var="$rating">{$resource.rating_avg}</xen:set>
-									<xen:set var="$hint">({xen:if '{$resource.rating_count} == 1', {xen:phrase 1_vote}, {xen:phrase x_votes_plural, 'count={$resource.rating_count}'}})</xen:set>
-								</xen:include>
-							<xen:elseif is="{$widget.options.type} == 'most_downloaded'" />
-								{xen:phrase downloads}: {xen:number $resource.download_count}
-							</xen:if>
-						</div>
+						<xen:if is="{$widget.options.type} == 'new'">
+							<div class="userTitle">{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$resource}}">{$resource.username}</a>'} <xen:datetime time="{$resource.resource_date}" /></div>
+						<xen:elseif is="{$widget.options.type} == 'latest_update'" />
+							<div class="userTitle">{xen:phrase wf_x_updated, 'user=<a href="{xen:link 'members', {$resource}}">{$resource.username}</a>'} <xen:datetime time="{$resource.last_update}" /></div>
+						<xen:elseif is="{$widget.options.type} == 'highest_rating'" />
+							<xen:include template="rating">
+								<xen:set var="$rating">{$resource.rating_avg}</xen:set>
+								<xen:set var="$hint">{xen:if '{$resource.rating_count} == 1', {xen:phrase 1_vote}, {xen:phrase x_votes_plural, 'count={$resource.rating_count}'}}</xen:set>
+							</xen:include>
+						<xen:elseif is="{$widget.options.type} == 'most_downloaded'" />
+							<div class="userTitle">{xen:phrase downloads}: {xen:number $resource.download_count}</div>
+						</xen:if>
 					</li>
 				</xen:foreach>
 			</xen:contentcheck>
