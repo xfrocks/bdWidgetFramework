@@ -381,9 +381,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 					continue;
 				}
 
-				$threadBbCodeOptions = $bbCodeOptions;
-				$threadBbCodeOptions['states']['viewAttachments'] = $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser);
-				$threadRef['messageHtml'] = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
+				if (!empty($bbCodeParser) AND !empty($bbCodeOptions))
+				{
+					$threadBbCodeOptions = $bbCodeOptions;
+					$threadBbCodeOptions['states']['viewAttachments'] = $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser);
+					$threadRef['messageHtml'] = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
+				}
 
 				$threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
 			}
