@@ -3,6 +3,18 @@
 class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPublic_Abstract
 {
 
+	protected function _postDispatch($controllerResponse, $controllerName, $action)
+	{
+		if (XenForo_Application::isRegistered('nodesAsTabsAPI'))
+		{
+			$nodeId = (isset($controllerResponse->params['widgetPage']['node_id'])
+				? $controllerResponse->params['widgetPage']['node_id']
+				: 0);
+
+			NodesAsTabs_API::postDispatch($this, $nodeId, $controllerResponse, $controllerName, $action);
+		}
+	}
+
 	public function actionIndex()
 	{
 		$nodeName = $this->_input->filterSingle('node_name', XenForo_Input::STRING);

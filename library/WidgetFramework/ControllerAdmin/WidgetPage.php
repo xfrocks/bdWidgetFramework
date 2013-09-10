@@ -43,6 +43,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 			'widgets' => $widgets,
 			'nodeParentOptions' => $this->_getNodeModel()->getNodeOptionsArray($this->_getNodeModel()->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true),
 			'styles' => $this->_getStyleModel()->getAllStylesAsFlattenedTree(),
+			'natOptions' => (XenForo_Application::isRegistered('nodesAsTabsAPI') ? NodesAsTabs_API::nodeOptionsRecord($nodeId) : false)
 		);
 
 		return $this->responseView('WidgetFramework_ViewAdmin_WidgetPage_Edit', 'wf_widget_page_edit', $viewParams);
@@ -137,7 +138,26 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 			$link = XenForo_Link::buildAdminLink('widget-pages/edit', $dw->getMergedData());
 		}
 
-		return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
+		$response = $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
+
+		if (XenForo_Application::isRegistered('nodesAsTabsAPI'))
+		{
+			NodesAsTabs_API::actionSave($response, $this);
+		}
+
+		return $response;
+	}
+
+	public function actionDelete()
+	{
+		$response = parent::actionDelete();
+
+		if (XenForo_Application::isRegistered('nodesAsTabsAPI'))
+		{
+			NodesAsTabs_API::actionDelete($response, $this);
+		}
+
+		return $response;
 	}
 
 	public function actionDeleteConfirm()
@@ -159,6 +179,18 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 		);
 
 		return $this->responseView('WidgetFramework_ViewAdmin_WidgetPage_Delete', 'wf_widget_page_delete', $viewParams);
+	}
+
+	public function actionValidateField()
+	{
+		$response = parent::actionValidateField();
+
+		if (XenForo_Application::isRegistered('nodesAsTabsAPI'))
+		{
+			NodesAsTabs_API::actionValidateField($response, $this);
+		}
+
+		return $response;
 	}
 
 	/**

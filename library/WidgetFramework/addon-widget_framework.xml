@@ -432,6 +432,8 @@
 				<xen:explain>{xen:phrase if_specified_all_visitors_view_using_selected_style}</xen:explain>
 			</xen:checkboxunit>
 
+			<xen:include template="nat_nodeoptions" />
+
 			</xen:hook>
 		</li>
 		</xen:hook>
