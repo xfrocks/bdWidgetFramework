@@ -467,12 +467,18 @@
 
 </xen:form>]]></template>
     <template title="wf_widget_page_layout"><![CDATA[<xen:require css="widget_framework.css" />
+<xen:require js="js/WidgetFramework/jquery.gridster.js" />
 <xen:require js="js/WidgetFramework/functions.js" />
 <xen:require js="js/WidgetFramework/widget_page_layout.js" />
 
 <ul class="WidgetFramework_WidgetPage_LayoutEditor" style="{xen:helper WidgetFramework_LayoutContainerSize, $widgets}">
 	<xen:foreach loop="$widgets" value="$widget">
-		<li style="{xen:helper WidgetFramework_LayoutWidgetPositionAndSize, $widget}">
+		<li class="widget"
+			data-row="{xen:calc '{$widget.options.layout_row} + 1'}"
+			data-col="{xen:calc '{$widget.options.layout_col} + 1'}"
+			data-sizex="{$widget.options.layout_sizeCol}"
+			data-sizey="{$widget.options.layout_sizeRow}"
+			style="{xen:helper WidgetFramework_LayoutWidgetPositionAndSize, $widget}">
 			<div class="WidgetFramework_WidgetPage_WidgetBlock">
 				<span>
 					<xen:if is="{$widget.title}">
@@ -483,14 +489,14 @@
 				</span><br />
 
 				{xen:phrase wf_layout_position}:<br />
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_row]" value="{$widget.options.layout_row}" min="0" inputclass="WidgetFramework_Layout_Input" />
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_row]" value="{$widget.options.layout_row}" min="0" inputclass="WidgetFramework_Layout_Input row" />
 				/
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_col]" value="{$widget.options.layout_col}" min="0" inputclass="WidgetFramework_Layout_Input" /><br />
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_col]" value="{$widget.options.layout_col}" min="0" inputclass="WidgetFramework_Layout_Input col" /><br />
 				
 				{xen:phrase wf_layout_size}:<br />
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeRow]" value="{$widget.options.layout_sizeRow}" min="1" inputclass="WidgetFramework_Layout_Input" />
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeRow]" value="{$widget.options.layout_sizeRow}" min="1" inputclass="WidgetFramework_Layout_Input sizeRow" />
 				x
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeCol]" value="{$widget.options.layout_sizeCol}" min="1" inputclass="WidgetFramework_Layout_Input" /><br />
+				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeCol]" value="{$widget.options.layout_sizeCol}" min="1" inputclass="WidgetFramework_Layout_Input sizeCol" /><br />
 				
 				<a href="{xen:adminlink widgets/edit, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase edit}</a>
 				|
