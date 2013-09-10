@@ -37,6 +37,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'prefixes' => XenForo_Input::ARRAY_SIMPLE,
 				'as_guest' => XenForo_Input::UINT,
 				'limit' => XenForo_Input::UINT,
+				'layout' => XenForo_Input::STRING,
 				'display' => XenForo_Input::ARRAY_SIMPLE,
 			),
 			'useCache' => true,
@@ -104,6 +105,19 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				$optionValue = 5;
 			}
 		}
+		elseif ('layout' == $optionKey)
+		{
+			if (!in_array($optionValue, array(
+				'',
+				'sidebar',
+				'sidebar_snippet',
+				'list',
+				'full',
+			)))
+			{
+				throw new XenForo_Exception(new XenForo_Phrase('wf_widget_threads_invalid_layout'), true);
+			}
+		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
@@ -117,6 +131,40 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 	{
 		$core = WidgetFramework_Core::getInstance();
 		$visitor = XenForo_Visitor::getInstance();
+
+		$layout = 'sidebar';
+		$layoutNeedPost = false;
+		if (empty($widget['options']['layout']))
+		{
+			if (!empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]))
+			{
+				$layout = 'list';
+			}
+			else
+			{
+				$layout = 'sidebar';
+			}
+		}
+		else
+		{
+			switch ($widget['options']['layout'])
+			{
+				case 'sidebar':
+					$layout = 'sidebar';
+					break;
+				case 'sidebar_snippet':
+					$layout = 'sidebar';
+					$layoutNeedPost = true;
+					break;
+				case 'list':
+					$layout = 'list';
+					break;
+				case 'full':
+					$layout = 'full';
+					$layoutNeedPost = true;
+					break;
+			}
+		}
 
 		/* @var $threadModel XenForo_Model_Thread */
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
@@ -143,6 +191,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			$conditions['prefix_id'] = $widget['options']['prefixes'];
 		}
 
+		// get first post if layout needs it
+		// since 2.4
+		if ($layoutNeedPost)
+		{
+			$fetchOptions['join'] |= XenForo_Model_Thread::FETCH_FIRSTPOST;
+		}
+
 		if ($widget['options']['type'] == 'new')
 		{
 			$threads = $threadModel->getThreads($conditions, $fetchOptions + array(
@@ -156,7 +211,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'order' => 'last_post_date',
 				'orderDirection' => 'desc',
 				'join' => 0,
-				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => XenForo_Model_Thread::FETCH_USER,
+				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => $fetchOptions['join'],
 			)));
 		}
 		elseif ($widget['options']['type'] == 'popular')
@@ -219,15 +274,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			$threads = array();
 		}
 
-		if (!empty($params['_WidgetFramework_isHook']))
-		{
-			$layout = 'list';
-		}
-		else
-		{
-			$layout = 'sidebar';
-		}
-
 		if (!empty($threads))
 		{
 			/* @var $nodeModel XenForo_Model_Node */
@@ -240,6 +286,67 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			$userModel = $core->getModelFromCache('XenForo_Model_User');
 
 			$nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination(empty($widget['options']['as_guest']) ? null : 1);
+
+			if ($layoutNeedPost AND !empty($params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT]))
+			{
+				$bbCodeParser = XenForo_BbCode_Parser::create(XenForo_BbCode_Formatter_Base::create('Base', array('view' => $params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT])));
+				$bbCodeOptions = array(
+					'states' => array(),
+					'contentType' => 'post',
+					'contentIdKey' => 'post_id'
+				);
+
+				$postsWithAttachment = array();
+				foreach (array_keys($threads) as $threadId)
+				{
+					$threadRef = &$threads[$threadId];
+
+					if (empty($threadRef['attach_count']))
+					{
+						continue;
+					}
+
+					if (!empty($threadRef['fetched_last_post']))
+					{
+						$threadRef['post_id'] = $threadRef['last_post_id'];
+
+						$postsWithAttachment[$threadRef['post_id']] = array(
+							'post_id' => $threadRef['post_id'],
+							'thread_id' => $threadRef['thread_id'],
+							'attach_count' => $threadRef['attach_count'],
+						);
+					}
+					else
+					{
+						$threadRef['post_id'] = $threadRef['first_post_id'];
+
+						$postsWithAttachment[$threadRef['post_id']] = array(
+							'post_id' => $threadRef['post_id'],
+							'thread_id' => $threadRef['thread_id'],
+							'attach_count' => $threadRef['attach_count'],
+						);
+					}
+				}
+				if (!empty($postsWithAttachment))
+				{
+					$postsWithAttachment = $core->getModelFromCache('XenForo_Model_Post')->getAndMergeAttachmentsIntoPosts($postsWithAttachment);
+					foreach ($postsWithAttachment as $postWithAttachment)
+					{
+						if (empty($postWithAttachment['attachments']))
+						{
+							continue;
+						}
+
+						if (empty($threads[$postWithAttachment['thread_id']]))
+						{
+							continue;
+						}
+						$threadRef = &$threads[$postWithAttachment['thread_id']];
+
+						$threadRef['attachments'] = $postWithAttachment['attachments'];
+					}
+				}
+			}
 
 			$threadForumIds = array();
 			foreach ($threads as $thread)
@@ -273,6 +380,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 					unset($threads[$threadId]);
 					continue;
 				}
+
+				$threadBbCodeOptions = $bbCodeOptions;
+				$threadBbCodeOptions['states']['viewAttachments'] = $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser);
+				$threadRef['messageHtml'] = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
 
 				$threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
 			}

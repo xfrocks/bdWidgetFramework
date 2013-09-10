@@ -74,7 +74,7 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 			if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_USER)
 			{
 				$selectFields .= ',
-						user.*';
+						1 AS fetched_last_post_user, user.*';
 				$joinTables .= '
 						LEFT JOIN xf_user AS user ON
 						(user.user_id = thread.last_post_user_id)';
@@ -82,12 +82,20 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 			elseif ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_AVATAR)
 			{
 				$selectFields .= ',
-						user.gender, user.avatar_date, user.gravatar';
+						1 AS fetched_last_post_user, user.gender, user.avatar_date, user.gravatar';
 				$joinTables .= '
 						LEFT JOIN xf_user AS user ON
 						(user.user_id = thread.last_post_user_id)';
 			}
 
+			if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_FIRSTPOST)
+			{
+				$selectFields .= ',
+					1 AS fetched_last_post, post.message, post.attach_count';
+				$joinTables .= '
+					LEFT JOIN xf_post AS post ON
+						(post.post_id = thread.last_post_id)';
+			}
 		}
 
 		return compact('selectFields', 'joinTables', 'orderClause');
