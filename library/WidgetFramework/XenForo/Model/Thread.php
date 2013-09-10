@@ -107,6 +107,21 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 
 		$thread['canInlineMod'] = false;
 		$thread['canEditThread'] = false;
+		
+		if (!empty($thread['fetched_last_post_user']))
+		{
+			$thread['user_id'] = $thread['last_post_user_id'];
+			$thread['username'] = $thread['last_post_username'];
+		}
+		
+		if (!empty($thread['fetched_last_post']))
+		{
+			$thread['post_id'] = $thread['last_post_id'];
+		}
+		else
+		{
+			$thread['post_id'] = $thread['first_post_id'];
+		}
 
 		return $thread;
 	}
