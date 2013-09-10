@@ -628,7 +628,7 @@ abstract class WidgetFramework_WidgetRenderer
 			$renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
 			if (!empty($renderTemplate))
 			{
-				$renderTemplateObject = $template->create($renderTemplate, array_merge($params, array('widget' => $widget, )));
+				$renderTemplateObject = $template->create($renderTemplate, array_merge($params, array('widget' => $widget)));
 
 				// reset required externals
 				$existingRequiredExternals = WidgetFramework_Template_Trojan::WidgetFramework_getRequiredExternals();

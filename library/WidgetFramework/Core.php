@@ -62,6 +62,10 @@ class WidgetFramework_Core
 			// XFRM is installed
 			$renderers[] = 'WidgetFramework_WidgetRenderer_XFRM_Resources';
 		}
+
+		// since 2.4
+		$renderers[] = 'WidgetFramework_WidgetRenderer_UsersStaff';
+		$renderers[] = 'WidgetFramework_WidgetRenderer_FacebookFacepile';
 	}
 
 	public function bootstrap()

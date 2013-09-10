@@ -1,12 +1,12 @@
 <?php
 
-class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRenderer
+class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRenderer
 {
 	public function extraPrepareTitle(array $widget)
 	{
 		if (empty($widget['title']))
 		{
-			return new XenForo_Phrase('users');
+			return new XenForo_Phrase('staff_members');
 		}
 
 		return parent::extraPrepareTitle($widget);
@@ -15,30 +15,19 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 	protected function _getConfiguration()
 	{
 		return array(
-			'name' => 'Users',
+			'name' => 'Users: Staff Members',
 			'options' => array(
 				'limit' => XenForo_Input::UINT,
-				'order' => XenForo_Input::STRING,
-				'direction' => XenForo_Input::STRING,
-
-				// since 1.3
 				'displayMode' => XenForo_Input::STRING,
 			),
 			'useCache' => true,
-			'cacheSeconds' => 1800, // cache for 30 minutes
+			'cacheSeconds' => 86400, // cache for a day
 		);
 	}
 
 	protected function _getOptionsTemplate()
 	{
-		return 'wf_widget_options_users';
-	}
-
-	protected function _renderOptions(XenForo_Template_Abstract $template)
-	{
-		$template->setParam('_xfrmFound', WidgetFramework_Core::xfrmFound());
-
-		return parent::_renderOptions($template);
+		return 'wf_widget_options_users_staff';
 	}
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
@@ -47,7 +36,7 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 		{
 			if (empty($optionValue))
 			{
-				$optionValue = 5;
+				$optionValue = 0;
 			}
 		}
 
@@ -64,37 +53,29 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 		$users = false;
 
 		// try to be smart and get the users data if they happen to be available
-		if ($positionCode == 'member_list')
+		if ($positionCode == 'member_notable' AND $widget['options']['limit'] == 0)
 		{
-			if ($widget['options']['limit'] == 12 && $widget['options']['order'] == 'message_count')
-			{
-				$users = $params['activeUsers'];
-			}
-
-			if ($widget['options']['limit'] == 8 && $widget['options']['order'] == 'register_date')
-			{
-				$users = $params['latestUsers'];
-			}
+			$users = $params['staff'];
 		}
 
 		if ($users === false)
 		{
 			$userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
-			$conditions = array(
-				// sondh@2012-09-13
-				// do not display not confirmed or banned users
-				'user_state' => 'valid',
-				'is_banned' => 0
-			);
-			$fetchOptions = array(
+			$users = $userModel->getUsers(array('is_staff' => true), array(
+				'join' => XenForo_Model_User::FETCH_USER_FULL,
 				'limit' => $widget['options']['limit'],
-				'order' => $widget['options']['order'],
-				'direction' => $widget['options']['direction'],
-			);
-			$users = $userModel->getUsers($conditions, $fetchOptions);
+				'order' => 'username',
+			));
 		}
 
 		$renderTemplateObject->setParam('users', $users);
+
+		if (empty($widget['options']['displayMode']))
+		{
+			// default to big avatar mode
+			$widget['options']['displayMode'] = 'avatarOnlyBigger';
+			$renderTemplateObject->setParam('widget', $widget);
+		}
 
 		return $renderTemplateObject->render();
 	}
