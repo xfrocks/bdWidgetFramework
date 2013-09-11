@@ -7,9 +7,7 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 	{
 		if (XenForo_Application::isRegistered('nodesAsTabsAPI'))
 		{
-			$nodeId = (isset($controllerResponse->params['widgetPage']['node_id'])
-				? $controllerResponse->params['widgetPage']['node_id']
-				: 0);
+			$nodeId = (isset($controllerResponse->params['widgetPage']['node_id']) ? $controllerResponse->params['widgetPage']['node_id'] : 0);
 
 			NodesAsTabs_API::postDispatch($this, $nodeId, $controllerResponse, $controllerName, $action);
 		}
@@ -17,8 +15,9 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 
 	public function actionIndex()
 	{
+		$nodeId = $this->_input->filterSingle('node_id', XenForo_Input::UINT);
 		$nodeName = $this->_input->filterSingle('node_name', XenForo_Input::STRING);
-		$widgetPage = $this->_getWidgetPageOrError($nodeName);
+		$widgetPage = $this->_getWidgetPageOrError($nodeId ? $nodeId : $nodeName);
 
 		$page = max(1, $this->_input->filterSingle('page', XenForo_Input::UINT));
 		$this->canonicalizeRequestUrl(XenForo_Link::buildPublicLink('widget-pages', $widgetPage, array('page' => $page)));
@@ -43,12 +42,27 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 		return $this->responseView('WidgetFramework_ViewPublic_WidgetPage_Index', 'wf_widget_page_index', $viewParams);
 	}
 
-	protected function _getWidgetPageOrError($nodeName)
+	public function actionAsIndex()
+	{
+		$this->_request->setParam('node_id', WidgetFramework_Option::get('indexNodeId'));
+
+		return $this->responseReroute(__CLASS__, 'index');
+	}
+
+	protected function _getWidgetPageOrError($nodeIdOrName)
 	{
 		$visitor = XenForo_Visitor::getInstance();
 		$fetchOptions = array('permissionCombinationId' => $visitor['permission_combination_id']);
 
-		$widgetPage = $this->_getWidgetPageModel()->getWidgetPageByName($nodeName, $fetchOptions);
+		if (is_numeric($nodeIdOrName))
+		{
+			$widgetPage = $this->_getWidgetPageModel()->getWidgetPageById($nodeIdOrName, $fetchOptions);
+		}
+		else
+		{
+			$widgetPage = $this->_getWidgetPageModel()->getWidgetPageByName($nodeIdOrName, $fetchOptions);
+		}
+
 		if (!$widgetPage || $widgetPage['node_type_id'] != 'WF_WidgetPage')
 		{
 			throw $this->responseException($this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404));

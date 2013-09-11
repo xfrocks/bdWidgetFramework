@@ -25,6 +25,17 @@ class WidgetFramework_Listener
 				'WidgetFramework_Template_Helper_Layout',
 				'getWidgetPositionAndSize'
 			);
+
+			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_getoption'] = array(
+				'WidgetFramework_Option',
+				'get'
+			);
+		}
+
+		$indexNodeId = WidgetFramework_Option::get('indexNodeId');
+		if ($indexNodeId > 0)
+		{
+			WidgetFramework_Helper_Index::setup();
 		}
 	}
 
@@ -146,6 +157,8 @@ class WidgetFramework_Listener
 	public static function load_class($class, array &$extend)
 	{
 		static $classesNeedsExtending = array(
+			'XenForo_ControllerPublic_Forum',
+			'XenForo_ControllerPublic_Index',
 			'XenForo_ControllerPublic_Misc',
 			'XenForo_ControllerPublic_Thread',
 
@@ -156,6 +169,8 @@ class WidgetFramework_Listener
 
 			'XenForo_Model_Thread',
 			'XenForo_Model_User',
+
+			'XenForo_Route_Prefix_Index',
 
 			'bdCache_Model_Cache',
 		);

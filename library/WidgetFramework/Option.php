@@ -2,6 +2,7 @@
 
 class WidgetFramework_Option
 {
+	const SIMPLE_CACHE_KEY_INDEX_NODE_ID = 'WidgetFramework_indexNodeId';
 
 	protected static $_revealEnabled = null;
 
@@ -27,9 +28,16 @@ class WidgetFramework_Option
 
 				// use the cached value
 				return self::$_revealEnabled;
+			case 'indexNodeId':
+				return XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY_INDEX_NODE_ID);
 		}
 
 		return $options->get('WidgetFramework_' . $key);
+	}
+	
+	public static function setIndexNodeId($nodeId)
+	{
+		XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY_INDEX_NODE_ID, $nodeId);
 	}
 
 }

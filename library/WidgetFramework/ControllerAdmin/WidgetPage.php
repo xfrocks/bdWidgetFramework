@@ -86,6 +86,15 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 		}
 		$dw->bulkSet($data);
 		$dw->save();
+		
+		if ($this->_input->filterSingle('is_index', XenForo_Input::UINT))
+		{
+			WidgetFramework_Option::setIndexNodeId($dw->get('node_id'));
+		}
+		elseif (WidgetFramework_Option::get('indexNodeId') == $dw->get('node_id'))
+		{
+			WidgetFramework_Option::setIndexNodeId(0);
+		}
 
 		// save widgets
 		$widgets = $this->_getWidgetModel()->getWidgetPageWidgets($dw->get('node_id'));

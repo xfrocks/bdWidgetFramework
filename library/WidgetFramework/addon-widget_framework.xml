@@ -399,9 +399,7 @@
 				<xen:textboxunit name="options[column_gap]" value="{$widgetPage.options.column_gap}" label="{xen:phrase wf_column_gap}:" />
 				<xen:textboxunit name="options[row_gap]" value="{$widgetPage.options.row_gap}" label="{xen:phrase wf_row_gap}:" />
 
-				<div style="margin: 10px">
-					<xen:include template="wf_widget_page_layout" />
-				</div>
+				<xen:include template="wf_widget_page_layout" />
 				
 				<a href="{xen:adminlink widgets/add, '', 'widget_page_id={$widgetPage.node_id}'}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase wf_add_widget}</a>
 
@@ -432,6 +430,9 @@
 				</xen:textboxunit>
 
 				<xen:checkboxunit label="">
+					<xen:option name="is_index" label="{xen:phrase wf_is_index}" selected="{xen:helper WidgetFramework_getOption, indexNodeId} == {$widgetPage.node_id}">
+						<xen:hint>{xen:phrase wf_is_index_explain}</xen:hint>
+					</xen:option>
 					<xen:option name="display_in_list" label="{xen:phrase display_in_node_list}" selected="{$widgetPage.display_in_list}" inputclass="OptIn">
 						<xen:hint>{xen:phrase if_unselected_users_will_not_see_this_node_in_list}</xen:hint>
 					</xen:option>
@@ -571,6 +572,7 @@ Arguments:
     <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
+    <listener event_id="load_class_route_prefix" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_view" active="1" hint="" description=""/>
     <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" hint="" description=""/>
     <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" hint="" description=""/>
@@ -635,6 +637,8 @@ XenForo_Template_Helper_Core::callHelper('ismemberof', array($visitor,3)) -- mea
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
     <phrase title="wf_invalid_position_x" version_id="37" version_string="1.5.4"><![CDATA[Invalid position specified: {position}. The position must be one of three types: "all", "template_name" or "hook:hook_name".]]></phrase>
     <phrase title="wf_invalid_widget_renderer_x" version_id="24" version_string="1.2.2.2"><![CDATA[Invalid Widget Renderer specified: {renderer}.]]></phrase>
+    <phrase title="wf_is_index" version_id="68" version_string="2.4.0c"><![CDATA[Is Index Page]]></phrase>
+    <phrase title="wf_is_index_explain" version_id="68" version_string="2.4.0c"><![CDATA[If selected, this page will be take over the index page.]]></phrase>
     <phrase title="wf_layout_position" version_id="54" version_string="2.2.3"><![CDATA[Position]]></phrase>
     <phrase title="wf_layout_size" version_id="54" version_string="2.2.3"><![CDATA[Size]]></phrase>
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
@@ -749,6 +753,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
       <prefix original_prefix="widgets" class="WidgetFramework_Route_PrefixAdmin_Widgets" build_link="data_only"/>
     </route_type>
     <route_type type="public">
+      <prefix original_prefix="widget-page-index" class="WidgetFramework_Route_Prefix_WidgetPageIndex" build_link="none"/>
       <prefix original_prefix="widget-pages" class="WidgetFramework_Route_Prefix_WidgetPages" build_link="data_only"/>
     </route_type>
   </route_prefixes>

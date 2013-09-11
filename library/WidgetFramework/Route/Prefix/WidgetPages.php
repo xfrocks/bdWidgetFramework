@@ -13,6 +13,11 @@ class WidgetFramework_Route_Prefix_WidgetPages implements XenForo_Route_Interfac
 
 	public function buildLink($originalPrefix, $outputPrefix, $action, $extension, $data, array &$extraParams)
 	{
+		if (!empty($data['node_id']) AND $data['node_id'] == WidgetFramework_Option::get('indexNodeId'))
+		{
+			return WidgetFramework_Helper_Index::buildBasicLink('widget-page-index', '', $extension);
+		}
+		
 		$action = XenForo_Link::getPageNumberAsAction($action, $extraParams);
 
 		return XenForo_Link::buildBasicLinkWithStringParam($outputPrefix, $action, $extension, $data, 'node_name');
