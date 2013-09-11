@@ -308,16 +308,16 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 					if (!empty($threadRef['fetched_last_post']))
 					{
-						$postsWithAttachment[$threadRef['post_id']] = array(
-							'post_id' => $threadRef['post_id'],
+						$postsWithAttachment[$threadRef['last_post_id']] = array(
+							'post_id' => $threadRef['last_post_id'],
 							'thread_id' => $threadRef['thread_id'],
 							'attach_count' => $threadRef['attach_count'],
 						);
 					}
 					else
 					{
-						$postsWithAttachment[$threadRef['post_id']] = array(
-							'post_id' => $threadRef['post_id'],
+						$postsWithAttachment[$threadRef['first_post_id']] = array(
+							'post_id' => $threadRef['first_post_id'],
 							'thread_id' => $threadRef['thread_id'],
 							'attach_count' => $threadRef['attach_count'],
 						);
