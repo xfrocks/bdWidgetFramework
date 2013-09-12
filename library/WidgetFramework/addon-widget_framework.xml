@@ -287,6 +287,7 @@
 	<xen:option name="{$namePrefix}as_guest" value="1" selected="{$options.as_guest}">{xen:phrase wf_use_guest_permissions}</xen:option>
 </xen:checkboxunit>
 
+<xen:hook name="wf_widget_options_threads_layout" params="{xen:array 'widget={$widget}', 'options={$options}', 'options_loaded={$options_loaded}'}">
 <xen:selectunit label="{xen:phrase layout}:" name="{$namePrefix}layout" value="{$options.layout}">
 	<xen:option value="">{xen:phrase default}</xen:option>
 	<xen:option value="sidebar">{xen:phrase wf_threads_layout_sidebar}</xen:option>
@@ -297,7 +298,8 @@
 
 <xen:checkboxunit label="{xen:phrase display_styling}">
 	<xen:option name="{$namePrefix}display[show_prefix]" value="1" selected="{$options.display.show_prefix}">{xen:phrase wf_threads_display_show_prefix}</xen:option>
-</xen:checkboxunit>]]></template>
+</xen:checkboxunit>
+</xen:hook>]]></template>
     <template title="wf_widget_options_users"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
 </xen:spinboxunit>
