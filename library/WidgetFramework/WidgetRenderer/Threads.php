@@ -129,9 +129,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
-		$core = WidgetFramework_Core::getInstance();
-		$visitor = XenForo_Visitor::getInstance();
-
 		$layout = 'sidebar';
 		$layoutNeedPost = false;
 		if (empty($widget['options']['layout']))
@@ -165,6 +162,46 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 					break;
 			}
 		}
+		$renderTemplateObject->setParam('layout', $layout);
+		$renderTemplateObject->setParam('layoutNeedPost', $layoutNeedPost);
+
+		$threads = $this->_getThreads($widget, $positionCode, $params, $renderTemplateObject);
+		$renderTemplateObject->setParam('threads', $threads);
+
+		return $renderTemplateObject->render();
+	}
+
+	public function useUserCache(array $widget)
+	{
+		if (!empty($widget['options']['as_guest']))
+		{
+			// using guest permission
+			// there is no reason to use the user cache
+			return false;
+		}
+
+		return parent::useUserCache($widget);
+	}
+
+	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
+	{
+		if ($this->_helperDetectSpecialForums($widget['options']['forums']))
+		{
+			// we have to use special cache id when special forum ids are used
+			if (isset($params['forum']))
+			{
+				$suffix[] = 'f' . $params['forum']['node_id'];
+			}
+		}
+
+		return parent::_getCacheId($widget, $positionCode, $params, $suffix);
+	}
+
+	protected function _getThreads($widget, $positionCode, $params, $renderTemplateObject)
+	{
+		$core = WidgetFramework_Core::getInstance();
+		$visitor = XenForo_Visitor::getInstance();
+		$layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
 
 		/* @var $threadModel XenForo_Model_Thread */
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
@@ -388,36 +425,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			}
 		}
 
-		$renderTemplateObject->setParam('threads', $threads);
-		$renderTemplateObject->setParam('layout', $layout);
-
-		return $renderTemplateObject->render();
-	}
-
-	public function useUserCache(array $widget)
-	{
-		if (!empty($widget['options']['as_guest']))
-		{
-			// using guest permission
-			// there is no reason to use the user cache
-			return false;
-		}
-
-		return parent::useUserCache($widget);
-	}
-
-	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
-	{
-		if ($this->_helperDetectSpecialForums($widget['options']['forums']))
-		{
-			// we have to use special cache id when special forum ids are used
-			if (isset($params['forum']))
-			{
-				$suffix[] = 'f' . $params['forum']['node_id'];
-			}
-		}
-
-		return parent::_getCacheId($widget, $positionCode, $params, $suffix);
+		return $threads;
 	}
 
 }
