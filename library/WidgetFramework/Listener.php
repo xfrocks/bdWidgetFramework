@@ -201,7 +201,7 @@ class WidgetFramework_Listener
 			else
 			{
 				// load_class_view got called again!?
-				if (XenForo_Application::debugMode())
+				if (WidgetFramework_Core::debugMode())
 				{
 					// only throw exception in debug mode because I'm not quite sure
 					throw new XenForo_Exception(sprintf('[bd] Widget Framework: load_class_view is being called thrice (%s, %s, %s)', $extended1, $extended2, $class));
