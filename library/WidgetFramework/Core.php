@@ -313,7 +313,7 @@ class WidgetFramework_Core
 		foreach ($position['widgets'] as &$widgetGroup)
 		{
 			$count = 0;
-			$isRandom = ($widgetGroup['name'] == 'random');
+			$isRandom = strpos($widgetGroup['name'], 'random') === 0;
 
 			if ($widgetGroup['keys'] === false)
 			{
@@ -418,8 +418,7 @@ class WidgetFramework_Core
 
 				if (!empty($tabs))
 				{
-					$groupId = $widgetGroup['name'] . substr(md5(serialize(array_keys($tabs))), 0, 5);
-					$htmls[] = WidgetFramework_WidgetRenderer::wrap($tabs, $params, $template, $groupId);
+					$htmls[] = WidgetFramework_WidgetRenderer::wrap($tabs, $params, $template, $widgetGroup['name']);
 				}
 
 				if (count($htmls) > 0)

@@ -752,15 +752,22 @@ abstract class WidgetFramework_WidgetRenderer
 
 	public static function wrap(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId = false)
 	{
-		if ($groupId === false)
+		$isColumns = strpos($groupId, 'columns') === 0;
+
+		if (empty($groupId))
 		{
-			$groupId = 'widget-rand-' . rand(1000, 9999);
+			$groupId = 'nope';
 		}
-		$groupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $groupId);
+
+		$normalizedGroupId = sprintf('%s-%s', $groupId, substr(md5(serialize(array_keys($tabs))), 0, 5));
+		$normalizedGroupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $normalizedGroupId);
 
 		$wrapper = $template->create('wf_widget_wrapper', array_merge($params, array(
 			'tabs' => $tabs,
-			'groupId' => $groupId
+			'groupId' => $groupId,
+
+			'isColumns' => $isColumns,
+			'normalizedGroupId' => $normalizedGroupId,
 		)));
 
 		return $wrapper;
