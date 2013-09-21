@@ -2,8 +2,6 @@
 
 class WidgetFramework_Option
 {
-	const SIMPLE_CACHE_KEY_INDEX_NODE_ID = 'WidgetFramework_indexNodeId';
-
 	protected static $_revealEnabled = null;
 
 	public static function get($key)
@@ -28,16 +26,40 @@ class WidgetFramework_Option
 
 				// use the cached value
 				return self::$_revealEnabled;
-			case 'indexNodeId':
-				return XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY_INDEX_NODE_ID);
 		}
 
 		return $options->get('WidgetFramework_' . $key);
 	}
-	
+
 	public static function setIndexNodeId($nodeId)
 	{
-		XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY_INDEX_NODE_ID, $nodeId);
+		$optionDw = XenForo_DataWriter::create('XenForo_DataWriter_Option');
+		$optionDw->setExistingData('WidgetFramework_indexNodeId');
+		$optionDw->set('option_value', $nodeId);
+		$optionDw->save();
+	}
+
+	public static function renderWidgetPages(XenForo_View $view, $fieldPrefix, array $preparedOption, $canEdit)
+	{
+		$widgetPages = XenForo_Model::create('WidgetFramework_Model_WidgetPage')->getList();
+		$choices = array(0 => '');
+		foreach ($widgetPages as $widgetPageId => $widgetPageTitle)
+		{
+			$choices[$widgetPageId] = $widgetPageTitle;
+		}
+
+		$editLink = $view->createTemplateObject('option_list_option_editlink', array(
+			'preparedOption' => $preparedOption,
+			'canEditOptionDefinition' => $canEdit
+		));
+
+		return $view->createTemplateObject('option_list_option_select', array(
+			'fieldPrefix' => $fieldPrefix,
+			'listedFieldName' => $fieldPrefix . '_listed[]',
+			'preparedOption' => $preparedOption,
+			'formatParams' => $choices,
+			'editLink' => $editLink,
+		));
 	}
 
 }

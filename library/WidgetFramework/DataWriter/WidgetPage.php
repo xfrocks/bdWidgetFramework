@@ -44,6 +44,11 @@ class WidgetFramework_DataWriter_WidgetPage extends XenForo_DataWriter_Node
 
 	protected function _postDelete()
 	{
+		if ($this->get('node_id') == WidgetFramework_Option::get('indexNodeId'))
+		{
+			WidgetFramework_Option::setIndexNodeId(0);
+		}
+
 		$this->_deleteWidgets();
 	}
 

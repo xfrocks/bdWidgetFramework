@@ -17,7 +17,7 @@ class WidgetFramework_Model_WidgetPage extends XenForo_Model
 
 		foreach ($data as $id => $row)
 		{
-			$list[$id] = $row['node_id'];
+			$list[$id] = $row['title'];
 		}
 
 		return $list;

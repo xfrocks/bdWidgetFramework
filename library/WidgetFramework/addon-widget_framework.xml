@@ -583,7 +583,14 @@ Arguments:
   <cron/>
   <email_templates/>
   <email_template_modifications/>
-  <optiongroups/>
+  <optiongroups>
+    <option option_id="WidgetFramework_indexNodeId" edit_format="callback" data_type="unsigned_integer" can_backup="1">
+      <default_value>0</default_value>
+      <edit_format_params>WidgetFramework_Option::renderWidgetPages</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="basicBoard" display_order="100"/>
+    </option>
+  </optiongroups>
   <permissions>
     <permission_groups>
       <permission_group permission_group_id="wfWidgetPage"/>
@@ -598,6 +605,8 @@ Arguments:
     <phrase title="admin_navigation_widgetFramework_list" version_id="1" version_string="0.9"><![CDATA[List Widgets]]></phrase>
     <phrase title="admin_navigation_widgetFramework_pageAdd" version_id="55" version_string="2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="node_type_WF_WidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page]]></phrase>
+    <phrase title="option_WidgetFramework_indexNodeId" version_id="69" version_string="2.4.1"><![CDATA[Widget Page As Index]]></phrase>
+    <phrase title="option_WidgetFramework_indexNodeId_explain" version_id="69" version_string="2.4.1"><![CDATA[You can choose to have a widget page take over as the index page.]]></phrase>
     <phrase title="permission_group_wfWidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page Permissions]]></phrase>
     <phrase title="style_property_group_widget_framework_master" version_id="33" version_string="1.5"><![CDATA[[bd] Widget Framework]]></phrase>
     <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
