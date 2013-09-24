@@ -84,6 +84,7 @@ class WidgetFramework_DataWriter_Helper_Widget
 					{
 						$templateForHooks[$position][] = $template['title'];
 					}
+					$templateForHooks[$position] = array_unique($templateForHooks[$position]);
 				}
 				else
 				{
@@ -104,7 +105,7 @@ class WidgetFramework_DataWriter_Helper_Widget
 			$positionsGood[] = $position;
 		}
 
-		$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_TEMPLATE_FOR_HOOKS, array_unique($templateForHooks));
+		$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_TEMPLATE_FOR_HOOKS, $templateForHooks);
 		asort($positionsGood);
 		$positions = implode(', ', $positionsGood);
 
