@@ -47,10 +47,12 @@ class WidgetFramework_Listener
 
 			WidgetFramework_Core::getInstance()->prepareWidgetsForHooksIn($templateName, $params, $template);
 
-			if ($templateName == 'PAGE_CONTAINER')
+			if ($templateName === 'PAGE_CONTAINER')
 			{
 				$template->preloadTemplate('wf_hook_moderator_bar');
 				$template->preloadTemplate('wf_revealer');
+
+				WidgetFramework_Template_Trojan::WidgetFramework_setPageContainer($template);
 			}
 		}
 	}
@@ -66,6 +68,11 @@ class WidgetFramework_Listener
 			if ($positionCode !== null)
 			{
 				WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
+			}
+			
+			if ($templateName === 'PAGE_CONTAINER')
+			{
+				WidgetFramework_Template_Trojan::WidgetFramework_processLateExtraData($output, $containerData, $template);
 			}
 		}
 	}

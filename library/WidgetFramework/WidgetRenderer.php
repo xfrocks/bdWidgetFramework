@@ -666,10 +666,9 @@ abstract class WidgetFramework_WidgetRenderer
 
 		$this->_releaseLock($lockId);
 
-		if (!empty($containerData) AND $cacheHit)
+		if (!empty($containerData))
 		{
-			// apply container data only if cache hit
-			// when cache miss, the data is applied already by XenForo_Template_Abstract
+			// apply container data
 			WidgetFramework_Template_Trojan::WidgetFramework_mergeExtraContainerData($containerData);
 		}
 

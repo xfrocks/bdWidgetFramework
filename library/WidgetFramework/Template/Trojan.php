@@ -2,6 +2,14 @@
 
 class WidgetFramework_Template_Trojan extends XenForo_Template_Public
 {
+	protected static $_WidgetFramework_pageContainerTemplate = null;
+
+	protected static $_WidgetFramework_lateExtraData = array();
+
+	public static function WidgetFramework_setPageContainer(XenForo_Template_Public $template)
+	{
+		self::$_WidgetFramework_pageContainerTemplate = $template;
+	}
 
 	public static function WidgetFramework_getRequiredExternals()
 	{
@@ -15,7 +23,37 @@ class WidgetFramework_Template_Trojan extends XenForo_Template_Public
 
 	public static function WidgetFramework_mergeExtraContainerData(array $extraData)
 	{
-		XenForo_Template_Public::$_extraData = XenForo_Application::mapMerge(XenForo_Template_Public::$_extraData, $extraData);
+		if (empty($extraData))
+		{
+			return;
+		}
+
+		if (self::$_WidgetFramework_pageContainerTemplate === null OR self::$_WidgetFramework_pageContainerTemplate->getParam('contents') === null)
+		{
+			XenForo_Template_Public::$_extraData = XenForo_Application::mapMerge(XenForo_Template_Public::$_extraData, $extraData);
+		}
+		else
+		{
+			// these extra data came too late
+			// page container has already started rendering...
+			self::$_WidgetFramework_lateExtraData = XenForo_Application::mapMerge(self::$_WidgetFramework_lateExtraData, $extraData);
+		}
+	}
+
+	public static function WidgetFramework_processLateExtraData(&$output, array &$containerData, XenForo_Template_Abstract $template)
+	{
+		foreach (self::$_WidgetFramework_lateExtraData as $key => $value)
+		{
+			switch ($key)
+			{
+				case 'head':
+					foreach ($value as $headKey => $headValue)
+					{
+						$output = str_replace('</head>', $headValue . '</head>', $output);
+					}
+					break;
+			}
+		}
 	}
 
 }
