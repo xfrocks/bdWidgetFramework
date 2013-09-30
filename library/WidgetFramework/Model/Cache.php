@@ -104,6 +104,8 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
 	protected function _getDbKey($id)
 	{
+		$id = preg_replace('/[^a-zA-Z0-9_]/', '', $id);
+
 		$key = self::CACHED_WIDGETS_BY_PCID_PREFIX . $id;
 
 		if (strlen($key) > 25)
