@@ -114,8 +114,15 @@ abstract class WidgetFramework_WidgetRenderer
 
 		foreach ($nodes as $node)
 		{
-			if ($node['node_type_id'] != 'Forum')
+			if (in_array($node['node_type_id'], array(
+				'Category',
+				'LinkForum',
+				'Page',
+				'WF_WidgetPage'
+			)))
+			{
 				continue;
+			}
 
 			$forums[] = array(
 				'value' => $node['node_id'],
