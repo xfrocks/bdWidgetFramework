@@ -66,6 +66,9 @@ class WidgetFramework_Core
 		// since 2.4
 		$renderers[] = 'WidgetFramework_WidgetRenderer_UsersStaff';
 		$renderers[] = 'WidgetFramework_WidgetRenderer_FacebookFacepile';
+		
+		// since 2.4.2
+		$renderers[] = 'WidgetFramework_WidgetRenderer_CallbackWithoutWrapper';
 	}
 
 	public function bootstrap()
