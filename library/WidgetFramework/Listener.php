@@ -14,6 +14,11 @@ class WidgetFramework_Listener
 			}
 
 			WidgetFramework_Core::getInstance()->bootstrap();
+			
+			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_snippet'] = array(
+				'WidgetFramework_Template_Helper_Core',
+				'snippet'
+			);
 		}
 		elseif ($dependencies instanceof XenForo_Dependencies_Admin)
 		{

@@ -612,6 +612,8 @@ Arguments:
     <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
     <phrase title="style_property_wf_recent_status_statusMaxLength_description_master" version_id="33" version_string="1.5"><![CDATA[This property will be applied to User Recent Status widgets.]]></phrase>
     <phrase title="style_property_wf_recent_status_statusMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Status Maximum Length]]></phrase>
+    <phrase title="style_property_wf_threads_snippetMaxLength_description_master" version_id="69" version_string="2.4.1"><![CDATA[This property will be applied with all Threads widgets.]]></phrase>
+    <phrase title="style_property_wf_threads_snippetMaxLength_master" version_id="69" version_string="2.4.1"><![CDATA[Snippet Maximum Length]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_description_master" version_id="33" version_string="1.5"><![CDATA[This property will be applied with all Threads widgets.]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
@@ -774,6 +776,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
   <style_properties>
     <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Title Maximum Length" description="This property will be applied with all Threads widgets." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="Threads"><![CDATA[35]]></property>
     <property property_name="wf_recent_status_statusMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Status Maximum Length" description="This property will be applied to User Recent Status widgets." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="RecentStatus"><![CDATA[150]]></property>
+    <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Snippet Maximum Length" description="This property will be applied with all Threads widgets." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="Threads"><![CDATA[0]]></property>
     <group group_name="widget_framework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Widget display settings for this style.</description>
@@ -1485,7 +1488,7 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 	
 </div>]]></template>
-    <template title="wf_widget_threads_thread_sidebar" version_id="63" version_string="2.3.4"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
+    <template title="wf_widget_threads_thread_sidebar" version_id="69" version_string="2.4.1"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
 	<xen:avatar user="$thread" size="s" img="true" />
 
 	<xen:if is="{$widget.options.display.show_prefix}">{xen:helper threadprefix, $thread}</xen:if>
@@ -1497,7 +1500,7 @@ All customization should go to wf_default_EXTRA.css
 
 	<div class="userTitle">{xen:raw $_secondRow}</div>
 	
-	<xen:if is="{$thread.messageHtml}"><div>{xen:raw $thread.messageHtml}</div></xen:if>
+	<xen:if is="{$thread.messageHtml}"><div>{xen:helper WidgetFramework_snippet, $thread.messageHtml, {xen:property wf_threads_snippetMaxLength}}</div></xen:if>
 </li>
 ]]></template>
     <template title="wf_widget_users" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
