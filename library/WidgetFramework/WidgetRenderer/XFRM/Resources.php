@@ -100,31 +100,50 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		$resources = $this->_getResources($widget, $positionCode, $params, $renderTemplateObject);
+		$renderTemplateObject->setParam('resources', $resources);
+
+		return $renderTemplateObject->render();
+	}
+
+	protected function _getResources(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+	{
 		$core = WidgetFramework_Core::getInstance();
+		$categoryModel = $core->getModelFromCache('XenResource_Model_Category');
 		$resourceModel = $core->getModelFromCache('XenResource_Model_Resource');
 		$visitor = XenForo_Visitor::getInstance();
 
-		$resources = array();
-		$canViewResource = $resourceModel->canViewResource($this->__getFakeResource('visible'), array());
+		$categoryIds = array();
 
-		if ($canViewResource)
+		$viewableCategories = $categoryModel->getViewableCategories();
+		foreach ($viewableCategories as $category)
 		{
-			$canViewDeleted = $resourceModel->canViewResource($this->__getFakeResource('deleted'), array());
-			$canViewModerated = $resourceModel->canViewResource($this->__getFakeResource('moderated'), array());
+			if (!empty($widget['options']['categories']))
+			{
+				if (in_array($category['resource_category_id'], $widget['options']['categories']))
+				{
+					// configured with some category id
+					// only include those that were selected
+					$categoryIds[] = $category['resource_category_id'];
+				}
+			}
+			else
+			{
+				$categoryIds[] = $category['resource_category_id'];
+			}
+		}
 
+		if (!empty($categoryIds))
+		{
 			$conditions = array(
-				'deleted' => $canViewDeleted,
-				'moderated' => $canViewModerated,
+				'deleted' => $visitor->isSuperAdmin(),
+				'moderated' => $visitor->isSuperAdmin(),
+				'resource_category_id' => $categoryIds,
 			);
 			$fetchOptions = array(
 				'limit' => $widget['options']['limit'],
 				'join' => XenResource_Model_Resource::FETCH_USER | XenResource_Model_Resource::FETCH_CATEGORY | XenResource_Model_Resource::FETCH_DESCRIPTION,
 			);
-
-			if (!empty($widget['options']['categories']))
-			{
-				$conditions['resource_category_id'] = $widget['options']['categories'];
-			}
 
 			switch ($widget['options']['type'])
 			{
@@ -153,12 +172,11 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 					)));
 					break;
 			}
+
+			$resources = $resourceModel->prepareResources($resources);
 		}
 
-		$resources = $resourceModel->prepareResources($resources);
-		$renderTemplateObject->setParam('resources', $resources);
-
-		return $renderTemplateObject->render();
+		return $resources;
 	}
 
 	private function __getFakeResource($state)
