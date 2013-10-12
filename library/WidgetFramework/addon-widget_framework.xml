@@ -667,7 +667,7 @@ XenForo_Template_Helper_Core::callHelper('ismemberof', array($visitor,3)) -- mea
     <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget" version_id="1" version_string="0.9"><![CDATA[Please confirm that you want to delete the following widget]]></phrase>
     <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Please confirm that you want to delete the following widget page]]></phrase>
     <phrase title="wf_poll_thread_id" version_id="5" version_string="0.9.3"><![CDATA[Thread ID]]></phrase>
-    <phrase title="wf_poll_thread_id_explain" version_id="5" version_string="0.9.3"><![CDATA[Enter the thread ID of the thread you want to display. Leave it blank to always get the latest poll.]]></phrase>
+    <phrase title="wf_poll_thread_id_explain" version_id="69" version_string="2.4.1"><![CDATA[Enter the thread ID of the thread you want to display. Leave it blank to get the latest poll, enter "random" to get a random one each time.]]></phrase>
     <phrase title="wf_popular" version_id="1" version_string="0.9"><![CDATA[Popular]]></phrase>
     <phrase title="wf_position" version_id="1" version_string="0.9"><![CDATA[Position]]></phrase>
     <phrase title="wf_position_can_not_be_empty" version_id="22" version_string="1.2.2"><![CDATA[Widget position can not be empty.]]></phrase>

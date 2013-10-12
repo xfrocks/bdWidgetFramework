@@ -8,6 +8,7 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 	const FETCH_OPTIONS_FORUM_FULL_JOIN = 'WidgetFramework_forum_full_join';
 	const FETCH_OPTIONS_LAST_POST_JOIN = 'WidgetFramework_last_post_join';
 	const FETCH_OPTIONS_POLL_JOIN = 'WidgetFramework_poll_join';
+	const FETCH_OPTIONS_ORDER_RANDOM = 'WidgetFramework_random';
 
 	public function prepareThreadConditions(array $conditions, array &$fetchOptions)
 	{
@@ -98,6 +99,16 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 			}
 		}
 
+		if (!empty($fetchOptions['order']))
+		{
+			switch ($fetchOptions['order'])
+			{
+				case self::FETCH_OPTIONS_ORDER_RANDOM:
+					$orderClause = 'ORDER BY RAND()';
+					break;
+			}
+		}
+
 		return compact('selectFields', 'joinTables', 'orderClause');
 	}
 
@@ -107,13 +118,13 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 
 		$thread['canInlineMod'] = false;
 		$thread['canEditThread'] = false;
-		
+
 		if (!empty($thread['fetched_last_post_user']))
 		{
 			$thread['user_id'] = $thread['last_post_user_id'];
 			$thread['username'] = $thread['last_post_username'];
 		}
-		
+
 		if (!empty($thread['fetched_last_post']))
 		{
 			$thread['post_id'] = $thread['last_post_id'];
