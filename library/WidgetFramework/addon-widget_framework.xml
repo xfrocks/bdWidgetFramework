@@ -163,7 +163,7 @@
 	id="{$widget.widget_id}"
 	href="{xen:adminlink 'widgets/edit', $widget}"
 	delete="{xen:adminlink 'widgets/delete', $widget}"
-	label="{xen:if '{$widget.title}', '{$widget.title}', '{$widget.rendererName}'}"
+	label="{xen:if '{$widget.title}', '{xen:raw $widget.title}', '{$widget.rendererName}'}"
 	labelclass="{xen:if '!{$widget.active}', 'disabled'}"
 	snippet="{xen:if '{$widget.title}', '{$widget.rendererName} ({xen:number $widget.display_order})', '({xen:number $widget.display_order})'}"
 	toggle="{$widget.active}"
