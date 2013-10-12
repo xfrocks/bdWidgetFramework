@@ -70,6 +70,18 @@ abstract class WidgetFramework_WidgetRenderer
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
+		if ($optionKey === 'cache_seconds')
+		{
+			if (!is_numeric($optionValue))
+			{
+				$optionValue = '';
+			}
+			elseif ($optionValue < 0)
+			{
+				$optionValue = 0;
+			}
+		}
+
 		return true;
 	}
 
@@ -328,6 +340,11 @@ abstract class WidgetFramework_WidgetRenderer
 				$this->_configuration['options']['tab_group'] = XenForo_Input::STRING;
 			}
 
+			if ($this->_configuration['useCache'])
+			{
+				$this->_configuration['options']['cache_seconds'] = XenForo_Input::STRING;
+			}
+
 			$this->_configuration['options']['expression'] = XenForo_Input::STRING;
 			$this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
 			$this->_configuration['options']['layout_row'] = XenForo_Input::UINT;
@@ -353,6 +370,11 @@ abstract class WidgetFramework_WidgetRenderer
 
 	public function useCache(array $widget)
 	{
+		if (isset($widget['options']['cache_seconds']) AND $widget['options']['cache_seconds'] === '0')
+		{
+			return false;
+		}
+
 		$configuration = $this->getConfiguration();
 		return !empty($configuration['useCache']);
 	}
@@ -411,10 +433,13 @@ abstract class WidgetFramework_WidgetRenderer
 		if (!empty($widget['widget_page_id']))
 		{
 			if (empty($options['layout_sizeRow']))
+			{
 				$options['layout_sizeRow'] = 1;
+			}
 			if (empty($options['layout_sizeCol']))
+			{
 				$options['layout_sizeCol'] = 1;
-
+			}
 		}
 
 		return $options;
@@ -733,13 +758,21 @@ abstract class WidgetFramework_WidgetRenderer
 		{
 			return false;
 		}
-		if ($configuration['cacheSeconds'] <= 0)
+
+		$cacheSeconds = $configuration['cacheSeconds'];
+
+		if (!empty($widget['options']['cache_seconds']))
+		{
+			$cacheSeconds = intval($widget['options']['cache_seconds']);
+		}
+
+		if ($cacheSeconds < 0)
 		{
 			return true;
 		}
 
 		$seconds = XenForo_Application::$time - $cached['time'];
-		if ($seconds > $configuration['cacheSeconds'])
+		if ($seconds > $cacheSeconds)
 		{
 			return false;
 		}

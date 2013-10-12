@@ -198,6 +198,12 @@
 	<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="5" inputclass="Elastic">
 		<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
 	</xen:textboxunit>
+
+	<xen:if is="{$rendererConfiguration.useCache}">
+		<xen:textboxunit name="{$namePrefix}cache_seconds" label="{xen:phrase wf_cache_seconds}" value="{$options.cache_seconds}" placeholder="{$rendererConfiguration.cacheSeconds}">
+			<xen:explain>{xen:phrase wf_cache_seconds_explain}</xen:explain>
+		</xen:textboxunit>
+	</xen:if>
 </xen:if>]]></template>
     <template title="wf_widget_options_birthday"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 0}">
 	<xen:explain>
@@ -618,6 +624,8 @@ Arguments:
     <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
+    <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
+    <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
     <phrase title="wf_column_gap" version_id="54" version_string="2.2.3"><![CDATA[Column Gap]]></phrase>
     <phrase title="wf_column_width" version_id="54" version_string="2.2.3"><![CDATA[Column Width]]></phrase>
     <phrase title="wf_confirm_deletion_of_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Confirm Deletion of Widget Page]]></phrase>
