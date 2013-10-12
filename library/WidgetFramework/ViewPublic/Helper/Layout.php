@@ -17,13 +17,21 @@ class WidgetFramework_ViewPublic_Helper_Layout
 		foreach ($widgets as $widget)
 		{
 			if (!isset($widget['options']['layout_row']))
+			{
 				continue;
+			}
 			if (!isset($widget['options']['layout_col']))
+			{
 				continue;
+			}
 			if (empty($widget['options']['layout_sizeRow']))
+			{
 				continue;
+			}
 			if (empty($widget['options']['layout_sizeCol']))
+			{
 				continue;
+			}
 
 			$rows = max($rows, $widget['options']['layout_row'] + $widget['options']['layout_sizeRow']);
 			$cols = max($cols, $widget['options']['layout_col'] + $widget['options']['layout_sizeCol']);
@@ -48,7 +56,7 @@ class WidgetFramework_ViewPublic_Helper_Layout
 		$options = XenForo_Application::mapMerge(array(
 			'params' => $view->getParams(),
 			'templateObj' => $view->createOwnTemplateObject(),
-			'positionCode' => md5(serialize($widgets)),
+			'positionCode' => md5(implode('_', $widgetIds)),
 			'rows' => $rows,
 			'cols' => $cols,
 			'cssClasses' => $cssClasses,
@@ -72,9 +80,14 @@ class _Layout_Vertical extends _Layout_Multiple
 		return 'layout_sizeCol';
 	}
 
-	protected function _newSubLayout(XenForo_ViewPublic_Base $view, array &$widgets, array &$options, array $widgetIds, $depth)
+	protected function _newSingleLayout(array &$widget)
 	{
-		return new _Layout_Horizontal($view, $widgets, $options, $widgetIds, $depth);
+		return new _Layout_Single($this->_view, $widget, $this->_options);
+	}
+
+	protected function _newSubLayout(array &$widgets, array $widgetIds, $depth)
+	{
+		return new _Layout_Horizontal($this->_view, $widgets, $this->_options, $widgetIds, $depth);
 	}
 
 	public function __toString()
@@ -87,12 +100,11 @@ class _Layout_Vertical extends _Layout_Multiple
 				$html = '';
 				break;
 			case 1:
-				$subLayout = strval(reset($this->_subLayouts));
-				$hash = md5($subLayout);
+				$subLayout = strval(reset($this->_subLayouts)); ;
 
-				$html = sprintf('<!-- WidgetFramework_WidgetPage_LayoutVertical-%s -->', $hash);
+				$html = sprintf('<!-- WidgetFramework_WidgetPage_LayoutVertical-%s -->', $this->_getHash());
 				$html .= $subLayout;
-				$html .= sprintf('<!-- /WidgetFramework_WidgetPage_LayoutVertical-%s -->', $hash);
+				$html .= sprintf('<!-- /WidgetFramework_WidgetPage_LayoutVertical-%s -->', $this->_getHash());
 				break;
 			default:
 				$html = '<ul class="WidgetFramework_WidgetPage_LayoutVertical">';
@@ -122,6 +134,71 @@ class _Layout_Vertical extends _Layout_Multiple
 
 class _Layout_Horizontal extends _Layout_Multiple
 {
+	protected function _doLayout(array $widgetIds)
+	{
+		parent::_doLayout($widgetIds);
+
+		$groupIds = array_keys($this->_subLayouts);
+
+		$mergedGroupCount = 0;
+		$mergeableGroupIds = array();
+
+		foreach ($groupIds as $groupId)
+		{
+			if (is_array($this->_subLayouts[$groupId]))
+			{
+				if (empty($mergeableGroupIds[$mergedGroupCount]))
+				{
+					$mergeableGroupIds[$mergedGroupCount] = array($groupId);
+				}
+				else
+				{
+					$mergeableGroupIds[$mergedGroupCount][] = $groupId;
+				}
+			}
+			else
+			{
+				$mergedGroupCount++;
+			}
+		}
+
+		for ($mergedGroupId = 0; $mergedGroupId < ($mergedGroupCount + 1); $mergedGroupId++)
+		{
+			if (empty($mergeableGroupIds[$mergedGroupId]))
+			{
+				continue;
+			}
+
+			$firstMergeableGroupId = reset($mergeableGroupIds[$mergedGroupId]);
+			$widgets = array();
+			$indeces = array();
+			foreach ($mergeableGroupIds[$mergedGroupId] as $mergeableGroupId)
+			{
+				$widgets[] = $this->_subLayouts[$mergeableGroupId]['widget'];
+
+				foreach ($this->_subLayoutIndeces[$mergeableGroupId] as $index)
+				{
+					$indeces[] = $index;
+				}
+
+				if ($mergeableGroupId != $firstMergeableGroupId)
+				{
+					unset($this->_subLayouts[$mergeableGroupId]);
+					unset($this->_subLayoutIndeces[$mergeableGroupId]);
+				}
+			}
+
+			$options = $this->_options;
+			$options['singleHookName'] = sprintf('%s_%s', $this->_getHash(), implode('_', $indeces));
+
+			foreach ($widgets as $widget)
+			{
+				$this->_subLayouts[$firstMergeableGroupId] = new _Layout_Single($this->_view, $widget, $options);
+			}
+
+			$this->_subLayoutIndeces[$firstMergeableGroupId] = $indeces;
+		}
+	}
 
 	protected function _getFieldIndex()
 	{
@@ -133,9 +210,14 @@ class _Layout_Horizontal extends _Layout_Multiple
 		return 'layout_sizeRow';
 	}
 
-	protected function _newSubLayout(XenForo_ViewPublic_Base $view, array &$widgets, array &$options, array $widgetIds, $depth)
+	protected function _newSingleLayout(array &$widget)
 	{
-		return new _Layout_Vertical($view, $widgets, $options, $widgetIds, $depth);
+		return array('widget' => $widget);
+	}
+
+	protected function _newSubLayout(array &$widgets, array $widgetIds, $depth)
+	{
+		return new _Layout_Vertical($this->_view, $widgets, $this->_options, $widgetIds, $depth);
 	}
 
 	public function __toString()
@@ -149,11 +231,10 @@ class _Layout_Horizontal extends _Layout_Multiple
 				break;
 			case 1:
 				$subLayout = strval(reset($this->_subLayouts));
-				$hash = md5($subLayout);
 
-				$html = sprintf('<!-- WidgetFramework_WidgetPage_LayoutHorizontal-%s -->', $hash);
+				$html = sprintf('<!-- WidgetFramework_WidgetPage_LayoutHorizontal-%s -->', $this->_getHash());
 				$html .= $subLayout;
-				$html .= sprintf('<!-- /WidgetFramework_WidgetPage_LayoutHorizontal-%s -->', $hash);
+				$html .= sprintf('<!-- /WidgetFramework_WidgetPage_LayoutHorizontal-%s -->', $this->_getHash());
 				break;
 			default:
 				$html = '<ul class="WidgetFramework_WidgetPage_LayoutHorizontal">';
@@ -181,10 +262,11 @@ class _Layout_Horizontal extends _Layout_Multiple
 
 abstract class _Layout_Multiple
 {
-	protected $_view = null;
-	protected $_widgets = null;
-	protected $_options = null;
-	protected $_depth = null;
+	protected $_view;
+	protected $_widgets;
+	protected $_options;
+	protected $_widgetIds;
+	protected $_depth;
 
 	protected $_subLayouts = array();
 	protected $_subLayoutIndeces = array();
@@ -194,6 +276,7 @@ abstract class _Layout_Multiple
 		$this->_view = $view;
 		$this->_widgets = &$widgets;
 		$this->_options = &$options;
+		$this->_widgetIds = $widgetIds;
 		$this->_depth = $depth;
 
 		if ($depth < 10)
@@ -210,6 +293,11 @@ abstract class _Layout_Multiple
 		}
 
 		return null;
+	}
+
+	protected function _getHash()
+	{
+		return md5(implode('_', $this->_widgetIds));
 	}
 
 	protected function _doLayout(array $widgetIds)
@@ -241,7 +329,9 @@ abstract class _Layout_Multiple
 		{
 			$indeces = $groups[$groupId];
 			if (empty($indeces))
+			{
 				continue;
+			}
 
 			$subLayoutWidgetIds = array();
 
@@ -263,12 +353,12 @@ abstract class _Layout_Multiple
 			elseif (count($subLayoutWidgetIds) == 1)
 			{
 				$firstWidgetId = reset($subLayoutWidgetIds);
-				$this->_subLayouts[$groupId] = new _Layout_Single($this->_view, $this->_widgets[$firstWidgetId], $this->_options);
+				$this->_subLayouts[$groupId] = $this->_newSingleLayout($this->_widgets[$firstWidgetId]);
 				$this->_subLayoutIndeces[$groupId] = $indeces;
 			}
 			else
 			{
-				$this->_subLayouts[$groupId] = $this->_newSubLayout($this->_view, $this->_widgets, $this->_options, $subLayoutWidgetIds, $this->_depth + 1);
+				$this->_subLayouts[$groupId] = $this->_newSubLayout($this->_widgets, $subLayoutWidgetIds, $this->_depth + 1);
 				$this->_subLayoutIndeces[$groupId] = $indeces;
 			}
 		}
@@ -317,57 +407,48 @@ abstract class _Layout_Multiple
 
 	abstract protected function _getFieldIndex();
 	abstract protected function _getFieldSize();
-	abstract protected function _newSubLayout(XenForo_ViewPublic_Base $view, array &$widgets, array &$options, array $widgetIds, $depth);
+	abstract protected function _newSingleLayout(array &$widget);
+	abstract protected function _newSubLayout(array &$widgets, array $widgetIds, $depth);
 }
 
 class _Layout_Single
 {
+	protected $_hookName;
+	protected $_options;
 
-	protected $_view = null;
-	protected $_widget = null;
-	protected $_options = null;
-
-	public function __construct(XenForo_ViewPublic_Base $view, array &$widget, array &$options)
+	public function __construct(XenForo_ViewPublic_Base $view, array &$widget, array $options)
 	{
-		$this->_view = $view;
-		$this->_widget = &$widget;
+		if (!empty($options['singleHookName']))
+		{
+			$this->_hookName = $options['singleHookName'];
+		}
+		else
+		{
+			$this->_hookName = sprintf('%s_%d', $options['positionCode'], $widget['widget_id']);
+		}
+
 		$this->_options = &$options;
 
-		$this->_prepare();
+		$widgets = array($widget);
+		$widgets[0]['position'] = 'hook:' . $this->_hookName;
+
+		WidgetFramework_Core::getInstance()->addWidgets($widgets);
 	}
 
 	protected function _prepare()
 	{
-		$renderer = WidgetFramework_Core::getRenderer($this->_widget['class'], false);
-		if ($renderer)
-		{
-			$renderer->prepare($this->_widget, $this->_options['positionCode'], $this->_options['params'], $this->_options['templateObj']);
-		}
+		WidgetFramework_Core::getInstance()->prepareWidgetsForHook($this->_hookName, $this->_options['params'], $this->_options['templateObj']);
 	}
 
 	public function __toString()
 	{
-		$renderer = WidgetFramework_Core::getRenderer($this->_widget['class'], false);
-		if ($renderer)
-		{
-			$html = '';
+		$this->_prepare();
 
-			$params = $this->_options['params'];
-			$params[WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE] = 'hook:' . $this->_options['positionCode'] . '_' . md5(serialize($this->_widget));
-			$params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK] = true;
-			$params[WidgetFramework_WidgetRenderer::PARAM_PARENT_TEMPLATE] = $this->_options['positionCode'];
-			$params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT] = $this->_view;
-			
-			$widgetHtml = $renderer->render($this->_widget, $this->_options['positionCode'], $params, $this->_options['templateObj'], $html);
+		$html = '';
 
-			$renderer->extraPrepare($this->_widget, $widgetHtml);
-		}
-		else
-		{
-			$widgetHtml = '';
-		}
+		WidgetFramework_Core::getInstance()->renderWidgetsForHook($this->_hookName, $this->_options['params'], $this->_options['templateObj'], $html);
 
-		return $widgetHtml;
+		return strval($html);
 	}
 
 }

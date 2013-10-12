@@ -66,7 +66,7 @@ class WidgetFramework_Core
 		// since 2.4
 		$renderers[] = 'WidgetFramework_WidgetRenderer_UsersStaff';
 		$renderers[] = 'WidgetFramework_WidgetRenderer_FacebookFacepile';
-		
+
 		// since 2.4.2
 		$renderers[] = 'WidgetFramework_WidgetRenderer_CallbackWithoutWrapper';
 	}
@@ -120,7 +120,9 @@ class WidgetFramework_Core
 			{
 				$position = trim($position);
 				if (empty($position))
+				{
 					continue;
+				}
 
 				if (!isset($this->_positions[$position]))
 				{
@@ -214,15 +216,24 @@ class WidgetFramework_Core
 		}
 	}
 
+	public function prepareWidgetsForHook($hookName, array $params, XenForo_Template_Abstract $template)
+	{
+		$this->_prepareWidgetsFor('hook:' . $hookName, $params, $template);
+	}
+
 	protected function _prepareWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template)
 	{
 		if (!isset($this->_positions[$positionCode]))
+		{
 			return false;
+		}
 
 		$position = &$this->_positions[$positionCode];
 		if (!empty($position['prepared']))
+		{
+			// prepared
 			return false;
-		// prepared
+		}
 
 		foreach ($position['widgets'] as &$widgetGroup)
 		{

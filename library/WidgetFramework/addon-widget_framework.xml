@@ -185,16 +185,15 @@
 	</fieldset>
 </xen:if>
 
-<xen:if is="!{$widget.widget_page_id}">
+
+<xen:if is="{$options_loaded}">
 	<xen:if is="{$rendererConfiguration.useWrapper}">
 		<!-- tab group - added 02-02-2011 -->
 		<xen:textboxunit label="{xen:phrase wf_tab_group}:" name="{$namePrefix}tab_group" value="{$options.tab_group}">
 			<xen:explain>{xen:phrase wf_tab_group_explain}</xen:explain>
 		</xen:textboxunit>
 	</xen:if>
-</xen:if>
 
-<xen:if is="{$options_loaded}">
 	<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="5" inputclass="Elastic">
 		<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
 	</xen:textboxunit>
@@ -1144,7 +1143,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_widget_page.css" version_id="58" version_string="2.3.2b"><![CDATA[.WidgetFramework_WidgetPage_LayoutVertical {
+    <template title="wf_widget_page.css" version_id="69" version_string="2.4.1"><![CDATA[.WidgetFramework_WidgetPage_LayoutVertical {
 	margin: 0;
 	padding: 0;
 	width: 100%;
@@ -1170,6 +1169,11 @@ All customization should go to wf_default_EXTRA.css
 .WidgetFramework_WidgetPage_LayoutHorizontal .WidgetFramework_WidgetPage_LayoutRow {
 	width: 100%;
 	overflow: hidden;
+}
+
+#WidgetPageContent .widget > h3 {
+	font-size: 12pt;
+	font-weight: bold;
 }]]></template>
     <template title="wf_widget_page_index" version_id="58" version_string="2.3.2b"><![CDATA[<xen:require css="wf_widget_page.css" />
 
