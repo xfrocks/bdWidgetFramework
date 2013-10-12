@@ -326,7 +326,17 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 			if ($layoutNeedPost AND !empty($params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT]))
 			{
-				$bbCodeParser = XenForo_BbCode_Parser::create(XenForo_BbCode_Formatter_Base::create('Base', array('view' => $params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT])));
+				$bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT]));
+				if (XenForo_Application::$versionId < 1020000)
+				{
+					// XenForo 1.1.x
+					$bbCodeParser = new XenForo_BbCode_Parser($bbCodeFormatter);
+				}
+				else
+				{
+					// XenForo 1.2.x
+					$bbCodeParser = XenForo_BbCode_Parser::create($bbCodeFormatter);
+				}
 				$bbCodeOptions = array(
 					'states' => array(),
 					'contentType' => 'post',
