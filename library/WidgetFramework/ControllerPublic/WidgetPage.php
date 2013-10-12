@@ -46,6 +46,8 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 	{
 		$this->_request->setParam('node_id', WidgetFramework_Option::get('indexNodeId'));
 
+		$this->_routeMatch->setSections(WidgetFramework_Option::get('indexTabId'));
+
 		return $this->responseReroute(__CLASS__, 'index');
 	}
 

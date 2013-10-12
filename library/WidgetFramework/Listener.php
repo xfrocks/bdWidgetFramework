@@ -14,7 +14,7 @@ class WidgetFramework_Listener
 			}
 
 			WidgetFramework_Core::getInstance()->bootstrap();
-			
+
 			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_snippet'] = array(
 				'WidgetFramework_Template_Helper_Core',
 				'snippet'
@@ -41,6 +41,22 @@ class WidgetFramework_Listener
 		if ($indexNodeId > 0)
 		{
 			WidgetFramework_Helper_Index::setup();
+		}
+	}
+
+	public static function navigation_tabs(array &$extraTabs, $selectedTabId)
+	{
+		$nodeId = WidgetFramework_Option::get('indexNodeId');
+
+		if ($nodeId > 0)
+		{
+			$tabId = WidgetFramework_Option::get('indexTabId');
+
+			$extraTabs[$tabId] = array(
+				'title' => new XenForo_Phrase('home'),
+				'href' => XenForo_Link::buildPublicLink('full:widget-page-index'),
+				'position' => 'home',
+			);
 		}
 	}
 
@@ -74,7 +90,7 @@ class WidgetFramework_Listener
 			{
 				WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
 			}
-			
+
 			if ($templateName === 'PAGE_CONTAINER')
 			{
 				WidgetFramework_Template_Trojan::WidgetFramework_processLateExtraData($output, $containerData, $template);

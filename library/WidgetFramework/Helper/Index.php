@@ -69,16 +69,23 @@ class WidgetFramework_Helper_Index
 	{
 		self::$_setup11x = true;
 
-		// dirty trick to get the public routes
-		$className = 'a' . md5(uniqid());
-		eval(sprintf('class %s extends XenForo_Link{
-			public static function getHandlerInfoForGroup($group){
-			if (empty(XenForo_Link::$_handlerCache[$group]))return false;
-			return XenForo_Link::$_handlerCache[$group];}}', $className));
-		$routesPublic = call_user_func(array(
-			$className,
-			'getHandlerInfoForGroup'
-		), 'public');
+		if (XenForo_Application::$versionId < 1020000)
+		{
+			// dirty trick to get the public routes
+			$className = 'a' . md5(uniqid());
+			eval(sprintf('class %s extends XenForo_Link{
+				public static function getHandlerInfoForGroup($group){
+				if (empty(XenForo_Link::$_handlerCache[$group]))return false;
+				return XenForo_Link::$_handlerCache[$group];}}', $className));
+			$routesPublic = call_user_func(array(
+				$className,
+				'getHandlerInfoForGroup'
+			), 'public');
+		}
+		else
+		{
+			$routesPublic = XenForo_Link::getHandlerInfoForGroup('public');
+		}
 
 		if (!empty($routesPublic))
 		{

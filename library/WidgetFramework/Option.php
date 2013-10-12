@@ -12,6 +12,8 @@ class WidgetFramework_Option
 		{
 			case 'cacheCutoffDays':
 				return 7;
+			case 'indexTabId':
+				return 'WidgetFramework_home';
 			case 'revealEnabled':
 				if (self::$_revealEnabled === null)
 				{
