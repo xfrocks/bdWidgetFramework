@@ -6,34 +6,85 @@ class WidgetFramework_Helper_String
 	{
 		return new _WidgetFramework_ArrayOfString($glue, $strings);
 	}
-	
+
 	public static function createWidgetTitleDelayed(WidgetFramework_WidgetRenderer $renderer, array $widget)
 	{
 		return new _WidgetFramework_WidgetTitleDelayed($renderer, $widget);
 	}
+
 }
 
 class _WidgetFramework_ArrayOfString
 {
 	protected $_glue;
-	protected $_strings;
+	protected $_arrays;
 
-	public function __construct($glue, array $strings)
+	public function __construct($glue, array $array)
 	{
 		$this->_glue = $glue;
-		$this->_strings = $strings;
+		$this->_arrays = $array;
 	}
-	
+
 	public function __toString()
 	{
-		return implode($this->_glue, $this->_strings);
+		$strings = array();
+		$exceptions = array();
+
+		foreach ($this->_arrays as $item)
+		{
+			if (is_string($item))
+			{
+				$strings[] = $item;
+			}
+			elseif ($item instanceof XenForo_Template_Abstract)
+			{
+				try
+				{
+					$strings[] = $item->render();
+				}
+				catch (Exception $e)
+				{
+					$exceptions[] = $e;
+				}
+			}
+			else
+			{
+				try
+				{
+					$item = strval($item);
+				}
+				catch (Exception $e)
+				{
+					$exceptions[] = $e;
+				}
+			}
+		}
+
+		if (!empty($exceptions))
+		{
+			if (WidgetFramework_Core::debugMode())
+			{
+				// do this to display the exception (only done in our debug mode)
+				var_dump($exceptions);
+				exit ;
+			}
+			else
+			{
+				// throw the first exception to let people know that something is wrong
+				$e = reset($exceptions);
+				throw $e;
+			}
+		}
+
+		return implode($this->_glue, $strings);
 	}
+
 }
 
 class _WidgetFramework_WidgetTitleDelayed
 {
 	static protected $_newInstances = array();
-	
+
 	protected $_renderer;
 	protected $_widget;
 	protected $_prepared = false;
@@ -42,10 +93,10 @@ class _WidgetFramework_WidgetTitleDelayed
 	{
 		$this->_renderer = $renderer;
 		$this->_widget = $widget;
-		
+
 		self::$_newInstances[] = $this;
 	}
-	
+
 	public function prepare()
 	{
 		if ($this->_prepared === false)
@@ -53,7 +104,7 @@ class _WidgetFramework_WidgetTitleDelayed
 			$this->_prepared = $this->_renderer->extraPrepareTitle($this->_widget);
 		}
 	}
-	
+
 	public function __toString()
 	{
 		foreach (self::$_newInstances as $instance)
@@ -61,7 +112,8 @@ class _WidgetFramework_WidgetTitleDelayed
 			$instance->prepare();
 		}
 		self::$_newInstances = array();
-		
+
 		return strval($this->_prepared);
 	}
+
 }
