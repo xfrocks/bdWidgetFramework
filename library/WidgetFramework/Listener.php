@@ -82,13 +82,18 @@ class WidgetFramework_Listener
 	{
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
 		{
-			WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
-
-			// get a copy of container data for widget rendered
-			$positionCode = $template->getParam(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE);
-			if ($positionCode !== null)
+			if ($templateName != 'wf_widget_wrapper')
 			{
-				WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
+				WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
+
+				// get a copy of container data for widget rendered
+				$positionCode = $template->getParam(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE);
+				if ($positionCode !== null)
+				{
+					$widget = $template->getParam('widget');
+
+					WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
+				}
 			}
 
 			if ($templateName === 'PAGE_CONTAINER')

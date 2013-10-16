@@ -450,7 +450,6 @@ abstract class WidgetFramework_WidgetRenderer
 		if ($this->useWrapper($widget))
 		{
 			$template->preloadTemplate('wf_widget_wrapper');
-			self::$_widgetTemplates['wf_widget_wrapper'] = true;
 		}
 
 		$renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
