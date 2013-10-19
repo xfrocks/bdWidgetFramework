@@ -51,7 +51,7 @@ class _WidgetFramework_ArrayOfString
 			{
 				try
 				{
-					$item = strval($item);
+					$strings[] = strval($item);
 				}
 				catch (Exception $e)
 				{

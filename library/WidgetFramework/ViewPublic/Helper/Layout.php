@@ -100,7 +100,7 @@ class _Layout_Vertical extends _Layout_Multiple
 				$html = '';
 				break;
 			case 1:
-				$subLayout = strval(reset($this->_subLayouts)); ;
+				$subLayout = strval(reset($this->_subLayouts));
 
 				$html = sprintf('<!-- WidgetFramework_WidgetPage_LayoutVertical-%s -->', $this->_getHash());
 				$html .= $subLayout;

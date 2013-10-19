@@ -169,7 +169,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		{
 			return $widget;
 		}
-		
+
 		$widget['options'] = @unserialize($widget['options']);
 		if (empty($widget['options']))
 		{
@@ -186,7 +186,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
 		if ($renderer)
 		{
-			$widget['renderer'] =& $renderer;
+			$widget['renderer'] = &$renderer;
 			$widget['rendererName'] = $renderer->getName();
 			$configuration = $renderer->getConfiguration();
 			$options = &$configuration['options'];
@@ -204,7 +204,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 			$widget['rendererNotFound'] = true;
 			$widget['active'] = false;
 		}
-		
+
 		return $widget;
 	}
 
