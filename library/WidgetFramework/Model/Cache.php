@@ -62,9 +62,12 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
 	protected function _getCachedWidgetsKey($cacheId, $permissionCombinationId)
 	{
-		$merged = sprintf('%s_%s', $permissionCombinationId, $cacheId);
-		$exploded = explode('_', $merged);
+		$exploded = explode('_', $cacheId);
+		array_unshift($exploded, $permissionCombinationId);
+		self::_modifyCacheKey($exploded);
+
 		array_pop($exploded);
+
 		return implode('_', $exploded);
 	}
 
@@ -89,7 +92,9 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 		foreach ($dbKeys as $cacheKey => $dbKey)
 		{
 			if (!isset($dbData[$dbKey]))
+			{
 				continue;
+			}
 
 			self::$_queriedData[$cacheKey] = $dbData[$dbKey];
 		}
@@ -102,15 +107,15 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 		return $this->_getDataRegistry()->set($dbKey, $data);
 	}
 
-	protected function _getDbKey($id)
+	protected function _getDbKey($id, $maxLength = 25)
 	{
 		$id = preg_replace('/[^a-zA-Z0-9_]/', '', $id);
 
 		$key = self::CACHED_WIDGETS_BY_PCID_PREFIX . $id;
 
-		if (strlen($key) > 25)
+		if ($maxLength > 0 AND strlen($key) > $maxLength)
 		{
-			$key = self::CACHED_WIDGETS_BY_PCID_PREFIX . substr(md5($key), 0, 25 - strlen(self::CACHED_WIDGETS_BY_PCID_PREFIX));
+			$key = self::CACHED_WIDGETS_BY_PCID_PREFIX . substr(md5($key), 0, $maxLength - strlen(self::CACHED_WIDGETS_BY_PCID_PREFIX));
 		}
 
 		return $key;
@@ -223,7 +228,42 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
 	protected function _getLiveCacheKey($cacheId, $permissionCombinationId)
 	{
-		return $this->_getDbKey($cacheId) . '_' . $permissionCombinationId;
+		$exploded = explode('_', $cacheId);
+		$exploded[] = $permissionCombinationId;
+		self::_modifyCacheKey($exploded);
+
+		return $this->_getDbKey(implode('_', $exploded), 0);
+	}
+
+	protected static function _modifyCacheKey(array &$keys)
+	{
+		static $modifiers = false;
+
+		if ($modifiers === false)
+		{
+			$modifiersArray = array();
+			$visitor = XenForo_Visitor::getInstance();
+			$options = XenForo_Application::getOptions();
+
+			if (!empty($visitor['language_id']) AND $visitor['language_id'] != $options->get('defaultLanguageId'))
+			{
+				$modifiersArray[] = sprintf('l%d', $visitor['language_id']);
+			}
+
+			if ($visitor['style_id'] > 0)
+			{
+				$modifiersArray[] = sprintf('s%d', $visitor['style_id']);
+			}
+
+			if (!empty($visitor['timezone']) AND $visitor['timezone'] != $options->get('guestTimeZone'))
+			{
+				$modifiersArray[] = sprintf('tz%s', $visitor['timezone']);
+			}
+
+			$modifiers = implode('', $modifiersArray);
+		}
+
+		array_unshift($keys, $modifiers);
 	}
 
 }
