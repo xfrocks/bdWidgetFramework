@@ -73,7 +73,7 @@ class WidgetFramework_Listener
 				$template->preloadTemplate('wf_hook_moderator_bar');
 				$template->preloadTemplate('wf_revealer');
 
-				WidgetFramework_Template_Trojan::WidgetFramework_setPageContainer($template);
+				WidgetFramework_Template_Extended::WidgetFramework_setPageContainer($template);
 			}
 		}
 	}
@@ -98,7 +98,7 @@ class WidgetFramework_Listener
 
 			if ($templateName === 'PAGE_CONTAINER')
 			{
-				WidgetFramework_Template_Trojan::WidgetFramework_processLateExtraData($output, $containerData, $template);
+				WidgetFramework_Template_Extended::WidgetFramework_processLateExtraData($output, $containerData, $template);
 			}
 		}
 	}

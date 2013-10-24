@@ -1,13 +1,18 @@
 <?php
 
-class WidgetFramework_Template_Trojan extends XenForo_Template_Public
+class WidgetFramework_Template_Extended extends XenForo_Template_Public
 {
 	protected static $_WidgetFramework_pageContainerTemplate = null;
 
 	protected static $_WidgetFramework_lateExtraData = array();
 
-	public static function WidgetFramework_setPageContainer(XenForo_Template_Public $template)
+	public static function WidgetFramework_setPageContainer(XenForo_Template_Abstract $template)
 	{
+		if (!($template instanceof XenForo_Template_Public))
+		{
+			return;
+		}
+
 		self::$_WidgetFramework_pageContainerTemplate = $template;
 	}
 
@@ -42,6 +47,11 @@ class WidgetFramework_Template_Trojan extends XenForo_Template_Public
 
 	public static function WidgetFramework_processLateExtraData(&$output, array &$containerData, XenForo_Template_Abstract $template)
 	{
+		if (!($template instanceof XenForo_Template_Public))
+		{
+			return;
+		}
+
 		foreach (self::$_WidgetFramework_lateExtraData as $key => $value)
 		{
 			switch ($key)

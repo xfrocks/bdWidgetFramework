@@ -662,16 +662,16 @@ abstract class WidgetFramework_WidgetRenderer
 				$renderTemplateObject = $template->create($renderTemplate, array_merge($params, array('widget' => $widget)));
 
 				// reset required externals
-				$existingRequiredExternals = WidgetFramework_Template_Trojan::WidgetFramework_getRequiredExternals();
-				WidgetFramework_Template_Trojan::WidgetFramework_setRequiredExternals(array());
+				$existingRequiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
+				WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals(array());
 
 				$html = $this->_render($widget, $positionCode, $params, $renderTemplateObject);
 
 				// get container data (using template_post_render listener)
 				$containerData = self::_getContainerData($widget);
 				// get widget required externals
-				$requiredExternals = WidgetFramework_Template_Trojan::WidgetFramework_getRequiredExternals();
-				WidgetFramework_Template_Trojan::WidgetFramework_setRequiredExternals($existingRequiredExternals);
+				$requiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
+				WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals($existingRequiredExternals);
 			}
 			else
 			{
@@ -700,7 +700,7 @@ abstract class WidgetFramework_WidgetRenderer
 		if (!empty($containerData))
 		{
 			// apply container data
-			WidgetFramework_Template_Trojan::WidgetFramework_mergeExtraContainerData($containerData);
+			WidgetFramework_Template_Extended::WidgetFramework_mergeExtraContainerData($containerData);
 		}
 
 		if (!empty($requiredExternals))
