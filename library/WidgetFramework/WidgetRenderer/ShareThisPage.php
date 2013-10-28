@@ -41,12 +41,21 @@ class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_Widge
 
 			switch ($positionCode)
 			{
+				case 'forum_list':
+					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:forums');
+					break;
 				case 'forum_view':
 					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:forums', $params['forum']);
 					break;
 				case 'member_view':
 					// this widget on member_view, seriously?
 					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:members', $params['user']);
+					break;
+				case 'resource_author_view':
+					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:resources/authors', $params['user']);
+					break;
+				case 'resource_view':
+					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:resources', $params['resource']);
 					break;
 				case 'thread_view':
 					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:threads', $params['thread']);
