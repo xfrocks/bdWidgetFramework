@@ -53,11 +53,11 @@
 	</div>
 	
 	<fieldset>
-		<xen:if is="!{$widget.widget_page_id}">
-			<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}" hint="{xen:phrase you_may_use_html}">
-				<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
-			</xen:textboxunit>
+		<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}" hint="{xen:phrase you_may_use_html}">
+			<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
+		</xen:textboxunit>
 
+		<xen:if is="!{$widget.widget_page_id}">
 			<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
 				<xen:explain>{xen:phrase wf_position_explain, 'reveal_link={xen:adminlink widgets/reveal}'}</xen:explain>
 			</xen:textboxunit>
@@ -67,7 +67,6 @@
 			</xen:spinboxunit>
 		<xen:else />
 			<input id="widgetPageId" type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
-			<input type="hidden" name="title" value="{$widget.title}" />
 			<input type="hidden" name="position" value="{$widget.position}" />
 			<input type="hidden" name="display_order" value="{$widget.display_order}" />
 
