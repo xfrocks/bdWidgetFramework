@@ -691,6 +691,8 @@ abstract class WidgetFramework_WidgetRenderer
 					$extraData[self::EXTRA_REQUIRED_EXTERNALS] = $requiredExternals;
 				}
 
+				WidgetFramework_Core::preSaveWidget($widget, $positionCode, $params, $html);
+
 				WidgetFramework_Core::saveCachedWidget($cacheId, $html, $extraData, $useUserCache, $useLiveCache);
 			}
 		}
@@ -715,7 +717,7 @@ abstract class WidgetFramework_WidgetRenderer
 			}
 		}
 
-		return trim($html);
+		return $html;
 	}
 
 	public function extraPrepare(array $widget, &$html)

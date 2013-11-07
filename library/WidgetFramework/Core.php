@@ -586,6 +586,11 @@ class WidgetFramework_Core
 		return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
 	}
 
+	public static function preSaveWidget(array $widget, $positionCode, array $params, &$html)
+	{
+		return self::getInstance()->_getModelCache()->preSaveWidget($widget, $positionCode, $params, $html);
+	}
+
 	public static function saveCachedWidget($cacheId, $html, array $extraData, $useUserCache, $useLiveCache)
 	{
 		self::getInstance()->_saveCachedWidget($cacheId, $html, $extraData, $useUserCache, $useLiveCache);
