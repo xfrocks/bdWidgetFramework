@@ -1650,7 +1650,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:foreach>
 	</div>
 </xen:if>]]></template>
-    <template title="wf_widget_xfrm_resources" version_id="70" version_string="2.4.2"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_xfrm_resources" version_id="73" version_string="2.4.3b"><![CDATA[<xen:if hascontent="true">
 	<xen:require css="wf_default.css" />
 
 	<div class="avatarList">
@@ -1660,7 +1660,7 @@ All customization should go to wf_default_EXTRA.css
 					<li class="resource-{$resource.resource_id} resource-category-{$resource.resource_category_id}">
 						<xen:if is="{$xenOptions.resourceAllowIcons}">
 							<a href="{xen:link resources, $resource}" class="avatar NoOverlay">
-								<img src="{xen:helper resourceiconurl, $resource}" class="resourceIcon" />
+								<img src="{xen:helper resourceiconurl, $resource}" class="resourceIcon" width="48" height="48" />
 							</a>
 						<xen:else />
 							<xen:avatar user="$resource" size="s" img="true" />
