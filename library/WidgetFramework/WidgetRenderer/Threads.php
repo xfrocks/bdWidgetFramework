@@ -213,11 +213,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			'deleted' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
 			'moderated' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
 		);
+
+		// note: `limit` is set to 3 times of configured limit to account for the threads
+		// that get hidden because of deep permissions like viewOthers or viewContent
 		$fetchOptions = array(
-			// 'readUserId' => XenForo_Visitor::getUserId(), -- disable this to save some
-			// headeach of db join
-			// 'includeForumReadDate' => true, -- this's not necessary too
-			'limit' => $widget['options']['limit'],
+			'limit' => $widget['options']['limit'] * 3,
 			'join' => XenForo_Model_Thread::FETCH_AVATAR,
 		);
 
@@ -433,6 +433,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 				$threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
 			}
+		}
+
+		if (count($threads) > $widget['options']['limit'])
+		{
+			// too many threads (because we fetched 3 times as needed)
+			$threads = array_slice($threads, 0, $widget['options']['limit'], true);
 		}
 
 		return $threads;
