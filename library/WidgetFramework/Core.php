@@ -76,7 +76,7 @@ class WidgetFramework_Core
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
 			return false;
 
-		$globalWidgets = $this->_getModelWidget()->getGlobalWidgets();
+		$globalWidgets = $this->_getModelWidget()->getGlobalWidgets(true, false);
 		$this->_getModelWidget()->reverseNegativeDisplayOrderWidgets($globalWidgets);
 		$this->addWidgets($globalWidgets);
 

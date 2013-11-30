@@ -87,10 +87,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 					", 'widget_id');
 		}
 
-		/* prepare information for widgets */
-		if ($prepare)
+		foreach ($widgets as &$widget)
 		{
-			foreach ($widgets as &$widget)
+			$this->_prepareWidgetMandatory($widget);
+
+			if ($prepare)
 			{
 				$this->prepareWidget($widget);
 			}
@@ -109,9 +110,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 				ORDER BY display_order ASC
 				", 'widget_id', array($widgetPageId));
 
-		if ($prepare)
+		foreach ($widgets as &$widget)
 		{
-			foreach ($widgets as &$widget)
+			$this->_prepareWidgetMandatory($widget);
+
+			if ($prepare)
 			{
 				$this->prepareWidget($widget);
 			}
@@ -154,6 +157,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 				WHERE widget_id = ?
 				", array($widgetId));
 
+		$this->_prepareWidgetMandatory($widget);
+
 		return $widget;
 	}
 
@@ -168,18 +173,6 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		if (empty($widget))
 		{
 			return $widget;
-		}
-
-		$widget['options'] = @unserialize($widget['options']);
-		if (empty($widget['options']))
-		{
-			$widget['options'] = array();
-		}
-
-		$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
-		if (empty($widget['template_for_hooks']))
-		{
-			$widget['template_for_hooks'] = array();
 		}
 
 		$renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
@@ -206,6 +199,24 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		}
 
 		return $widget;
+	}
+
+	protected function _prepareWidgetMandatory(array &$widget)
+	{
+		if (!is_array($widget['options']))
+		{
+			$widget['options'] = @unserialize($widget['options']);
+		}
+		if (empty($widget['options']))
+		{
+			$widget['options'] = array();
+		}
+
+		$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
+		if (empty($widget['template_for_hooks']))
+		{
+			$widget['template_for_hooks'] = array();
+		}
 	}
 
 }
