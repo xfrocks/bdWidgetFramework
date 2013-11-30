@@ -790,6 +790,11 @@ abstract class WidgetFramework_WidgetRenderer
 
 	protected static $_containerData = array();
 
+	/**
+	 * @var XenForo_View
+	 */
+	protected static $_pseudoViewObj = null;
+
 	public static function wrap(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId = false)
 	{
 		$isColumns = strpos($groupId, 'columns') === 0;
@@ -880,6 +885,44 @@ abstract class WidgetFramework_WidgetRenderer
 		{
 			return array();
 		}
+	}
+
+	public static function getViewObject(array $params, XenForo_Template_Abstract $templateObj)
+	{
+		if (isset($params[self::PARAM_VIEW_OBJECT]))
+		{
+			return $params[self::PARAM_VIEW_OBJECT];
+		}
+
+		$viewObj = $templateObj->getParam(self::PARAM_VIEW_OBJECT);
+		if (!empty($viewObj))
+		{
+			return $viewObj;
+		}
+
+		if (empty(self::$_pseudoViewObj))
+		{
+			if (!empty(WidgetFramework_Listener::$fc) AND !empty(WidgetFramework_Listener::$viewRenderer))
+			{
+				if (WidgetFramework_Listener::$viewRenderer instanceof XenForo_ViewRenderer_HtmlPublic)
+				{
+					self::$_pseudoViewObj = new XenForo_ViewPublic_Base(WidgetFramework_Listener::$viewRenderer, WidgetFramework_Listener::$fc->getResponse());
+				}
+			}
+		}
+
+		if (!empty(self::$_pseudoViewObj))
+		{
+			return self::$_pseudoViewObj;
+		}
+
+		if (WidgetFramework_Core::debugMode())
+		{
+			// log the exception for admin examination (in our debug mode only)
+			XenForo_Error::logException(new XenForo_Exception(sprintf('Unable to get view object for %s', $templateObj->getTemplateName())), false, '[bd] Widget Framework');
+		}
+
+		return null;
 	}
 
 }

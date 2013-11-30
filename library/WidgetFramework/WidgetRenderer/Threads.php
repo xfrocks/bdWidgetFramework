@@ -324,9 +324,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 			$nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination(empty($widget['options']['as_guest']) ? null : 1);
 
-			if ($layoutNeedPost AND !empty($params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT]))
+			$viewObj = self::getViewObject($params, $renderTemplateObject);
+			if ($layoutNeedPost AND !empty($viewObj))
 			{
-				$bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT]));
+				$bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
 				if (XenForo_Application::$versionId < 1020000)
 				{
 					// XenForo 1.1.x

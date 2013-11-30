@@ -2,8 +2,25 @@
 
 class WidgetFramework_Listener
 {
+	/**
+	 * @var XenForo_Dependencies_Abstract
+	 */
+	public static $dependencies = null;
+
+	/**
+	 * @var XenForo_FrontController
+	 */
+	public static $fc = null;
+
+	/**
+	 * @var XenForo_ViewRenderer_Abstract
+	 */
+	public static $viewRenderer = null;
+
 	public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
 	{
+		self::$dependencies = $dependencies;
+
 		if ($dependencies instanceof XenForo_Dependencies_Public)
 		{
 			// we only boot up if we are in the front end
@@ -170,6 +187,9 @@ class WidgetFramework_Listener
 
 	public static function front_controller_pre_view(XenForo_FrontController $fc, XenForo_ControllerResponse_Abstract &$controllerResponse, XenForo_ViewRenderer_Abstract &$viewRenderer, array &$containerParams)
 	{
+		self::$fc = $fc;
+		self::$viewRenderer = $viewRenderer;
+
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
 		{
 			if ($controllerResponse instanceof XenForo_ControllerResponse_View)
@@ -219,8 +239,11 @@ class WidgetFramework_Listener
 		static $extended1 = false;
 		static $extended2 = false;
 
-		if (defined('WIDGET_FRAMEWORK_LOADED'))
+		if (defined('WIDGET_FRAMEWORK_LOADED') AND !empty($class))
 		{
+			// check for empty($class) to avoid a bug with XenForo 1.2.0
+			// http://xenforo.com/community/threads/resolvedynamicclass-when-class-is-empty.57064/
+
 			if (empty($extended1))
 			{
 				$extend[] = 'WidgetFramework_XenForo_View1';
@@ -230,15 +253,6 @@ class WidgetFramework_Listener
 			{
 				$extend[] = 'WidgetFramework_XenForo_View2';
 				$extended2 = $class;
-			}
-			else
-			{
-				// load_class_view got called again!?
-				if (WidgetFramework_Core::debugMode())
-				{
-					// only throw exception in debug mode because I'm not quite sure
-					throw new XenForo_Exception(sprintf('[bd] Widget Framework: load_class_view is being called thrice (%s, %s, %s)', $extended1, $extended2, $class));
-				}
 			}
 		}
 	}
