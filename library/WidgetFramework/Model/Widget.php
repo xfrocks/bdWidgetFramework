@@ -212,7 +212,10 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 			$widget['options'] = array();
 		}
 
-		$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
+		if (!is_array($widget['template_for_hooks']))
+		{
+			$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
+		}
 		if (empty($widget['template_for_hooks']))
 		{
 			$widget['template_for_hooks'] = array();

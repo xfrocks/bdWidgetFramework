@@ -74,7 +74,9 @@ class WidgetFramework_Core
 	public function bootstrap()
 	{
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
+		{
 			return false;
+		}
 
 		$globalWidgets = $this->_getModelWidget()->getGlobalWidgets(true, false);
 		$this->_getModelWidget()->reverseNegativeDisplayOrderWidgets($globalWidgets);
@@ -112,7 +114,9 @@ class WidgetFramework_Core
 		foreach ($widgets as &$widget)
 		{
 			if (empty($widget['active']))
+			{
 				continue;
+			}
 
 			$widgetPositions = explode(',', $widget['position']);
 
