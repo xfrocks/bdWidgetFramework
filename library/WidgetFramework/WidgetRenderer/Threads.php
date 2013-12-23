@@ -207,6 +207,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
 		$forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
+		if (empty($forumIds))
+		{
+			// no forum ids?! Save the effort and return asap
+			// btw, because XenForo_Model_Thread::prepareThreadConditions ignores empty
+			// node_id in $conditions, continuing may result in incorrect output (could be a
+			// serious bug)
+			return array();
+		}
 
 		$conditions = array(
 			'node_id' => $forumIds,
