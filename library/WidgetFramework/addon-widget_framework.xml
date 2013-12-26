@@ -1515,10 +1515,10 @@ All customization should go to wf_default_EXTRA.css
 	<xen:if is="{$thread.messageHtml}"><div>{xen:helper WidgetFramework_snippet, $thread.messageHtml, {xen:property wf_threads_snippetMaxLength}}</div></xen:if>
 </li>
 ]]></template>
-    <template title="wf_widget_users" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
+    <template title="wf_widget_users" version_id="73" version_string="2.4.3b"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">
     <ul class="followedOnline">
 		<xen:foreach loop="$users" value="$user">
-			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip user-{$user.user_id}">
+			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper striphtml, {xen:helper usertitle, $user}}'}</xen:contentcheck></xen:if>" class="Tooltip user-{$user.user_id}">
 				<xen:avatar user="$user" size="s" img="true" class="_plainImage" />
 			</li>
 		</xen:foreach>
@@ -1526,7 +1526,7 @@ All customization should go to wf_default_EXTRA.css
 <xen:elseif is="{$widget.options.displayMode} == 'avatarOnlyBigger'" />
     <ul class="avatarHeap">
 		<xen:foreach loop="$users" value="$user">
-			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper usertitle, $user}'}</xen:contentcheck></xen:if>" class="Tooltip user-{$user.user_id}">
+			<li title="{$user.username}<xen:if hascontent="true"> - <xen:contentcheck>{xen:if '{$widget.options.order} == "message_count"', '{xen:phrase messages}: {xen:number $user.message_count}', '{xen:helper striphtml, {xen:helper usertitle, $user}}'}</xen:contentcheck></xen:if>" class="Tooltip user-{$user.user_id}">
 				<xen:avatar user="$user" size="s" />
 			</li>
 		</xen:foreach>
