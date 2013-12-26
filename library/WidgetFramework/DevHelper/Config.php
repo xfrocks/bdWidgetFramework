@@ -30,8 +30,8 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base {
 			'camelCaseWSpace' => 'Widget',
 			'fields' => array(
 				'widget_id' => array('name' => 'widget_id', 'type' => 'uint', 'autoIncrement' => true),
-				'title' => array('name' => 'title', 'type' => 'string', 'length' => '75'),
-				'class' => array('name' => 'class', 'type' => 'string', 'length' => '75', 'required' => true),
+				'title' => array('name' => 'title', 'type' => 'string'),
+				'class' => array('name' => 'class', 'type' => 'string', 'required' => true),
 				'position' => array('name' => 'position', 'type' => 'string'),
 				'display_order' => array('name' => 'display_order', 'type' => 'int', 'required' => true, 'default' => 0),
 				'active' => array('name' => 'active', 'type' => 'uint', 'required' => true, 'default' => 1),

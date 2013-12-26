@@ -18,8 +18,8 @@ class WidgetFramework_Installer
 		'xf_widget' => array(
 			'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widget` (
 				`widget_id` INT(10) UNSIGNED AUTO_INCREMENT
-				,`title` VARCHAR(75)
-				,`class` VARCHAR(75) NOT NULL
+				,`title` TEXT
+				,`class` TEXT NOT NULL
 				,`position` TEXT
 				,`display_order` INT(11) NOT NULL DEFAULT \'0\'
 				,`active` INT(10) UNSIGNED NOT NULL DEFAULT \'1\'
@@ -31,16 +31,14 @@ class WidgetFramework_Installer
 			'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`',
 		),
 	);
-	protected static $_patches = array(
-		array(
+	protected static $_patches = array( array(
 			'table' => 'xf_widget',
 			'field' => 'widget_page_id',
 			'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
 			'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
 			'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
 			'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
-		),
-	);
+		), );
 
 	public static function install($existingAddOn, $addOnData)
 	{
@@ -65,7 +63,7 @@ class WidgetFramework_Installer
 				$db->query($patch['alterTableAddColumnQuery']);
 			}
 		}
-		
+
 		self::installCustomized($existingAddOn, $addOnData);
 	}
 
@@ -101,6 +99,8 @@ class WidgetFramework_Installer
 	private static function installCustomized($existingAddOn, $addOnData)
 	{
 		$db = XenForo_Application::getDb();
+
+		$effectiveVersionId = 0;
 
 		if (empty($existingAddOn))
 		{
@@ -144,12 +144,15 @@ class WidgetFramework_Installer
 
 			XenForo_Model::create('WidgetFramework_Model_Widget')->buildCache();
 		}
-
-		// node type definition
-		// since 2.3
-		$anything = $db->fetchOne("SELECT COUNT(*) FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
-		if (empty($anything))
+		else
 		{
+			$effectiveVersionId = $existingAddOn['version_id'];
+		}
+
+		if ($effectiveVersionId < 55)
+		{
+			// node type definition
+			// since 2.3
 			$db->insert('xf_node_type', array(
 				'node_type_id' => 'WF_WidgetPage',
 				'handler_class' => 'WidgetFramework_NodeHandler_WidgetPage',
@@ -160,6 +163,14 @@ class WidgetFramework_Installer
 				'public_route_prefix' => 'widget-pages',
 			));
 			XenForo_Model::create('XenForo_Model_Node')->rebuildNodeTypeCache();
+		}
+
+		if ($effectiveVersionId > 0 AND $effectiveVersionId < 74)
+		{
+			// change definiation for widget.title and widget.class
+			// since 2.4.4
+			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `title` TEXT");
+			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
 		}
 	}
 
