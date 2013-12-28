@@ -218,8 +218,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 		$conditions = array(
 			'node_id' => $forumIds,
-			'deleted' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
-			'moderated' => $visitor->isSuperAdmin() AND empty($widget['options']['as_guest']),
+			'deleted' => false,
+			'moderated' => false,
 		);
 
 		// note: `limit` is set to 3 times of configured limit to account for the threads

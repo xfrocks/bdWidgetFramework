@@ -77,21 +77,32 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 			}
 			$forumIds = array_keys($GLOBALS['WidgetFramework_viewableNodeList']);
 
-			$thread = $threadModel->getThreads(array(
+			$threads = $threadModel->getThreads(array(
 				'node_id' => $forumIds,
 				WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
+				'deleted' => false,
+				'moderated' => false,
 			), array(
 				'order' => ($widget['options']['thread_id'] === 'random' ? WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_ORDER_RANDOM : 'post_date'),
 				'orderDirection' => 'desc',
 				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
 				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
-				'limit' => 1,
+				'limit' => 3,
 			));
 
-			if (!empty($thread))
+			if (!empty($threads))
 			{
-				$thread = array_shift($thread);
-				$poll = $pollModel->preparePoll($thread, $threadModel->canVoteOnPoll($thread, $thread));
+				$thread = array();
+				$nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination();
+
+				foreach ($threads as $_thread)
+				{
+					if ($threadModel->canViewThread($_thread, $_thread, $null, $nodePermissions[$_thread['node_id']]))
+					{
+						$thread = $_thread;
+						break;
+					}
+				}
 			}
 		}
 		else
@@ -106,8 +117,11 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 				$thread = array();
 			}
 		}
+
 		if (!empty($thread))
+		{
 			$poll = $pollModel->preparePoll($thread, $threadModel->canVoteOnPoll($thread, $thread));
+		}
 
 		$renderTemplateObject->setParam('thread', $thread);
 		$renderTemplateObject->setParam('poll', $poll);
