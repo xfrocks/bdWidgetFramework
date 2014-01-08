@@ -820,13 +820,20 @@ abstract class WidgetFramework_WidgetRenderer
 
 	public static function create($class)
 	{
-		$createClass = XenForo_Application::resolveDynamicClass($class, 'widget_renderer');
-		if (!$createClass)
+		static $instances = array();
+
+		if (!isset($instances[$class]))
 		{
-			throw new XenForo_Exception("Invalid model '$class' specified");
+			$createClass = XenForo_Application::resolveDynamicClass($class, 'widget_renderer');
+			if (!$createClass)
+			{
+				throw new XenForo_Exception("Invalid renderer '$class' specified");
+			}
+
+			$instances[$class] = new $createClass;
 		}
 
-		return new $createClass;
+		return $instances[$class];
 	}
 
 	public static function getNamePrefix()
