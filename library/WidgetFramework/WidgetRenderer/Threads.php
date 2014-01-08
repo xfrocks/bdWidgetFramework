@@ -320,7 +320,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 		elseif ($widget['options']['type'] == 'polls')
 		{
-			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll', ), $fetchOptions + array(
+			$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll'), $fetchOptions + array(
 				'order' => 'post_date',
 				'orderDirection' => 'desc',
 			));
@@ -332,127 +332,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 		if (!empty($threads))
 		{
-			/* @var $nodeModel XenForo_Model_Node */
-			$nodeModel = $core->getModelFromCache('XenForo_Model_Node');
-
-			/* @var $forumModel XenForo_Model_Forum */
-			$forumModel = $core->getModelFromCache('XenForo_Model_Forum');
-
-			/* @var $userModel XenForo_Model_User */
-			$userModel = $core->getModelFromCache('XenForo_Model_User');
-
-			$nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination(empty($widget['options']['as_guest']) ? null : 1);
-
-			$viewObj = self::getViewObject($params, $renderTemplateObject);
-			if ($layoutNeedPost AND !empty($viewObj))
-			{
-				$bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
-				if (XenForo_Application::$versionId < 1020000)
-				{
-					// XenForo 1.1.x
-					$bbCodeParser = new XenForo_BbCode_Parser($bbCodeFormatter);
-				}
-				else
-				{
-					// XenForo 1.2.x
-					$bbCodeParser = XenForo_BbCode_Parser::create($bbCodeFormatter);
-				}
-				$bbCodeOptions = array(
-					'states' => array(),
-					'contentType' => 'post',
-					'contentIdKey' => 'post_id'
-				);
-
-				$postsWithAttachment = array();
-				foreach (array_keys($threads) as $threadId)
-				{
-					$threadRef = &$threads[$threadId];
-
-					if (empty($threadRef['attach_count']))
-					{
-						continue;
-					}
-
-					if (!empty($threadRef['fetched_last_post']))
-					{
-						$postsWithAttachment[$threadRef['last_post_id']] = array(
-							'post_id' => $threadRef['last_post_id'],
-							'thread_id' => $threadRef['thread_id'],
-							'attach_count' => $threadRef['attach_count'],
-						);
-					}
-					else
-					{
-						$postsWithAttachment[$threadRef['first_post_id']] = array(
-							'post_id' => $threadRef['first_post_id'],
-							'thread_id' => $threadRef['thread_id'],
-							'attach_count' => $threadRef['attach_count'],
-						);
-					}
-				}
-				if (!empty($postsWithAttachment))
-				{
-					$postsWithAttachment = $core->getModelFromCache('XenForo_Model_Post')->getAndMergeAttachmentsIntoPosts($postsWithAttachment);
-					foreach ($postsWithAttachment as $postWithAttachment)
-					{
-						if (empty($postWithAttachment['attachments']))
-						{
-							continue;
-						}
-
-						if (empty($threads[$postWithAttachment['thread_id']]))
-						{
-							continue;
-						}
-						$threadRef = &$threads[$postWithAttachment['thread_id']];
-
-						$threadRef['attachments'] = $postWithAttachment['attachments'];
-					}
-				}
-			}
-
-			$threadForumIds = array();
-			foreach ($threads as $thread)
-			{
-				$threadForumIds[] = $thread['node_id'];
-			}
-			$threadForums = $forumModel->getForumsByIds($threadForumIds);
-
-			$viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
-
-			foreach (array_keys($threads) as $threadId)
-			{
-				$threadRef = &$threads[$threadId];
-
-				if (empty($nodePermissions[$threadRef['node_id']]))
-				{
-					unset($threads[$threadId]);
-					continue;
-				}
-				$threadPermissionsRef = &$nodePermissions[$threadRef['node_id']];
-
-				if (empty($threadForums[$threadRef['node_id']]))
-				{
-					unset($threads[$threadId]);
-					continue;
-				}
-				$threadForumRef = &$threadForums[$thread['node_id']];
-
-				if (!$threadModel->canViewThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser))
-				{
-					unset($threads[$threadId]);
-					continue;
-				}
-
-				if (!empty($bbCodeParser) AND !empty($bbCodeOptions))
-				{
-					$threadBbCodeOptions = $bbCodeOptions;
-					$threadBbCodeOptions['states']['viewAttachments'] = $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser);
-					$threadRef['messageHtml'] = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
-				}
-
-				$threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
-			}
+			$this->_prepareThreads($widget, $positionCode, $params, $renderTemplateObject, $threads);
 		}
 
 		if (count($threads) > $widget['options']['limit'])
@@ -462,6 +342,138 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		}
 
 		return $threads;
+	}
+
+	protected function _prepareThreads($widget, $positionCode, $params, $renderTemplateObject, array &$threads)
+	{
+		$core = WidgetFramework_Core::getInstance();
+		$visitor = XenForo_Visitor::getInstance();
+		$layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
+
+		/* @var $threadModel XenForo_Model_Thread */
+		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
+
+		/* @var $nodeModel XenForo_Model_Node */
+		$nodeModel = $core->getModelFromCache('XenForo_Model_Node');
+
+		/* @var $forumModel XenForo_Model_Forum */
+		$forumModel = $core->getModelFromCache('XenForo_Model_Forum');
+
+		/* @var $userModel XenForo_Model_User */
+		$userModel = $core->getModelFromCache('XenForo_Model_User');
+
+		$nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination(empty($widget['options']['as_guest']) ? null : 1);
+
+		$viewObj = self::getViewObject($params, $renderTemplateObject);
+		if ($layoutNeedPost AND !empty($viewObj))
+		{
+			$bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
+			if (XenForo_Application::$versionId < 1020000)
+			{
+				// XenForo 1.1.x
+				$bbCodeParser = new XenForo_BbCode_Parser($bbCodeFormatter);
+			}
+			else
+			{
+				// XenForo 1.2.x
+				$bbCodeParser = XenForo_BbCode_Parser::create($bbCodeFormatter);
+			}
+			$bbCodeOptions = array(
+				'states' => array(),
+				'contentType' => 'post',
+				'contentIdKey' => 'post_id'
+			);
+
+			$postsWithAttachment = array();
+			foreach (array_keys($threads) as $threadId)
+			{
+				$threadRef = &$threads[$threadId];
+
+				if (empty($threadRef['attach_count']))
+				{
+					continue;
+				}
+
+				if (!empty($threadRef['fetched_last_post']))
+				{
+					$postsWithAttachment[$threadRef['last_post_id']] = array(
+						'post_id' => $threadRef['last_post_id'],
+						'thread_id' => $threadRef['thread_id'],
+						'attach_count' => $threadRef['attach_count'],
+					);
+				}
+				else
+				{
+					$postsWithAttachment[$threadRef['first_post_id']] = array(
+						'post_id' => $threadRef['first_post_id'],
+						'thread_id' => $threadRef['thread_id'],
+						'attach_count' => $threadRef['attach_count'],
+					);
+				}
+			}
+			if (!empty($postsWithAttachment))
+			{
+				$postsWithAttachment = $core->getModelFromCache('XenForo_Model_Post')->getAndMergeAttachmentsIntoPosts($postsWithAttachment);
+				foreach ($postsWithAttachment as $postWithAttachment)
+				{
+					if (empty($postWithAttachment['attachments']))
+					{
+						continue;
+					}
+
+					if (empty($threads[$postWithAttachment['thread_id']]))
+					{
+						continue;
+					}
+					$threadRef = &$threads[$postWithAttachment['thread_id']];
+
+					$threadRef['attachments'] = $postWithAttachment['attachments'];
+				}
+			}
+		}
+
+		$threadForumIds = array();
+		foreach ($threads as $thread)
+		{
+			$threadForumIds[] = $thread['node_id'];
+		}
+		$threadForums = $forumModel->getForumsByIds($threadForumIds);
+
+		$viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
+
+		foreach (array_keys($threads) as $threadId)
+		{
+			$threadRef = &$threads[$threadId];
+
+			if (empty($nodePermissions[$threadRef['node_id']]))
+			{
+				unset($threads[$threadId]);
+				continue;
+			}
+			$threadPermissionsRef = &$nodePermissions[$threadRef['node_id']];
+
+			if (empty($threadForums[$threadRef['node_id']]))
+			{
+				unset($threads[$threadId]);
+				continue;
+			}
+			$threadForumRef = &$threadForums[$thread['node_id']];
+
+			if (!$threadModel->canViewThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser))
+			{
+				unset($threads[$threadId]);
+				continue;
+			}
+
+			if (!empty($bbCodeParser) AND !empty($bbCodeOptions))
+			{
+				$threadBbCodeOptions = $bbCodeOptions;
+				$threadBbCodeOptions['states']['viewAttachments'] = $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser);
+				$threadRef['messageHtml'] = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
+			}
+
+			$threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
+		}
 	}
 
 }

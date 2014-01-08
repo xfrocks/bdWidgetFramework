@@ -262,6 +262,7 @@
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_threads}"}</xen:explain>
 </xen:spinboxunit>
 
+<xen:hook name="wf_widget_options_threads_filter" params="{xen:array 'widget={$widget}', 'options={$options}', 'options_loaded={$options_loaded}'}">
 <xen:selectunit label="{xen:phrase wf_widget_threads_type}:" name="{$namePrefix}type" value="{$options.type}">
 	<xen:option value="new">{xen:phrase wf_widget_threads_type_new}</xen:option>
 	<xen:option value="recent">{xen:phrase wf_widget_threads_type_recent}</xen:option>
@@ -286,6 +287,7 @@
 		<xen:explain>{xen:phrase wf_threads_prefixes_explain}</xen:explain>
 	</xen:selectunit>
 </xen:if>
+</xen:hook>
 
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}as_guest" value="1" selected="{$options.as_guest}">{xen:phrase wf_use_guest_permissions}</xen:option>
