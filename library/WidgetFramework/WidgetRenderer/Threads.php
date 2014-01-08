@@ -183,6 +183,17 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		return parent::useUserCache($widget);
 	}
 
+	public function useWrapper(array $widget)
+	{
+		if (!empty($widget['options']['layout']) AND $widget['options']['layout'] === 'full')
+		{
+			// using full layout, do not use wrapper
+			return false;
+		}
+
+		return parent::useWrapper($widget);
+	}
+
 	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
 	{
 		if ($this->_helperDetectSpecialForums($widget['options']['forums']))
