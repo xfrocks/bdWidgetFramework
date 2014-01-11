@@ -40,6 +40,12 @@
 
 <xen:title>{xen:if '{$widget.widget_id}', '{xen:phrase wf_edit_widget}', '{xen:phrase wf_add_widget}'}</xen:title>
 
+<xen:if is="{$widgetPage}">
+	<xen:navigation>
+		<xen:breadcrumb href="{xen:adminlink 'widget-page/edit', $widgetPage}">{$widgetPage.title}</xen:breadcrumb>
+	</xen:navigation>
+</xen:if>
+
 <xen:form action="{xen:adminlink 'widgets/save'}" class="AutoValidator WidgetFramework_Widget_EditForm" data-redirect="yes">
 	<xen:selectunit label="{xen:phrase wf_renderer}:" name="class" value="{$widget.class}"
 		inputclass="WidgetRendererOptions" data-optionsUrl="{xen:adminlink widgets/options}" data-optionsTarget="#OptionsTarget" data-widgetId="{$widget.widget_id}">
@@ -58,6 +64,7 @@
 		</xen:textboxunit>
 
 		<xen:if is="!{$widget.widget_page_id}">
+
 			<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
 				<xen:explain>{xen:phrase wf_position_explain, 'reveal_link={xen:adminlink widgets/reveal}'}</xen:explain>
 			</xen:textboxunit>
@@ -65,7 +72,17 @@
 			<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
 				<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
 			</xen:spinboxunit>
+
+		<xen:elseif is="{$widget.widget_page_id} AND {$widget.position} == 'sidebar'" />
+
+			<input id="widgetPageId" type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
+			<input type="hidden" name="position" value="{$widget.position}" />
+			<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
+				<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
+			</xen:spinboxunit>
+
 		<xen:else />
+
 			<input id="widgetPageId" type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
 			<input type="hidden" name="position" value="{$widget.position}" />
 			<input type="hidden" name="display_order" value="{$widget.display_order}" />
@@ -81,6 +98,7 @@
 				x
 				<xen:spinbox name="{$namePrefix}layout_sizeCol" value="{$options.layout_sizeCol}" min="1" inputclass="WidgetFramework_Layout_Input" />
 			</xen:controlunit>
+
 		</xen:if>
 		
 		<xen:checkboxunit label="">
@@ -410,6 +428,7 @@
 				<xen:include template="wf_widget_page_layout" />
 				
 				<a href="{xen:adminlink widgets/add, '', 'widget_page_id={$widgetPage.node_id}'}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase wf_add_widget}</a>
+					<a href="{xen:adminlink widgets/add, '', 'widget_page_id={$widgetPage.node_id}', 'position=sidebar'}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase wf_add_sidebar_widget}</a>
 
 				</xen:hook>
 			</li>
@@ -486,6 +505,7 @@
 
 <ul class="WidgetFramework_WidgetPage_LayoutEditor" style="{xen:helper WidgetFramework_LayoutContainerSize, $widgets}">
 	<xen:foreach loop="$widgets" value="$widget">
+		<xen:if is="{$widget.position} == ''">
 		<li class="widget"
 			data-row="{xen:calc '{$widget.options.layout_row} + 1'}"
 			data-col="{xen:calc '{$widget.options.layout_col} + 1'}"
@@ -534,7 +554,51 @@
 				</div>
 			</div>
 		</li>
+		</xen:if>
 	</xen:foreach>
+
+	<xen:if hascontent="true">
+		<li class="widget sidebar" 
+			data-row="{xen:calc '{$sidebarWidgetContainer.options.layout_row} + 1'}"
+			data-col="{xen:calc '{$sidebarWidgetContainer.options.layout_col} + 1'}"
+			data-sizex="{$sidebarWidgetContainer.options.layout_sizeCol}"
+			data-sizey="{$sidebarWidgetContainer.options.layout_sizeRow}"
+			style="{xen:helper WidgetFramework_LayoutWidgetPositionAndSize, $sidebarWidgetContainer}">
+			<div class="WidgetFramework_WidgetPage_WidgetBlock">
+				<div class="WidgetFramework_WidgetPage_WidgetBlock_Title">
+					{xen:phrase style_property_group_sidebar_master}
+				</div>
+
+				<ul class="WidgetFramework_WidgetPage_LayoutEditorSidebar">
+				<xen:contentcheck>
+					<xen:foreach loop="$widgets" value="$widget">
+						<xen:if is="{$widget.position} == 'sidebar'">
+							<li class="sidebar-widget">
+								<div class="WidgetFramework_WidgetPage_WidgetBlock">
+									<div class="WidgetFramework_WidgetPage_WidgetBlock_Title">
+										<xen:if is="{$widget.title}">
+											{xen:raw $widget.title}
+										<xen:else />
+											{$widget.class}
+										</xen:if>
+									</div>
+									
+									<div class="WidgetFramework_WidgetPage_WidgetBlock_Controls">
+										<span title="{xen:phrase display_order}" class="Tooltip">{$widget.display_order}</span>
+										|
+										<a href="{xen:adminlink widgets/edit, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase edit}</a>
+										|
+										<a href="{xen:adminlink widgets/delete, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase delete}</a><br />
+									</div>
+								</div>
+							</li>
+						</xen:if>
+					</xen:foreach>
+				</xen:contentcheck>
+				</ul>
+			</div>
+		</li>
+	</xen:if>
 </ul>]]></template>
     <template title="widget_framework.css"><![CDATA[.widget-list-tab-group h3 {
 	padding-left: 20px !important;
@@ -551,15 +615,15 @@
 .WidgetFramework_WidgetPage_LayoutEditor {
 	position: relative;
 }
-.WidgetFramework_WidgetPage_LayoutEditor li {
+.WidgetFramework_WidgetPage_LayoutEditor > li {
 	background: {xen:property primaryLightest};
 	border: 1px solid {xen:property primaryLightish};
 	position: absolute;
 }
-.WidgetFramework_WidgetPage_LayoutEditor.gridsterized li {
+.WidgetFramework_WidgetPage_LayoutEditor.gridsterized > li {
 	cursor: pointer;
 }
-.WidgetFramework_WidgetPage_LayoutEditor li .WidgetFramework_WidgetPage_WidgetBlock {
+.WidgetFramework_WidgetPage_LayoutEditor .WidgetFramework_WidgetPage_WidgetBlock {
 	margin: 5px;
 }
 .WidgetFramework_WidgetPage_WidgetBlock_Title {
@@ -576,7 +640,17 @@
 }
 .WidgetFramework_WidgetPage_WidgetBlock_Controls {
 	margin-top: 5px;
-}]]></template>
+}
+
+.WidgetFramework_WidgetPage_LayoutEditorSidebar > li {
+	background: {xen:property primaryLightest};
+	border: 1px solid {xen:property primaryLightish};
+	margin-bottom: 10px;
+}
+.WidgetFramework_WidgetPage_LayoutEditor.gridsterized > li.sidebar {
+	cursor: inherit;
+}
+]]></template>
   </admin_templates>
   <admin_template_modifications/>
   <code_events>
@@ -659,6 +733,7 @@ Arguments:
     <phrase title="style_property_wf_threads_snippetMaxLength_master" version_id="69" version_string="2.4.1"><![CDATA[Snippet Maximum Length]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_description_master" version_id="33" version_string="1.5"><![CDATA[This property will be applied with all Threads widgets.]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
+    <phrase title="wf_add_sidebar_widget" version_id="76" version_string="2.4.5"><![CDATA[Add Sidebar Widget]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
@@ -1246,14 +1321,15 @@ All customization should go to wf_default_EXTRA.css
 	{xen:raw $layoutTree}
 </div>
 
+<xen:container var="$noVisitorPanel">1</xen:container>
+
 <xen:comment>It is important to generate CSS after the layout tree is rendered</xen:comment>
 <xen:set var="$widgetPageStylesheet">{xen:helper WidgetFramework_generateLayoutCss, $widgetPage.options, $layoutTree}</xen:set>
 <xen:if is="trim({$widgetPageStylesheet})">
 	<xen:container var="$head.widgetPage">
 		<style>{xen:raw $widgetPageStylesheet}</style>
 	</xen:container>
-</xen:if>
-]]></template>
+</xen:if>]]></template>
     <template title="wf_widget_poll" version_id="62" version_string="2.3.3d"><![CDATA[<xen:edithint template="wf_default.css" />
 
 <xen:if is="{$poll}">

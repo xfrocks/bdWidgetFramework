@@ -33,7 +33,14 @@ class WidgetFramework_DataWriter_Helper_Widget
 	{
 		if ($dw->get('widget_page_id') > 0)
 		{
-			$positions = '';
+			if ($positions === 'sidebar')
+			{
+				// good
+			}
+			else
+			{
+				$positions = '';
+			}
 			return true;
 		}
 

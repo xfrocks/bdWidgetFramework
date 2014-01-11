@@ -17,6 +17,10 @@ class WidgetFramework_ViewPublic_Helper_Layout
 
 		foreach ($widgets as $widget)
 		{
+			if (!empty($widget['position']))
+			{
+				continue;
+			}
 			if (!isset($widget['options']['layout_row']))
 			{
 				continue;
@@ -67,6 +71,22 @@ class WidgetFramework_ViewPublic_Helper_Layout
 		$layout = new _Layout_Vertical($view, $widgets, $options, $widgetIds);
 
 		return $layout;
+	}
+
+	public static function prepareSidebarWidgets(XenForo_ViewPublic_Base $view, array &$widgets, array $options = array())
+	{
+		$sidebarWidgets = array();
+
+		foreach ($widgets as $widget)
+		{
+			if ($widget['position'] === 'sidebar')
+			{
+				$widget['position'] = 'wf_widget_page_index';
+				$sidebarWidgets[] = $widget;
+			}
+		}
+
+		WidgetFramework_Core::getInstance()->addWidgets($sidebarWidgets);
 	}
 
 }

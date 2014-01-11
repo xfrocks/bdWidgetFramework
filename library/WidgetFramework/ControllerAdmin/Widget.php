@@ -31,7 +31,13 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		if (!empty($widgetPageId))
 		{
 			// prepare options for widget of widget page
-			$widgetPageWidgets = $this->_getWidgetModel()->getWidgetPageWidgets($widgetPageId);
+			$widgetPage = $this->_getWidgetPageModel()->getWidgetPageById($widgetPageId);
+			if (empty($widgetPage))
+			{
+				return $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404);
+			}
+
+			$widgetPageWidgets = $this->_getWidgetModel()->getWidgetPageWidgets($widgetPage['node_id']);
 			$maxRow = -1;
 			foreach ($widgetPageWidgets as $widgetPageWidget)
 			{
@@ -53,6 +59,13 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			),
 			'renderers' => $this->_getRenderersList(),
 		);
+
+		if (!empty($widgetPage))
+		{
+			$viewParams['widgetPage'] = $widgetPage;
+
+			$this->_routeMatch->setSections('nodeTree');
+		}
 
 		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Edit', 'wf_widget_edit', $viewParams);
 	}
@@ -303,6 +316,14 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 	protected function _getWidgetModel()
 	{
 		return $this->getModelFromCache('WidgetFramework_Model_Widget');
+	}
+
+	/**
+	 * @return WidgetFramework_Model_WidgetPage
+	 */
+	protected function _getWidgetPageModel()
+	{
+		return $this->getModelFromCache('WidgetFramework_Model_WidgetPage');
 	}
 
 	protected function _getRenderersList()

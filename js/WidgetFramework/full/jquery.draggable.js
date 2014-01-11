@@ -349,6 +349,12 @@
     };
 
     fn.ignore_drag = function(event) {
+    	if (event.currentTarget) {
+    		if ($(event.currentTarget).is('.sidebar')) {
+    			return true;
+    		}
+    	}
+
         if (this.options.handle) {
             return !$(event.target).is(this.options.handle);
         }

@@ -2068,6 +2068,8 @@
 
         if (!$widget) { return false; }
 
+        if ($widget.is('.sidebar')) { return this.move_widget_sidebar($widget); }
+
         if ($.inArray($widget, moved) === -1) {
 
             var widget_grid_data = $widget.gcoords().grid;
@@ -2094,6 +2096,21 @@
 
             moved.push($widget);
         }
+    };
+
+    fn.move_widget_sidebar = function($widget) {
+    	var widget_grid_data = $widget.gcoords().grid;
+        var actual_col = widget_grid_data.col;
+        var next_col = actual_col + 1;
+
+        this.remove_from_gridmap(widget_grid_data);
+
+        this.add_faux_cols(1);
+
+        widget_grid_data.col = next_col;
+        this.update_widget_position(widget_grid_data, $widget);
+        $widget.attr('data-col', widget_grid_data.col);
+        this.$changed = this.$changed.add($widget);
     };
 
 
@@ -2791,7 +2808,7 @@
         var actual_cols = this.cols;
         var max_cols = actual_cols + (cols || 1);
 
-        for (var c = actual_cols; c < max_cols; c++) {
+        for (var c = actual_cols + 1; c <= max_cols; c++) {
             for (var r = this.rows; r >= 1; r--) {
                 this.add_faux_cell(r, c);
             }

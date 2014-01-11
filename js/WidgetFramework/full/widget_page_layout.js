@@ -21,8 +21,13 @@
 
 		setupGridster: function()
 		{
-			var onDragStop = $.context(this, 'onDragStop');
-
+			/*
+			 * changes to gridster
+			 * - coords renamed to gcoords
+			 * - added `$(event.currentTarget).is('.sidebar')` to fn.ignore_drag
+			 * - fixed add_faux_cols
+			 * - added move_widget_sidebar
+			 */
 			this.$widgets.css('top', '').css('left', '').css('width', '').css('height', '');
 
 			var $sizeRow = this.$widgets.find('input.WidgetFramework_Layout_Input.sizeRow');
@@ -48,14 +53,17 @@
 
 				var widgetCol = parseInt($widget.find('input.WidgetFramework_Layout_Input.col').val());
 				var widgetSizeCol = parseInt($widget.find('input.WidgetFramework_Layout_Input.sizeCol').val());
-				currentCols = Math.max(currentCols, widgetCol + widgetSizeCol);
+
+				if (!isNaN(widgetCol) && !isNaN(widgetSizeCol))
+				{
+					currentCols = Math.max(currentCols, widgetCol + widgetSizeCol);
+				}
 			});
 			var idealBlockSize = Math.floor(usableWidth / (currentCols + 2));
 			if (idealBlockSize < blockSize)
 			{
 				blockSize = idealBlockSize;
 			}
-			console.log(currentCols, blockSize, idealBlockSize);
 
 			this.gridster = this.$container.gridster(
 			{
@@ -63,7 +71,7 @@
 				widget_base_dimensions: [blockSize, blockSize],
 				draggable:
 				{
-					stop: onDragStop
+					stop: $.context(this, 'onDragStop')
 				}
 			}).data('gridster');
 
@@ -81,6 +89,11 @@
 
 				var sizex = parseInt($widget.find('input.WidgetFramework_Layout_Input.sizeCol').val());
 				var sizey = parseInt($widget.find('input.WidgetFramework_Layout_Input.sizeRow').val());
+
+				if (isNaN(sizex) || isNaN(sizey))
+				{
+					return;
+				}
 
 				if (sizex != $widget.attr('data-sizex') || sizey != $widget.attr('data-sizey'))
 				{
