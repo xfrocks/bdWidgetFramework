@@ -73,38 +73,6 @@ class WidgetFramework_ViewPublic_Helper_Layout
 
 class _Layout_Vertical extends _Layout_Multiple
 {
-	protected function _doLayout(array $widgetIds)
-	{
-		parent::_doLayout($widgetIds);
-
-		// calculate xOfY CSS rules
-		$cssClasses = &$this->_options['cssClasses'];
-
-		$totalColumnsCount = 0;
-		foreach (array_keys($this->_subLayouts) as $layoutId)
-		{
-			$totalColumnsCount += count($this->_subLayoutIndeces[$layoutId]);
-		}
-		$cssClassLayoutCols = $cssClasses['cols'][$totalColumnsCount]['name'];
-
-		foreach (array_keys($this->_subLayouts) as $layoutId)
-		{
-			$columnsCount = count($this->_subLayoutIndeces[$layoutId]);
-
-			$columnWidthPercent = floor($columnsCount / $totalColumnsCount * 100);
-			$cssClassXOfY = sprintf('_%dOf%d', $columnWidthPercent, $totalColumnsCount);
-			if (!isset($cssClasses['xOfY'][$cssClassXOfY]))
-			{
-				$cssClasses['xOfY'][$cssClassXOfY] = array(
-					'name' => $cssClassXOfY,
-					'cssClassLayoutCols' => $cssClassLayoutCols,
-					'cssClassLayoutColsWidth' => $cssClasses['cols'][$totalColumnsCount]['width'],
-					'widthPercent' => $columnWidthPercent
-				);
-			}
-		}
-	}
-
 	protected function _getFieldIndex()
 	{
 		return 'layout_col';
@@ -161,8 +129,17 @@ class _Layout_Vertical extends _Layout_Multiple
 					$cssClassCols = $cssClasses['cols'][$columnsCount]['name'];
 					$cssClassIsLast = ($i == count($this->_subLayouts) ? ' isLast' : '');
 
-					$columnWidthPercent = floor($columnsCount / $totalColumnsCount * 100);
-					$cssClassXOfY = sprintf('_%dOf%d', $columnWidthPercent, $totalColumnsCount);
+					$columnWidthPercent = round($columnsCount / $totalColumnsCount * 100, 2);
+					$cssClassXOfY = sprintf('_%dOf%d', preg_replace('/[^0-9]/', '', $columnWidthPercent), $totalColumnsCount);
+					if (!isset($cssClasses['xOfY'][$cssClassXOfY]))
+					{
+						$cssClasses['xOfY'][$cssClassXOfY] = array(
+							'name' => $cssClassXOfY,
+							'cssClassLayoutCols' => $cssClassLayoutCols,
+							'cssClassLayoutColsWidth' => $cssClasses['cols'][$totalColumnsCount]['width'],
+							'widthPercent' => $columnWidthPercent
+						);
+					}
 
 					$html .= call_user_func_array('sprintf', array(
 						'<li class="WidgetFramework_WidgetPage_LayoutColumn %s %s%s"><div class="margin">',

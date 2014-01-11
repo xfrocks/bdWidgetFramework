@@ -1238,20 +1238,22 @@ All customization should go to wf_default_EXTRA.css
 <xen:container var="$head.canonical">
 	<link rel="canonical" href="{xen:link 'canonical:widget-pages', $widgetPage, 'page={$page}'}" /></xen:container>
 
-<xen:set var="$widgetPageStylesheet">{xen:helper WidgetFramework_generateLayoutCss, $widgetPage.options, $layoutTree}</xen:set>
-<xen:if is="trim({$widgetPageStylesheet})">
-	<xen:container var="$head.widgetPage">
-		<style>{xen:raw $widgetPageStylesheet}</style>
-	</xen:container>
-</xen:if>
-
 <xen:if is="{$widgetPage.description}">
 	<xen:description class="baseHtml">{xen:raw $widgetPage.description}</xen:description>
 </xen:if>
 
 <div id="WidgetPageContent">
 	{xen:raw $layoutTree}
-</div>]]></template>
+</div>
+
+<xen:comment>It is important to generate CSS after the layout tree is rendered</xen:comment>
+<xen:set var="$widgetPageStylesheet">{xen:helper WidgetFramework_generateLayoutCss, $widgetPage.options, $layoutTree}</xen:set>
+<xen:if is="trim({$widgetPageStylesheet})">
+	<xen:container var="$head.widgetPage">
+		<style>{xen:raw $widgetPageStylesheet}</style>
+	</xen:container>
+</xen:if>
+]]></template>
     <template title="wf_widget_poll" version_id="62" version_string="2.3.3d"><![CDATA[<xen:edithint template="wf_default.css" />
 
 <xen:if is="{$poll}">
