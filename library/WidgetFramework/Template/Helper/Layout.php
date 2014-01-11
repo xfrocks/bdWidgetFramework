@@ -94,7 +94,7 @@ class WidgetFramework_Template_Helper_Layout
 					if ($cssClassXOfY['cssClassLayoutCols'] == $cssClassCol['name'])
 					{
 						$mediaStatement = sprintf('screen and (min-width: %dpx)', $cssClassCol['width']);
-						$cssMedia[$mediaStatement][] = sprintf('.%s > .%s { width: %d%%; }', $cssClassCol['name'], $cssClassXOfY['name'], $cssClassXOfY['widthPercent']);
+						$cssMedia[$mediaStatement][] = sprintf('.%s > .%s { width: %f%%; }', $cssClassCol['name'], $cssClassXOfY['name'], $cssClassXOfY['widthPercent']);
 					}
 					elseif ($cssClassCol['width'] < $cssClassXOfY['cssClassLayoutColsWidth'])
 					{
