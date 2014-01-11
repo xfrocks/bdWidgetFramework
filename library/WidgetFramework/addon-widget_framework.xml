@@ -1197,7 +1197,7 @@ All customization should go to wf_default_EXTRA.css
 	overflow: hidden;
 }
 
-.WidgetFramework_WidgetPage_LayoutVertical .WidgetFramework_WidgetPage_LayoutColumn.isLast .margin {
+.WidgetFramework_WidgetPage_LayoutVertical .WidgetFramework_WidgetPage_LayoutColumn.isLast > .margin {
 	margin-right: 0 !important;
 }
 
