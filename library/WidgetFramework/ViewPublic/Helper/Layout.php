@@ -11,6 +11,7 @@ class WidgetFramework_ViewPublic_Helper_Layout
 		$cssClasses = array(
 			'cols' => array(),
 			'rows' => array(),
+			'xOfY' => array(),
 		);
 		$widgetIds = array();
 
@@ -40,7 +41,7 @@ class WidgetFramework_ViewPublic_Helper_Layout
 
 		for ($col = 1; $col <= $cols; $col++)
 		{
-			$cssClasses['cols'][$col] = array('name' => sprintf('WF_Cols_%d_%d', $widgetPage['node_id'], $col), );
+			$cssClasses['cols'][$col] = array('name' => sprintf('WF_Cols_%d_%d', $widgetPage['node_id'], $col));
 
 			if (!empty($widgetPage['options']['column_width']) AND !empty($widgetPage['options']['column_gap']))
 			{
@@ -60,15 +61,49 @@ class WidgetFramework_ViewPublic_Helper_Layout
 			'rows' => $rows,
 			'cols' => $cols,
 			'cssClasses' => $cssClasses,
+			'layoutCount' => 0,
 		), $options);
 
-		return new _Layout_Vertical($view, $widgets, $options, $widgetIds);
+		$layout = new _Layout_Vertical($view, $widgets, $options, $widgetIds);
+
+		return $layout;
 	}
 
 }
 
 class _Layout_Vertical extends _Layout_Multiple
 {
+	protected function _doLayout(array $widgetIds)
+	{
+		parent::_doLayout($widgetIds);
+
+		// calculate xOfY CSS rules
+		$cssClasses = &$this->_options['cssClasses'];
+
+		$totalColumnsCount = 0;
+		foreach (array_keys($this->_subLayouts) as $layoutId)
+		{
+			$totalColumnsCount += count($this->_subLayoutIndeces[$layoutId]);
+		}
+		$cssClassLayoutCols = $cssClasses['cols'][$totalColumnsCount]['name'];
+
+		foreach (array_keys($this->_subLayouts) as $layoutId)
+		{
+			$columnsCount = count($this->_subLayoutIndeces[$layoutId]);
+
+			$columnWidthPercent = floor($columnsCount / $totalColumnsCount * 100);
+			$cssClassXOfY = sprintf('_%dOf%d', $columnWidthPercent, $totalColumnsCount);
+			if (!isset($cssClasses['xOfY'][$cssClassXOfY]))
+			{
+				$cssClasses['xOfY'][$cssClassXOfY] = array(
+					'name' => $cssClassXOfY,
+					'cssClassLayoutCols' => $cssClassLayoutCols,
+					'cssClassLayoutColsWidth' => $cssClasses['cols'][$totalColumnsCount]['width'],
+					'widthPercent' => $columnWidthPercent
+				);
+			}
+		}
+	}
 
 	protected function _getFieldIndex()
 	{
@@ -92,22 +127,22 @@ class _Layout_Vertical extends _Layout_Multiple
 
 	public function __toString()
 	{
-		$cssClasses = $this->getOption('cssClasses');
+		$cssClasses = &$this->_options['cssClasses'];
 
 		switch (count($this->_subLayouts))
 		{
 			case 0:
 				$html = '';
 				break;
-			case 1:
-				$subLayout = strval(reset($this->_subLayouts));
-
-				$html = sprintf('<!-- WidgetFramework_WidgetPage_LayoutVertical-%s -->', $this->_getHash());
-				$html .= $subLayout;
-				$html .= sprintf('<!-- /WidgetFramework_WidgetPage_LayoutVertical-%s -->', $this->_getHash());
-				break;
 			default:
-				$html = '<ul class="WidgetFramework_WidgetPage_LayoutVertical">';
+				$totalColumnsCount = 0;
+				foreach (array_keys($this->_subLayouts) as $layoutId)
+				{
+					$totalColumnsCount += count($this->_subLayoutIndeces[$layoutId]);
+				}
+				$cssClassLayoutCols = $cssClasses['cols'][$totalColumnsCount]['name'];
+
+				$html = sprintf('<ul class="WidgetFramework_WidgetPage_LayoutVertical %s">', $cssClassLayoutCols);
 
 				$i = 0;
 				foreach (array_keys($this->_subLayouts) as $layoutId)
@@ -117,11 +152,19 @@ class _Layout_Vertical extends _Layout_Multiple
 					$columnsCount = count($this->_subLayoutIndeces[$layoutId]);
 
 					$cssClassCols = $cssClasses['cols'][$columnsCount]['name'];
-					$cssClassIsLast = ($i == count($this->_subLayouts) ? 'WidgetFramework_WidgetPage_LayoutColumnLast' : '');
+					$cssClassIsLast = ($i == count($this->_subLayouts) ? ' isLast' : '');
 
-					$html .= sprintf('<li class="WidgetFramework_WidgetPage_LayoutColumn %s %s">', $cssClassCols, $cssClassIsLast);
+					$columnWidthPercent = floor($columnsCount / $totalColumnsCount * 100);
+					$cssClassXOfY = sprintf('_%dOf%d', $columnWidthPercent, $totalColumnsCount);
+
+					$html .= call_user_func_array('sprintf', array(
+						'<li class="WidgetFramework_WidgetPage_LayoutColumn %s %s%s"><div class="margin">',
+						$cssClassCols,
+						$cssClassXOfY,
+						$cssClassIsLast,
+					));
 					$html .= $subLayout;
-					$html .= '</li>';
+					$html .= '</div></li>';
 				}
 
 				$html .= '</ul>';
@@ -222,7 +265,7 @@ class _Layout_Horizontal extends _Layout_Multiple
 
 	public function __toString()
 	{
-		$cssClasses = $this->getOption('cssClasses');
+		$cssClasses = &$this->_options['cssClasses'];
 
 		switch (count($this->_subLayouts))
 		{
@@ -278,6 +321,8 @@ abstract class _Layout_Multiple
 		$this->_options = &$options;
 		$this->_widgetIds = $widgetIds;
 		$this->_depth = $depth;
+
+		$this->_options['layoutCount']++;
 
 		if ($depth < 10)
 		{
@@ -416,7 +461,7 @@ class _Layout_Single
 	protected $_hookName;
 	protected $_options;
 
-	public function __construct(XenForo_ViewPublic_Base $view, array &$widget, array $options)
+	public function __construct(XenForo_ViewPublic_Base $view, array &$widget, array &$options)
 	{
 		if (!empty($options['singleHookName']))
 		{
@@ -428,6 +473,7 @@ class _Layout_Single
 		}
 
 		$this->_options = &$options;
+		$this->_options['layoutCount']++;
 
 		$widgets = array($widget);
 		$widgets[0]['position'] = 'hook:' . $this->_hookName;

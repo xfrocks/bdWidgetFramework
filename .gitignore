@@ -5,3 +5,7 @@ library/WidgetFramework/FileSums.php
 js/WidgetFramework/functions.js
 js/WidgetFramework/widget_page_layout.js
 js/WidgetFramework/jquery.gridster.js
+js/WidgetFramework/gridster.utils.js
+js/WidgetFramework/jquery.collision.js
+js/WidgetFramework/jquery.draggable.js
+js/WidgetFramework/jquery.gcoords.js

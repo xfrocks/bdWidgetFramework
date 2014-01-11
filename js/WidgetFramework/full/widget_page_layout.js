@@ -1,61 +1,110 @@
-/** @param {jQuery} $ jQuery Object */! function($, window, document, _undefined) {
+/** @param {jQuery} $ jQuery Object */! function($, window, document, _undefined)
+{
 
-	XenForo.WidgetFramework_WidgetPage_LayoutEditor = function($container) {
+	XenForo.WidgetFramework_WidgetPage_LayoutEditor = function($container)
+	{
 		this.__construct($container);
 	};
-	XenForo.WidgetFramework_WidgetPage_LayoutEditor.prototype = {
-		__construct : function($container) {
+	XenForo.WidgetFramework_WidgetPage_LayoutEditor.prototype =
+	{
+		__construct: function($container)
+		{
 			this.$container = $container;
 			this.$widgets = $container.children('li');
 
-			if (jQuery.fn.prop) {
+			if (jQuery.fn.prop)
+			{
 				// Gridster needs jQuery.prop
 				this.setupGridster();
 			}
 		},
 
-		setupGridster : function() {
+		setupGridster: function()
+		{
 			var onDragStop = $.context(this, 'onDragStop');
 
-			this.$widgets.css('top', '').css('left', '').css('width', '').css('height', '').find('input.WidgetFramework_Layout_Input.sizeRow').change($.context(this, 'onInputSizeChange')).end().find('input.WidgetFramework_Layout_Input.sizeCol').change($.context(this, 'onInputSizeChange')).end();
+			this.$widgets.css('top', '').css('left', '').css('width', '').css('height', '');
 
-			this.gridster = this.$container.gridster({
-				widget_margins : [10, 10],
-				widget_base_dimensions : [200, 200],
-				draggable : {
-					stop : onDragStop
+			var $sizeRow = this.$widgets.find('input.WidgetFramework_Layout_Input.sizeRow');
+			$sizeRow.change($.context(this, 'onInputSizeChange'));
+
+			var $sizeCol = this.$widgets.find('input.WidgetFramework_Layout_Input.sizeCol');
+			$sizeCol.change($.context(this, 'onInputSizeChange')).end();
+
+			var $positionInputs = this.$widgets.find('.WidgetFramework_WidgetPage_WidgetBlock_PositionInputs');
+			$positionInputs.hide();
+
+			var $sizeInputsLabel = this.$widgets.find('.WidgetFramework_WidgetPage_WidgetBlock_SizeInputs label');
+			$sizeInputsLabel.hide();
+
+			var margin = 10;
+			var blockSize = 200;
+			// calculate block size for best display
+			var usableWidth = this.$container.parents('.xenForm').width();
+			var currentCols = 0;
+			this.$widgets.each(function()
+			{
+				var $widget = $(this);
+
+				var widgetCol = parseInt($widget.find('input.WidgetFramework_Layout_Input.col').val());
+				var widgetSizeCol = parseInt($widget.find('input.WidgetFramework_Layout_Input.sizeCol').val());
+				currentCols = Math.max(currentCols, widgetCol + widgetSizeCol);
+			});
+			var idealBlockSize = Math.floor(usableWidth / (currentCols + 2));
+			if (idealBlockSize < blockSize)
+			{
+				blockSize = idealBlockSize;
+			}
+			console.log(currentCols, blockSize, idealBlockSize);
+
+			this.gridster = this.$container.gridster(
+			{
+				widget_margins: [margin, margin],
+				widget_base_dimensions: [blockSize, blockSize],
+				draggable:
+				{
+					stop: onDragStop
 				}
 			}).data('gridster');
+
+			this.$container.addClass('gridsterized');
 		},
 
-		onInputSizeChange : function() {
+		onInputSizeChange: function()
+		{
 			var gridster = this.gridster;
 			var resized = false;
 
-			this.$widgets.each(function() {
+			this.$widgets.each(function()
+			{
 				var $widget = $(this);
 
-				var sizex = $widget.find('input.WidgetFramework_Layout_Input.sizeCol').val();
-				var sizey = $widget.find('input.WidgetFramework_Layout_Input.sizeRow').val();
+				var sizex = parseInt($widget.find('input.WidgetFramework_Layout_Input.sizeCol').val());
+				var sizey = parseInt($widget.find('input.WidgetFramework_Layout_Input.sizeRow').val());
 
-				if (sizex != $widget.attr('data-sizex') || sizey != $widget.attr('data-sizey')) {
-					gridster.resize_widget($widget, sizex, sizey);
+				if (sizex != $widget.attr('data-sizex') || sizey != $widget.attr('data-sizey'))
+				{
+					gridster.resize_widget($widget, sizex, sizey, false);
 					resized = true;
 				}
 			});
 
-			if (resized) {
+			if (resized)
+			{
 				// because resizing may change other things...
 				this.syncFromGridster();
 			}
 		},
 
-		onDragStop : function() {
+		onDragStop: function()
+		{
 			this.syncFromGridster();
 		},
 
-		syncFromGridster : function() {
-			this.$widgets.each(function() {
+		syncFromGridster: function()
+		{
+			this.$widgets.each(function()
+			{
 				var $widget = $(this);
 
 				$widget.find('input.WidgetFramework_Layout_Input.row').val($widget.attr('data-row') - 1);

@@ -36,6 +36,11 @@ class WidgetFramework_Listener
 				'WidgetFramework_Template_Helper_Core',
 				'snippet'
 			);
+
+			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_generatelayoutcss'] = array(
+				'WidgetFramework_Template_Helper_Layout',
+				'generateCss'
+			);
 		}
 		elseif ($dependencies instanceof XenForo_Dependencies_Admin)
 		{

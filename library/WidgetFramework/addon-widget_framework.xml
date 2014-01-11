@@ -476,6 +476,10 @@
 
 </xen:form>]]></template>
     <template title="wf_widget_page_layout"><![CDATA[<xen:require css="widget_framework.css" />
+<xen:require js="js/WidgetFramework/gridster.utils.js" />
+<xen:require js="js/WidgetFramework/jquery.collision.js" />
+<xen:require js="js/WidgetFramework/jquery.draggable.js" />
+<xen:require js="js/WidgetFramework/jquery.gcoords.js" />
 <xen:require js="js/WidgetFramework/jquery.gridster.js" />
 <xen:require js="js/WidgetFramework/functions.js" />
 <xen:require js="js/WidgetFramework/widget_page_layout.js" />
@@ -489,27 +493,45 @@
 			data-sizey="{$widget.options.layout_sizeRow}"
 			style="{xen:helper WidgetFramework_LayoutWidgetPositionAndSize, $widget}">
 			<div class="WidgetFramework_WidgetPage_WidgetBlock">
-				<span>
+				<div class="WidgetFramework_WidgetPage_WidgetBlock_Title">
 					<xen:if is="{$widget.title}">
-						{$widget.title}
+						{xen:raw $widget.title}
 					<xen:else />
 						{$widget.class}
 					</xen:if>
-				</span><br />
+				</div>
 
-				{xen:phrase wf_layout_position}:<br />
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_row]" value="{$widget.options.layout_row}" min="0" inputclass="WidgetFramework_Layout_Input row" />
-				/
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_col]" value="{$widget.options.layout_col}" min="0" inputclass="WidgetFramework_Layout_Input col" /><br />
+				<div class="WidgetFramework_WidgetPage_WidgetBlock_PositionInputs">
+					<div><label>{xen:phrase wf_layout_position}:</label></div>
+					<div>
+						<xen:spinbox name="widgets[{$widget.widget_id}][layout_row]" value="{$widget.options.layout_row}"
+									 min="0" inputclass="WidgetFramework_Layout_Input row Tooltip"
+									 title="{xen:phrase wf_widget_page_widget_row_explain}" />
+						/
+						<xen:spinbox name="widgets[{$widget.widget_id}][layout_col]" value="{$widget.options.layout_col}"
+									 min="0" inputclass="WidgetFramework_Layout_Input col Tooltip"
+									 title="{xen:phrase wf_widget_page_widget_col_explain}" />
+					</div>
+				</div>
+
+				<div class="WidgetFramework_WidgetPage_WidgetBlock_SizeInputs">
+					<div><label>{xen:phrase wf_layout_size}:</label></div>
+					<div>
+						<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeRow]" value="{$widget.options.layout_sizeRow}"
+									 min="1" inputclass="WidgetFramework_Layout_Input sizeRow Tooltip"
+									 title="{xen:phrase wf_widget_page_widget_size_row_explain}" />
+						x
+						<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeCol]" value="{$widget.options.layout_sizeCol}"
+									 min="1" inputclass="WidgetFramework_Layout_Input sizeCol Tooltip"
+									 title="{xen:phrase wf_widget_page_widget_size_col_explain}" />
+					</div>
+				</div>
 				
-				{xen:phrase wf_layout_size}:<br />
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeRow]" value="{$widget.options.layout_sizeRow}" min="1" inputclass="WidgetFramework_Layout_Input sizeRow" />
-				x
-				<xen:spinbox name="widgets[{$widget.widget_id}][layout_sizeCol]" value="{$widget.options.layout_sizeCol}" min="1" inputclass="WidgetFramework_Layout_Input sizeCol" /><br />
-				
-				<a href="{xen:adminlink widgets/edit, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase edit}</a>
-				|
-				<a href="{xen:adminlink widgets/delete, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase delete}</a><br />
+				<div class="WidgetFramework_WidgetPage_WidgetBlock_Controls">
+					<a href="{xen:adminlink widgets/edit, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase edit}</a>
+					|
+					<a href="{xen:adminlink widgets/delete, $widget}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase delete}</a><br />
+				</div>
 			</div>
 		</li>
 	</xen:foreach>
@@ -534,12 +556,26 @@
 	border: 1px solid {xen:property primaryLightish};
 	position: absolute;
 }
+.WidgetFramework_WidgetPage_LayoutEditor.gridsterized li {
+	cursor: pointer;
+}
 .WidgetFramework_WidgetPage_LayoutEditor li .WidgetFramework_WidgetPage_WidgetBlock {
-	margin: 2.5px;
+	margin: 5px;
+}
+.WidgetFramework_WidgetPage_WidgetBlock_Title {
+	font-size: 1.1em;
+	font-weight: bold;
+	margin-bottom: 5px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .textCtrl.number.WidgetFramework_Layout_Input, 
 .xenForm .ctrlUnit dd .textCtrl.number.WidgetFramework_Layout_Input {
 	width: 20px;
+}
+.WidgetFramework_WidgetPage_WidgetBlock_Controls {
+	margin-top: 5px;
 }]]></template>
   </admin_templates>
   <admin_template_modifications/>
@@ -741,6 +777,10 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
     <phrase title="wf_widget_online_users_rich" version_id="47" version_string="2.1.1"><![CDATA[Show rich usernames]]></phrase>
     <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
+    <phrase title="wf_widget_page_widget_col_explain" version_id="76" version_string="2.4.5"><![CDATA[Widget position vertically: left-most column is 0.]]></phrase>
+    <phrase title="wf_widget_page_widget_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Widget position horizontally: top row is 0.]]></phrase>
+    <phrase title="wf_widget_page_widget_size_col_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of columns to occupy]]></phrase>
+    <phrase title="wf_widget_page_widget_size_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of rows to occupy]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_invalid_layout" version_id="63" version_string="2.3.4"><![CDATA[Invalid layout selected.]]></phrase>
     <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
@@ -1144,10 +1184,10 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_widget_page.css" version_id="69" version_string="2.4.1"><![CDATA[.WidgetFramework_WidgetPage_LayoutVertical {
+    <template title="wf_widget_page.css" version_id="76" version_string="2.4.5"><![CDATA[.WidgetFramework_WidgetPage_LayoutVertical {
 	margin: 0;
 	padding: 0;
-	width: 100%;
+	width: 100% !important;
 }
 {xen:helper clearfix, '.WidgetFramework_WidgetPage_LayoutVertical'}
 
@@ -1157,8 +1197,8 @@ All customization should go to wf_default_EXTRA.css
 	overflow: hidden;
 }
 
-.WidgetFramework_WidgetPage_LayoutVertical .WidgetFramework_WidgetPage_LayoutColumn.WidgetFramework_WidgetPage_LayoutColumnLast {
-	margin-right: 0;
+.WidgetFramework_WidgetPage_LayoutVertical .WidgetFramework_WidgetPage_LayoutColumn.isLast .margin {
+	margin-right: 0 !important;
 }
 
 .WidgetFramework_WidgetPage_LayoutHorizontal {
@@ -1176,7 +1216,7 @@ All customization should go to wf_default_EXTRA.css
 	font-size: 12pt;
 	font-weight: bold;
 }]]></template>
-    <template title="wf_widget_page_index" version_id="58" version_string="2.3.2b"><![CDATA[<xen:require css="wf_widget_page.css" />
+    <template title="wf_widget_page_index" version_id="76" version_string="2.4.5"><![CDATA[<xen:require css="wf_widget_page.css" />
 
 <xen:title>{$widgetPage.title}</xen:title>
 
@@ -1198,31 +1238,12 @@ All customization should go to wf_default_EXTRA.css
 <xen:container var="$head.canonical">
 	<link rel="canonical" href="{xen:link 'canonical:widget-pages', $widgetPage, 'page={$page}'}" /></xen:container>
 
-<xen:container var="$head.widgetPage">
-<style>
-	<xen:foreach loop="$layoutTreeCssClasses.cols" i="$i" value="$cssClassCol">
-.{$cssClassCol.name} {
-	<xen:if is="{$cssClassCol.width}">width: {$cssClassCol.width}px;</xen:if>
-	<xen:if is="{$widgetPage.options.column_gap}">margin-right: {$widgetPage.options.column_gap}px;</xen:if>
-}
-	
-<xen:if is="{$cssClassCol.width}">
-@media screen and (max-width: {$cssClassCol.width}px) {
-	.{$cssClassCol.name} {
-		width: 100%;
-		margin-right: 0;
-	}
-}
+<xen:set var="$widgetPageStylesheet">{xen:helper WidgetFramework_generateLayoutCss, $widgetPage.options, $layoutTree}</xen:set>
+<xen:if is="trim({$widgetPageStylesheet})">
+	<xen:container var="$head.widgetPage">
+		<style>{xen:raw $widgetPageStylesheet}</style>
+	</xen:container>
 </xen:if>
-	</xen:foreach>
-	
-	<xen:foreach loop="$layoutTreeCssClasses.rows" i="$i" value="$cssClassRow">
-.{$cssClassRow.name} {
-	<xen:if is="{$widgetPage.options.row_gap}">margin-bottom: {$widgetPage.options.row_gap}px;</xen:if>
-}
-	</xen:foreach>
-</style>
-</xen:container>
 
 <xen:if is="{$widgetPage.description}">
 	<xen:description class="baseHtml">{xen:raw $widgetPage.description}</xen:description>
