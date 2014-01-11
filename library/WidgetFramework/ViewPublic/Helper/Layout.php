@@ -134,6 +134,13 @@ class _Layout_Vertical extends _Layout_Multiple
 			case 0:
 				$html = '';
 				break;
+			case 1:
+				$subLayout = strval(reset($this->_subLayouts));
+
+				$html = sprintf('<!-- WidgetFramework_WidgetPage_LayoutVertical-%s -->', $this->_getHash());
+				$html .= $subLayout;
+				$html .= sprintf('<!-- /WidgetFramework_WidgetPage_LayoutVertical-%s -->', $this->_getHash());
+				break;
 			default:
 				$totalColumnsCount = 0;
 				foreach (array_keys($this->_subLayouts) as $layoutId)
