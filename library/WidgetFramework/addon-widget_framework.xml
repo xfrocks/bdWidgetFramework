@@ -1324,7 +1324,7 @@ All customization should go to wf_default_EXTRA.css
 <xen:container var="$noVisitorPanel">1</xen:container>
 
 <xen:comment>It is important to generate CSS after the layout tree is rendered</xen:comment>
-<xen:set var="$widgetPageStylesheet">{xen:helper WidgetFramework_generateLayoutCss, $widgetPage.options, $layoutTree}</xen:set>
+<xen:set var="$widgetPageStylesheet">{xen:helper WidgetFramework_generateLayoutCss, $widgetPage.options, $widgets, $layoutTree}</xen:set>
 <xen:if is="trim({$widgetPageStylesheet})">
 	<xen:container var="$head.widgetPage">
 		<style>{xen:raw $widgetPageStylesheet}</style>

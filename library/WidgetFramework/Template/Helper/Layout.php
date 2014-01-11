@@ -57,7 +57,7 @@ class WidgetFramework_Template_Helper_Layout
 		));
 	}
 
-	public static function generateCss(array $widgetPageOptions, $layoutTree)
+	public static function generateCss(array $widgetPageOptions, array $widgets, $layoutTree)
 	{
 		if (!is_callable(array(
 			$layoutTree,
