@@ -4,12 +4,15 @@ class WidgetFramework_Template_Helper_Core
 {
 	public static function snippet($string, $maxLength = 0, array $options = array())
 	{
+		$gotCutOff = false;
+
 		$posOpen = strpos($string, '<span class="prbreak"');
 		if ($posOpen !== false)
 		{
 			if (preg_match('#<span class="prbreak"[^>]+>([^<]*)</span>#', $string, $matches, PREG_OFFSET_CAPTURE))
 			{
 				$string = substr($string, 0, $matches[0][1]);
+				$gotCutOff = true;
 
 				if (!empty($options['link']))
 				{
@@ -31,7 +34,11 @@ class WidgetFramework_Template_Helper_Core
 		{
 			$string = strval($string);
 			$string = XenForo_Helper_String::wholeWordTrim($string, $maxLength);
+			$gotCutOff = true;
+		}
 
+		if ($gotCutOff)
+		{
 			// try to make valid HTML output
 			$offset = 0;
 			$opened = array();
