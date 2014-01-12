@@ -23,15 +23,6 @@ class WidgetFramework_Listener
 
 		if ($dependencies instanceof XenForo_Dependencies_Public)
 		{
-			// we only boot up if we are in the front end
-			if (!empty($_SERVER['SCRIPT_NAME']) AND strpos($_SERVER['SCRIPT_NAME'], 'css.php') !== false)
-			{
-				// it looks like this is a CSS request...
-				return;
-			}
-
-			WidgetFramework_Core::getInstance()->bootstrap();
-
 			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_snippet'] = array(
 				'WidgetFramework_Template_Helper_Core',
 				'snippet'
@@ -204,6 +195,8 @@ class WidgetFramework_Listener
 	{
 		self::$fc = $fc;
 		self::$viewRenderer = $viewRenderer;
+
+		WidgetFramework_Core::getInstance()->bootstrap();
 
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
 		{
