@@ -134,6 +134,8 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 			$thread['post_id'] = $thread['first_post_id'];
 		}
 
+		$thread['forum'] = $forum;
+
 		return $thread;
 	}
 

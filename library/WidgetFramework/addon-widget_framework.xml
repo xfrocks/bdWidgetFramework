@@ -735,6 +735,20 @@ Arguments:
     <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
     <phrase title="style_property_wf_recent_status_statusMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all User Recent Status widgets.]]></phrase>
     <phrase title="style_property_wf_recent_status_statusMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Status Maximum Length]]></phrase>
+    <phrase title="style_property_wf_threads_fullDate_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullDate_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Posted Date]]></phrase>
+    <phrase title="style_property_wf_threads_fullFirstPostLikes_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullFirstPostLikes_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Like Count]]></phrase>
+    <phrase title="style_property_wf_threads_fullForum_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullForum_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Forum Origin]]></phrase>
+    <phrase title="style_property_wf_threads_fullInfoBottom_description_master" version_id="77" version_string="2.4.5b"><![CDATA[By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullInfoBottom_master" version_id="77" version_string="2.4.5b"><![CDATA[Show information at bottom]]></phrase>
+    <phrase title="style_property_wf_threads_fullReplyCount_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullReplyCount_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Reply Count]]></phrase>
+    <phrase title="style_property_wf_threads_fullUser_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullUser_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Poster]]></phrase>
+    <phrase title="style_property_wf_threads_fullViewCount_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullViewCount_master" version_id="77" version_string="2.4.5b"><![CDATA[Show View Count]]></phrase>
     <phrase title="style_property_wf_threads_showPrefix_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar layout.]]></phrase>
     <phrase title="style_property_wf_threads_showPrefix_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Thread Prefix]]></phrase>
     <phrase title="style_property_wf_threads_snippetMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar + snippet layout.]]></phrase>
@@ -911,6 +925,13 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_recent_status_statusMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Status Maximum Length" description="This property will be applied to all User Recent Status widgets." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="RecentStatus"><![CDATA[150]]></property>
     <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Snippet Maximum Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="Threads"><![CDATA[0]]></property>
     <property property_name="wf_threads_showPrefix" property_type="scalar" definition="1" group_name="widget_framework" title="Show Thread Prefix" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="Threads"><![CDATA[0]]></property>
+    <property property_name="wf_threads_fullViewCount" property_type="scalar" definition="1" group_name="widget_framework" title="Show View Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="Threads"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullFirstPostLikes" property_type="scalar" definition="1" group_name="widget_framework" title="Show Like Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="Threads"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullReplyCount" property_type="scalar" definition="1" group_name="widget_framework" title="Show Reply Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1130" sub_group="Threads"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullUser" property_type="scalar" definition="1" group_name="widget_framework" title="Show Poster" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1010" sub_group="Threads"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullForum" property_type="scalar" definition="1" group_name="widget_framework" title="Show Forum Origin" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1020" sub_group="Threads"><![CDATA[0]]></property>
+    <property property_name="wf_threads_fullDate" property_type="scalar" definition="1" group_name="widget_framework" title="Show Posted Date" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1030" sub_group="Threads"><![CDATA[0]]></property>
+    <property property_name="wf_threads_fullInfoBottom" property_type="scalar" definition="1" group_name="widget_framework" title="Show information at bottom" description="By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1000" sub_group="Threads"><![CDATA[1]]></property>
     <group group_name="widget_framework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Widget display settings for this style.</description>
@@ -1022,7 +1043,12 @@ All customization should go to wf_default_EXTRA.css
 	}
 	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info {
 		padding: 5px 10px;
-		border-bottom: 1px dashed {xen:property primaryLighterStill}; 
+
+		<xen:if is="{xen:property wf_threads_fullInfoBottom}">
+			border-top: 1px dashed {xen:property primaryLighterStill};
+		<xen:else />
+			border-bottom: 1px dashed {xen:property primaryLighterStill};
+		</xen:if>
 	}
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .counters {
 			float: right;
@@ -1461,7 +1487,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="65" version_string="2.3.6"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="77" version_string="2.4.5b"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 	<xen:if hascontent="true">
 		<div class="avatarList">
@@ -1577,8 +1603,8 @@ All customization should go to wf_default_EXTRA.css
 			<xen:contentcheck>
 
 				<xen:foreach loop="$threads" value="$thread">
-					<xen:include template="wf_widget_threads_thread_full">
-					</xen:include>
+					<xen:include template="wf_widget_threads_thread_full" />
+					<xen:edithint template="wf_widget_threads_thread_full_info" />
 				</xen:foreach>
 
 			</xen:contentcheck>
@@ -1590,22 +1616,22 @@ All customization should go to wf_default_EXTRA.css
 
 </xen:if>]]></template>
     <template title="wf_widget_threads_thread_full" version_id="77" version_string="2.4.5b"><![CDATA[<xen:require css="wf_default.css" />
-
 <xen:require css="bb_code.css" />
 
+<xen:set var="$info"><xen:include template="wf_widget_threads_thread_full_info" /></xen:set>
+
 <div id="thread-{$thread.thread_id}" class="message section sectionMain" data-author="{$thread.username}">
-	
+
 	<div class="subHeading thread">
 		<a href="{xen:link threads, $thread}">{$thread.title}</a>
 	</div>
 
-	<div class="info">
-		<div class="counters">{xen:phrase views}: {xen:number $thread.view_count} / {xen:phrase likes}: {xen:number $thread.first_post_likes} / {xen:phrase replies}: {xen:number $thread.reply_count}</div>
-		<div class="poster">{xen:phrase by} <xen:username user="$thread" rich="true" />, <a href="{xen:link threads, $thread}"><xen:datetime time="$thread.post_date" /></a></div>
-	</div>
+	<xen:if is="!{xen:property wf_threads_fullInfoBottom} AND trim({$info})">
+		<div class="info">{xen:raw $info}</div>
+	</xen:if>
 
-	<div class="messageInfo primaryContent">
-		
+	<div class="messageInfo">
+
 		<xen:hook name="message_content" params="{xen:array 'message={$thread}', 'WidgetFramework_WidgetRenderer_Threads_FullThreadList=1'}">
 		<div class="messageContent">		
 			<article>
@@ -1617,8 +1643,59 @@ All customization should go to wf_default_EXTRA.css
 		</xen:hook>
 
 	</div>
-	
+
+	<xen:if is="{xen:property wf_threads_fullInfoBottom} AND trim({$info})">
+		<div class="info">{xen:raw $info}</div>
+	</xen:if>
+
 </div>]]></template>
+    <template title="wf_widget_threads_thread_full_info" version_id="77" version_string="2.4.5b"><![CDATA[<xen:if hascontent="true">
+	<div class="counters">
+		<xen:contentcheck>
+			<xen:hook name="wf_widget_threads_thread_full_info_counters" params="{xen:array 'thread={$thread}'}">
+
+			<xen:if is="{xen:property wf_threads_fullViewCount}">
+				<span class="viewCount">{xen:phrase views}: {xen:number $thread.view_count}</span>
+				<xen:if is="{xen:property wf_threads_fullFirstPostLikes} OR {xen:property wf_threads_fullReplyCount}"><span class="divider">/</span></xen:if>
+			</xen:if>
+
+			<xen:if is="{xen:property wf_threads_fullFirstPostLikes}">
+				<span class="firstPostLikes">{xen:phrase likes}: {xen:number $thread.first_post_likes}</span>
+				<xen:if is="{xen:property wf_threads_fullReplyCount}"><span class="divider">/</span></xen:if>
+			</xen:if>
+
+			<xen:if is="{xen:property wf_threads_fullReplyCount}">
+				<span class="replyCount">{xen:phrase replies}: {xen:number $thread.reply_count}</span>
+			</xen:if>
+
+			</xen:hook>
+		</xen:contentcheck>
+	</div>
+</xen:if>
+
+<xen:if hascontent="true">
+	<div class="main">
+		<xen:contentcheck>
+			<xen:hook name="wf_widget_threads_thread_full_info_main" params="{xen:array 'thread={$thread}'}">
+
+			<xen:if is="{xen:property wf_threads_fullUser}">
+				<span class="user">{xen:phrase by} <xen:username user="$thread" rich="true" /></span><xen:comment>
+				</xen:comment><xen:if is="{xen:property wf_threads_fullForum} OR {xen:property wf_threads_fullDate}"><span class="divider">,</span></xen:if>
+			</xen:if>
+
+			<xen:if is="{xen:property wf_threads_fullForum}">
+				<span class="user">{xen:phrase in_forum} <a href="{xen:link forums, $thread.forum}">{$thread.forum.title}</a></span><xen:comment>
+				</xen:comment><xen:if is="{xen:property wf_threads_fullDate}"><span class="divider">,</span></xen:if>
+			</xen:if>
+
+			<xen:if is="{xen:property wf_threads_fullDate}">
+				<a href="{xen:link threads, $thread}"><xen:datetime time="$thread.post_date" /></a>
+			</xen:if>
+
+			</xen:hook>
+		</xen:contentcheck>
+	</div>
+</xen:if>]]></template>
     <template title="wf_widget_threads_thread_sidebar" version_id="77" version_string="2.4.5b"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
 	<xen:avatar user="$thread" size="s" img="true" />
 
