@@ -76,21 +76,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
-		if ('type' == $optionKey)
-		{
-			if (!in_array($optionValue, array(
-				'new',
-				'recent',
-				'popular',
-				'most_replied',
-				'most_liked',
-				'polls'
-			)))
-			{
-				throw new XenForo_Exception(new XenForo_Phrase('wf_widget_threads_invalid_type'), true);
-			}
-		}
-		elseif ('limit' == $optionKey)
+		if ('limit' == $optionKey)
 		{
 			if (empty($optionValue))
 			{

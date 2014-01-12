@@ -880,7 +880,6 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_page_widget_size_col_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of columns to occupy]]></phrase>
     <phrase title="wf_widget_page_widget_size_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of rows to occupy]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
-    <phrase title="wf_widget_threads_invalid_layout" version_id="63" version_string="2.3.4"><![CDATA[Invalid layout selected.]]></phrase>
     <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff_explain" version_id="26" version_string="1.3.1"><![CDATA[Threads older than this number of days won't make it to the list that supports cutoff as noted above.]]></phrase>
