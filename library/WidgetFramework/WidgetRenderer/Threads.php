@@ -38,7 +38,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'as_guest' => XenForo_Input::UINT,
 				'limit' => XenForo_Input::UINT,
 				'layout' => XenForo_Input::STRING,
-				'display' => XenForo_Input::ARRAY_SIMPLE,
 			),
 			'useCache' => true,
 			'useUserCache' => true,
