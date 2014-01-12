@@ -104,19 +104,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				$optionValue = 5;
 			}
 		}
-		elseif ('layout' == $optionKey)
-		{
-			if (!in_array($optionValue, array(
-				'',
-				'sidebar',
-				'sidebar_snippet',
-				'list',
-				'full',
-			)))
-			{
-				throw new XenForo_Exception(new XenForo_Phrase('wf_widget_threads_invalid_layout'), true);
-			}
-		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);
 	}
@@ -145,9 +132,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		{
 			switch ($widget['options']['layout'])
 			{
-				case 'sidebar':
-					$layout = 'sidebar';
-					break;
 				case 'sidebar_snippet':
 					$layout = 'sidebar';
 					$layoutNeedPost = true;
@@ -158,6 +142,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				case 'full':
 					$layout = 'full';
 					$layoutNeedPost = true;
+					break;
+				case 'sidebar':
+				default:
+					$layout = 'sidebar';
 					break;
 			}
 		}
