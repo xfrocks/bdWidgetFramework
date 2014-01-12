@@ -215,6 +215,10 @@ class WidgetFramework_Listener
 	public static function load_class($class, array &$extend)
 	{
 		static $classesNeedsExtending = array(
+			'XenForo_BbCode_Formatter_Base',
+			'XenForo_BbCode_Formatter_HtmlEmail',
+			'XenForo_BbCode_Formatter_Text',
+
 			'XenForo_ControllerPublic_Forum',
 			'XenForo_ControllerPublic_Index',
 			'XenForo_ControllerPublic_Misc',

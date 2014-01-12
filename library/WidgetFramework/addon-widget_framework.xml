@@ -687,6 +687,7 @@ Arguments:
     <listener event_id="front_controller_post_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_post_view" active="1" hint="" description=""/>
     <listener event_id="front_controller_pre_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_pre_view" active="1" hint="" description=""/>
     <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" hint="" description=""/>
+    <listener event_id="load_class_bb_code" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
@@ -907,7 +908,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="65" version_string="2.3.6"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="77" version_string="2.4.5b"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1024,6 +1025,10 @@ All customization should go to wf_default_EXTRA.css
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageInfo {
 			padding: 5px 10px;
 		}
+	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageText .readMoreLink {
+		display: block;
+		text-align: right;
+	}
 
 .widget .avatarHeap {
 	<xen:comment>avatarHeap last avatar of a row will need some space at
@@ -1571,7 +1576,7 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_full" version_id="65" version_string="2.3.6"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_threads_thread_full" version_id="77" version_string="2.4.5b"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:require css="bb_code.css" />
 
@@ -1592,7 +1597,7 @@ All customization should go to wf_default_EXTRA.css
 		<div class="messageContent">		
 			<article>
 				<blockquote class="messageText ugc baseHtml">
-					{xen:raw $thread.messageHtml}
+					{xen:helper WidgetFramework_snippet, $thread.messageHtml, 0, {xen:array 'link={xen:link threads, $thread}'}}
 				</blockquote>
 			</article>
 		</div>

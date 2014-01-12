@@ -2,8 +2,31 @@
 
 class WidgetFramework_Template_Helper_Core
 {
-	public static function snippet($string, $maxLength = 0)
+	public static function snippet($string, $maxLength = 0, array $options = array())
 	{
+		$posOpen = strpos($string, '<span class="prbreak"');
+		if ($posOpen !== false)
+		{
+			if (preg_match('#<span class="prbreak"[^>]+>([^<]*)</span>#', $string, $matches, PREG_OFFSET_CAPTURE))
+			{
+				$string = substr($string, 0, $matches[0][1]);
+
+				if (!empty($options['link']))
+				{
+					if (!empty($matches[1][0]))
+					{
+						$linkText = $matches[1][0];
+					}
+					else
+					{
+						$linkText = new XenForo_Phrase('wf_read_more');
+					}
+
+					$string .= sprintf('<div class="readMoreLink"><a href="%s">%s</a></div>', $options['link'], $linkText);
+				}
+			}
+		}
+
 		if ($maxLength > 0)
 		{
 			$string = strval($string);
