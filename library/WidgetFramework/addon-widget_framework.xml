@@ -420,13 +420,22 @@
 		<xen:if is="{$widgetPage.node_id}">
 			<li>
 				<xen:hook name="wf_widget_page_edit_layout">
-					
+
+				<!-- before options -->
+
 				<xen:textboxunit name="options[column_width]" value="{$widgetPage.options.column_width}" label="{xen:phrase wf_column_width}:" />
 				<xen:textboxunit name="options[column_gap]" value="{$widgetPage.options.column_gap}" label="{xen:phrase wf_column_gap}:" />
 				<xen:textboxunit name="options[row_gap]" value="{$widgetPage.options.row_gap}" label="{xen:phrase wf_row_gap}:" />
+				<xen:checkboxunit label="">
+					<xen:option name="options[break_container]" value="1" selected="{$widgetPage.options.break_container}">{xen:phrase wf_break_container}</xen:option>
+				</xen:checkboxunit>
+
+				<!-- after options -->
 
 				<xen:include template="wf_widget_page_layout" />
-				
+
+				<!-- after layout editor -->
+
 				<a href="{xen:adminlink widgets/add, '', 'widget_page_id={$widgetPage.node_id}'}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase wf_add_widget}</a>
 					<a href="{xen:adminlink widgets/add, '', 'widget_page_id={$widgetPage.node_id}', 'position=sidebar'}" class="OverlayTrigger" data-cacheOverlay="no">{xen:phrase wf_add_sidebar_widget}</a>
 
@@ -737,6 +746,7 @@ Arguments:
     <phrase title="wf_add_sidebar_widget" version_id="76" version_string="2.4.5"><![CDATA[Add Sidebar Widget]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
+    <phrase title="wf_break_container" version_id="77" version_string="2.4.5b"><![CDATA[Break out of content container]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
     <phrase title="wf_column_gap" version_id="54" version_string="2.2.3"><![CDATA[Column Gap]]></phrase>
@@ -802,6 +812,7 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_posted_by_lowercase" version_id="44" version_string="2.0.6"><![CDATA[posted by]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
+    <phrase title="wf_read_more" global_cache="1" version_id="77" version_string="2.4.5b"><![CDATA[Read more]]></phrase>
     <phrase title="wf_recent" version_id="1" version_string="0.9"><![CDATA[Recent]]></phrase>
     <phrase title="wf_recent_status" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
@@ -1296,7 +1307,7 @@ All customization should go to wf_default_EXTRA.css
 	font-size: 12pt;
 	font-weight: bold;
 }]]></template>
-    <template title="wf_widget_page_index" version_id="76" version_string="2.4.5"><![CDATA[<xen:require css="wf_widget_page.css" />
+    <template title="wf_widget_page_index" version_id="77" version_string="2.4.5b"><![CDATA[<xen:require css="wf_widget_page.css" />
 
 <xen:title>{$widgetPage.title}</xen:title>
 
@@ -1334,6 +1345,10 @@ All customization should go to wf_default_EXTRA.css
 	<xen:container var="$head.widgetPage">
 		<style>{xen:raw $widgetPageStylesheet}</style>
 	</xen:container>
+</xen:if>
+
+<xen:if is="{$widgetPage.options.break_container}">
+	<xen:container var="$widgetPageOptionsBreakContainer">1</xen:container>
 </xen:if>]]></template>
     <template title="wf_widget_poll" version_id="62" version_string="2.3.3d"><![CDATA[<xen:edithint template="wf_default.css" />
 

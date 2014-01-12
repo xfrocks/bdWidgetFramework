@@ -136,6 +136,16 @@ class WidgetFramework_Listener
 				$ourTemplate = $template->create('wf_hook_moderator_bar', $template->getParams());
 				$contents .= $ourTemplate->render();
 			}
+			elseif (in_array($hookName, array(
+				'page_container_breadcrumb_top',
+				'page_container_content_title_bar'
+			)))
+			{
+				if (!!$template->getParam('widgetPageOptionsBreakContainer'))
+				{
+					$contents = '';
+				}
+			}
 
 			static $ignoredHooks = array(
 				'ad_sidebar_top', // this one is reserved to show the template name

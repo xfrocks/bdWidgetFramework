@@ -114,6 +114,17 @@ class WidgetFramework_Template_Helper_Layout
 			}
 		}
 
+		if (!empty($widgetPageOptions['break_container']))
+		{
+			$css[] = XenForo_CssOutput::translateCssRules('.mainContent { background: transparent; border: 0; border-radius: 0; box-shadow: none; padding: 0; }');
+
+			$sectionMainMarginTop = XenForo_Template_Helper_Core::styleProperty('sectionMain.margin-top');
+			if (!empty($sectionMainMarginTop))
+			{
+				$css[] = sprintf('#WidgetPageContent { margin-top: -%s; }', $sectionMainMarginTop);
+			}
+		}
+
 		foreach ($cssMedia as $mediaStatement => $cssMediaRules)
 		{
 			$css[] = sprintf('@media %s { %s }', $mediaStatement, implode(" ", $cssMediaRules));
