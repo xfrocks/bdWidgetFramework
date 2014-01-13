@@ -191,6 +191,20 @@ class WidgetFramework_Listener
 		}
 	}
 
+	public static function init_router_public(XenForo_Dependencies_Abstract $dependencies, XenForo_Router $router)
+	{
+		$rules = $router->getRules();
+		$router->resetRules();
+
+		// insert our filter as the first rule
+		$router->addRule(new WidgetFramework_Route_Filter_PageX(), 'WidgetFramework_Route_Filter_PageX');
+
+		foreach ($rules as $ruleName => $rule)
+		{
+			$router->addRule($rule, $ruleName);
+		}
+	}
+
 	public static function front_controller_pre_view(XenForo_FrontController $fc, XenForo_ControllerResponse_Abstract &$controllerResponse, XenForo_ViewRenderer_Abstract &$viewRenderer, array &$containerParams)
 	{
 		self::$fc = $fc;

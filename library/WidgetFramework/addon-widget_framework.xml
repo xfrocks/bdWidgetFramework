@@ -692,6 +692,7 @@ Arguments:
     <listener event_id="front_controller_post_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_post_view" active="1" hint="" description=""/>
     <listener event_id="front_controller_pre_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_pre_view" active="1" hint="" description=""/>
     <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" hint="" description=""/>
+    <listener event_id="init_router_public" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_router_public" active="1" hint="" description=""/>
     <listener event_id="load_class_bb_code" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
     <listener event_id="load_class_datawriter" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
