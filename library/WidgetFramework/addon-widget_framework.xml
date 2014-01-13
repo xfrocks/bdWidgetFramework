@@ -730,7 +730,7 @@ Arguments:
     <phrase title="admin_navigation_widgetFramework_pageAdd" version_id="55" version_string="2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="node_type_WF_WidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page]]></phrase>
     <phrase title="option_WidgetFramework_indexNodeId" version_id="69" version_string="2.4.1"><![CDATA[Widget Page As Index]]></phrase>
-    <phrase title="option_WidgetFramework_indexNodeId_explain" version_id="69" version_string="2.4.1"><![CDATA[You can choose to have a widget page take over as the index page.]]></phrase>
+    <phrase title="option_WidgetFramework_indexNodeId_explain" version_id="78" version_string="2.4.5c"><![CDATA[You can choose to have a widget page take over the index page. The option "Index Page Route" will be ignored and it is recommended to leave the option "Home Page URL" blank.]]></phrase>
     <phrase title="permission_group_wfWidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page Permissions]]></phrase>
     <phrase title="style_property_group_widget_framework_master" version_id="33" version_string="1.5"><![CDATA[[bd] Widget Framework]]></phrase>
     <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
@@ -795,7 +795,7 @@ XenForo_Template_Helper_Core::callHelper('ismemberof', array($visitor,3)) -- mea
     <phrase title="wf_invalid_position_x" version_id="37" version_string="1.5.4"><![CDATA[Invalid position specified: {position}. The position must be one of three types: "all", "template_name" or "hook:hook_name".]]></phrase>
     <phrase title="wf_invalid_widget_renderer_x" version_id="24" version_string="1.2.2.2"><![CDATA[Invalid Widget Renderer specified: {renderer}.]]></phrase>
     <phrase title="wf_is_index" version_id="68" version_string="2.4.0c"><![CDATA[Is Index Page]]></phrase>
-    <phrase title="wf_is_index_explain" version_id="68" version_string="2.4.0c"><![CDATA[If selected, this page will be take over the index page.]]></phrase>
+    <phrase title="wf_is_index_explain" version_id="78" version_string="2.4.5c"><![CDATA[If selected, this page will take over the index page.]]></phrase>
     <phrase title="wf_layout_position" version_id="54" version_string="2.2.3"><![CDATA[Position]]></phrase>
     <phrase title="wf_layout_size" version_id="54" version_string="2.2.3"><![CDATA[Size]]></phrase>
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
