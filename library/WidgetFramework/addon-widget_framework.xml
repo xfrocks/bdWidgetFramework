@@ -511,7 +511,7 @@
 <ul class="WidgetFramework_WidgetPage_LayoutEditor" style="{xen:helper WidgetFramework_LayoutContainerSize, $widgets}">
 	<xen:foreach loop="$widgets" value="$widget">
 		<xen:if is="{$widget.position} == ''">
-		<li class="widget"
+		<li class="widget{xen:if '!{$widget.active}', ' _disabled'}"
 			data-row="{xen:calc '{$widget.options.layout_row} + 1'}"
 			data-col="{xen:calc '{$widget.options.layout_col} + 1'}"
 			data-sizex="{$widget.options.layout_sizeCol}"
@@ -578,7 +578,7 @@
 				<xen:contentcheck>
 					<xen:foreach loop="$widgets" value="$widget">
 						<xen:if is="{$widget.position} == 'sidebar'">
-							<li class="sidebar-widget">
+							<li class="sidebar-widget{xen:if '!{$widget.active}', ' _disabled'}">
 								<div class="WidgetFramework_WidgetPage_WidgetBlock">
 									<div class="WidgetFramework_WidgetPage_WidgetBlock_Title">
 										<xen:if is="{$widget.title}">
@@ -628,6 +628,10 @@
 .WidgetFramework_WidgetPage_LayoutEditor.gridsterized > li {
 	cursor: pointer;
 }
+.WidgetFramework_WidgetPage_LayoutEditor li._disabled {
+	background: {xen:property faintTextColor};
+}
+
 .WidgetFramework_WidgetPage_LayoutEditor .WidgetFramework_WidgetPage_WidgetBlock {
 	margin: 5px;
 }
@@ -638,6 +642,9 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+.WidgetFramework_WidgetPage_LayoutEditor li._disabled .WidgetFramework_WidgetPage_WidgetBlock_Title {
+	text-decoration:line-through;
 }
 .textCtrl.number.WidgetFramework_Layout_Input, 
 .xenForm .ctrlUnit dd .textCtrl.number.WidgetFramework_Layout_Input {
