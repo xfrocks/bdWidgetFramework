@@ -17,6 +17,10 @@ class WidgetFramework_ViewPublic_Helper_Layout
 
 		foreach ($widgets as $widget)
 		{
+			if (empty($widget['active']))
+			{
+				continue;
+			}
 			if (!empty($widget['position']))
 			{
 				continue;
@@ -82,6 +86,11 @@ class WidgetFramework_ViewPublic_Helper_Layout
 
 		foreach ($widgets as $widget)
 		{
+			if (empty($widget['active']))
+			{
+				continue;
+			}
+
 			if ($widget['position'] === 'sidebar')
 			{
 				$widget['position'] = 'wf_widget_page_index';
