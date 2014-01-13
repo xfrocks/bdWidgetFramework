@@ -878,7 +878,14 @@ abstract class WidgetFramework_WidgetRenderer
 	{
 		if (is_array($widget))
 		{
-			self::$_containerData[$widget['widget_id']] = $containerData;
+			if (empty(self::$_containerData[$widget['widget_id']]))
+			{
+				self::$_containerData[$widget['widget_id']] = $containerData;
+			}
+			else
+			{
+				self::$_containerData[$widget['widget_id']] = XenForo_Application::mapMerge(self::$_containerData[$widget['widget_id']], $containerData);
+			}
 		}
 	}
 
