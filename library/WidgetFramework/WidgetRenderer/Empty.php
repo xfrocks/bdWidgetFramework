@@ -10,7 +10,7 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 	{
 		return array(
 			'name' => ' Clear Sidebar',
-			'options' => array('noVisitorPanel' => XenForo_Input::UINT, ),
+			'options' => array('noVisitorPanel' => XenForo_Input::UINT),
 			'useWrapper' => false,
 		);
 	}

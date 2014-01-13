@@ -34,12 +34,14 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
-		if ('limit' == $optionKey)
+		switch ($optionKey)
 		{
-			if (empty($optionValue))
-			{
-				$optionValue = 5;
-			}
+			case 'limit':
+				if (empty($optionValue))
+				{
+					$optionValue = 5;
+				}
+				break;
 		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);

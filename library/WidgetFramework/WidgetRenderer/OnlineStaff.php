@@ -29,7 +29,7 @@ class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetR
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
-		if ('forum_list' == $positionCode)
+		if ('forum_list' === $positionCode AND !empty($params['onlineUsers']))
 		{
 			$renderTemplateObject->setParam('onlineUsers', $params['onlineUsers']);
 		}

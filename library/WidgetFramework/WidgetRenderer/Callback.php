@@ -40,6 +40,11 @@ class WidgetFramework_WidgetRenderer_Callback extends WidgetFramework_WidgetRend
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		if (empty($widget['options']['callback_class']) OR empty($widget['options']['callback_method']))
+		{
+			return '';
+		}
+
 		$class = $widget['options']['callback_class'];
 		$method = $widget['options']['callback_method'];
 

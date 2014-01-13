@@ -11,7 +11,7 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
 
 		return parent::extraPrepareTitle($widget);
 	}
-	
+
 	protected function _getConfiguration()
 	{
 		return array(
@@ -33,10 +33,14 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
-		if ('limit' == $optionKey)
+		switch ($optionKey)
 		{
-			if (empty($optionValue))
-				$optionValue = 5;
+			case 'limit':
+				if (empty($optionValue))
+				{
+					$optionValue = 5;
+				}
+				break;
 		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);
@@ -49,6 +53,15 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		if (empty($widget['options']['url']))
+		{
+			return '';
+		}
+		if (empty($widget['options']['limit']))
+		{
+			$widget['options']['limit'] = 5;
+		}
+
 		$core = WidgetFramework_Core::getInstance();
 		$feedModel = $core->getModelFromCache('XenForo_Model_Feed');
 

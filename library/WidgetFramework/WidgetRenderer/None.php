@@ -14,9 +14,7 @@ class WidgetFramework_WidgetRenderer_None extends WidgetFramework_WidgetRenderer
 
 	protected function _getConfiguration()
 	{
-		return array(
-			// hide the tab field
-			'useWrapper' => false, );
+		return array('useWrapper' => false);
 	}
 
 	protected function _getOptionsTemplate()

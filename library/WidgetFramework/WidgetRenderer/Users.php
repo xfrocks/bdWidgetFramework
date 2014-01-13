@@ -43,12 +43,26 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
-		if ('limit' == $optionKey)
+		switch ($optionKey)
 		{
-			if (empty($optionValue))
-			{
-				$optionValue = 5;
-			}
+			case 'limit':
+				if (empty($optionValue))
+				{
+					$optionValue = 5;
+				}
+				break;
+			case 'order':
+				if (empty($optionValue))
+				{
+					$optionValue = 'register_date';
+				}
+				break;
+			case 'direction':
+				if (empty($optionValue))
+				{
+					$optionValue = 'DESC';
+				}
+				break;
 		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);
@@ -61,17 +75,30 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		if (empty($widget['options']['limit']))
+		{
+			$widget['options']['limit'] = 5;
+		}
+		if (empty($widget['options']['order']))
+		{
+			$widget['options']['order'] = 'register_date';
+		}
+		if (empty($widget['options']['direction']))
+		{
+			$widget['options']['direction'] = 'DESC';
+		}
+
 		$users = false;
 
 		// try to be smart and get the users data if they happen to be available
 		if ($positionCode == 'member_list')
 		{
-			if ($widget['options']['limit'] == 12 && $widget['options']['order'] == 'message_count')
+			if ($widget['options']['limit'] == 12 && $widget['options']['order'] == 'message_count' AND !empty($params['activeUsers']))
 			{
 				$users = $params['activeUsers'];
 			}
 
-			if ($widget['options']['limit'] == 8 && $widget['options']['order'] == 'register_date')
+			if ($widget['options']['limit'] == 8 && $widget['options']['order'] == 'register_date' AND !empty($params['latestUsers']))
 			{
 				$users = $params['latestUsers'];
 			}

@@ -22,6 +22,11 @@ class WidgetFramework_WidgetRenderer_Html extends WidgetFramework_WidgetRenderer
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $justAnTemplate)
 	{
+		if (empty($widget['options']['html']))
+		{
+			return '';
+		}
+
 		return $widget['options']['html'];
 	}
 

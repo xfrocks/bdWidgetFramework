@@ -6,16 +6,22 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 	{
 		if (empty($widget['title']))
 		{
+			if (empty($widget['options']['type']))
+			{
+				$widget['options']['type'] = 'new';
+			}
+
 			switch ($widget['options']['type'])
 			{
-				case 'new':
-					return new XenForo_Phrase('wf_widget_xfrm_resources_type_new');
 				case 'latest_update':
 					return new XenForo_Phrase('wf_widget_xfrm_resources_type_latest_update');
 				case 'highest_rating':
 					return new XenForo_Phrase('wf_widget_xfrm_resources_type_highest_rating');
 				case 'most_downloaded':
 					return new XenForo_Phrase('wf_widget_xfrm_resources_type_most_downloaded');
+				case 'new':
+				default:
+					return new XenForo_Phrase('wf_widget_xfrm_resources_type_new');
 			}
 		}
 
@@ -73,20 +79,17 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 	{
 		switch ($optionKey)
 		{
-			case 'type':
-				if (!in_array($optionValue, array(
-					'new',
-					'latest_update',
-					'highest_rating',
-					'most_downloaded'
-				)))
-				{
-					throw new XenForo_Exception(new XenForo_Phrase('wf_widget_xfrm_resources_invalid_type'), true);
-				}
-				break;
 			case 'limit':
 				if (empty($optionValue))
+				{
 					$optionValue = 5;
+				}
+				break;
+			case 'type':
+				if (empty($optionValue))
+				{
+					$optionValue = 'new';
+				}
 				break;
 		}
 
@@ -100,6 +103,15 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		if (empty($widget['options']['limit']))
+		{
+			$widget['options']['limit'] = 5;
+		}
+		if (empty($widget['options']['type']))
+		{
+			$widget['options']['type'] = 'new';
+		}
+
 		$resources = $this->_getResources($widget, $positionCode, $params, $renderTemplateObject);
 		$renderTemplateObject->setParam('resources', $resources);
 
@@ -147,12 +159,6 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 
 			switch ($widget['options']['type'])
 			{
-				case 'new':
-					$resources = $resourceModel->getResources($conditions, array_merge($fetchOptions, array(
-						'order' => 'resource_date',
-						'direction' => 'desc',
-					)));
-					break;
 				case 'latest_update':
 					$resources = $resourceModel->getResources($conditions, array_merge($fetchOptions, array(
 						'order' => 'last_update',
@@ -168,6 +174,13 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 				case 'most_downloaded':
 					$resources = $resourceModel->getResources($conditions, array_merge($fetchOptions, array(
 						'order' => 'download_count',
+						'direction' => 'desc',
+					)));
+					break;
+				case 'new':
+				default:
+					$resources = $resourceModel->getResources($conditions, array_merge($fetchOptions, array(
+						'order' => 'resource_date',
 						'direction' => 'desc',
 					)));
 					break;

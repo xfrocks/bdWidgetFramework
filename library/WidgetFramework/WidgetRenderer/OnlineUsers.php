@@ -54,7 +54,7 @@ class WidgetFramework_WidgetRenderer_OnlineUsers extends WidgetFramework_WidgetR
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
-		if ('forum_list' == $positionCode)
+		if ('forum_list' === $positionCode AND !empty($params['onlineUsers']) AND !empty($params['visitor']))
 		{
 			$renderTemplateObject->setParam('onlineUsers', $params['onlineUsers']);
 			$renderTemplateObject->setParam('visitor', $params['visitor']);

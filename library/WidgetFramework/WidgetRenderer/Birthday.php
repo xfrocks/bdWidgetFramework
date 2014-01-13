@@ -16,7 +16,7 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 	{
 		return array(
 			'name' => 'Birthday',
-			'options' => array('limit' => XenForo_Input::UINT, ),
+			'options' => array('limit' => XenForo_Input::UINT),
 			'useCache' => true,
 			'cacheSeconds' => 3600, // cache for 1 hour
 		);
@@ -29,10 +29,14 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
-		if ('limit' == $optionKey)
+		switch ($optionKey)
 		{
-			if (empty($optionValue))
-				$optionValue = 0;
+			case 'limit':
+				if (empty($optionValue))
+				{
+					$optionValue = 0;
+				}
+				break;
 		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);
@@ -65,10 +69,15 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 			'is_banned' => false,
 		);
 		$fetchOptions = array(
-			'limit' => $widget['options']['limit'],
 			'order' => 'username',
 			'join' => XenForo_Model_User::FETCH_USER_PROFILE + XenForo_Model_User::FETCH_USER_OPTION,
 		);
+
+		if (!empty($widget['options']['limit']))
+		{
+			$fetchOptions['limit'] = $widget['options'];
+		}
+
 		$users = array_values($userModel->getUsers($conditions, $fetchOptions));
 
 		foreach ($users as &$user)

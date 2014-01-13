@@ -32,12 +32,14 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
-		if ('limit' == $optionKey)
+		switch ($optionKey)
 		{
-			if (empty($optionValue))
-			{
-				$optionValue = 0;
-			}
+			case 'limit':
+				if (empty($optionValue))
+				{
+					$optionValue = 0;
+				}
+				break;
 		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);
@@ -50,10 +52,15 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		if (empty($widget['options']['limit']))
+		{
+			$widget['options']['limit'] = 5;
+		}
+
 		$users = false;
 
 		// try to be smart and get the users data if they happen to be available
-		if ($positionCode == 'member_notable' AND $widget['options']['limit'] == 0)
+		if ($positionCode == 'member_notable' AND $widget['options']['limit'] == 0 AND !empty($params['staff']))
 		{
 			$users = $params['staff'];
 		}
@@ -69,13 +76,6 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
 		}
 
 		$renderTemplateObject->setParam('users', $users);
-
-		if (empty($widget['options']['displayMode']))
-		{
-			// default to big avatar mode
-			$widget['options']['displayMode'] = 'avatarOnlyBigger';
-			$renderTemplateObject->setParam('widget', $widget);
-		}
 
 		return $renderTemplateObject->render();
 	}

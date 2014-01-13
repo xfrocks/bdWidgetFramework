@@ -28,27 +28,32 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
 	{
-		if ('thread_id' == $optionKey AND !empty($optionValue))
+		switch ($optionKey)
 		{
-			$optionValue = strtolower($optionValue);
+			case 'thread_id':
+				if (!empty($optionValue))
+				{
+					$optionValue = strtolower($optionValue);
 
-			if ($optionValue === 'random')
-			{
-				// random mode
-			}
-			else
-			{
-				$threadModel = XenForo_Model::create('XenForo_Model_Thread');
-				$thread = $threadModel->getThreadById($optionValue);
-				if (empty($thread))
-				{
-					throw new XenForo_Exception(new XenForo_Phrase('requested_thread_not_found'), true);
+					if ($optionValue === 'random')
+					{
+						// random mode
+					}
+					else
+					{
+						$threadModel = XenForo_Model::create('XenForo_Model_Thread');
+						$thread = $threadModel->getThreadById($optionValue);
+						if (empty($thread))
+						{
+							throw new XenForo_Exception(new XenForo_Phrase('requested_thread_not_found'), true);
+						}
+						elseif (empty($thread['discussion_type']) OR 'poll' != $thread['discussion_type'])
+						{
+							throw new XenForo_Exception(new XenForo_Phrase('wf_requested_thread_does_not_have_poll'), true);
+						}
+					}
 				}
-				elseif (empty($thread['discussion_type']) OR 'poll' != $thread['discussion_type'])
-				{
-					throw new XenForo_Exception(new XenForo_Phrase('wf_requested_thread_does_not_have_poll'), true);
-				}
-			}
+				break;
 		}
 
 		return parent::_validateOptionValue($optionKey, $optionValue);
@@ -64,18 +69,14 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 		$core = WidgetFramework_Core::getInstance();
 		$threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 		$pollModel = $core->getModelFromCache('XenForo_Model_Poll');
+		$nodeModel = $core->getModelFromCache('XenForo_Model_Node');
 
 		$thread = array();
 		$poll = array();
 
 		if (empty($widget['options']['thread_id']) OR $widget['options']['thread_id'] === 'random')
 		{
-			if (empty($GLOBALS['WidgetFramework_viewableNodeList']))
-			{
-				$nodeModel = $core->getModelFromCache('XenForo_Model_Node');
-				$GLOBALS['WidgetFramework_viewableNodeList'] = $nodeModel->getViewableNodeList();
-			}
-			$forumIds = array_keys($GLOBALS['WidgetFramework_viewableNodeList']);
+			$forumIds = array_keys($this->_helperGetViewableNodeList(false));
 
 			$threads = $threadModel->getThreads(array(
 				'node_id' => $forumIds,
