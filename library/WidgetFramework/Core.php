@@ -577,9 +577,6 @@ class WidgetFramework_Core
 		return $this->getModelFromCache('WidgetFramework_Model_Widget');
 	}
 
-	/* ######################################## STATIC FUNCTIONS BELOW
-	 * ######################################## */
-
 	public static function preloadCachedWidget($cacheId, $useUserCache, $useLiveCache)
 	{
 		return self::getInstance()->_preloadCachedWidget($cacheId, $useUserCache, $useLiveCache);

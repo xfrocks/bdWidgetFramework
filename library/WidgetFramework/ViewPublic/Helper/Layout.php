@@ -70,6 +70,9 @@ class WidgetFramework_ViewPublic_Helper_Layout
 
 		$layout = new _Layout_Vertical($view, $widgets, $options, $widgetIds);
 
+		$layout->prepare();
+		$layout->render();
+
 		return $layout;
 	}
 
@@ -344,6 +347,22 @@ abstract class _Layout_Multiple
 		return null;
 	}
 
+	public function prepare()
+	{
+		foreach ($this->_subLayouts as $subLayout)
+		{
+			$subLayout->prepare();
+		}
+	}
+
+	public function render()
+	{
+		foreach ($this->_subLayouts as $subLayout)
+		{
+			$subLayout->render();
+		}
+	}
+
 	protected function _getHash()
 	{
 		return md5(implode('_', $this->_widgetIds));
@@ -465,6 +484,9 @@ class _Layout_Single
 	protected $_hookName;
 	protected $_options;
 
+	protected $_prepared = false;
+	protected $_rendered = false;
+
 	public function __construct(XenForo_ViewPublic_Base $view, array &$widget, array &$options)
 	{
 		if (!empty($options['singleHookName']))
@@ -485,20 +507,42 @@ class _Layout_Single
 		WidgetFramework_Core::getInstance()->addWidgets($widgets);
 	}
 
-	protected function _prepare()
+	public function prepare()
 	{
+		if ($this->_prepared !== false)
+		{
+			// already prepared
+			return false;
+		}
+
 		WidgetFramework_Core::getInstance()->prepareWidgetsForHook($this->_hookName, $this->_options['params'], $this->_options['templateObj']);
+
+		$this->_prepared = true;
+
+		return true;
+	}
+
+	public function render()
+	{
+		if ($this->_rendered !== false)
+		{
+			// already rendered
+			return false;
+		}
+
+		$this->_rendered = '';
+
+		WidgetFramework_Core::getInstance()->renderWidgetsForHook($this->_hookName, $this->_options['params'], $this->_options['templateObj'], $this->_rendered);
+
+		return true;
 	}
 
 	public function __toString()
 	{
-		$this->_prepare();
+		$this->prepare();
+		$this->render();
 
-		$html = '';
-
-		WidgetFramework_Core::getInstance()->renderWidgetsForHook($this->_hookName, $this->_options['params'], $this->_options['templateObj'], $html);
-
-		return strval($html);
+		return strval($this->_rendered);
 	}
 
 }
