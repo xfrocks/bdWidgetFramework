@@ -61,7 +61,7 @@ class WidgetFramework_Listener
 	{
 		$nodeId = WidgetFramework_Option::get('indexNodeId');
 
-		if ($nodeId > 0)
+		if ($nodeId > 0 AND XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab'))
 		{
 			$tabId = WidgetFramework_Option::get('indexTabId');
 
@@ -87,6 +87,20 @@ class WidgetFramework_Listener
 				$template->preloadTemplate('wf_revealer');
 
 				WidgetFramework_Template_Extended::WidgetFramework_setPageContainer($template);
+
+				if ($params['contentTemplate'] === 'wf_widget_page_index' AND empty($params['selectedTabId']))
+				{
+					// make sure a navtab is selected if user is viewing our (as index) widget page
+					if (!XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab'))
+					{
+						// oh, our "Home" navtab has been disable...
+						// try something from $params['tabs'] OR $params['extraTabs']
+						if (isset($params['tabs']) AND isset($params['extraTabs']))
+						{
+							WidgetFramework_Helper_Index::setNavtabSelected($params['tabs'], $params['extraTabs']);
+						}
+					}
+				}
 			}
 		}
 	}
@@ -210,7 +224,10 @@ class WidgetFramework_Listener
 		self::$fc = $fc;
 		self::$viewRenderer = $viewRenderer;
 
-		WidgetFramework_Core::getInstance()->bootstrap();
+		if ($viewRenderer instanceof XenForo_ViewRenderer_HtmlPublic)
+		{
+			WidgetFramework_Core::getInstance()->bootstrap();
+		}
 
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
 		{
@@ -280,6 +297,11 @@ class WidgetFramework_Listener
 				$extend[] = 'WidgetFramework_XenForo_View2';
 				$extended2 = $class;
 			}
+		}
+
+		if ($class === 'XenForo_ViewAdmin_StyleProperty_List')
+		{
+			$extend[] = 'WidgetFramework_' . $class;
 		}
 	}
 

@@ -734,6 +734,8 @@ Arguments:
     <phrase title="permission_group_wfWidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page Permissions]]></phrase>
     <phrase title="style_property_group_widget_framework_master" version_id="33" version_string="1.5"><![CDATA[[bd] Widget Framework]]></phrase>
     <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
+    <phrase title="style_property_wf_homeNavTab_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to render a "Home" navigation tab for the selected Widget Page.]]></phrase>
+    <phrase title="style_property_wf_homeNavTab_master" version_id="78" version_string="2.4.5c"><![CDATA[Navtab for Index Page]]></phrase>
     <phrase title="style_property_wf_recent_status_statusMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all User Recent Status widgets.]]></phrase>
     <phrase title="style_property_wf_recent_status_statusMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Status Maximum Length]]></phrase>
     <phrase title="style_property_wf_threads_fullDate_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -932,6 +934,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_threads_fullForum" property_type="scalar" definition="1" group_name="widget_framework" title="Show Forum Origin" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1020" sub_group="Threads"><![CDATA[0]]></property>
     <property property_name="wf_threads_fullDate" property_type="scalar" definition="1" group_name="widget_framework" title="Show Posted Date" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1030" sub_group="Threads"><![CDATA[0]]></property>
     <property property_name="wf_threads_fullInfoBottom" property_type="scalar" definition="1" group_name="widget_framework" title="Show information at bottom" description="By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1000" sub_group="Threads"><![CDATA[1]]></property>
+    <property property_name="wf_homeNavTab" property_type="scalar" definition="1" group_name="widget_framework" title="Navtab for Index Page" description="Enable this property to render a &quot;Home&quot; navigation tab for the selected Widget Page." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1000" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
     <group group_name="widget_framework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Widget display settings for this style.</description>
@@ -1331,7 +1334,7 @@ All customization should go to wf_default_EXTRA.css
 	font-size: 12pt;
 	font-weight: bold;
 }]]></template>
-    <template title="wf_widget_page_index" version_id="77" version_string="2.4.5b"><![CDATA[<xen:require css="wf_widget_page.css" />
+    <template title="wf_widget_page_index" version_id="78" version_string="2.4.5c"><![CDATA[<xen:require css="wf_widget_page.css" />
 
 <xen:title>{$widgetPage.title}</xen:title>
 

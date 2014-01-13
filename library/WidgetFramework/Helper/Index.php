@@ -57,6 +57,42 @@ class WidgetFramework_Helper_Index
 		return false;
 	}
 
+	public static function setNavtabSelected(array &$tabs, array &$extraTabs)
+	{
+		$selected = false;
+
+		if (!empty($tabs['forums']))
+		{
+			// found "Forums" navtab, select it now
+			$tabs['forums']['selected'] = true;
+			$selected = true;
+		}
+		else
+		{
+			// try to select the first one from $tabs
+			foreach ($tabs as &$tab)
+			{
+				$tab['selected'] = true;
+				$selected = true;
+				break;
+			}
+
+			if (!$selected)
+			{
+				// still not selected!?
+				// try with $extraTabs now
+				foreach ($extraTabs as &$tabs)
+				{
+					$tab['selected'] = true;
+					$selected = true;
+					break 2;
+				}
+			}
+		}
+
+		return $selected;
+	}
+
 	protected static function _setupForXenForo1_2_x()
 	{
 		// ONLY ONE LINE TO CHANGE THE INDEX ROUTE FOR XENFORO 1.2.x
