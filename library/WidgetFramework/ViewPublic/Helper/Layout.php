@@ -533,6 +533,8 @@ class _Layout_Single
 
 	public function render()
 	{
+		$this->prepare();
+
 		if ($this->_rendered !== false)
 		{
 			// already rendered
@@ -548,7 +550,6 @@ class _Layout_Single
 
 	public function __toString()
 	{
-		$this->prepare();
 		$this->render();
 
 		return strval($this->_rendered);
