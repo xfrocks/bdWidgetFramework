@@ -791,6 +791,7 @@ $visitor['user_id'] > 0 -- means: show the widget for logged in users only.<br/>
 XenForo_Template_Helper_Core::callHelper('ismemberof', array($visitor,3)) -- means: show the widget for users of user group #3 only.]]></phrase>
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
     <phrase title="wf_feed_reader" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
+    <phrase title="wf_home_navtab" global_cache="1" version_id="78" version_string="2.4.5c"><![CDATA[Home]]></phrase>
     <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>

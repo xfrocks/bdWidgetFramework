@@ -66,7 +66,7 @@ class WidgetFramework_Listener
 			$tabId = WidgetFramework_Option::get('indexTabId');
 
 			$extraTabs[$tabId] = array(
-				'title' => new XenForo_Phrase('home'),
+				'title' => new XenForo_Phrase('wf_home_navtab'),
 				'href' => XenForo_Link::buildPublicLink('full:widget-page-index'),
 				'position' => 'home',
 			);
