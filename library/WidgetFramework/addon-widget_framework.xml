@@ -887,6 +887,8 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
     <phrase title="wf_use_live_cache" version_id="29" version_string="1.3.4"><![CDATA[Use Live Cache]]></phrase>
+    <phrase title="wf_viewing_home_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing home page]]></phrase>
+    <phrase title="wf_viewing_widget_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing page]]></phrase>
     <phrase title="wf_widgets" version_id="1" version_string="0.9"><![CDATA[Widgets]]></phrase>
     <phrase title="wf_widget_birthday_today_is_xs_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {username}'s birthday.]]></phrase>
     <phrase title="wf_widget_birthday_today_is_x_peoples_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {count} people's birthday.]]></phrase>

@@ -57,6 +57,109 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 		return $this->responseReroute(__CLASS__, 'index');
 	}
 
+	public static function getSessionActivityDetailsForList(array $activities)
+	{
+		$nodeIds = array();
+		$nodeNames = array();
+		foreach ($activities AS $activity)
+		{
+			if (!empty($activity['params']['node_id']))
+			{
+				$nodeIds[$activity['params']['node_id']] = intval($activity['params']['node_id']);
+			}
+			else
+			if (!empty($activity['params']['node_name']))
+			{
+				$nodeNames[$activity['params']['node_name']] = $activity['params']['node_name'];
+			}
+		}
+
+		if ($nodeNames)
+		{
+			$nodeNames = XenForo_Model::create('XenForo_Model_Node')->getNodeIdsFromNames($nodeNames);
+
+			foreach ($nodeNames AS $nodeName => $nodeId)
+			{
+				$nodeIds[$nodeName] = $nodeId;
+			}
+		}
+
+		$widgetPageData = array();
+		$indexNodeId = WidgetFramework_Option::get('indexNodeId');
+
+		if ($nodeIds)
+		{
+			/* @var $widgetPageModel WidgetFramework_Model_WidgetPage */
+			$widgetPageModel = XenForo_Model::create('WidgetFramework_Model_WidgetPage');
+
+			$visitor = XenForo_Visitor::getInstance();
+			$permissionCombinationId = $visitor['permission_combination_id'];
+
+			$widgetPages = $widgetPageModel->getWidgetPages(array('node_id' => $nodeIds), array('permissionCombinationId' => $permissionCombinationId));
+			foreach ($widgetPages AS $widgetPage)
+			{
+				$visitor->setNodePermissions($widgetPage['node_id'], $widgetPage['node_permission_cache']);
+				if ($widgetPageModel->canViewWidgetPage($widgetPage))
+				{
+					$widgetPageData[$widgetPage['node_id']] = array(
+						'title' => $widgetPage['title'],
+						'url' => XenForo_Link::buildPublicLink('widget-pages', $widgetPage)
+					);
+				}
+			}
+		}
+
+		$output = array();
+		foreach ($activities AS $key => $activity)
+		{
+			$widgetPage = false;
+
+			if (!empty($activity['params']['node_id']))
+			{
+				$nodeId = $activity['params']['node_id'];
+				if (isset($widgetPageData[$nodeId]))
+				{
+					$widgetPage = $widgetPageData[$nodeId];
+				}
+			}
+			elseif (!empty($activity['params']['node_name']))
+			{
+				$nodeName = $activity['params']['node_name'];
+				if (isset($nodeNames[$nodeName]))
+				{
+					$nodeId = $nodeNames[$nodeName];
+					if (isset($widgetPageData[$nodeId]))
+					{
+						$widgetPage = $widgetPageData[$nodeId];
+					}
+				}
+			}
+
+			if ($widgetPage)
+			{
+				if ($nodeId == $indexNodeId)
+				{
+					$output[$key] = new XenForo_Phrase('wf_viewing_home_page');
+				}
+				else
+				{
+					$output[$key] = array(
+						new XenForo_Phrase('wf_viewing_widget_page'),
+						$widgetPage['title'],
+						$widgetPage['url'],
+						false
+					);
+				}
+			}
+			else
+			{
+				$output[$key] = new XenForo_Phrase('wf_viewing_widget_page');
+			}
+		}
+
+		return $output;
+	}
+
 	protected function _getWidgetPageOrError($nodeIdOrName)
 	{
 		$visitor = XenForo_Visitor::getInstance();
