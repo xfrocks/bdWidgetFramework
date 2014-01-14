@@ -17,6 +17,8 @@ class WidgetFramework_Listener
 	 */
 	public static $viewRenderer = null;
 
+	protected static $_navigationTabsForums = '';
+
 	public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
 	{
 		self::$dependencies = $dependencies;
@@ -69,6 +71,7 @@ class WidgetFramework_Listener
 				'title' => new XenForo_Phrase('wf_home_navtab'),
 				'href' => XenForo_Link::buildPublicLink('full:widget-page-index'),
 				'position' => 'home',
+				'linksTemplate' => 'wf_home_navtab_links',
 			);
 		}
 	}
@@ -85,6 +88,12 @@ class WidgetFramework_Listener
 			{
 				$template->preloadTemplate('wf_hook_moderator_bar');
 				$template->preloadTemplate('wf_revealer');
+
+				if (WidgetFramework_Option::get('indexNodeId'))
+				{
+					// preload our links template for performance
+					$template->preloadTemplate('wf_home_navtab_links');
+				}
 
 				WidgetFramework_Template_Extended::WidgetFramework_setPageContainer($template);
 
@@ -126,6 +135,11 @@ class WidgetFramework_Listener
 			if ($templateName === 'PAGE_CONTAINER')
 			{
 				WidgetFramework_Template_Extended::WidgetFramework_processLateExtraData($output, $containerData, $template);
+
+				if (!empty(self::$_navigationTabsForums))
+				{
+					$output = str_replace('<!-- navigation_tabs_forums for wf_home_navtab_links -->', self::$_navigationTabsForums, $output);
+				}
 			}
 		}
 	}
@@ -203,6 +217,11 @@ class WidgetFramework_Listener
 				}
 			}
 		}
+	}
+
+	public static function template_hook_navigation_tabs_forums($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template)
+	{
+		self::$_navigationTabsForums = $contents;
 	}
 
 	public static function init_router_public(XenForo_Dependencies_Abstract $dependencies, XenForo_Router $router)

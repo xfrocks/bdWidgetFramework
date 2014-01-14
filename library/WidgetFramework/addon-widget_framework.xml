@@ -718,6 +718,7 @@ Arguments:
     <listener event_id="navigation_tabs" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="navigation_tabs" active="1" hint="" description=""/>
     <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" hint="" description=""/>
     <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" hint="" description=""/>
+    <listener event_id="template_hook" execute_order="9999" callback_class="WidgetFramework_Listener" callback_method="template_hook_navigation_tabs_forums" active="1" hint="navigation_tabs_forums" description="navigation_tabs_forums"/>
     <listener event_id="template_post_render" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_post_render" active="1" hint="" description=""/>
   </code_event_listeners>
   <cron/>
@@ -1150,6 +1151,9 @@ All customization should go to wf_default_EXTRA.css
 	.non-sidebar-widget .userList .moreLink {
 		display: block;
 	}]]></template>
+    <template title="wf_home_navtab_links" version_id="78" version_string="2.4.5c"><![CDATA[<ul class="secondaryContent blockLinksList">
+	<!-- navigation_tabs_forums for wf_home_navtab_links -->
+</ul>]]></template>
     <template title="wf_hook_moderator_bar" version_id="39" version_string="2.0.1"><![CDATA[<xen:if is="{$visitor.is_admin}">			
 	<xen:if is="{$session._WidgetFramework_reveal}">
 		<a href="{xen:link misc/wf-disable-reveal}" class="permissionTest adminLink">
