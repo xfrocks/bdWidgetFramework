@@ -70,6 +70,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 			'options' => XenForo_Input::ARRAY_SIMPLE,
 		));
 		$widgetsInput = $this->_input->filterSingle('widgets', XenForo_Input::ARRAY_SIMPLE);
+		$toggler = $this->_input->filterSingle('toggler', XenForo_Input::ARRAY_SIMPLE);
 
 		if (!$this->_input->filterSingle('style_override', XenForo_Input::UINT))
 		{
@@ -86,7 +87,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 		}
 		$dw->bulkSet($data);
 		$dw->save();
-		
+
 		if ($this->_input->filterSingle('is_index', XenForo_Input::UINT))
 		{
 			WidgetFramework_Option::setIndexNodeId($dw->get('node_id'));
@@ -98,11 +99,14 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 
 		// save widgets
 		$widgets = $this->_getWidgetModel()->getWidgetPageWidgets($dw->get('node_id'));
-		$atLeastOneChanged = false;
+		$widgetOptionsChanged = 0;
+		$preferStaying = 0;
+
 		foreach ($widgets as $widget)
 		{
-			$changed = false;
+			$changed = 0;
 			$newOptions = $widget['options'];
+			$newValues = array();
 
 			if (!empty($widgetsInput[$widget['widget_id']]))
 			{
@@ -110,44 +114,68 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
 
 				if (isset($inputRef['layout_row']) AND (!isset($widget['options']['layout_row']) OR ($inputRef['layout_row'] != $widget['options']['layout_row'])))
 				{
-					$changed = true;
+					$changed++;
+					$widgetOptionsChanged++;
 					$newOptions['layout_row'] = $inputRef['layout_row'];
 				}
 				if (isset($inputRef['layout_col']) AND (!isset($widget['options']['layout_col']) OR ($inputRef['layout_col'] != $widget['options']['layout_col'])))
 				{
-					$changed = true;
+					$changed++;
+					$widgetOptionsChanged++;
 					$newOptions['layout_col'] = $inputRef['layout_col'];
 				}
 				if (isset($inputRef['layout_sizeRow']) AND (!isset($widget['options']['layout_sizeRow']) OR ($inputRef['layout_sizeRow'] != $widget['options']['layout_sizeRow'])))
 				{
-					$changed = true;
+					$changed++;
+					$widgetOptionsChanged++;
 					$newOptions['layout_sizeRow'] = $inputRef['layout_sizeRow'];
 				}
 				if (isset($inputRef['layout_sizeCol']) AND (!isset($widget['options']['layout_sizeCol']) OR ($inputRef['layout_sizeCol'] != $widget['options']['layout_sizeCol'])))
 				{
-					$changed = true;
+					$changed++;
+					$widgetOptionsChanged++;
 					$newOptions['layout_sizeCol'] = $inputRef['layout_sizeCol'];
 				}
 			}
 
-			if ($changed)
+			if (!empty($toggler['exists'][$widget['widget_id']]))
+			{
+				$widgetActive = empty($toggler['id'][$widget['widget_id']]) ? 0 : intval($toggler['id'][$widget['widget_id']]);
+
+				if ($widgetActive != $widget['active'])
+				{
+					$changed++;
+					$preferStaying++;
+					$newValues['active'] = $widgetActive;
+				}
+			}
+
+			if ($changed > 0)
 			{
 				$widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 				$widgetDw->setExistingData($widget, true);
 				$widgetDw->set('options', $newOptions);
+				$widgetDw->bulkSet($newValues);
 				$widgetDw->save();
-
-				$atLeastOneChanged = true;
 			}
 		}
 
-		$link = XenForo_Link::buildAdminLink('nodes') . $this->getLastHash($nodeId);
-		if (empty($nodeId) OR $atLeastOneChanged)
+		$link = XenForo_Link::buildAdminLink('widget-pages/edit', $dw->getMergedData());
+
+		if ($widgetOptionsChanged == 0 AND $preferStaying > 0 AND $this->_noRedirect())
 		{
-			$link = XenForo_Link::buildAdminLink('widget-pages/edit', $dw->getMergedData());
+			// skip redirect
+			$link = false;
 		}
 
-		$response = $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
+		if ($link !== false)
+		{
+			$response = $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
+		}
+		else
+		{
+			$response = $this->responseMessage(new XenForo_Phrase('redirect_changes_saved_successfully'));
+		}
 
 		if (XenForo_Application::isRegistered('nodesAsTabsAPI'))
 		{
