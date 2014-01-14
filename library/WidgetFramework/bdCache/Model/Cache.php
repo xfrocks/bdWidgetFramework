@@ -11,7 +11,7 @@ class WidgetFramework_bdCache_Model_Cache extends XFCP_WidgetFramework_bdCache_M
 		{
 			$this->_normalizeControllerNameAndAction($controllerName, $action);
 
-			if ($controllerName === 'widgetframework_controllerpublic_widgetpage' AND $action === 'index')
+			if ($controllerName === 'widgetframework_controllerpublic_widgetpage')
 			{
 				return true;
 			}
