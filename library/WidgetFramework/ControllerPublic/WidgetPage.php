@@ -39,14 +39,20 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 			$this->getHelper('bdCache_ControllerHelper_Cache')->markViewParamsAsCacheable($viewParams);
 		}
 
+		$indexNodeId = WidgetFramework_Option::get('indexNodeId');
+		// TODO: should we change section for other node type too?
+		$indexChildNodes = WidgetFramework_Helper_Index::getChildNodes();
+		if ($widgetPage['node_id'] == $indexNodeId OR isset($indexChildNodes[$widgetPage['node_id']]))
+		{
+			$this->_routeMatch->setSections(WidgetFramework_Option::get('indexTabId'));
+		}
+
 		return $this->responseView('WidgetFramework_ViewPublic_WidgetPage_Index', 'wf_widget_page_index', $viewParams);
 	}
 
 	public function actionAsIndex()
 	{
 		$this->_request->setParam('node_id', WidgetFramework_Option::get('indexNodeId'));
-
-		$this->_routeMatch->setSections(WidgetFramework_Option::get('indexTabId'));
 
 		return $this->responseReroute(__CLASS__, 'index');
 	}

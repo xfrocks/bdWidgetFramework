@@ -61,9 +61,9 @@ class WidgetFramework_Listener
 
 	public static function navigation_tabs(array &$extraTabs, $selectedTabId)
 	{
-		$nodeId = WidgetFramework_Option::get('indexNodeId');
+		$indexNodeId = WidgetFramework_Option::get('indexNodeId');
 
-		if ($nodeId > 0 AND XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab'))
+		if ($indexNodeId > 0 AND XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab'))
 		{
 			$tabId = WidgetFramework_Option::get('indexTabId');
 
@@ -71,7 +71,10 @@ class WidgetFramework_Listener
 				'title' => new XenForo_Phrase('wf_home_navtab'),
 				'href' => XenForo_Link::buildPublicLink('full:widget-page-index'),
 				'position' => 'home',
+
 				'linksTemplate' => 'wf_home_navtab_links',
+				'indexNodeId' => $indexNodeId,
+				'childNodes' => WidgetFramework_Helper_Index::getChildNodes(),
 			);
 		}
 	}
@@ -282,6 +285,7 @@ class WidgetFramework_Listener
 			'XenForo_DataWriter_DiscussionMessage_ProfilePost',
 			'XenForo_DataWriter_User',
 
+			'XenForo_Model_Permission',
 			'XenForo_Model_Thread',
 			'XenForo_Model_User',
 

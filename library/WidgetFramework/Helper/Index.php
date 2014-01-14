@@ -2,6 +2,8 @@
 
 class WidgetFramework_Helper_Index
 {
+	const SIMPLE_CACHE_CHILD_NODES = 'wf_childNodes';
+
 	protected static $_setup11x = false;
 	protected static $_setup11x_forumsWasHit = false;
 
@@ -91,6 +93,39 @@ class WidgetFramework_Helper_Index
 		}
 
 		return $selected;
+	}
+
+	public static function rebuildChildNodesCache()
+	{
+		$nodeModel = XenForo_Model::create('XenForo_Model_Node');
+		$nodeId = WidgetFramework_Option::get('indexNodeId');
+		$childNodes = array();
+
+		if ($nodeId > 0)
+		{
+			$widgetPage = $nodeModel->getNodeById($nodeId);
+
+			if (!empty($widgetPage))
+			{
+				$childNodes = $nodeModel->getChildNodes($widgetPage, true);
+
+				XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_CHILD_NODES, $childNodes);
+			}
+		}
+
+		return $childNodes;
+	}
+
+	public static function getChildNodes()
+	{
+		$childNodes = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_CHILD_NODES);
+
+		if ($childNodes === false)
+		{
+			return self::rebuildChildNodesCache();
+		}
+
+		return $childNodes;
 	}
 
 	protected static function _setupForXenForo1_2_x()
