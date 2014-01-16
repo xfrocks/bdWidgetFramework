@@ -6,6 +6,7 @@ class WidgetFramework_ViewAdmin_WidgetPage_Edit extends XenForo_ViewAdmin_Base
 	{
 		$rows = 0;
 		$cols = 0;
+		$sidebarWidgetCount = 0;
 
 		foreach ($this->_params['widgets'] as &$widget)
 		{
@@ -19,6 +20,11 @@ class WidgetFramework_ViewAdmin_WidgetPage_Edit extends XenForo_ViewAdmin_Base
 				$cols = max($cols, $widget['options']['layout_col'] + $widget['options']['layout_sizeCol']);
 			}
 
+			if (!empty($widget['position']) AND $widget['position'] === 'sidebar')
+			{
+				$sidebarWidgetCount++;
+			}
+
 			if (!empty($widget['renderer']))
 			{
 				$widget['title'] = $widget['renderer']->extraPrepareTitle($widget);
@@ -28,8 +34,8 @@ class WidgetFramework_ViewAdmin_WidgetPage_Edit extends XenForo_ViewAdmin_Base
 		$sidebarWidgetContainer = array('options' => array(
 				'layout_row' => 0,
 				'layout_col' => $cols,
-				'layout_sizeRow' => $rows,
-				'layout_sizeCol' => 1,
+				'layout_sizeRow' => max($rows, ceil($sidebarWidgetCount / 2)),
+				'layout_sizeCol' => max(1, ceil($cols / 3)),
 			));
 		$this->_params['sidebarWidgetContainer'] = $sidebarWidgetContainer;
 	}

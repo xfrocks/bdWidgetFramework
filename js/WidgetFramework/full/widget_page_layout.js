@@ -28,6 +28,7 @@
 			 * - fixed add_faux_cols
 			 * - added move_widget_sidebar
 			 */
+			this.$container.css('width', '').css('height', '');
 			this.$widgets.css('top', '').css('left', '').css('width', '').css('height', '');
 
 			var $sizeRow = this.$widgets.find('input.WidgetFramework_Layout_Input.sizeRow');
@@ -43,7 +44,8 @@
 			$sizeInputsLabel.hide();
 
 			var margin = 10;
-			var blockSize = 200;
+			var blockWidth = 200;
+			var blockHeight = blockWidth;
 			// calculate block size for best display
 			var usableWidth = this.$container.parents('.xenForm').width();
 			var currentCols = 0;
@@ -51,24 +53,29 @@
 			{
 				var $widget = $(this);
 
-				var widgetCol = parseInt($widget.find('input.WidgetFramework_Layout_Input.col').val());
-				var widgetSizeCol = parseInt($widget.find('input.WidgetFramework_Layout_Input.sizeCol').val());
+				var widgetCol = parseInt($widget.data('col'));
+				var widgetSizeCol = parseInt($widget.data('sizex'));
 
 				if (!isNaN(widgetCol) && !isNaN(widgetSizeCol))
 				{
 					currentCols = Math.max(currentCols, widgetCol + widgetSizeCol);
 				}
 			});
-			var idealBlockSize = Math.floor(usableWidth / (currentCols + 2));
-			if (idealBlockSize < blockSize)
+
+			var idealBlockWidth = blockWidth;
+			while (idealBlockWidth > 10 && ((idealBlockWidth + margin) * currentCols - margin) > usableWidth)
 			{
-				blockSize = idealBlockSize;
+				idealBlockWidth -= 10;
+			}
+			if (idealBlockWidth < blockWidth)
+			{
+				blockWidth = idealBlockWidth;
 			}
 
 			this.gridster = this.$container.gridster(
 			{
 				widget_margins: [margin, margin],
-				widget_base_dimensions: [blockSize, blockSize],
+				widget_base_dimensions: [blockWidth, blockHeight],
 				draggable:
 				{
 					stop: $.context(this, 'onDragStop')
