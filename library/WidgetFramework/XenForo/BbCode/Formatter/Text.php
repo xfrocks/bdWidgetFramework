@@ -17,7 +17,7 @@ class WidgetFramework_XenForo_BbCode_Formatter_Text extends XFCP_WidgetFramework
 		return $tags;
 	}
 
-	public function renderTagSize(array $tag, array $rendererStates)
+	public function renderPrbreak(array $tag, array $rendererStates)
 	{
 		return '';
 	}
