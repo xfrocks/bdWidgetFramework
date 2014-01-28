@@ -14,6 +14,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			switch ($widget['options']['type'])
 			{
 				case 'recent':
+				case 'recent_first_poster':
 					return new XenForo_Phrase('wf_widget_threads_type_recent');
 				case 'popular':
 					return new XenForo_Phrase('wf_widget_threads_type_popular');
@@ -264,6 +265,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 					'orderDirection' => 'desc',
 					'join' => 0,
 					WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => $fetchOptions['join'],
+				)));
+				break;
+			case 'recent_first_poster':
+				$threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
+					'order' => 'last_post_date',
+					'orderDirection' => 'desc',
 				)));
 				break;
 			case 'popular':
