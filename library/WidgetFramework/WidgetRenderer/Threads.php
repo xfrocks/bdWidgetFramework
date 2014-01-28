@@ -40,6 +40,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'type' => XenForo_Input::STRING,
 				'cutoff' => XenForo_Input::UINT,
 				'forums' => XenForo_Input::ARRAY_SIMPLE,
+				'sticky' => XenForo_Input::STRING,
 				'prefixes' => XenForo_Input::ARRAY_SIMPLE,
 				'as_guest' => XenForo_Input::UINT,
 				'limit' => XenForo_Input::UINT,
@@ -233,6 +234,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			'limit' => $widget['options']['limit'] * 3,
 			'join' => XenForo_Model_Thread::FETCH_AVATAR,
 		);
+
+		// process sticky
+		// since 2.4.7
+		if (isset($widget['options']['sticky']) AND is_numeric($widget['options']['sticky']))
+		{
+			$conditions['sticky'] = intval($widget['options']['sticky']);
+		}
 
 		// process prefix
 		// since 1.3.4
