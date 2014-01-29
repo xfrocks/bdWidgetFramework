@@ -100,7 +100,7 @@ class WidgetFramework_Listener
 
 				WidgetFramework_Template_Extended::WidgetFramework_setPageContainer($template);
 
-				if ($params['contentTemplate'] === 'wf_widget_page_index' AND empty($params['selectedTabId']))
+				if (isset($params['contentTemplate']) AND $params['contentTemplate'] === 'wf_widget_page_index' AND empty($params['selectedTabId']))
 				{
 					// make sure a navtab is selected if user is viewing our (as index) widget page
 					if (!XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab'))
