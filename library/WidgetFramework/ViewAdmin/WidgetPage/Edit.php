@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_ViewAdmin_WidgetPage_Edit extends XenForo_ViewAdmin_Base
+class WidgetFramework_ViewAdmin_WidgetPage_Edit extends XenForo_ViewAdmin_Node_Edit
 {
 	public function renderHtml()
 	{
@@ -38,6 +38,8 @@ class WidgetFramework_ViewAdmin_WidgetPage_Edit extends XenForo_ViewAdmin_Base
 				'layout_sizeCol' => max(1, ceil($cols / 3)),
 			));
 		$this->_params['sidebarWidgetContainer'] = $sidebarWidgetContainer;
+
+		return parent::renderHtml();
 	}
 
 }
