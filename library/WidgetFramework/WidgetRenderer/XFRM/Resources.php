@@ -126,6 +126,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 		$visitor = XenForo_Visitor::getInstance();
 
 		$categoryIds = array();
+		$resources = array();
 
 		$viewableCategories = $categoryModel->getViewableCategories();
 		foreach ($viewableCategories as $category)
