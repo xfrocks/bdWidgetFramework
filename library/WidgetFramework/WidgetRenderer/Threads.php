@@ -460,7 +460,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				unset($threads[$threadId]);
 				continue;
 			}
-			$threadForumRef = &$threadForums[$thread['node_id']];
+			$threadForumRef = &$threadForums[$threadRef['node_id']];
 
 			if (!$threadModel->canViewThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser))
 			{
