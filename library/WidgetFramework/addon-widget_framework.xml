@@ -764,8 +764,6 @@ Arguments:
     <phrase title="style_property_wf_homeLinksForums_master" version_id="78" version_string="2.4.5c"><![CDATA[Show links from Forums navtab]]></phrase>
     <phrase title="style_property_wf_homeNavTab_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to render a "Home" navigation tab for the selected Widget Page.]]></phrase>
     <phrase title="style_property_wf_homeNavTab_master" version_id="78" version_string="2.4.5c"><![CDATA[Navtab for Index Page]]></phrase>
-    <phrase title="style_property_wf_recent_status_statusMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all User Recent Status widgets.]]></phrase>
-    <phrase title="style_property_wf_recent_status_statusMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Status Maximum Length]]></phrase>
     <phrase title="style_property_wf_threads_fullDate_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullDate_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Posted Date]]></phrase>
     <phrase title="style_property_wf_threads_fullFirstPostLikes_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -957,7 +955,6 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
   </route_prefixes>
   <style_properties>
     <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Title Maximum Length" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="Threads"><![CDATA[35]]></property>
-    <property property_name="wf_recent_status_statusMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Status Maximum Length" description="This property will be applied to all User Recent Status widgets." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="RecentStatus"><![CDATA[150]]></property>
     <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Snippet Maximum Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="Threads"><![CDATA[0]]></property>
     <property property_name="wf_threads_showPrefix" property_type="scalar" definition="1" group_name="widget_framework" title="Show Thread Prefix" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="Threads"><![CDATA[0]]></property>
     <property property_name="wf_threads_fullViewCount" property_type="scalar" definition="1" group_name="widget_framework" title="Show View Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="Threads"><![CDATA[1]]></property>
@@ -976,7 +973,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="77" version_string="2.4.5b"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="86" version_string="2.4.7c"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1044,6 +1041,12 @@ All customization should go to wf_default_EXTRA.css
 	margin: 0;
 	resize: vertical;
 	overflow: hidden;
+}
+
+.WidgetFramework_WidgetRenderer_RecentStatus .status .username {
+	display: inline;
+	font-size: inherit;
+	margin: 0;
 }
 
 .WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl {
@@ -1513,7 +1516,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_recent_status" version_id="64" version_string="2.3.5"><![CDATA[<xen:if is="{$users}">
+    <template title="wf_widget_recent_status" version_id="86" version_string="2.4.7c"><![CDATA[<xen:if is="{$users}">
     <xen:require css="wf_default.css" />
     
     <div class="avatarList">
@@ -1523,7 +1526,7 @@ All customization should go to wf_default_EXTRA.css
         		<xen:avatar user="$user" size="s" img="true" />
         		<div class="WidgetFramework_nextToAvatar">
         			<xen:username user="$user" rich="true" />
-        			<div>{xen:helper snippet, $user.status, {xen:property wf_recent_status_statusMaxLength}}</div>
+					<div class="status">{xen:helper bodyText, $user.status}</div>
         			<a href="{xen:link 'profile-posts', {xen:array 'profile_post_id={$user.status_profile_post_id}'}}" class="userTitle"><xen:datetime time="$user.status_date" /></a>
         		</div>
         	</li>
