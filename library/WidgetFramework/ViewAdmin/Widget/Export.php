@@ -21,7 +21,13 @@ class WidgetFramework_ViewAdmin_Widget_Export extends XenForo_ViewAdmin_Base
 			$widgetNode->setAttribute('class', $widget['class']);
 
 			$optionsNode = $document->createElement('options');
-			$optionsNode->appendChild(XenForo_Helper_DevelopmentXml::createDomCdataSection($document, $widget['options']));
+			$optionsString = $widget['options'];
+			if (!is_string($optionsString))
+			{
+				$optionsString = serialize($optionsString);
+			}
+			$optionsData = XenForo_Helper_DevelopmentXml::createDomCdataSection($document, $optionsString);
+			$optionsNode->appendChild($optionsData);
 			$widgetNode->appendChild($optionsNode);
 
 			$widgetNode->setAttribute('position', $widget['position']);
