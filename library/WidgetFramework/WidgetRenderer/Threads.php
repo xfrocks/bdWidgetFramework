@@ -43,6 +43,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'forums' => XenForo_Input::ARRAY_SIMPLE,
 				'sticky' => XenForo_Input::STRING,
 				'prefixes' => XenForo_Input::ARRAY_SIMPLE,
+				'open_only' => XenForo_Input::UINT,
 				'as_guest' => XenForo_Input::UINT,
 				'limit' => XenForo_Input::UINT,
 				'layout' => XenForo_Input::STRING,
@@ -248,6 +249,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		if (!empty($widget['options']['prefixes']))
 		{
 			$conditions['prefix_id'] = $widget['options']['prefixes'];
+		}
+
+		// process discussion_open
+		// since 2.5
+		if (!empty($widget['options']['open_only']))
+		{
+			$conditions['discussion_open'] = true;
 		}
 
 		// get first post if layout needs it

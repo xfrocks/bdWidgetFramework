@@ -316,6 +316,11 @@
 		<xen:explain>{xen:phrase wf_threads_prefixes_explain}</xen:explain>
 	</xen:selectunit>
 </xen:if>
+
+<xen:checkboxunit label="">
+	<xen:option name="{$namePrefix}open_only" value="1" selected="{$options.open_only}">{xen:phrase wf_thread_open_only}</xen:option>
+</xen:checkboxunit>
+
 </xen:hook>
 
 <xen:checkboxunit label="">
