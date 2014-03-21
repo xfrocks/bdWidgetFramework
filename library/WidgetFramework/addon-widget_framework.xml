@@ -257,7 +257,11 @@
 </xen:checkboxunit>]]></template>
     <template title="wf_widget_options_poll"><![CDATA[<xen:textboxunit label="{xen:phrase wf_poll_thread_id}:" name="{$namePrefix}thread_id" value="{$options.thread_id}">
 	<xen:explain>{xen:phrase wf_poll_thread_id_explain}</xen:explain>
-</xen:textboxunit>]]></template>
+</xen:textboxunit>
+
+<xen:checkboxunit label="">
+	<xen:option name="{$namePrefix}open_only" value="1" selected="{$options.open_only}">{xen:phrase wf_thread_open_only}</xen:option>
+</xen:checkboxunit>]]></template>
     <template title="wf_widget_options_recent_status"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_profile_posts}"}</xen:explain>
 </xen:spinboxunit>
@@ -887,6 +891,7 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_threads_layout_sidebar_snippet" version_id="63" version_string="2.3.4"><![CDATA[Sidebar with snippet from post]]></phrase>
     <phrase title="wf_threads_prefixes_explain" version_id="47" version_string="2.1.1"><![CDATA[Select the prefixes you want to filter the threads against.]]></phrase>
     <phrase title="wf_threads_sticky_threads_only" version_id="83" version_string="2.4.6e"><![CDATA[Sticky Threads Only]]></phrase>
+    <phrase title="wf_thread_open_only" version_id="87" version_string="2.4.8"><![CDATA[Unlocked threads only.]]></phrase>
     <phrase title="wf_thread_with_poll" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
     <phrase title="wf_title_explain" version_id="65" version_string="2.3.6"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer. Or you can use a phrase by using {xen:phrase title} format.]]></phrase>
@@ -1961,5 +1966,4 @@ All customization should go to wf_default_EXTRA.css
   </templates>
   <public_template_modifications/>
   <bb_code_media_sites/>
-  <bb_codes/>
 </addon>

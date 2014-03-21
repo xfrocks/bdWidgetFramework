@@ -16,7 +16,10 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 	{
 		return array(
 			'name' => 'Thread with Poll',
-			'options' => array('thread_id' => XenForo_Input::STRING),
+			'options' => array(
+				'thread_id' => XenForo_Input::STRING,
+				'open_only' => XenForo_Input::UINT,
+			),
 			'useWrapper' => false,
 		);
 	}
@@ -78,18 +81,27 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 		{
 			$forumIds = array_keys($this->_helperGetViewableNodeList(false));
 
-			$threads = $threadModel->getThreads(array(
+			$conditions = array(
 				'node_id' => $forumIds,
 				WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
 				'deleted' => false,
 				'moderated' => false,
-			), array(
+			);
+
+			if (!empty($widget['options']['open_only']))
+			{
+				$conditions['discussion_open'] = true;
+			}
+
+			$fetchOptions = array(
 				'order' => ($widget['options']['thread_id'] === 'random' ? WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_ORDER_RANDOM : 'post_date'),
 				'orderDirection' => 'desc',
 				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
 				WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
 				'limit' => 3,
-			));
+			);
+
+			$threads = $threadModel->getThreads($conditions, $fetchOptions);
 
 			if (!empty($threads))
 			{
@@ -116,6 +128,14 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 			if ($thread['discussion_type'] != 'poll')
 			{
 				$thread = array();
+			}
+			
+			if (!empty($widget['options']['open_only']))
+			{
+				if (empty($thread['discussion_open']))
+				{
+					$thread = array();
+				}
 			}
 		}
 
