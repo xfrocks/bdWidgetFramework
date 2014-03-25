@@ -272,6 +272,12 @@
 	<xen:explain>{xen:phrase wf_recent_status_friends_only_explain}</xen:explain>
 </xen:radiounit>
 
+<xen:radiounit label="{xen:phrase wf_recent_status_show_duplicates}:" name="{$namePrefix}show_duplicates">
+	<xen:option value="1" selected="{$options.show_duplicates}">{xen:phrase yes}</xen:option>
+	<xen:option value="0" selected="!{$options.show_duplicates}">{xen:phrase no}</xen:option>
+	<xen:explain>{xen:phrase wf_recent_status_show_duplicates_explain}</xen:explain>
+</xen:radiounit>
+
 <xen:radiounit label="{xen:phrase wf_recent_status_show_update_form}:" name="{$namePrefix}show_update_form">
 	<xen:option value="1" selected="{$options.show_update_form}">{xen:phrase yes}</xen:option>
 	<xen:option value="0" selected="!{$options.show_update_form}">{xen:phrase no}</xen:option>
@@ -868,6 +874,8 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_recent_status" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
     <phrase title="wf_recent_status_friends_only_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show statuses from user's friend list only. It will display from all users if current user is not logged in.]]></phrase>
+    <phrase title="wf_recent_status_show_duplicates" version_id="87" version_string="2.4.8"><![CDATA[Allow Multiple Statuses From Same User]]></phrase>
+    <phrase title="wf_recent_status_show_duplicates_explain" version_id="87" version_string="2.4.8"><![CDATA[Enable this option to list all statuses by their posting order. If a user posted many statuses continuously, all of them will be shown.]]></phrase>
     <phrase title="wf_recent_status_show_update_form" version_id="17" version_string="1.0.9"><![CDATA[Show Update Form]]></phrase>
     <phrase title="wf_recent_status_show_update_form_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show an update form if the current user has permission to do so.]]></phrase>
     <phrase title="wf_register_date" version_id="1" version_string="0.9"><![CDATA[Register Date]]></phrase>

@@ -286,6 +286,7 @@ class WidgetFramework_Listener
 			'XenForo_DataWriter_User',
 
 			'XenForo_Model_Permission',
+			'XenForo_Model_ProfilePost',
 			'XenForo_Model_Thread',
 			'XenForo_Model_User',
 

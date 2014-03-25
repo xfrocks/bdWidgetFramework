@@ -19,6 +19,7 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			'options' => array(
 				'limit' => XenForo_Input::UINT,
 				'friends_only' => XenForo_Input::BINARY,
+				'show_duplicates' => XenForo_Input::BINARY,
 				'show_update_form' => XenForo_Input::BINARY,
 			),
 			'useCache' => true,
@@ -65,15 +66,14 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			$conditions = array(WidgetFramework_XenForo_Model_User::CONDITIONS_STATUS_DATE => array(
 					'>',
 					0
-				), );
+				));
 			$fetchOptions = array(
 				'join' => XenForo_Model_User::FETCH_USER_PROFILE,
 
 				'order' => WidgetFramework_XenForo_Model_User::ORDER_STATUS_DATE,
 				'direction' => 'desc',
 
-				'limit' => $widget['options']['limit'] * 2, // we have to check for permissions
-				// later
+				'limit' => $widget['options']['limit'] * 3,
 			);
 
 			$users = $userModel->getUsers($conditions, $fetchOptions);
@@ -89,8 +89,7 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			if (count($users) > $widget['options']['limit'])
 			{
 				// remove if there are too many users left
-				$users = array_slice($users, 0, $widget['options']['limit'], true /* preserve
-				 * keys */);
+				$users = array_slice($users, 0, $widget['options']['limit'], true);
 			}
 		}
 		else
@@ -105,6 +104,30 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 					unset($users[$userId]);
 				}
 			}
+		}
+
+		if (!empty($widget['options']['show_duplicates']))
+		{
+			$userIds = array_keys($users);
+			$profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
+			$profilePostIds = $profilePostModel->WidgetFramework_getProfilePostIdsOfUserStatuses($userIds, intval($widget['options']['limit']));
+			$profilePosts = $profilePostModel->getProfilePostsByIds($profilePostIds);
+
+			$newUsers = array();
+			foreach ($profilePostIds as $profilePostId)
+			{
+				if (empty($profilePosts[$profilePostId]))
+				{
+					continue;
+				}
+				$profilePostRef = &$profilePosts[$profilePostId];
+
+				$newUsers[$profilePostId] = $users[$profilePostRef['user_id']];
+				$newUsers[$profilePostId]['status'] = $profilePostRef['message'];
+				$newUsers[$profilePostId]['status_date'] = $profilePostRef['post_date'];
+				$newUsers[$profilePostId]['status_profile_post_id'] = $profilePostRef['profile_post_id'];
+			}
+			$users = $newUsers;
 		}
 
 		$renderTemplateObject->setParam('users', $users);
