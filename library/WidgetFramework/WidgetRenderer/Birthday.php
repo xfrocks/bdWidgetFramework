@@ -75,7 +75,7 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 
 		if (!empty($widget['options']['limit']))
 		{
-			$fetchOptions['limit'] = $widget['options'];
+			$fetchOptions['limit'] = $widget['options']['limit'];
 		}
 
 		$users = array_values($userModel->getUsers($conditions, $fetchOptions));
