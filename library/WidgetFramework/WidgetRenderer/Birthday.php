@@ -91,4 +91,11 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 		return $renderTemplateObject->render();
 	}
 
+	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
+	{
+		$suffix[] = XenForo_Locale::getTimeZoneOffset();
+
+		return parent::_getCacheId($widget, $positionCode, $params, $suffix);
+	}
+
 }
