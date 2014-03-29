@@ -106,7 +106,7 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			}
 		}
 
-		if (!empty($widget['options']['show_duplicates']))
+		if (!empty($widget['options']['show_duplicates']) AND !empty($users))
 		{
 			$userIds = array_keys($users);
 			$profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
