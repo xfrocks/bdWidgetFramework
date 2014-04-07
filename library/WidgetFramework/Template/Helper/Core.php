@@ -87,6 +87,15 @@ class WidgetFramework_Template_Helper_Core
 						$opened[] = $tag;
 					}
 				}
+				else
+				{
+					// the opening/closing is not finished yet
+					// remove all of it, then stop
+					$string = substr($string, 0, $pos);
+
+					// while (true)
+					break;
+				}
 
 				$offset = $pos + 1;
 			}
