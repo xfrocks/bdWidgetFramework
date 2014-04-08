@@ -53,6 +53,7 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
 	public function getOrderByClause(array $choices, array $fetchOptions, $defaultOrderSql = '')
 	{
 		$choices[self::ORDER_STATUS_DATE] = 'user_profile.status_date';
+		$choices[self::ORDER_RESOURCE_COUNT] = 'user.resource_count';
 
 		return parent::getOrderByClause($choices, $fetchOptions, $defaultOrderSql);
 	}
