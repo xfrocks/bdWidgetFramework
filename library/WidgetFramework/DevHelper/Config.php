@@ -48,6 +48,7 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base {
 	);
 	protected $_dataPatches = array(
 		'xf_widget' => array(
+			'template_for_hooks' => array('name' => 'template_for_hooks', 'type' => 'serialized'),
 			'widget_page_id' => array('name' => 'widget_page_id', 'type' => 'uint', 'required' => true, 'default' => 0)
 		)
 	);

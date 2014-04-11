@@ -31,14 +31,24 @@ class WidgetFramework_Installer
 			'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`',
 		),
 	);
-	protected static $_patches = array( array(
+	protected static $_patches = array(
+		array(
+			'table' => 'xf_widget',
+			'field' => 'template_for_hooks',
+			'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
+			'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'template_for_hooks\'',
+			'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB',
+			'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `template_for_hooks`',
+		),
+		array(
 			'table' => 'xf_widget',
 			'field' => 'widget_page_id',
 			'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
 			'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
 			'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
 			'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
-		), );
+		),
+	);
 
 	public static function install($existingAddOn, $addOnData)
 	{
@@ -63,7 +73,7 @@ class WidgetFramework_Installer
 				$db->query($patch['alterTableAddColumnQuery']);
 			}
 		}
-
+		
 		self::installCustomized($existingAddOn, $addOnData);
 	}
 
