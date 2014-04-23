@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.4.9d" version_id="91" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.4.9e" version_id="92" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -1709,15 +1709,16 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_full" version_id="82" version_string="2.4.6d"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_threads_thread_full" version_id="91" version_string="2.4.9d"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="bb_code.css" />
 
+<xen:set var="$link">{xen:if '{$thread._link}', {xen:raw $thread._link}, {xen:link threads, $thread}}</xen:set>
 <xen:set var="$info"><xen:include template="wf_widget_threads_thread_full_info" /></xen:set>
 
-<div id="thread-{$thread.thread_id}" class="message section sectionMain" data-author="{$thread.username}">
+<div id="post-{$thread.first_post_id}" class="message section sectionMain" data-author="{$thread.username}">
 
 	<div class="subHeading thread">
-		<a href="{xen:link threads, $thread}">{$thread.title}</a>
+		<a href="{xen:raw $link}">{$thread.title}</a>
 	</div>
 
 	<xen:if is="!{xen:property wf_threads_fullInfoBottom}">
@@ -1730,7 +1731,7 @@ All customization should go to wf_default_EXTRA.css
 		<div class="messageContent">		
 			<article>
 				<blockquote class="messageText ugc baseHtml">
-					{xen:helper WidgetFramework_snippet, $thread.messageHtml, 0, {xen:array 'link={xen:link threads, $thread}'}}
+					{xen:helper WidgetFramework_snippet, $thread.messageHtml, 0, {xen:array 'link={xen:raw $link}'}}
 				</blockquote>
 			</article>
 		</div>
@@ -1743,7 +1744,7 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 
 </div>]]></template>
-    <template title="wf_widget_threads_thread_full_info" version_id="77" version_string="2.4.5b"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_threads_thread_full_info" version_id="91" version_string="2.4.9d"><![CDATA[<xen:if hascontent="true">
 	<div class="counters">
 		<xen:contentcheck>
 			<xen:hook name="wf_widget_threads_thread_full_info_counters" params="{xen:array 'thread={$thread}'}">
@@ -1783,7 +1784,7 @@ All customization should go to wf_default_EXTRA.css
 			</xen:if>
 
 			<xen:if is="{xen:property wf_threads_fullDate}">
-				<a href="{xen:link threads, $thread}"><xen:datetime time="$thread.post_date" /></a>
+				<a href="{xen:raw $link}"><xen:datetime time="$thread.post_date" /></a>
 			</xen:if>
 
 			</xen:hook>

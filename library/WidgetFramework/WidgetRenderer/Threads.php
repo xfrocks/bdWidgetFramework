@@ -409,7 +409,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				{
 					$postsWithAttachment[$threadRef['last_post_id']] = array(
 						'post_id' => $threadRef['last_post_id'],
-						'thread_id' => $threadRef['thread_id'],
+						'thread_id' => $threadId,
 						'attach_count' => $threadRef['attach_count'],
 					);
 				}
@@ -417,7 +417,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				{
 					$postsWithAttachment[$threadRef['first_post_id']] = array(
 						'post_id' => $threadRef['first_post_id'],
-						'thread_id' => $threadRef['thread_id'],
+						'thread_id' => $threadId,
 						'attach_count' => $threadRef['attach_count'],
 					);
 				}
