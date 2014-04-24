@@ -226,7 +226,14 @@
 		{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}
 		{xen:phrase wf_limit_zero_explain}
 	</xen:explain>
-</xen:spinboxunit>]]></template>
+</xen:spinboxunit>
+
+
+<xen:radiounit label="{xen:phrase wf_birthday_avatar_only}:" name="{$namePrefix}avatar_only">
+	<xen:option value="1" selected="{$options.avatar_only}">{xen:phrase yes}</xen:option>
+	<xen:option value="0" selected="!{$options.avatar_only}">{xen:phrase no}</xen:option>
+	<xen:explain>{xen:phrase wf_birthday_avatar_only_explain}</xen:explain>
+</xen:radiounit>]]></template>
     <template title="wf_widget_options_callback"><![CDATA[<xen:controlunit label="{xen:phrase php_callback}:" explain="{xen:phrase wf_widget_callback_callback_explain}">
 	<xen:textbox placeholder="{xen:phrase class}" name="{$namePrefix}callback_class" value="{$options.callback_class}" size="25" />
 	::
@@ -802,6 +809,8 @@ Arguments:
     <phrase title="wf_add_sidebar_widget" version_id="76" version_string="2.4.5"><![CDATA[Add Sidebar Widget]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
+    <phrase title="wf_birthday_avatar_only" version_id="92" version_string="2.4.9e"><![CDATA[Ignore Users Without Avatar]]></phrase>
+    <phrase title="wf_birthday_avatar_only_explain" version_id="92" version_string="2.4.9e"><![CDATA[Enable this option to hide users who haven't uploaded an avatar. ]]></phrase>
     <phrase title="wf_break_container" version_id="77" version_string="2.4.5b"><![CDATA[Break out of content container]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>

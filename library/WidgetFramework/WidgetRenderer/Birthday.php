@@ -16,7 +16,10 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 	{
 		return array(
 			'name' => 'Birthday',
-			'options' => array('limit' => XenForo_Input::UINT),
+			'options' => array(
+				'limit' => XenForo_Input::UINT,
+				'avatar_only' => XenForo_Input::UINT,
+			),
 			'useCache' => true,
 			'cacheSeconds' => 3600, // cache for 1 hour
 		);
@@ -76,6 +79,11 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 		if (!empty($widget['options']['limit']))
 		{
 			$fetchOptions['limit'] = $widget['options']['limit'];
+		}
+
+		if (!empty($widget['options']['avatar_only']))
+		{
+			$conditions[WidgetFramework_XenForo_Model_User::CONDITIONS_HAS_AVATAR] = true;
 		}
 
 		$users = array_values($userModel->getUsers($conditions, $fetchOptions));

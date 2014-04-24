@@ -5,6 +5,7 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
 
 	const CONDITIONS_STATUS_DATE = 'WidgetFramework_status_date';
 	const CONDITIONS_DOB = 'WidgetFramework_dob';
+	const CONDITIONS_HAS_AVATAR = 'WidgetFramework_has_avatar';
 	const ORDER_STATUS_DATE = 'WidgetFramework_status_date';
 	const ORDER_RESOURCE_COUNT = 'WidgetFramework_resource_count';
 
@@ -39,6 +40,11 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
 			}
 			$sqlConditions[] = '(' . implode(' OR ', $tmp) . ')';
 			$sqlConditions[] = 'user_option.show_dob_date = 1';
+		}
+
+		if (!empty($conditions[self::CONDITIONS_HAS_AVATAR]))
+		{
+			$sqlConditions[] = '(user.avatar_date > 0 OR user.gravatar <> \'\')';
 		}
 
 		if (count($sqlConditions) > 1)
