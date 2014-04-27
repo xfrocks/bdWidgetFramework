@@ -247,10 +247,11 @@ class WidgetFramework_Core
 			return true;
 		}
 
-		if (substr($positionCode, 0, 5) !== 'hook:')
+		if (substr($positionCode, 0, 5) !== 'hook:' AND !empty($this->_positions['all']['widgets']))
 		{
 			// only append `all` widgets for template position code
 			$allWidgets = array();
+
 			foreach ($this->_positions['all']['widgets'] as $allWidgetGroup)
 			{
 				foreach ($allWidgetGroup['widgets'] as $allWidget)
