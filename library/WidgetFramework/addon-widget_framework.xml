@@ -1574,11 +1574,13 @@ All customization should go to wf_default_EXTRA.css
         </xen:if>
     </div>
 </xen:if>]]></template>
-    <template title="wf_widget_share_page" version_id="62" version_string="2.3.3d"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_share_page" version_id="92" version_string="2.4.9e"><![CDATA[<xen:if hascontent="true">
+	<xen:require css="wf_default.css" />
 
-<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
-    <xen:include template="sidebar_share_page" />
-</div>]]></template>
+	<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
+		<xen:contentcheck><xen:include template="sidebar_share_page" /></xen:contentcheck>
+	</div>
+</xen:if>]]></template>
     <template title="wf_widget_stats" version_id="1" version_string="0.9"><![CDATA[<div class="pairsJustified">
 	<dl class="discussionCount"><dt>{xen:phrase discussions}:</dt>
 		<dd>{xen:number $boardTotals.discussions}</dd></dl>
