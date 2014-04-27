@@ -6,7 +6,7 @@ class WidgetFramework_Core
 	protected static $_rendererInstances = array();
 
 	protected $_renderers = array();
-	protected $_widgets = array();
+	protected $_widgetCount = 0;
 	protected $_positions = array();
 	protected $_templateForHooks = array();
 	protected $_models = array();
@@ -109,7 +109,7 @@ class WidgetFramework_Core
 
 	public function addWidgets(array $widgets)
 	{
-		$this->_widgets = array_merge($this->_widgets, $widgets);
+		$this->_widgetCount += count($widgets);
 		$positionsAdded = array();
 
 		foreach ($widgets as &$widget)
@@ -326,7 +326,7 @@ class WidgetFramework_Core
 
 			if (!empty($containerData['sidebar']) AND self::debugMode())
 			{
-				$containerData['sidebar'] .= sprintf('<div>Widget Framework is in debug mode<br/>Renderers: %d<br/>Widgets: %d<br/></div>', count($this->_renderers), count($this->_widgets));
+				$containerData['sidebar'] .= sprintf('<div>Widget Framework is in debug mode<br/>Renderers: %d<br/>Widgets: %d<br/></div>', count($this->_renderers), $this->_widgetCount);
 			}
 		}
 
@@ -645,7 +645,9 @@ class WidgetFramework_Core
 		$instance = self::getInstance();
 		$instance->bootstrap();
 
-		foreach ($instance->_widgets as $widget)
+		$widgets = $this->_getModelWidget()->getGlobalWidgets(false, false);
+
+		foreach ($widgets as $widget)
 		{
 			if ($widget['class'] == $class)
 			{
