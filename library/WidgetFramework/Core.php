@@ -79,7 +79,6 @@ class WidgetFramework_Core
 		}
 
 		$globalWidgets = $this->_getModelWidget()->getGlobalWidgets(true, false);
-		$this->_getModelWidget()->reverseNegativeDisplayOrderWidgets($globalWidgets);
 		$this->addWidgets($globalWidgets);
 
 		// sondh@2013-04-02
