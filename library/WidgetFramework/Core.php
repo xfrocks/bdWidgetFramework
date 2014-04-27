@@ -110,6 +110,7 @@ class WidgetFramework_Core
 	public function addWidgets(array $widgets)
 	{
 		$this->_widgets = array_merge($this->_widgets, $widgets);
+		$positionsAdded = array();
 
 		foreach ($widgets as &$widget)
 		{
@@ -138,6 +139,7 @@ class WidgetFramework_Core
 						'extraData' => array(),
 					);
 				}
+				$positionsAdded[] = $position;
 
 				if (!empty($widget['options']['tab_group']))
 				{
@@ -160,7 +162,7 @@ class WidgetFramework_Core
 					// no tab group
 					$this->_positions[$position]['widgets']['widget_' . $widget['widget_id']] = array(
 						'name' => 'no-name',
-						'widgets' => array($widget['widget_id'] => &$widget, ),
+						'widgets' => array($widget['widget_id'] => &$widget),
 						'keys' => array($widget['widget_id']),
 						'display_order' => $widget['display_order'],
 					);
@@ -194,6 +196,14 @@ class WidgetFramework_Core
 				}
 			}
 		}
+
+		foreach ($positionsAdded as $position)
+		{
+			uasort($this->_positions[$position]['widgets'], array(
+				'WidgetFramework_Helper_Sort',
+				'widgetGroups'
+			));
+		}
 	}
 
 	public function prepareWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template)
@@ -204,7 +214,6 @@ class WidgetFramework_Core
 		}
 
 		$this->_prepareWidgetsFor($templateName, $params, $template);
-		$this->_prepareWidgetsFor('all', $params, $template);
 
 		return true;
 	}
@@ -236,7 +245,38 @@ class WidgetFramework_Core
 		if (!empty($position['prepared']))
 		{
 			// prepared
-			return false;
+			return true;
+		}
+
+		if (substr($positionCode, 0, 5) !== 'hook:')
+		{
+			// only append `all` widgets for template position code
+			$allWidgets = array();
+			foreach ($this->_positions['all']['widgets'] as $allWidgetGroup)
+			{
+				foreach ($allWidgetGroup['widgets'] as $allWidget)
+				{
+					$found = false;
+
+					foreach ($position['widgets'] as &$widgetGroup)
+					{
+						if (isset($widgetGroup['widgets'][$allWidget['widget_id']]))
+						{
+							$found = true;
+						}
+					}
+
+					if (!$found)
+					{
+						// avoid having duplicated widget in the same position
+						// TODO: alter widget_id?
+						$allWidget['position'] = $positionCode;
+						$allWidgets[$allWidget['widget_id']] = $allWidget;
+					}
+				}
+			}
+
+			$this->addWidgets($allWidgets);
 		}
 
 		foreach ($position['widgets'] as &$widgetGroup)
@@ -266,11 +306,6 @@ class WidgetFramework_Core
 		$originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
 
 		$html = $this->_renderWidgetsFor($templateName, array_merge($params, array(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
-
-		$html = $this->_renderWidgetsFor('all', array_merge($params, array(
-			WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE => $templateName,
-			WidgetFramework_WidgetRenderer::PARAM_POSITION_ALL => true,
-		)), $template, $html);
 
 		if (defined(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_FLAG))
 		{
