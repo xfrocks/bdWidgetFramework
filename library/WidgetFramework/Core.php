@@ -645,7 +645,7 @@ class WidgetFramework_Core
 		$instance = self::getInstance();
 		$instance->bootstrap();
 
-		$widgets = $this->_getModelWidget()->getGlobalWidgets(false, false);
+		$widgets = $instance->_getModelWidget()->getGlobalWidgets(false, false);
 
 		foreach ($widgets as $widget)
 		{
