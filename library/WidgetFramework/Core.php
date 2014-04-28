@@ -235,13 +235,7 @@ class WidgetFramework_Core
 
 	protected function _prepareWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template)
 	{
-		if (!isset($this->_positions[$positionCode]))
-		{
-			return false;
-		}
-
-		$position = &$this->_positions[$positionCode];
-		if (!empty($position['prepared']))
+		if (isset($this->_positions[$positionCode]) AND !empty($this->_positions[$positionCode]['prepared']))
 		{
 			// prepared
 			return true;
@@ -258,11 +252,14 @@ class WidgetFramework_Core
 				{
 					$found = false;
 
-					foreach ($position['widgets'] as &$widgetGroup)
+					if (!empty($this->_positions[$positionCode]['widgets']))
 					{
-						if (isset($widgetGroup['widgets'][$allWidget['widget_id']]))
+						foreach ($this->_positions[$positionCode]['widgets'] as &$widgetGroup)
 						{
-							$found = true;
+							if (isset($widgetGroup['widgets'][$allWidget['widget_id']]))
+							{
+								$found = true;
+							}
 						}
 					}
 
@@ -278,6 +275,14 @@ class WidgetFramework_Core
 
 			$this->addWidgets($allWidgets);
 		}
+
+		if (!isset($this->_positions[$positionCode]))
+		{
+			// still no position data at this point?
+			// stop working
+			return false;
+		}
+		$position = &$this->_positions[$positionCode];
 
 		foreach ($position['widgets'] as &$widgetGroup)
 		{
