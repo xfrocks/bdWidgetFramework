@@ -386,39 +386,24 @@ class WidgetFramework_Core
 			foreach ($widgetGroup['keys'] as $key)
 			{
 				$widget = &$widgetGroup['widgets'][$key];
+				$widgetHtml = '';
 				$renderer = self::getRenderer($widget['class'], false);
 
-				if (!isset($position['html'][$widget['widget_id']]))
+				if (!empty($renderer))
 				{
-					// render the widget now
-					if ($renderer)
-					{
-						$widgetHtml = strval($renderer->render($widget, $positionCode, $params, $template, $html));
-					}
-					else
-					{
-						$widgetHtml = '';
-					}
-				}
-				else
-				{
-					// yay! The widget is rendered already, use it now
-					$widgetHtml = $position['html'][$widget['widget_id']];
-				}
+					$widgetHtml = strval($renderer->render($widget, $positionCode, $params, $template, $html));
 
-				// extra-preparation (this will be run everytime the widget is ready to display)
-				// this method can change the final html in some way if it needs to do that
-				// the changed html won't be store in the cache (caching is processed inside
-				// WidgetFramework_Renderer::render())
-				if ($renderer)
-				{
+					// extra-preparation (this will be run everytime the widget is ready to display)
+					// this method can change the final html in some way if it needs to do that
+					// the changed html won't be store in the cache (caching is processed inside
+					// WidgetFramework_Renderer::render())
 					$position['extraData'][$widget['widget_id']] = $renderer->extraPrepare($widget, $widgetHtml);
 				}
 
 				if (!empty($widgetHtml))
 				{
 					$position['html'][$widget['widget_id']] = $widgetHtml;
-					/* store it for later use */
+
 					$count++;
 				}
 				else
