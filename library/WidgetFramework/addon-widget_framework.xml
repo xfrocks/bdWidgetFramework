@@ -312,6 +312,7 @@
 	<xen:option value="new">{xen:phrase wf_widget_threads_type_new}</xen:option>
 	<xen:option value="recent">{xen:phrase wf_widget_threads_type_recent}</xen:option>
 	<xen:option value="recent_first_poster">{xen:phrase wf_widget_threads_type_recent_first_poster}</xen:option>
+	<xen:option value="latest_replies">{xen:phrase wf_widget_threads_type_latest_replies}</xen:option>
 	<xen:option value="popular">{xen:phrase wf_widget_threads_type_popular}</xen:option>
 	<xen:option value="most_replied">{xen:phrase wf_widget_threads_type_most_replied}</xen:option>
 	<xen:option value="most_liked">{xen:phrase wf_widget_threads_type_most_liked}</xen:option>
@@ -958,12 +959,13 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff_explain" version_id="26" version_string="1.3.1"><![CDATA[Threads older than this number of days won't make it to the list that supports cutoff as noted above.]]></phrase>
     <phrase title="wf_widget_threads_type" version_id="1" version_string="0.9"><![CDATA[Widget Type]]></phrase>
+    <phrase title="wf_widget_threads_type_latest_replies" version_id="96" version_string="2.5.0d"><![CDATA[Latest Replies]]></phrase>
     <phrase title="wf_widget_threads_type_most_liked" version_id="65" version_string="2.3.6"><![CDATA[Most Liked Threads]]></phrase>
     <phrase title="wf_widget_threads_type_most_replied" version_id="65" version_string="2.3.6"><![CDATA[Most Replied Thread]]></phrase>
     <phrase title="wf_widget_threads_type_new" version_id="1" version_string="0.9"><![CDATA[New Threads]]></phrase>
     <phrase title="wf_widget_threads_type_popular" version_id="65" version_string="2.3.6"><![CDATA[Most Viewed Theads]]></phrase>
-    <phrase title="wf_widget_threads_type_recent" version_id="26" version_string="1.3.1"><![CDATA[New Replies]]></phrase>
-    <phrase title="wf_widget_threads_type_recent_first_poster" version_id="84" version_string="2.4.7"><![CDATA[New Replies (use first poster avatar)]]></phrase>
+    <phrase title="wf_widget_threads_type_recent" version_id="96" version_string="2.5.0d"><![CDATA[Recent Threads]]></phrase>
+    <phrase title="wf_widget_threads_type_recent_first_poster" version_id="96" version_string="2.5.0d"><![CDATA[Recent Threads (use first poster avatar)]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
@@ -1606,39 +1608,19 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="77" version_string="2.4.5b"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="96" version_string="2.5.0d"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 	<xen:if hascontent="true">
 		<div class="avatarList">
 			<ul>
 				<xen:contentcheck>
-					<xen:if is="{$widget.options.type} == 'new'">
-	
-						<xen:foreach loop="$threads" value="$thread">
-							<xen:include template="wf_widget_threads_thread_sidebar">
-								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
-								</xen:set>
-							</xen:include>
-						</xen:foreach>
-
-					<xen:elseif is="{$widget.options.type} == 'recent'" />
+					<xen:if is="{$widget.options.type} == 'recent' OR {$widget.options.type} == 'latest_replies'">
 
 						<xen:foreach loop="$threads" value="$thread">
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
 								<xen:set var="$_secondRow">
 									{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" />
-								</xen:set>
-							</xen:include>
-						</xen:foreach>
-
-					<xen:elseif is="{$widget.options.type} == 'popular'" />
-
-						<xen:foreach loop="$threads" value="$thread">
-							<xen:include template="wf_widget_threads_thread_sidebar">
-								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
 								</xen:set>
 							</xen:include>
 						</xen:foreach>
@@ -1664,7 +1646,7 @@ All customization should go to wf_default_EXTRA.css
 							</xen:include>
 						</xen:foreach>
 
-					<xen:elseif is="{$widget.options.type} == 'polls'" />
+					<xen:else />
 
 						<xen:foreach loop="$threads" value="$thread">
 							<xen:include template="wf_widget_threads_thread_sidebar">
