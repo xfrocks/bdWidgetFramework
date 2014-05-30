@@ -19,6 +19,8 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 			'options' => array(
 				'limit' => XenForo_Input::UINT,
 				'avatar_only' => XenForo_Input::UINT,
+				'whitelist_user_groups' => XenForo_Input::ARRAY_SIMPLE,
+				'blacklist_user_groups' => XenForo_Input::ARRAY_SIMPLE,
 			),
 			'useCache' => true,
 			'cacheSeconds' => 3600, // cache for 1 hour
@@ -28,6 +30,49 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 	protected function _getOptionsTemplate()
 	{
 		return 'wf_widget_options_birthday';
+	}
+
+	protected function _renderOptions(XenForo_Template_Abstract $template)
+	{
+		$params = $template->getParams();
+		$userGroups = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_UserGroup')->getAllUserGroupTitles();
+
+		$whitelistUserGroups = array();
+		$blacklistUserGroups = array();
+
+		$optionWhitelist = array();
+		if (!empty($params['options']['whitelist_user_groups']))
+		{
+			$optionWhitelist = $params['options']['whitelist_user_groups'];
+		}
+
+		$optionBlacklist = array();
+		if (!empty($params['options']['blacklist_user_groups']))
+		{
+			$optionBlacklist = $params['options']['blacklist_user_groups'];
+		}
+
+		foreach ($userGroups as $userGroupId => $title)
+		{
+			$whitelistSelected = in_array($userGroupId, $optionWhitelist);
+			$whitelistUserGroups[] = array(
+				'value' => $userGroupId,
+				'label' => $title,
+				'selected' => $whitelistSelected,
+			);
+
+			$blacklistSelected = in_array($userGroupId, $optionBlacklist);
+			$blacklistUserGroups[] = array(
+				'value' => $userGroupId,
+				'label' => $title,
+				'selected' => $blacklistSelected,
+			);
+		}
+
+		$template->setParam('whitelistUserGroups', $whitelistUserGroups);
+		$template->setParam('blacklistUserGroups', $blacklistUserGroups);
+
+		return parent::_renderOptions($template);
 	}
 
 	protected function _validateOptionValue($optionKey, &$optionValue)
@@ -86,15 +131,37 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
 			$conditions[WidgetFramework_XenForo_Model_User::CONDITIONS_HAS_AVATAR] = true;
 		}
 
-		$users = array_values($userModel->getUsers($conditions, $fetchOptions));
+		$users = $userModel->getUsers($conditions, $fetchOptions);
 
-		foreach ($users as &$user)
+		foreach (array_keys($users) as $userId)
 		{
+			$user = &$users[$userId];
+
+			if (!empty($widget['options']['whitelist_user_groups']))
+			{
+				// check for whitelist user groups
+				if (!$userModel->isMemberOfUserGroup($user, $widget['options']['whitelist_user_groups']))
+				{
+					unset($users[$userId]);
+					continue;
+				}
+			}
+
+			if (!empty($widget['options']['blacklist_user_groups']))
+			{
+				// check for blacklist user groups
+				if ($userModel->isMemberOfUserGroup($user, $widget['options']['blacklist_user_groups']))
+				{
+					unset($users[$userId]);
+					continue;
+				}
+			}
+
 			// we can call XenForo_Model_User::prepareUserCard instead
 			$user['age'] = $userProfileModel->getUserAge($user);
 		}
 
-		$renderTemplateObject->setParam('users', $users);
+		$renderTemplateObject->setParam('users', array_values($users));
 
 		return $renderTemplateObject->render();
 	}

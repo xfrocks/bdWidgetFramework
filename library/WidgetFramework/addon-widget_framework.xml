@@ -228,12 +228,22 @@
 	</xen:explain>
 </xen:spinboxunit>
 
-
 <xen:radiounit label="{xen:phrase wf_birthday_avatar_only}:" name="{$namePrefix}avatar_only">
 	<xen:option value="1" selected="{$options.avatar_only}">{xen:phrase yes}</xen:option>
 	<xen:option value="0" selected="!{$options.avatar_only}">{xen:phrase no}</xen:option>
 	<xen:explain>{xen:phrase wf_birthday_avatar_only_explain}</xen:explain>
-</xen:radiounit>]]></template>
+</xen:radiounit>
+
+<xen:checkboxunit label="{xen:phrase wf_whitelist_user_groups}:" name="{$namePrefix}whitelist_user_groups"
+				  class="checkboxColumns" explain="{xen:phrase wf_whitelist_user_groups_explain}">
+	<xen:options source="$whitelistUserGroups" />
+</xen:checkboxunit>
+
+<xen:checkboxunit label="{xen:phrase wf_blacklist_user_groups}:" name="{$namePrefix}blacklist_user_groups"
+				  class="checkboxColumns" explain="{xen:phrase wf_blacklist_user_groups_explain}">
+	<xen:options source="$blacklistUserGroups" />
+</xen:checkboxunit>
+]]></template>
     <template title="wf_widget_options_callback"><![CDATA[<xen:controlunit label="{xen:phrase php_callback}:" explain="{xen:phrase wf_widget_callback_callback_explain}">
 	<xen:textbox placeholder="{xen:phrase class}" name="{$namePrefix}callback_class" value="{$options.callback_class}" size="25" />
 	::
@@ -811,6 +821,8 @@ Arguments:
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
     <phrase title="wf_birthday_avatar_only" version_id="92" version_string="2.4.9e"><![CDATA[Ignore Users Without Avatar]]></phrase>
     <phrase title="wf_birthday_avatar_only_explain" version_id="92" version_string="2.4.9e"><![CDATA[Enable this option to hide users who haven't uploaded an avatar. ]]></phrase>
+    <phrase title="wf_blacklist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Blacklist Groups]]></phrase>
+    <phrase title="wf_blacklist_user_groups_explain" version_id="96" version_string="2.5.0d"><![CDATA[If specified, users who are member of selected user group will not show up.]]></phrase>
     <phrase title="wf_break_container" version_id="77" version_string="2.4.5b"><![CDATA[Break out of content container]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
@@ -922,6 +934,8 @@ Feel free to contact <a href="mailto:pony@xfrocks.com" tabIndex="-1">me</a> if y
     <phrase title="wf_use_live_cache" version_id="29" version_string="1.3.4"><![CDATA[Use Live Cache]]></phrase>
     <phrase title="wf_viewing_home_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing home page]]></phrase>
     <phrase title="wf_viewing_widget_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing page]]></phrase>
+    <phrase title="wf_whitelist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Whitelist Groups]]></phrase>
+    <phrase title="wf_whitelist_user_groups_explain" version_id="96" version_string="2.5.0d"><![CDATA[If specified, only user of selected user groups will be show.]]></phrase>
     <phrase title="wf_widgets" version_id="1" version_string="0.9"><![CDATA[Widgets]]></phrase>
     <phrase title="wf_widget_birthday_today_is_xs_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {username}'s birthday.]]></phrase>
     <phrase title="wf_widget_birthday_today_is_x_peoples_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {count} people's birthday.]]></phrase>
