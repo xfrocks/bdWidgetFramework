@@ -190,6 +190,7 @@
 		<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>
 		<xen:link href="{xen:adminlink 'widgets/delete', $widget}">{xen:phrase delete}</xen:link>
 		<xen:link href="{xen:adminlink 'widgets/edit', $widget}">{xen:phrase edit}</xen:link>
+		<xen:link href="{xen:adminlink 'widgets/duplicate', $widget}">{xen:phrase wf_duplicate}</xen:link>
 	</xen:popup>
 </xen:listitem>]]></template>
     <template title="wf_widget_options"><![CDATA[<input type="hidden" name="options_loaded" value="{$options_loaded}" />
@@ -844,6 +845,7 @@ Arguments:
     <phrase title="wf_disable_reveal" version_id="39" version_string="2.0.1"><![CDATA[Disable Reveal Mode (Widget Framework)]]></phrase>
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
     <phrase title="wf_display_order_explain" version_id="37" version_string="1.5.4"><![CDATA[The position of this widget relative to other widgets in the same position. If the display order is negative, its contents will be inserted before the original contents of the position. Otherwise, it will be appended.]]></phrase>
+    <phrase title="wf_duplicate" version_id="96" version_string="2.5.0d"><![CDATA[Duplicate]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
     <phrase title="wf_edit_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Edit Widget Page]]></phrase>
     <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>

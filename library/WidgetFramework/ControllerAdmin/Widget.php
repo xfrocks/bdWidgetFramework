@@ -49,17 +49,15 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			$options['layout_row'] = $maxRow + 1;
 		}
 
-		$viewParams = array(
-			'widget' => array(
-				'active' => 1,
-				'position' => $this->_input->filterSingle('position', XenForo_Input::STRING),
-				'display_order' => $displayOrder,
-				'widget_page_id' => $widgetPageId,
-				'options' => $options,
-			),
-			'renderers' => $this->_getRenderersList(),
+		$widget = array(
+			'active' => 1,
+			'position' => $this->_input->filterSingle('position', XenForo_Input::STRING),
+			'display_order' => $displayOrder,
+			'widget_page_id' => $widgetPageId,
+			'options' => $options,
 		);
 
+		$viewParams = array();
 		if (!empty($widgetPage))
 		{
 			$viewParams['widgetPage'] = $widgetPage;
@@ -67,7 +65,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			$this->_routeMatch->setSections('nodeTree');
 		}
 
-		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Edit', 'wf_widget_edit', $viewParams);
+		return $this->_getResponseAddOrEdit($widget, $viewParams);
 	}
 
 	public function actionEdit()
@@ -76,10 +74,26 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		$widget = $this->_getWidgetOrError($widgetId);
 		$this->_getWidgetModel()->prepareWidget($widget);
 
-		$viewParams = array(
+		return $this->_getResponseAddOrEdit($widget);
+	}
+
+	public function actionDuplicate()
+	{
+		$widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
+		$widget = $this->_getWidgetOrError($widgetId);
+		$this->_getWidgetModel()->prepareWidget($widget);
+
+		$widget['widget_id'] = 0;
+
+		return $this->_getResponseAddOrEdit($widget);
+	}
+
+	protected function _getResponseAddOrEdit($widget, array $viewParams = array())
+	{
+		$viewParams = array_merge($viewParams, array(
 			'widget' => $widget,
 			'renderers' => $this->_getRenderersList(),
-		);
+		));
 
 		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Edit', 'wf_widget_edit', $viewParams);
 	}
