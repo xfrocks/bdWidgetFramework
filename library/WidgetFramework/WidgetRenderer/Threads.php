@@ -2,6 +2,16 @@
 
 class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRenderer
 {
+	public function useCache(array $widget)
+	{
+		if (!empty($widget['options']['is_new']))
+		{
+			return false;
+		}
+
+		return parent::useCache($widget);
+	}
+
 	public function extraPrepareTitle(array $widget)
 	{
 		if (empty($widget['title']))
@@ -47,6 +57,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				'prefixes' => XenForo_Input::ARRAY_SIMPLE,
 				'open_only' => XenForo_Input::UINT,
 				'as_guest' => XenForo_Input::UINT,
+				'is_new' => XenForo_Input::UINT,
 				'limit' => XenForo_Input::UINT,
 				'layout' => XenForo_Input::STRING,
 			),
@@ -267,6 +278,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			$fetchOptions['join'] |= XenForo_Model_Thread::FETCH_FIRSTPOST;
 		}
 
+		// include is_new if option is turned on
+		// since 2.5.1
+		if (!empty($widget['options']['is_new']))
+		{
+			$fetchOptions['readUserId'] = XenForo_Visitor::getUserId();
+		}
+
 		switch ($widget['options']['type'])
 		{
 			case 'recent':
@@ -295,22 +313,22 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				)));
 				break;
 			case 'popular':
-				$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
+				$threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
 						'>',
 						XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-					), ), $fetchOptions + array(
+					))), array_merge($fetchOptions, array(
 					'order' => 'view_count',
 					'orderDirection' => 'desc',
-				));
+				)));
 				break;
 			case 'most_replied':
-				$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
+				$threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
 						'>',
 						XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-					), ), $fetchOptions + array(
+					))), array_merge($fetchOptions, array(
 					'order' => 'reply_count',
 					'orderDirection' => 'desc',
-				));
+				)));
 
 				foreach (array_keys($threads) as $threadId)
 				{
@@ -322,13 +340,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				}
 				break;
 			case 'most_liked':
-				$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
+				$threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
 						'>',
 						XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-					), ), $fetchOptions + array(
+					))), array_merge($fetchOptions, array(
 					'order' => 'first_post_likes',
 					'orderDirection' => 'desc',
-				));
+				)));
 
 				foreach (array_keys($threads) as $threadId)
 				{
@@ -340,17 +358,17 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 				}
 				break;
 			case 'polls':
-				$threads = $threadModel->getThreads($conditions + array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll'), $fetchOptions + array(
+				$threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll')), array_merge($fetchOptions, array(
 					'order' => 'post_date',
 					'orderDirection' => 'desc',
-				));
+				)));
 				break;
 			case 'new':
 			default:
-				$threads = $threadModel->getThreads($conditions, $fetchOptions + array(
+				$threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
 					'order' => 'post_date',
 					'orderDirection' => 'desc',
-				));
+				)));
 				break;
 		}
 

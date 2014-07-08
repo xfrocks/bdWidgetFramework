@@ -350,6 +350,7 @@
 
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}as_guest" value="1" selected="{$options.as_guest}">{xen:phrase wf_use_guest_permissions}</xen:option>
+	<xen:option name="{$namePrefix}is_new" value="1" selected="{$options.is_new}">{xen:phrase wf_include_thread_is_new}</xen:option>
 </xen:checkboxunit>
 
 <xen:hook name="wf_widget_options_threads_layout" params="{xen:array 'widget={$widget}', 'options={$options}', 'options_loaded={$options_loaded}'}">
@@ -860,6 +861,7 @@ XenForo_Template_Helper_Core::callHelper('ismemberof', array($visitor,3)) -- mea
     <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
+    <phrase title="wf_include_thread_is_new" version_id="96" version_string="2.5.0d"><![CDATA[Include $thread.isNew information if thread is unread (this will disable caching)]]></phrase>
     <phrase title="wf_invalid_position_x" version_id="37" version_string="1.5.4"><![CDATA[Invalid position specified: {position}. The position must be one of three types: "all", "template_name" or "hook:hook_name".]]></phrase>
     <phrase title="wf_invalid_widget_renderer_x" version_id="24" version_string="1.2.2.2"><![CDATA[Invalid Widget Renderer specified: {renderer}.]]></phrase>
     <phrase title="wf_is_index" version_id="68" version_string="2.4.0c"><![CDATA[Is Index Page]]></phrase>
@@ -1018,7 +1020,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="86" version_string="2.4.7c"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="96" version_string="2.5.0d"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1122,6 +1124,8 @@ All customization should go to wf_default_EXTRA.css
 	float: right;
 }
 
+.WidgetFramework_WidgetRenderer_Threads .unread > a { font-weight: bold; }
+
 .WidgetFramework_WidgetRenderer_Threads_FullThreadList {
 }
 	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .subHeading {
@@ -1146,6 +1150,17 @@ All customization should go to wf_default_EXTRA.css
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageInfo {
 			padding: 5px 10px;
 		}
+		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator
+		{
+			{xen:property messageNewIndicator}
+
+			margin-right: -{xen:calc '{xen:property content.padding-right} + 5'}px;
+		}
+			.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator span
+			{
+				{xen:property messageNewIndicatorInner}
+			}
+
 	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageText .readMoreLink {
 		display: block;
 		text-align: right;
@@ -1718,13 +1733,13 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_full" version_id="91" version_string="2.4.9d"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_threads_thread_full" version_id="96" version_string="2.5.0d"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="bb_code.css" />
 
 <xen:set var="$link">{xen:if '{$thread._link}', {xen:raw $thread._link}, {xen:link threads, $thread}}</xen:set>
 <xen:set var="$info"><xen:include template="wf_widget_threads_thread_full_info" /></xen:set>
 
-<div id="post-{$thread.first_post_id}" class="message section sectionMain" data-author="{$thread.username}">
+<div id="post-{$thread.first_post_id}" class="message section sectionMain{xen:if '{$thread.isNew}', ' unread'}" data-author="{$thread.username}">
 
 	<div class="subHeading thread">
 		<a href="{xen:raw $link}">{$thread.title}</a>
@@ -1735,6 +1750,7 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 
 	<div class="messageInfo">
+		<xen:if is="{$thread.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
 
 		<xen:hook name="message_content" params="{xen:array 'message={$thread}', 'WidgetFramework_WidgetRenderer_Threads_FullThreadList=1'}">
 		<div class="messageContent">		
@@ -1800,7 +1816,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</div>
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_sidebar" version_id="77" version_string="2.4.5b"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}">
+    <template title="wf_widget_threads_thread_sidebar" version_id="96" version_string="2.5.0d"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
 	<xen:avatar user="$thread" size="s" img="true" />
 
 	<xen:if is="{xen:property wf_threads_showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
