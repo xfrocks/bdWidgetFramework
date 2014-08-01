@@ -188,6 +188,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 				$link = XenForo_Link::buildAdminLink('widget-pages/edit', array('node_id' => $widgetPageId));
 			}
 
+			$link = $this->getDynamicRedirect($link);
+
 			return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
 		}
 	}
@@ -210,6 +212,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			{
 				$link = XenForo_Link::buildAdminLink('widget-pages/edit', array('node_id' => $widgetPageId));
 			}
+
+			$link = $this->getDynamicRedirect($link);
 
 			return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
 		}
@@ -296,21 +300,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		);
 
 		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Export', '', $viewParams);
-	}
-
-	public function actionReveal()
-	{
-		$publicSession = new XenForo_Session();
-		$publicSession->start();
-		if ($publicSession->get('user_id') != XenForo_Visitor::getUserId())
-		{
-			return $this->responseError(new XenForo_Phrase('please_login_via_public_login_page_before_testing_permissions'));
-		}
-
-		$publicSession->set('_WidgetFramework_reveal', true);
-		$publicSession->save();
-
-		return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildPublicLink('index'));
 	}
 
 	protected function _getWidgetOrError($widgetId)

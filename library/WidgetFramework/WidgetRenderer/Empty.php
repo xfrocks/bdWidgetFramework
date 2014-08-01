@@ -9,7 +9,7 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 	protected function _getConfiguration()
 	{
 		return array(
-			'name' => ' Clear Sidebar',
+			'name' => ' Clear Contents',
 			'options' => array('noVisitorPanel' => XenForo_Input::UINT),
 			'useWrapper' => false,
 		);
@@ -27,6 +27,11 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		if (WidgetFramework_Option::get('layoutEditorEnabled'))
+		{
+			return new XenForo_Phrase('wf_widget_empty_layout_editor_explain');
+		}
+
 		return self::RENDERED;
 	}
 
@@ -39,16 +44,16 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 			// only work if the normal rendering routine runs throughly
 			// this is done to make sure expression is tested properly
 			// since 1.2.1
-			$output = '';
+			$rendered = $output = '';
 
 			if (!empty($widget['options']['noVisitorPanel']))
 			{
 				define(self::NO_VISITOR_PANEL_FLAG, true);
 				$output .= self::NO_VISITOR_PANEL_MARKUP;
 			}
-
-			return $output;
 		}
+
+		return $rendered;
 	}
 
 }

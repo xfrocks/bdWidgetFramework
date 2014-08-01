@@ -45,12 +45,12 @@ class WidgetFramework_Listener
 				'WidgetFramework_Template_Helper_Layout',
 				'getWidgetPositionAndSize'
 			);
-
-			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_getoption'] = array(
-				'WidgetFramework_Option',
-				'get'
-			);
 		}
+
+		XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_getoption'] = array(
+			'WidgetFramework_Option',
+			'get'
+		);
 
 		$indexNodeId = WidgetFramework_Option::get('indexNodeId');
 		if ($indexNodeId > 0)
@@ -90,7 +90,7 @@ class WidgetFramework_Listener
 			if ($templateName === 'PAGE_CONTAINER')
 			{
 				$template->preloadTemplate('wf_hook_moderator_bar');
-				$template->preloadTemplate('wf_revealer');
+				$template->preloadTemplate('wf_layout_editor_placeholder');
 
 				if (WidgetFramework_Option::get('indexNodeId'))
 				{
@@ -123,15 +123,24 @@ class WidgetFramework_Listener
 		{
 			if ($templateName != 'wf_widget_wrapper')
 			{
-				WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
+				$rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
 
-				// get a copy of container data for widget rendered
-				$positionCode = $template->getParam(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE);
-				if ($positionCode !== null)
+				if ($rendered)
 				{
-					$widget = $template->getParam('widget');
+					// get a copy of container data for widget rendered
+					$positionCode = $template->getParam(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE);
+					if ($positionCode !== null)
+					{
+						$widget = $template->getParam('widget');
 
-					WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
+						WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
+					}
+
+					if (!isset($containerData[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS]))
+					{
+						$containerData[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS] = array();
+					}
+					$containerData[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$templateName] = $template;
 				}
 			}
 
@@ -155,7 +164,10 @@ class WidgetFramework_Listener
 
 			if ($hookName == 'moderator_bar')
 			{
-				$ourTemplate = $template->create('wf_hook_moderator_bar', $template->getParams());
+				$ourParams = $template->getParams();
+				$ourParams['hasAdminPermStyle'] = XenForo_Visitor::getInstance()->hasAdminPermission('style');
+
+				$ourTemplate = $template->create('wf_hook_moderator_bar', $ourParams);
 				$contents .= $ourTemplate->render();
 			}
 			elseif (in_array($hookName, array(
@@ -169,54 +181,23 @@ class WidgetFramework_Listener
 				}
 			}
 
-			static $ignoredHooks = array(
-				'ad_sidebar_top', // this one is reserved to show the template name
-				'body', // useless
-				'footer_links', // ugly!
-				'footer_links_legal', // ugly!
-				'moderator_bar', // don't mess with our button
-				'navigation_tabs_forums', // this just looks ugly!
-				'navigation_visitor_tabs_start', // ugly!
-				'navigation_visitor_tabs_middle', // ugly!
-				'navigation_visitor_tabs_end', // ugly!
-				'page_container_head', // stay away from HTML <head />
-				'quick_search', // too advanced?
+			static $layoutEditorHooks = array(
+				'ad_above_content',
+				'ad_below_content',
 			);
-			if (WidgetFramework_Option::get('revealEnabled'))
+
+			if (WidgetFramework_Option::get('layoutEditorEnabled'))
 			{
-				if (!in_array($hookName, $ignoredHooks))
+				if (in_array($hookName, $layoutEditorHooks, true))
 				{
-					$contentsTrim = trim($contents);
-					if (!empty($contentsTrim))
-					{
-						// show a revealer with negative display order
-						$params = array(
-							'type' => 'hook',
-							'positionCode' => 'hook:' . $hookName,
-							'displayOrder' => '-10',
-						);
-						$revealerTemplate = $template->create('wf_revealer', $params);
-						$contents = $revealerTemplate->render() . $contents;
-					}
+					$conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($template->getParams());
 
 					$params = array(
 						'type' => 'hook',
 						'positionCode' => 'hook:' . $hookName,
+						'conditionalParams' => $conditionalParams,
 					);
-					$revealerTemplate = $template->create('wf_revealer', $params);
-					$contents .= $revealerTemplate->render();
-
-					// $ignoredHooks[] = $hookName; // render the revealer once for each hook name
-				}
-				elseif ($hookName == 'ad_sidebar_top' AND $template->getTemplateName() == 'PAGE_CONTAINER')
-				{
-					$templateParams = $template->getParams();
-					$params = array(
-						'type' => 'template',
-						'positionCode' => $templateParams['contentTemplate'],
-					);
-					$revealerTemplate = $template->create('wf_revealer', $params);
-					$contents .= $revealerTemplate->render();
+					$contents .= $template->create('wf_layout_editor_placeholder', $params);
 				}
 			}
 		}

@@ -369,4 +369,79 @@ class WidgetFramework_Template_Helper_Layout
 		return $mediaWidths;
 	}
 
+	public static function prepareConditionalParams(array $params, array $exclude = null)
+	{
+		if ($exclude === null)
+		{
+			$exclude = array(
+				// list of keys from XenForo_Dependencies_Abstract
+				'session',
+				'sessionId',
+				'requestPaths',
+				'cookieConfig',
+				'currentVersion',
+				'jsVersion',
+				'visitor',
+				'visitorLanguage',
+				'visitorStyle',
+				'userFieldsInfo',
+				'pageIsRtl',
+				'xenOptions',
+				'xenCache',
+				'xenAddOns',
+				'serverTime',
+				'debugMode',
+				'javaScriptSource',
+				'viewName',
+				'controllerName',
+				'controllerAction',
+			);
+		}
+
+		$prepared = array();
+
+		if (isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS]))
+		{
+			// this is params array from page container
+			if (isset($params['contentTemplate']) AND isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]))
+			{
+				// found content template params, use it
+				$params = $params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]->getParams();
+			}
+		}
+
+		foreach ($params as $key => &$value)
+		{
+			if (in_array($key, $exclude, true))
+			{
+				// excluded
+			}
+			elseif (is_object($value) OR empty($value))
+			{
+				// ignore
+			}
+			elseif (is_array($value))
+			{
+				$valueKeys = array_keys($value);
+				if (!is_numeric($valueKeys[0]))
+				{
+					// only process object-like array
+					$valueExclude = array();
+					$valuePrepared = self::prepareConditionalParams($value, $valueExclude);
+
+					if (!empty($valuePrepared))
+					{
+						$prepared[$key] = $valuePrepared;
+					}
+				}
+			}
+			elseif (is_int($value))
+			{
+				$prepared[$key] = $value;
+			}
+		}
+
+		return $prepared;
+	}
+
 }

@@ -6,6 +6,7 @@ abstract class WidgetFramework_WidgetRenderer
 	const PARAM_IS_HOOK = '_WidgetFramework_isHook';
 	const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
 	const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
+	const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
 
 	/**
 	 * Required method: define basic configuration of the renderer.
@@ -572,13 +573,19 @@ abstract class WidgetFramework_WidgetRenderer
 				if (!$this->_executeExpression($widget['options']['expression'], $params))
 				{
 					// exepression failed, stop rendering...
-					$html = '';
+					if (WidgetFramework_Option::get('layoutEditorEnabled'))
+					{
+						$html = new XenForo_Phrase('wf_layout_editor_widget_conditional_failed');
+					}
+					else {
+						$html = '';
+					}
 				}
 			}
 			catch (Exception $e)
 			{
 				// problem executing expression... Stop rendering anyway
-				if (WidgetFramework_Core::debugMode())
+				if (WidgetFramework_Core::debugMode() OR WidgetFramework_Option::get('layoutEditorEnabled'))
 				{
 					$html = $e->getMessage();
 				}
@@ -714,6 +721,14 @@ abstract class WidgetFramework_WidgetRenderer
 					$template->addRequiredExternal($type, $requirement);
 				}
 			}
+		}
+
+		if (!$this->useWrapper($widget) AND WidgetFramework_Option::get('layoutEditorEnabled'))
+		{
+			$html = $template->create('wf_layout_editor_widget', array_merge($params, array(
+				'widget' => $widget,
+				'html' => $html
+			)))->render();
 		}
 
 		return $html;

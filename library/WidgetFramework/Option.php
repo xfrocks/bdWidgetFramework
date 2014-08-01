@@ -2,7 +2,7 @@
 
 class WidgetFramework_Option
 {
-	protected static $_revealEnabled = null;
+	protected static $_layoutEditorEnabled = null;
 
 	public static function get($key)
 	{
@@ -14,8 +14,8 @@ class WidgetFramework_Option
 				return 7;
 			case 'indexTabId':
 				return 'WidgetFramework_home';
-			case 'revealEnabled':
-				if (self::$_revealEnabled === null)
+			case 'layoutEditorEnabled':
+				if (self::$_layoutEditorEnabled === null)
 				{
 					$session = XenForo_Application::get('session');
 					if (empty($session))
@@ -23,14 +23,14 @@ class WidgetFramework_Option
 						// no session yet...
 						return false;
 					}
-					self::$_revealEnabled = ($session->get('_WidgetFramework_reveal') == true);
+					self::$_layoutEditorEnabled = ($session->get('_WidgetFramework_layoutEditor') === true);
 				}
 
 				// use the cached value
-				return self::$_revealEnabled;
+				return self::$_layoutEditorEnabled;
 		}
 
-		return $options->get('WidgetFramework_' . $key);
+		return $options->get('wf_' . $key);
 	}
 
 	public static function setIndexNodeId($nodeId)

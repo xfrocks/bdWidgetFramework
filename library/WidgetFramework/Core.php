@@ -325,6 +325,18 @@ class WidgetFramework_Core
 			}
 		}
 
+		if (WidgetFramework_Option::get('layoutEditorEnabled'))
+		{
+			$conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
+
+			$params = array(
+				'type' => 'template',
+				'positionCode' => $templateName,
+				'conditionalParams' => $conditionalParams,
+			);
+			$html .= $template->create('wf_layout_editor_placeholder', $params);
+		}
+
 		if ($html != $originalHtml)
 		{
 			$containerData['sidebar'] = utf8_trim($html);
@@ -368,6 +380,16 @@ class WidgetFramework_Core
 			return $html;
 		}
 
+		if (isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS]))
+		{
+			// this is params array from page container
+			if (isset($params['contentTemplate']) AND isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]))
+			{
+				// found content template params, merge it
+				$params = array_merge($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]->getParams(), $params);
+			}
+		}
+
 		foreach ($position['widgets'] as &$widgetGroup)
 		{
 			$count = 0;
@@ -400,22 +422,19 @@ class WidgetFramework_Core
 					$position['extraData'][$widget['widget_id']] = $renderer->extraPrepare($widget, $widgetHtml);
 				}
 
-				if (!empty($widgetHtml))
+				if (!empty($widgetHtml) OR WidgetFramework_Option::get('layoutEditorEnabled'))
 				{
 					$position['html'][$widget['widget_id']] = $widgetHtml;
 
 					$count++;
 				}
-				else
-				{
-					$position['html'][$widget['widget_id']] = '';
-				}
 
-				if ($isRandom AND $count > 0)
+				if (!WidgetFramework_Option::get('layoutEditorEnabled') AND $isRandom AND $count > 0)
 				{
 					// we are in random group
 					// at least 1 widget is rendered
 					// stop the foreach loop now
+					// sondh@2014-08-01: do not break in layout editor
 					break;
 				}
 			}
@@ -430,7 +449,7 @@ class WidgetFramework_Core
 					$widget = &$widgetGroup['widgets'][$key];
 					$renderer = self::getRenderer($widget['class'], false);
 
-					if (!empty($position['html'][$widget['widget_id']]))
+					if (isset($position['html'][$widget['widget_id']]))
 					{
 						if ($renderer->useWrapper($widget))
 						{
@@ -440,15 +459,14 @@ class WidgetFramework_Core
 								$widgetClass .= ' non-sidebar-widget';
 							}
 
-							$tabs[$widget['widget_id']] = array(
-								'widget_id' => $widget['widget_id'],
+							$tabs[$widget['widget_id']] = array_merge($widget, array(
 								'title' => WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget),
 								'html' => $position['html'][$widget['widget_id']],
+
 								// since 1.0.9
 								'class' => $widgetClass,
 								'extraData' => $position['extraData'][$widget['widget_id']],
-								'options' => $widget['options'],
-							);
+							));
 						}
 						else
 						{
@@ -519,7 +537,7 @@ class WidgetFramework_Core
 	protected function _loadCachedWidget($cacheId, $useUserCache, $useLiveCache)
 	{
 		// disable cache in debug environment...
-		if (self::debugMode() OR WidgetFramework_Option::get('revealEnabled'))
+		if (self::debugMode() OR WidgetFramework_Option::get('layoutEditorEnabled'))
 		{
 			return false;
 		}
