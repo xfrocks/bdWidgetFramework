@@ -421,6 +421,10 @@ class WidgetFramework_Core
 					// WidgetFramework_Renderer::render())
 					$position['extraData'][$widget['widget_id']] = $renderer->extraPrepare($widget, $widgetHtml);
 				}
+				elseif (WidgetFramework_Option::get('layoutEditorEnabled'))
+				{
+					$widgetHtml = new XenForo_Phrase('wf_layout_editor_widget_no_renderer');
+				}
 
 				if (!empty($widgetHtml) OR WidgetFramework_Option::get('layoutEditorEnabled'))
 				{
@@ -451,7 +455,7 @@ class WidgetFramework_Core
 
 					if (isset($position['html'][$widget['widget_id']]))
 					{
-						if ($renderer->useWrapper($widget))
+						if (empty($renderer) OR $renderer->useWrapper($widget))
 						{
 							$widgetClass = $widget['class'];
 							if (!empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]))
@@ -465,8 +469,12 @@ class WidgetFramework_Core
 
 								// since 1.0.9
 								'class' => $widgetClass,
-								'extraData' => $position['extraData'][$widget['widget_id']],
 							));
+
+							if (!empty($position['extraData'][$widget['widget_id']]))
+							{
+								$tabs[$widget['widget_id']]['extraData'] = $position['extraData'][$widget['widget_id']];
+							}
 						}
 						else
 						{
@@ -713,7 +721,7 @@ class WidgetFramework_Core
 			}
 			else
 			{
-				return false;
+				return null;
 			}
 		}
 	}

@@ -167,7 +167,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		}
 		else
 		{
-			$widget['rendererName'] = new XenForo_Phrase('xf_unknown_renderer', array('class' => $widget['class']));
+			$widget['rendererName'] = new XenForo_Phrase('wf_unknown_renderer', array('class' => $widget['class']));
 			$widget['rendererNotFound'] = true;
 			$widget['active'] = false;
 		}

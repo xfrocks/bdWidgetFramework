@@ -7,7 +7,7 @@ class WidgetFramework_Helper_String
 		return new _WidgetFramework_ArrayOfString($glue, $strings);
 	}
 
-	public static function createWidgetTitleDelayed(WidgetFramework_WidgetRenderer $renderer, array $widget)
+	public static function createWidgetTitleDelayed($renderer, array $widget)
 	{
 		return new _WidgetFramework_WidgetTitleDelayed($renderer, $widget);
 	}
@@ -89,7 +89,7 @@ class _WidgetFramework_WidgetTitleDelayed
 	protected $_widget;
 	protected $_prepared = false;
 
-	public function __construct(WidgetFramework_WidgetRenderer $renderer, array $widget)
+	public function __construct($renderer, array $widget)
 	{
 		$this->_renderer = $renderer;
 		$this->_widget = $widget;
@@ -101,7 +101,14 @@ class _WidgetFramework_WidgetTitleDelayed
 	{
 		if ($this->_prepared === false)
 		{
-			$this->_prepared = $this->_renderer->extraPrepareTitle($this->_widget);
+			if (!empty($this->_renderer))
+			{
+				$this->_prepared = $this->_renderer->extraPrepareTitle($this->_widget);
+			}
+			else
+			{
+				$this->_prepared = new XenForo_Phrase('wf_unknown_renderer', array('class' => $this->_widget['class']));
+			}
 		}
 	}
 

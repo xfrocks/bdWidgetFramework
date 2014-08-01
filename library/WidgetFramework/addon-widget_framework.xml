@@ -888,6 +888,7 @@ Arguments:
     <phrase title="wf_layout_editor_widget_conditional_failed" version_id="96" version_string="2.5.0d"><![CDATA[Conditional check prevented this widget from being rendered.
 ]]></phrase>
     <phrase title="wf_layout_editor_widget_no_html" version_id="96" version_string="2.5.0d"><![CDATA[Nothing rendered, the widget currently has no contents and users will not see it.]]></phrase>
+    <phrase title="wf_layout_editor_widget_no_renderer" version_id="96" version_string="2.5.0d"><![CDATA[This widget cannot be rendered because the renderer class is invalid.]]></phrase>
     <phrase title="wf_layout_position" version_id="54" version_string="2.2.3"><![CDATA[Position]]></phrase>
     <phrase title="wf_layout_size" version_id="54" version_string="2.2.3"><![CDATA[Size]]></phrase>
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
@@ -953,6 +954,7 @@ Arguments:
     <phrase title="wf_thread_with_poll" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
     <phrase title="wf_title_explain" version_id="65" version_string="2.3.6"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer. Or you can use a phrase by using {xen:phrase title} format.]]></phrase>
+    <phrase title="wf_unknown_renderer" version_id="96" version_string="2.5.0d"><![CDATA[Unknown Renderer ({class})]]></phrase>
     <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
     <phrase title="wf_use_live_cache" version_id="29" version_string="1.3.4"><![CDATA[Use Live Cache]]></phrase>
@@ -1007,7 +1009,6 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_x_posted" version_id="1" version_string="0.9"><![CDATA[{user} posted]]></phrase>
     <phrase title="wf_x_replied" version_id="1" version_string="0.9"><![CDATA[{user} replied]]></phrase>
     <phrase title="wf_x_updated" version_id="47" version_string="2.1.1"><![CDATA[{user} updated]]></phrase>
-    <phrase title="xf_unknown_renderer" version_id="24" version_string="1.2.2.2"><![CDATA[Unknown Renderer ({class})]]></phrase>
     <phrase title="xf_x_users_online" global_cache="1" version_id="69" version_string="2.4.1"><![CDATA[{total} Users Online]]></phrase>
   </phrases>
   <route_prefixes>
