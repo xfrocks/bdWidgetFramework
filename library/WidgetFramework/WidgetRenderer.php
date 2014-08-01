@@ -81,6 +81,26 @@ abstract class WidgetFramework_WidgetRenderer
 				$optionValue = 0;
 			}
 		}
+		elseif ($optionKey === 'conditional')
+		{
+			$raw = '';
+			if (!empty($optionValue['raw']))
+			{
+				$raw = $optionValue['raw'];
+			}
+
+			if (!empty($raw))
+			{
+				$optionValue = array(
+					'raw' => $raw,
+					'parsed' => WidgetFramework_Helper_Conditional::parse($raw),
+				);
+			}
+			else
+			{
+				$optionValue = array();
+			}
+		}
 
 		return true;
 	}
@@ -346,6 +366,7 @@ abstract class WidgetFramework_WidgetRenderer
 			}
 
 			$this->_configuration['options']['expression'] = XenForo_Input::STRING;
+			$this->_configuration['options']['conditional'] = XenForo_Input::ARRAY_SIMPLE;
 			$this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
 			$this->_configuration['options']['layout_row'] = XenForo_Input::UINT;
 			$this->_configuration['options']['layout_col'] = XenForo_Input::UINT;
@@ -442,6 +463,11 @@ abstract class WidgetFramework_WidgetRenderer
 			}
 		}
 
+		if (!empty($options['conditional']) AND !empty($options['expression']))
+		{
+			unset($options['expression']);
+		}
+
 		return $options;
 	}
 
@@ -476,9 +502,16 @@ abstract class WidgetFramework_WidgetRenderer
 
 	protected function _executeExpression($expression, array $params)
 	{
+		if (WidgetFramework_Core::debugMode())
+		{
+			XenForo_Error::logError('Widget Expression has been deprecated: %s', $expression);
+		}
+
 		$expression = trim($expression);
 		if (empty($expression))
+		{
 			return true;
+		}
 
 		$sandbox = @create_function('$params', 'extract($params); return (' . $expression . ');');
 
@@ -490,6 +523,25 @@ abstract class WidgetFramework_WidgetRenderer
 		{
 			throw new Exception('Syntax error');
 		}
+	}
+
+	protected function _testConditional(array $widget, array $params)
+	{
+		if (!empty($widget['options']['conditional']))
+		{
+			$conditional = $widget['options']['conditional'];
+
+			if (!empty($conditional['raw']) AND !empty($conditional['parsed']))
+			{
+				return WidgetFramework_Helper_Conditional::test($conditional['raw'], $conditional['parsed'], $params);
+			}
+		}
+		elseif (!empty($widget['options']['expression']))
+		{
+			return $this->_executeExpression($widget['options']['expression'], $params);
+		}
+
+		return true;
 	}
 
 	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
@@ -562,37 +614,31 @@ abstract class WidgetFramework_WidgetRenderer
 		$containerData = array();
 		$requiredExternals = array();
 
-		// always check for expression if it's available
-		// otherwise the cached widget will show up every where... (the cache test also
-		// moved down below this)
-		// since 1.2.1
-		if (isset($widget['options']['expression']))
+		try
 		{
-			try
+			if (!$this->_testConditional($widget, $params))
 			{
-				if (!$this->_executeExpression($widget['options']['expression'], $params))
+				// exepression failed, stop rendering...
+				if (WidgetFramework_Option::get('layoutEditorEnabled'))
 				{
-					// exepression failed, stop rendering...
-					if (WidgetFramework_Option::get('layoutEditorEnabled'))
-					{
-						$html = new XenForo_Phrase('wf_layout_editor_widget_conditional_failed');
-					}
-					else {
-						$html = '';
-					}
-				}
-			}
-			catch (Exception $e)
-			{
-				// problem executing expression... Stop rendering anyway
-				if (WidgetFramework_Core::debugMode() OR WidgetFramework_Option::get('layoutEditorEnabled'))
-				{
-					$html = $e->getMessage();
+					$html = new XenForo_Phrase('wf_layout_editor_widget_conditional_failed');
 				}
 				else
 				{
 					$html = '';
 				}
+			}
+		}
+		catch (Exception $e)
+		{
+			// problem while testing conditional, stop rendering...
+			if (WidgetFramework_Core::debugMode() OR WidgetFramework_Option::get('layoutEditorEnabled'))
+			{
+				$html = $e->getMessage();
+			}
+			else
+			{
+				$html = '';
 			}
 		}
 
@@ -606,7 +652,7 @@ abstract class WidgetFramework_WidgetRenderer
 			}
 		}
 
-		// check for cache after expression test
+		// check for cache
 		// since 1.2.1
 		$cacheId = false;
 		$useUserCache = false;
@@ -659,7 +705,7 @@ abstract class WidgetFramework_WidgetRenderer
 			$html = '';
 		}
 
-		// expression executed just fine
+		// conditional executed just fine
 		if ($html === false)
 		{
 			$renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);

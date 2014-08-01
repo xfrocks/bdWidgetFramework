@@ -6,7 +6,7 @@ class WidgetFramework_WidgetRenderer_None extends WidgetFramework_WidgetRenderer
 	{
 		$response = parent::renderOptions($viewRenderer, $templateParams);
 
-		// hide the expression field
+		// hide the conditional field
 		$templateParams['options_loaded'] = '';
 
 		return $response;
