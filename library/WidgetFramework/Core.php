@@ -69,6 +69,9 @@ class WidgetFramework_Core
 
 		// since 2.4.2
 		$renderers[] = 'WidgetFramework_WidgetRenderer_CallbackWithoutWrapper';
+
+		// since 2.6
+		$renderers[] = 'WidgetFramework_WidgetRenderer_ProfilePosts';
 	}
 
 	public function bootstrap()

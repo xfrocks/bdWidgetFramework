@@ -10,6 +10,8 @@ class WidgetFramework_Option
 
 		switch ($key)
 		{
+			case 'applicationVersionId':
+				return XenForo_Application::$versionId;
 			case 'cacheCutoffDays':
 				return 7;
 			case 'indexTabId':
