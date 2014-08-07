@@ -129,7 +129,7 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 			{
 				$thread = array();
 			}
-			
+
 			if (!empty($widget['options']['open_only']))
 			{
 				if (empty($thread['discussion_open']))
@@ -141,7 +141,19 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 
 		if (!empty($thread))
 		{
-			$poll = $pollModel->preparePoll($thread, $threadModel->canVoteOnPoll($thread, $thread));
+			if (XenForo_Application::$versionId > 1040000)
+			{
+				// XenForo 1.4.0+ has some major changes regarding polls
+				$poll = $pollModel->getPollByContent('thread', $thread['thread_id']);
+				if (!empty($poll))
+				{
+					$poll = $pollModel->preparePoll($poll, $threadModel->canVoteOnPoll($poll, $thread, $thread));
+				}
+			}
+			else
+			{
+				$poll = $pollModel->preparePoll($thread, $threadModel->canVoteOnPoll($thread, $thread));
+			}
 		}
 
 		$renderTemplateObject->setParam('thread', $thread);

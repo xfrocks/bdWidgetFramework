@@ -1510,7 +1510,7 @@ All customization should go to wf_default_EXTRA.css
 <xen:if is="{$widgetPage.options.break_container}">
 	<xen:container var="$widgetPageOptionsBreakContainer">1</xen:container>
 </xen:if>]]></template>
-    <template title="wf_widget_poll" version_id="62" version_string="2.3.3d"><![CDATA[<xen:edithint template="wf_default.css" />
+    <template title="wf_widget_poll" version_id="96" version_string="2.5.0d"><![CDATA[<xen:edithint template="wf_default.css" />
 
 <xen:if is="{$poll}">
 	<div class="section">
@@ -1528,13 +1528,18 @@ All customization should go to wf_default_EXTRA.css
 			</xen:include>
 		</div>
 	</div>
-</xen:if>]]></template>
-    <template title="wf_widget_poll_block" version_id="62" version_string="2.3.3d"><![CDATA[<xen:require css="wf_default.css" />
+</xen:if>
+
+<xen:edithint template="poll_block" />
+<xen:edithint template="poll_block_result" />]]></template>
+    <template title="wf_widget_poll_block" version_id="96" version_string="2.5.0d"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="polls.css" />
 <xen:require js="js/xenforo/discussion.js" />
 
-<div id="PollContainer" class="NoAutoHeader widget-poll">
-	<form action="{xen:link threads/poll/vote, $thread}" method="post" class="pollBlock AutoValidator PollVoteForm" data-container="#PollContainer">
+<div id="PollContainer" class="NoAutoHeader PollContainer widget-poll">
+	<form action="{xen:link threads/poll/vote, $thread}" method="post" class="pollBlock AutoValidator PollVoteForm"
+		data-container="#PollContainer" data-max-votes="{$poll.max_votes}">
+
 		<div class="pollContent">
 			{xen:raw $options}
 		</div>
@@ -1543,12 +1548,12 @@ All customization should go to wf_default_EXTRA.css
 		<input type="hidden" name="_fromWidget" value="1" />
 	</form>
 </div>]]></template>
-    <template title="wf_widget_poll_block_result" version_id="62" version_string="2.3.3d"><![CDATA[<xen:edithint template="wf_default.css" />
+    <template title="wf_widget_poll_block_result" version_id="96" version_string="2.5.0d"><![CDATA[<xen:edithint template="wf_default.css" />
 <xen:edithint template="polls.css" />
 
 <div class="overlayScroll pollResultsOverlay">
 
-	<ol class="pollResults">
+	<ol class="pollResults noResults">
 	<xen:foreach loop="$poll.responses" key="$pollResponseId" value="$response">
 		<li class="pollResult {xen:if $response.hasVoted, voted}">
 			<xen:if is="{$response.hasVoted}">
