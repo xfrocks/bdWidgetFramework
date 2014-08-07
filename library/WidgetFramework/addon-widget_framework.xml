@@ -286,6 +286,9 @@
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}open_only" value="1" selected="{$options.open_only}">{xen:phrase wf_thread_open_only}</xen:option>
 </xen:checkboxunit>]]></template>
+    <template title="wf_widget_options_profile_posts"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase profile_posts}"}</xen:explain>
+</xen:spinboxunit>]]></template>
     <template title="wf_widget_options_recent_status"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_profile_posts}"}</xen:explain>
 </xen:spinboxunit>
@@ -980,6 +983,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_page_widget_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Widget position horizontally: top row is 0.]]></phrase>
     <phrase title="wf_widget_page_widget_size_col_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of columns to occupy]]></phrase>
     <phrase title="wf_widget_page_widget_size_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of rows to occupy]]></phrase>
+    <phrase title="wf_widget_profile_posts_type_recent" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
@@ -1186,6 +1190,57 @@ All customization should go to wf_default_EXTRA.css
 		display: block;
 		text-align: right;
 	}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem
+{
+	overflow: hidden; zoom: 1;
+
+	margin: 5px 0;
+	padding-top: 5px;
+	border-top: 1px solid {xen:property primaryLighterStill};
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem:first-child
+{
+	border-top: none;
+	padding-top: 0;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .avatar
+{
+	float: left;
+	font-size: 0;
+}
+
+	.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .avatar img
+	{
+		width: 24px;
+		height: 24px;
+	}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageInfo
+{
+	margin-left: 34px;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageContent article,
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageContent blockquote
+{
+	display: inline;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .poster
+{
+	font-weight: bold;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageMeta
+{
+	overflow: hidden; zoom: 1;
+	font-size: 11px;
+	line-height: 14px;
+	padding-top: 4px;
+}
 
 .widget .avatarHeap {
 	<xen:comment>avatarHeap last avatar of a row will need some space at
@@ -1633,6 +1688,48 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
+    <template title="wf_widget_profile_posts" version_id="96" version_string="2.5.0d"><![CDATA[<ul>
+	<xen:foreach loop="$profilePosts" value="$profilePost">
+		<xen:include template="wf_widget_profile_posts_profile_post" />
+	</xen:foreach>
+</ul>
+
+<xen:edithint template="profile_post_list_item_simple" />
+<xen:edithint template="wf_default.css" />]]></template>
+    <template title="wf_widget_profile_posts_profile_post" version_id="96" version_string="2.5.0d"><![CDATA[<xen:comment>
+	This template is intended to be used with old version of XenForo only.
+	Since XenForo 1.4.0, "profile_post_list_item_simple" should be used instead
+</xen:comment>
+
+<xen:if is="{xen:helper WidgetFramework_getOption, applicationVersionId} > 1040000">
+	<xen:include template="profile_post_list_item_simple" />
+<xen:else />
+	<xen:require css="wf_default.css" />
+	<xen:require css="bb_code.css" />
+
+	<li id="profile-post-{$profilePost.profile_post_id}" class="WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem" data-author="{$profilePost.username}">
+
+		<xen:avatar user="$profilePost" size="s" img="true" />
+
+		<div class="messageInfo">
+
+			<div class="messageContent">
+				<span class="poster">
+					<xen:username user="$profilePost" rich="true" />
+					<xen:if is="{$profilePost.user_id} != {$profilePost.profile_user_id} AND {$profilePost.profileUser}">
+						<span class="muted">&#9658;</span> <xen:username user="$profilePost.profileUser" rich="true" />
+					</xen:if>
+				</span>
+				<article><blockquote class="ugc baseHtml{xen:if $profilePost.isIgnored, ' ignored'}">{xen:helper bodyText, $profilePost.message}</blockquote></article>
+			</div>
+
+			<div class="messageMeta">
+				<a href="{xen:link 'profile-posts', $profilePost}" title="{xen:phrase permalink}" class="item muted"><xen:datetime time="$profilePost.post_date" /></a>
+			</div>
+
+		</div>
+	</li>
+</xen:if>]]></template>
     <template title="wf_widget_recent_status" version_id="86" version_string="2.4.7c"><![CDATA[<xen:if is="{$users}">
     <xen:require css="wf_default.css" />
     
