@@ -2068,7 +2068,7 @@ All customization should go to wf_default_EXTRA.css
 									<xen:set var="$html">{xen:raw $tab.html}</xen:set>
 								</xen:include>
 							<xen:else />
-								{xen:raw $html}
+								{xen:raw $tab.html}
 							</xen:if>
 						</li>
 					</xen:foreach>
