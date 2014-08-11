@@ -1129,6 +1129,7 @@ All customization should go to wf_default_EXTRA.css
 }
 
 .WidgetFramework_WidgetRenderer_Threads .unread > a { font-weight: bold; }
+.sidebar .WidgetFramework_WidgetRenderer_Threads .avatarList .username { display: inline; font-size: inherit; margin: 0; }
 
 .WidgetFramework_WidgetRenderer_Threads_FullThreadList {
 }
@@ -1739,7 +1740,7 @@ All customization should go to wf_default_EXTRA.css
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" />
+									{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}" class="username">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" />
 								</xen:set>
 							</xen:include>
 						</xen:foreach>
@@ -1749,7 +1750,7 @@ All customization should go to wf_default_EXTRA.css
 						<xen:foreach loop="$threads" value="$thread">
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'}, {xen:phrase replies}: {xen:number $thread.reply_count}
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}" class="username">{$thread.username}</a>'}, {xen:phrase replies}: {xen:number $thread.reply_count}
 								</xen:set>
 							</xen:include>
 						</xen:foreach>
@@ -1759,7 +1760,7 @@ All customization should go to wf_default_EXTRA.css
 						<xen:foreach loop="$threads" value="$thread">
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'},
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}" class="username">{$thread.username}</a>'},
 									{xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
 								</xen:set>
 							</xen:include>
@@ -1770,7 +1771,7 @@ All customization should go to wf_default_EXTRA.css
 						<xen:foreach loop="$threads" value="$thread">
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
+									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}" class="username">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
 								</xen:set>
 							</xen:include>
 						</xen:foreach>
