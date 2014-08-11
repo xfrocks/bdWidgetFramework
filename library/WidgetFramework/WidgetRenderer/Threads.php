@@ -501,6 +501,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 			}
 			$threadForumRef = &$threadForums[$threadRef['node_id']];
 
+			if ($threadModel->isRedirect($threadRef))
+			{
+				unset($threads[$threadId]);
+				continue;
+			}
+
 			if (!$threadModel->canViewThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser))
 			{
 				unset($threads[$threadId]);
