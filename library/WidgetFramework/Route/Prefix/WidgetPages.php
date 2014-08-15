@@ -5,10 +5,10 @@ class WidgetFramework_Route_Prefix_WidgetPages implements XenForo_Route_Interfac
 
 	public function match($routePath, Zend_Controller_Request_Http $request, XenForo_Router $router)
 	{
-		$action = $router->resolveActionWithStringParam($routePath, $request, 'node_name');
+		$action = $router->resolveActionWithIntegerOrStringParam($routePath, $request, 'node_id', 'node_name');
 		$action = $router->resolveActionAsPageNumber($action, $request);
 
-		return $router->getRouteMatch('WidgetFramework_ControllerPublic_WidgetPage', 'index', 'forums');
+		return $router->getRouteMatch('WidgetFramework_ControllerPublic_WidgetPage', $action, 'forums');
 	}
 
 	public function buildLink($originalPrefix, $outputPrefix, $action, $extension, $data, array &$extraParams)
