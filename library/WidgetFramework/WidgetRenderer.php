@@ -196,46 +196,62 @@ abstract class WidgetFramework_WidgetRenderer
 		{
 			$forumIds = array_values($forumsOption);
 			$forumIds2 = array();
+			$templateNode = null;
+
+			if (!empty($templateParams['forum']['node_id']))
+			{
+				$templateNode = $templateParams['forum'];
+			}
+			elseif (!empty($templateParams['category']['node_id']))
+			{
+				$templateNode = $templateParams['category'];
+			}
+			elseif (!empty($templateParams['page']['node_id']))
+			{
+				$templateNode = $templateParams['page'];
+			}
+			elseif (!empty($templateParams['widgetPage']['node_id']))
+			{
+				$templateNode = $templateParams['widgetPage'];
+			}
 
 			foreach (array_keys($forumIds) as $i)
 			{
 				switch ($forumIds[$i])
 				{
 					case self::FORUMS_OPTION_SPECIAL_CURRENT:
-						if (isset($templateParams['forum']))
+						if (!empty($templateNode))
 						{
-							$forumIds2[] = $templateParams['forum']['node_id'];
+							$forumIds2[] = $templateNode['node_id'];
 						}
 						unset($forumIds[$i]);
-						// remove because it's not a valid forum id anyway
 						break;
 					case self::FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN:
-						if (isset($templateParams['forum']))
+						if (!empty($templateNode))
 						{
+							$forumIds2[] = $templateNode['node_id'];
+
 							$viewableNodeList = $this->_helperGetViewableNodeList($asGuest);
-							$forumIds2[] = $templateParams['forum']['node_id'];
-							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateParams['forum']['node_id']);
+							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateNode['node_id']);
 						}
 						unset($forumIds[$i]);
-						// remove because it's not a valid forum id anyway
 						break;
 					case self::FORUMS_OPTION_SPECIAL_PARENT:
-						if (isset($templateParams['forum']))
+						if (!empty($templateNode))
 						{
-							$forumIds2[] = $templateParams['forum']['parent_node_id'];
+							$forumIds2[] = $templateNode['parent_node_id'];
 						}
 						unset($forumIds[$i]);
-						// remove because it's not a valid forum id anyway
 						break;
 					case self::FORUMS_OPTION_SPECIAL_PARENT_AND_CHILDREN:
-						if (isset($templateParams['forum']))
+						if (!empty($templateNode))
 						{
+							$forumIds2[] = $templateNode['parent_node_id'];
+
 							$viewableNodeList = $this->_helperGetViewableNodeList($asGuest);
-							$forumIds2[] = $templateParams['forum']['parent_node_id'];
-							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateParams['forum']['parent_node_id']);
+							$this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateNode['parent_node_id']);
 						}
 						unset($forumIds[$i]);
-						// remove because it's not a valid forum id anyway
 						break;
 				}
 			}
