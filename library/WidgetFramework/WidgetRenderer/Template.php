@@ -6,7 +6,7 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
 	{
 		return array(
 			'name' => '[Advanced] Template',
-			'options' => array('template' => XenForo_Input::STRING, ),
+			'options' => array('template' => XenForo_Input::STRING),
 		);
 	}
 
@@ -22,7 +22,14 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
-		return $renderTemplateObject->render();
+		if (!empty($widget['options']['template']) AND $widget['options']['template'] == $renderTemplateObject->getTemplateName())
+		{
+			return $renderTemplateObject->render();
+		}
+		else
+		{
+			return '';
+		}
 	}
 
 }
