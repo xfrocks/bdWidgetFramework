@@ -11,6 +11,9 @@ class WidgetFramework_Core
 	protected $_templateForHooks = array();
 	protected $_models = array();
 
+	protected $_renderedTemplateObjByGroupId = array();
+	protected $_renderedGroupsByWidgetId = array();
+
 	public function __construct()
 	{
 		$renderers = array();
@@ -152,8 +155,7 @@ class WidgetFramework_Core
 							'name' => $widget['options']['tab_group'],
 							'widgets' => array(),
 							'keys' => false,
-							'display_order' => $widget['display_order'], // the group uses the first widget's
-							// display order
+							'display_order' => $widget['display_order'],
 						);
 					}
 
@@ -470,8 +472,8 @@ class WidgetFramework_Core
 								'title' => WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget),
 								'html' => $position['html'][$widget['widget_id']],
 
-								// since 1.0.9
 								'class' => $widgetClass,
+								'positionCode' => $positionCode,
 							));
 
 							if (!empty($position['extraData'][$widget['widget_id']]))
@@ -481,7 +483,17 @@ class WidgetFramework_Core
 						}
 						else
 						{
-							$noWrapper[$widget['widget_id']] = $position['html'][$widget['widget_id']];
+							if (WidgetFramework_Option::get('layoutEditorEnabled'))
+							{
+								$noWrapper[$widget['widget_id']] = $template->create('wf_layout_editor_widget', array_merge($params, array(
+									'widget' => $widget,
+									'html' => $position['html'][$widget['widget_id']],
+								)));
+							}
+							else
+							{
+								$noWrapper[$widget['widget_id']] = $position['html'][$widget['widget_id']];
+							}
 						}
 					}
 				}
@@ -490,7 +502,7 @@ class WidgetFramework_Core
 
 				if (!empty($tabs))
 				{
-					$htmls[] = WidgetFramework_WidgetRenderer::wrap($tabs, $params, $template, $widgetGroup['name']);
+					$htmls[] = $this->_wrapWidgets($tabs, $params, $template, $widgetGroup['name']);
 				}
 
 				if (count($htmls) > 0)
@@ -510,6 +522,116 @@ class WidgetFramework_Core
 		}
 
 		return $html;
+	}
+
+	protected function _wrapWidgets(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId)
+	{
+		$firstTab = reset($tabs);
+		$isColumns = strpos($groupId, 'columns') === 0;
+
+		$normalizedGroupId = sprintf('%s-%s', $groupId, substr(md5(serialize(array_keys($tabs))), 0, 5));
+		$normalizedGroupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $normalizedGroupId);
+
+		$wrapperTemplateName = 'wf_widget_wrapper';
+		$wrapperParams = array_merge($params, array(
+			'tabs' => $tabs,
+			'firstTab' => $firstTab,
+			'groupId' => $groupId,
+
+			'isColumns' => $isColumns,
+			'normalizedGroupId' => $normalizedGroupId,
+		));
+
+		if (WidgetFramework_Option::get('layoutEditorEnabled'))
+		{
+			$wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
+			$wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
+		}
+
+		$wrapperTemplateObj = $template->create($wrapperTemplateName, $wrapperParams);
+
+		if (WidgetFramework_Option::get('layoutEditorEnabled'))
+		{
+			if (!empty($_REQUEST['_layoutEditorGroup']) AND $_REQUEST['_layoutEditorGroup'] == $normalizedGroupId)
+			{
+				$this->_renderedTemplateObjByGroupId[$normalizedGroupId] = $wrapperTemplateObj;
+			}
+
+			if (!empty($_REQUEST['_widgetId']))
+			{
+				foreach ($tabs as &$tabRef)
+				{
+					if ($_REQUEST['_widgetId'] == $tabRef['widget_id'])
+					{
+						$this->_renderedGroupsByWidgetId[$tabRef['widget_id']] = $normalizedGroupId;
+						$this->_renderedTemplateObjByGroupId[$normalizedGroupId] = $wrapperTemplateObj;
+					}
+				}
+			}
+		}
+
+		return $wrapperTemplateObj;
+	}
+
+	public function getWidgetGroupsByPosition($positionCode)
+	{
+		if (!isset($this->_positions[$positionCode]))
+		{
+			return array();
+		}
+
+		return $this->_positions[$positionCode]['widgets'];
+	}
+
+	public function getRenderedGroupByWidgetId($widgetId)
+	{
+		if (isset($this->_renderedGroupsByWidgetId[$widgetId]))
+		{
+			return $this->_renderedGroupsByWidgetId[$widgetId];
+		}
+
+		return '';
+	}
+
+	public function getRenderedHtmlByWidgetId($widgetId)
+	{
+		foreach ($this->_positions as &$positionRef)
+		{
+			if (!empty($positionRef['html']))
+			{
+				foreach ($positionRef['html'] as $_widgetId => &$widgetHtml)
+				{
+					if ($_widgetId == $widgetId)
+					{
+						return $widgetHtml;
+					}
+				}
+			}
+		}
+
+		return '';
+	}
+
+	public function getRenderedTemplateObjByWidgetId($widgetId)
+	{
+		$groupId = $this->getRenderedGroupByWidgetId($widgetId);
+
+		if (!empty($groupId))
+		{
+			return $this->getRenderedTemplateObjByGroupId($groupId);
+		}
+
+		return '';
+	}
+
+	public function getRenderedTemplateObjByGroupId($groupId)
+	{
+		if (isset($this->_renderedTemplateObjByGroupId[$groupId]))
+		{
+			return $this->_renderedTemplateObjByGroupId[$groupId];
+		}
+
+		return '';
 	}
 
 	protected function _getPermissionCombinationId($useUserCache)

@@ -131,7 +131,10 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 				WHERE widget_id = ?
 				", array($widgetId));
 
-		$this->_prepareWidgetMandatory($widget);
+		if (!empty($widget))
+		{
+			$this->_prepareWidgetMandatory($widget);
+		}
 
 		return $widget;
 	}

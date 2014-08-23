@@ -785,14 +785,6 @@ abstract class WidgetFramework_WidgetRenderer
 			}
 		}
 
-		if (!$this->useWrapper($widget) AND WidgetFramework_Option::get('layoutEditorEnabled'))
-		{
-			$html = $template->create('wf_layout_editor_widget', array_merge($params, array(
-				'widget' => $widget,
-				'html' => $html
-			)))->render();
-		}
-
 		return $html;
 	}
 
@@ -870,29 +862,6 @@ abstract class WidgetFramework_WidgetRenderer
 	 * @var XenForo_View
 	 */
 	protected static $_pseudoViewObj = null;
-
-	public static function wrap(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId = false)
-	{
-		$isColumns = strpos($groupId, 'columns') === 0;
-
-		if (empty($groupId))
-		{
-			$groupId = 'nope';
-		}
-
-		$normalizedGroupId = sprintf('%s-%s', $groupId, substr(md5(serialize(array_keys($tabs))), 0, 5));
-		$normalizedGroupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $normalizedGroupId);
-
-		$wrapper = $template->create('wf_widget_wrapper', array_merge($params, array(
-			'tabs' => $tabs,
-			'groupId' => $groupId,
-
-			'isColumns' => $isColumns,
-			'normalizedGroupId' => $normalizedGroupId,
-		)));
-
-		return $wrapper;
-	}
 
 	public static function create($class)
 	{

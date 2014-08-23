@@ -227,7 +227,7 @@ class WidgetFramework_Listener
 		self::$fc = $fc;
 		self::$viewRenderer = $viewRenderer;
 
-		if ($viewRenderer instanceof XenForo_ViewRenderer_HtmlPublic)
+		if ($fc->getDependencies() instanceof XenForo_Dependencies_Public)
 		{
 			WidgetFramework_Core::getInstance()->bootstrap();
 		}
@@ -245,7 +245,28 @@ class WidgetFramework_Listener
 	{
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
 		{
-			WidgetFramework_Core::getInstance()->shutdown();
+			$core = WidgetFramework_Core::getInstance();
+
+			$renderWidget = 0;
+			$renderWidget += (!WidgetFramework_Option::get('layoutEditorEnabled') ? 0 : 1);
+			$renderWidget += (empty($_REQUEST['_layoutEditor']) ? 0 : 1);
+			$renderWidget += (empty($_REQUEST['_widgetFrameworkRenderWidget']) ? 0 : 1);
+			$renderWidget += (empty($_REQUEST['_widgetId']) ? 0 : 1);
+
+			if ($renderWidget == 4)
+			{
+				$controllerResponse = new XenForo_ControllerResponse_View();
+				$controllerResponse->viewName = 'WidgetFramework_ViewPublic_Widget_Render';
+				$controllerResponse->params = array(
+					'_widgetId' => $_REQUEST['_widgetId'],
+					'_layoutEditorGroup' => !empty($_REQUEST['_layoutEditorGroup']) ? $_REQUEST['_layoutEditorGroup'] : '',
+				);
+
+				$viewRenderer = $fc->getDependencies()->getViewRenderer($fc->getResponse(), 'json', $fc->getRequest());
+				$output = $fc->renderView($controllerResponse, $viewRenderer);
+			}
+
+			$core->shutdown();
 		}
 	}
 

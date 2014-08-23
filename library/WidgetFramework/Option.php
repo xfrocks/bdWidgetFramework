@@ -26,6 +26,15 @@ class WidgetFramework_Option
 						return false;
 					}
 					self::$_layoutEditorEnabled = ($session->get('_WidgetFramework_layoutEditor') === true);
+
+					if (!self::$_layoutEditorEnabled AND !empty($_REQUEST['_layoutEditor']))
+					{
+						$visitor = XenForo_Visitor::getInstance();
+						if ($visitor->hasAdminPermission('style'))
+						{
+							self::$_layoutEditorEnabled = true;
+						}
+					}
 				}
 
 				// use the cached value

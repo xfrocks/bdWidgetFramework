@@ -5,8 +5,13 @@ class WidgetFramework_XenForo_ControllerPublic_Misc extends XFCP_WidgetFramework
 	public function actionWfLayoutEditor()
 	{
 		$session = XenForo_Application::get('session');
-
 		if (empty($session))
+		{
+			return $this->responseNoPermission();
+		}
+
+		$visitor = XenForo_Visitor::getInstance();
+		if (!$visitor->hasAdminPermission('style'))
 		{
 			return $this->responseNoPermission();
 		}
