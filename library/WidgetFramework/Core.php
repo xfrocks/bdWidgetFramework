@@ -462,18 +462,12 @@ class WidgetFramework_Core
 					{
 						if (empty($renderer) OR $renderer->useWrapper($widget))
 						{
-							$widgetClass = $widget['class'];
-							if (!empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]))
-							{
-								$widgetClass .= ' non-sidebar-widget';
-							}
-
 							$tabs[$widget['widget_id']] = array_merge($widget, array(
 								'title' => WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget),
 								'html' => $position['html'][$widget['widget_id']],
 
-								'class' => $widgetClass,
 								'positionCode' => $positionCode,
+								WidgetFramework_WidgetRenderer::PARAM_IS_HOOK => !empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]),
 							));
 
 							if (!empty($position['extraData'][$widget['widget_id']]))
