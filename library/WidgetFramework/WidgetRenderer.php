@@ -129,6 +129,10 @@ abstract class WidgetFramework_WidgetRenderer
 
 		if ($useSpecialForums)
 		{
+			// new XenForo_Phrase('wf_current_forum')
+			// new XenForo_Phrase('wf_current_forum_and_children')
+			// new XenForo_Phrase('wf_parent_forum')
+			// new XenForo_Phrase('wf_parent_forum_and_children')
 			foreach (array(
 			self::FORUMS_OPTION_SPECIAL_CURRENT,
 			self::FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN,

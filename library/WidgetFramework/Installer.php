@@ -163,6 +163,7 @@ class WidgetFramework_Installer
 		{
 			// node type definition
 			// since 2.3
+			// new XenForo_Phrase('node_type_WF_WidgetPage')
 			$db->insert('xf_node_type', array(
 				'node_type_id' => 'WF_WidgetPage',
 				'handler_class' => 'WidgetFramework_NodeHandler_WidgetPage',

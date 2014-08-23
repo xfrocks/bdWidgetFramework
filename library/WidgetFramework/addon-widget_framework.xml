@@ -135,7 +135,7 @@
     <template title="wf_widget_import"><![CDATA[<xen:title>{xen:phrase wf_import_widgets}</xen:title>
 
 <xen:form action="{xen:adminlink 'widgets/import'}" upload="true">
-	<xen:uploadunit label="{xen:phrase import_from_uploaded_file}:" name="upload_file" />
+	<xen:uploadunit label="{xen:phrase wf_import_from_uploaded_file}:" name="upload_file" />
 	<xen:textboxunit label="{xen:phrase wf_import_from_file_on_server}:" name="server_file" />
 
 	<xen:checkboxunit label="" explain="{xen:phrase wf_delete_all_before_import_explain}">
@@ -867,6 +867,7 @@ Arguments:
     <phrase title="wf_blacklist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Blacklist Groups]]></phrase>
     <phrase title="wf_blacklist_user_groups_explain" version_id="96" version_string="2.5.0d"><![CDATA[If specified, users who are member of selected user group will not show up.]]></phrase>
     <phrase title="wf_break_container" version_id="77" version_string="2.4.5b"><![CDATA[Break out of content container]]></phrase>
+    <phrase title="wf_by" version_id="96" version_string="2.5.0d"><![CDATA[by]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
     <phrase title="wf_column_gap" version_id="54" version_string="2.2.3"><![CDATA[Column Gap]]></phrase>
@@ -888,7 +889,6 @@ Arguments:
     <phrase title="wf_delete_widget" version_id="1" version_string="0.9"><![CDATA[Delete Widget]]></phrase>
     <phrase title="wf_delete_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Delete Widget Page]]></phrase>
     <phrase title="wf_descending" version_id="1" version_string="0.9"><![CDATA[Descending]]></phrase>
-    <phrase title="wf_disable_caching" version_id="47" version_string="2.1.1"><![CDATA[Disable Caching]]></phrase>
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
     <phrase title="wf_display_order_explain" version_id="37" version_string="1.5.4"><![CDATA[The position of this widget relative to other widgets in the same position. If the display order is negative, its contents will be inserted before the original contents of the position. Otherwise, it will be appended.]]></phrase>
     <phrase title="wf_duplicate" version_id="96" version_string="2.5.0d"><![CDATA[Duplicate]]></phrase>
@@ -901,6 +901,7 @@ Arguments:
     <phrase title="wf_home_navtab" global_cache="1" version_id="78" version_string="2.4.5c"><![CDATA[Home]]></phrase>
     <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
+    <phrase title="wf_import_from_uploaded_file" version_id="96" version_string="2.5.0d"><![CDATA[Import from uploaded file]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
     <phrase title="wf_include_thread_is_new" version_id="96" version_string="2.5.0d"><![CDATA[Include $thread.isNew information if thread is unread (this will disable caching)]]></phrase>
     <phrase title="wf_invalid_position_x" version_id="37" version_string="1.5.4"><![CDATA[Invalid position specified: {position}. The position must be one of three types: "all", "template_name" or "hook:hook_name".]]></phrase>
@@ -918,7 +919,6 @@ Arguments:
     <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
     <phrase title="wf_limit_zero_explain" version_id="58" version_string="2.3.2b"><![CDATA[Enter 0 (zero) to set no limitation.]]></phrase>
     <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
-    <phrase title="wf_new" version_id="1" version_string="0.9"><![CDATA[New]]></phrase>
     <phrase title="wf_non_existent_hook_x" version_id="37" version_string="1.5.4"><![CDATA[The specified hook "{hook}" could not be found in any public templates.]]></phrase>
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
@@ -928,7 +928,6 @@ Arguments:
     <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Please confirm that you want to delete the following widget page]]></phrase>
     <phrase title="wf_poll_thread_id" version_id="5" version_string="0.9.3"><![CDATA[Thread ID]]></phrase>
     <phrase title="wf_poll_thread_id_explain" version_id="69" version_string="2.4.1"><![CDATA[Enter the thread ID of the thread you want to display. Leave it blank to get the latest poll, enter "random" to get a random one each time.]]></phrase>
-    <phrase title="wf_popular" version_id="1" version_string="0.9"><![CDATA[Popular]]></phrase>
     <phrase title="wf_position" version_id="1" version_string="0.9"><![CDATA[Position]]></phrase>
     <phrase title="wf_position_can_not_be_empty" version_id="22" version_string="1.2.2"><![CDATA[Widget position can not be empty.]]></phrase>
     <phrase title="wf_position_explain" version_id="96" version_string="2.5.0d"><![CDATA[There are three types of positions:<br/>
@@ -939,7 +938,6 @@ Arguments:
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
     <phrase title="wf_read_more" global_cache="1" version_id="77" version_string="2.4.5b"><![CDATA[Read more]]></phrase>
-    <phrase title="wf_recent" version_id="1" version_string="0.9"><![CDATA[Recent]]></phrase>
     <phrase title="wf_recent_status" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
     <phrase title="wf_recent_status_friends_only_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show statuses from user's friend list only. It will display from all users if current user is not logged in.]]></phrase>
@@ -980,7 +978,6 @@ Arguments:
     <phrase title="wf_unknown_renderer" version_id="96" version_string="2.5.0d"><![CDATA[Unknown Renderer ({class})]]></phrase>
     <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
-    <phrase title="wf_use_live_cache" version_id="29" version_string="1.3.4"><![CDATA[Use Live Cache]]></phrase>
     <phrase title="wf_viewing_home_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing home page]]></phrase>
     <phrase title="wf_viewing_widget_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing page]]></phrase>
     <phrase title="wf_whitelist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Whitelist Groups]]></phrase>
@@ -1005,7 +1002,6 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_page_widget_size_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of rows to occupy]]></phrase>
     <phrase title="wf_widget_profile_posts_type_recent" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
-    <phrase title="wf_widget_threads_invalid_type" version_id="7" version_string="0.9.5"><![CDATA[Invalid type selected.]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff_explain" version_id="26" version_string="1.3.1"><![CDATA[Threads older than this number of days won't make it to the list that supports cutoff as noted above.]]></phrase>
     <phrase title="wf_widget_threads_type" version_id="1" version_string="0.9"><![CDATA[Widget Type]]></phrase>
@@ -1019,21 +1015,15 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
-    <phrase title="wf_widget_xfrm_resources_invalid_type" version_id="47" version_string="2.1.1"><![CDATA[Invalid type selected.]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type" version_id="47" version_string="2.1.1"><![CDATA[Widget Type]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_highest_rating" version_id="65" version_string="2.3.6"><![CDATA[Top Resources]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_latest_update" version_id="47" version_string="2.1.1"><![CDATA[Recently Updated]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_most_downloaded" version_id="65" version_string="2.3.6"><![CDATA[Popular Resources]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_new" version_id="47" version_string="2.1.1"><![CDATA[New Resources]]></phrase>
     <phrase title="wf_xfrm_resources_categories_explain" version_id="69" version_string="2.4.1"><![CDATA[Select the categories you want to search for resources. Leave nothing selected to include all viewable categories.]]></phrase>
-    <phrase title="wf_xfshout_instance_id" version_id="7" version_string="0.9.5"><![CDATA[Instance ID]]></phrase>
-    <phrase title="wf_xfshout_instance_id_explain" version_id="7" version_string="0.9.5"><![CDATA[Enter the instance ID of the xfShout instance that you want to put to the sidebar.]]></phrase>
-    <phrase title="wf_xfshout_instance_id_invalid" version_id="7" version_string="0.9.5"><![CDATA[No xfShout instance is found with the ID of {id}.]]></phrase>
-    <phrase title="wf_x_not_installed" version_id="7" version_string="0.9.5"><![CDATA[Oops, it looks like you haven't got {target} installed.]]></phrase>
     <phrase title="wf_x_posted" version_id="1" version_string="0.9"><![CDATA[{user} posted]]></phrase>
     <phrase title="wf_x_replied" version_id="1" version_string="0.9"><![CDATA[{user} replied]]></phrase>
     <phrase title="wf_x_updated" version_id="47" version_string="2.1.1"><![CDATA[{user} updated]]></phrase>
-    <phrase title="xf_x_users_online" global_cache="1" version_id="69" version_string="2.4.1"><![CDATA[{total} Users Online]]></phrase>
   </phrases>
   <route_prefixes>
     <route_type type="admin">
@@ -2024,7 +2014,7 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 
 </div>]]></template>
-    <template title="wf_widget_threads_thread_full_info" version_id="91" version_string="2.4.9d"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_threads_thread_full_info" version_id="96" version_string="2.5.0d"><![CDATA[<xen:if hascontent="true">
 	<div class="counters">
 		<xen:contentcheck>
 			<xen:hook name="wf_widget_threads_thread_full_info_counters" params="{xen:array 'thread={$thread}'}">
@@ -2054,7 +2044,7 @@ All customization should go to wf_default_EXTRA.css
 			<xen:hook name="wf_widget_threads_thread_full_info_main" params="{xen:array 'thread={$thread}'}">
 
 			<xen:if is="{xen:property wf_threads_fullUser}">
-				<span class="user">{xen:phrase by} <xen:username user="$thread" rich="true" /></span><xen:comment>
+				<span class="user">{xen:phrase wf_by} <xen:username user="$thread" rich="true" /></span><xen:comment>
 				</xen:comment><xen:if is="{xen:property wf_threads_fullForum} OR {xen:property wf_threads_fullDate}"><span class="divider">,</span></xen:if>
 			</xen:if>
 
