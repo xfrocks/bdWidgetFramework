@@ -285,9 +285,12 @@ class WidgetFramework_Core
 		{
 			// still no position data at this point?
 			// stop working
+
 			return false;
 		}
 		$position = &$this->_positions[$positionCode];
+
+		$widgetParams = $this->_prepareWidgetParams($params);
 
 		foreach ($position['widgets'] as &$widgetGroup)
 		{
@@ -296,7 +299,7 @@ class WidgetFramework_Core
 				$renderer = self::getRenderer($widget['class'], false);
 				if ($renderer)
 				{
-					$renderer->prepare($widget, $positionCode, $params, $template);
+					$renderer->prepare($widget, $positionCode, $widgetParams, $template);
 				}
 			}
 		}
@@ -304,6 +307,21 @@ class WidgetFramework_Core
 		$position['prepared'] = true;
 
 		return true;
+	}
+
+	protected function _prepareWidgetParams(array $params)
+	{
+		if (isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS]))
+		{
+			// this is params array from page container
+			if (isset($params['contentTemplate']) AND isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]))
+			{
+				// found content template params, merge it
+				$params = array_merge($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]->getParams(), $params);
+			}
+		}
+
+		return $params;
 	}
 
 	public function renderWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template, array &$containerData)
@@ -385,15 +403,7 @@ class WidgetFramework_Core
 			return $html;
 		}
 
-		if (isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS]))
-		{
-			// this is params array from page container
-			if (isset($params['contentTemplate']) AND isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]))
-			{
-				// found content template params, merge it
-				$params = array_merge($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]->getParams(), $params);
-			}
-		}
+		$widgetParams = $this->_prepareWidgetParams($params);
 
 		foreach ($position['widgets'] as &$widgetGroup)
 		{
@@ -418,7 +428,7 @@ class WidgetFramework_Core
 
 				if (!empty($renderer))
 				{
-					$widgetHtml = strval($renderer->render($widget, $positionCode, $params, $template, $html));
+					$widgetHtml = strval($renderer->render($widget, $positionCode, $widgetParams, $template, $html));
 
 					// extra-preparation (this will be run everytime the widget is ready to display)
 					// this method can change the final html in some way if it needs to do that
@@ -496,7 +506,7 @@ class WidgetFramework_Core
 
 				if (!empty($tabs))
 				{
-					$htmls[] = $this->_wrapWidgets($tabs, $params, $template, $widgetGroup['name']);
+					$htmls[] = $this->_wrapWidgets($tabs, $widgetParams, $template, $widgetGroup['name']);
 				}
 
 				if (count($htmls) > 0)

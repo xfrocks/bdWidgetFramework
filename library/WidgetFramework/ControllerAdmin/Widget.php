@@ -159,6 +159,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			'renderers' => $this->_getRenderersList(),
 
 			'_layoutEditor' => $this->_input->filterSingle('_layoutEditor', XenForo_Input::UINT),
+			'conditionalParams' => $this->_input->filterSingle('conditionalParams', XenForo_Input::STRING),
 		));
 
 		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Edit', 'wf_widget_edit', $viewParams);

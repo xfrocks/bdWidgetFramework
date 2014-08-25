@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.5.0d" version_id="96" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.5.0d" version_id="98" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -55,7 +55,7 @@
 		  class="formOverlay AutoValidator WidgetFramework_Widget_EditForm">
 
 	<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}" hint="{xen:phrase you_may_use_html}">
-		<xen:explain>{xen:phrase wf_title_explain}</xen:explain>
+		<xen:explain>{xen:if '{$_layoutEditor}', '', {xen:phrase wf_title_explain}}</xen:explain>
 	</xen:textboxunit>
 
 	<xen:selectunit label="{xen:phrase wf_renderer}:" name="class" value="{$widget.class}"
@@ -64,7 +64,7 @@
 		data-target="#OptionsTarget">
 		<xen:option value=""></xen:option>
 		<xen:options source="$renderers" />
-		<xen:explain>{xen:phrase wf_renderer_explain}</xen:explain>
+		<xen:explain>{xen:if '{$_layoutEditor}', '', {xen:phrase wf_renderer_explain}}</xen:explain>
 	</xen:selectunit>
 	
 	<div id="OptionsTarget">
@@ -112,11 +112,33 @@
 			</xen:if>
 
 		</xen:if>
-		
-		<xen:checkboxunit label="">
-			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
-			<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
-		</xen:checkboxunit>
+
+		<xen:if is="{$options.expression}">
+			<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="3">
+				<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
+				<xen:explain>{xen:if '{$_layoutEditor}', '', {xen:phrase wf_expression_explain}}</xen:explain>
+			</xen:textboxunit>
+		</xen:if>
+
+		<xen:textboxunit name="{$namePrefix}conditional[raw]" label="{xen:phrase wf_conditional}" value="{$options.conditional.raw}" rows="3" inputclass="Elastic">
+			<xen:explain>
+				{xen:if '{$_layoutEditor}', '', {xen:phrase
+					wf_conditional_explain,
+					'link={xen:link misc/wf-layout-editor, '', 'redirect={xen:link canonical:index}'}'
+				}}
+				{xen:raw $conditionalParamsExplain}
+			</xen:explain>
+		</xen:textboxunit>
+
+		<xen:if is="!{$_layoutEditor}">
+			<xen:checkboxunit label="">
+				<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
+				<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
+			</xen:checkboxunit>
+		<xen:else />
+			<input type="hidden" name="active" value="{xen:if '{$widget.active}', 1, 0}" />
+			<input type="hidden" name="{$namePrefix}deactivate_for_mobile" value="{xen:if '{$options.deactivate_for_mobile}', 1, 0}" />
+		</xen:if>
 	</fieldset>
 
 	<xen:submitunit>
@@ -217,7 +239,6 @@
 	</fieldset>
 </xen:if>
 
-
 <xen:if is="{$options_loaded}">
 	<xen:if is="{$rendererConfiguration.useWrapper}">
 		<xen:if is="{$_layoutEditor}">
@@ -229,15 +250,6 @@
 		</xen:if>
 	</xen:if>
 
-	<xen:if is="{$options.expression}">
-		<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="3">
-			<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
-		</xen:textboxunit>
-	</xen:if>
-	<xen:textboxunit name="{$namePrefix}conditional[raw]" label="{xen:phrase wf_conditional}" value="{$options.conditional.raw}" rows="5" inputclass="Elastic">
-		<xen:explain>{xen:phrase wf_conditional_explain, 'link={xen:link misc/wf-layout-editor, '', 'redirect={xen:link canonical:index}'}'}</xen:explain>
-	</xen:textboxunit>
-
 	<xen:if is="{$rendererConfiguration.useCache}">
 		<xen:textboxunit name="{$namePrefix}cache_seconds" label="{xen:phrase wf_cache_seconds}" value="{$options.cache_seconds}" placeholder="{$rendererConfiguration.cacheSeconds}">
 			<xen:explain>{xen:phrase wf_cache_seconds_explain}</xen:explain>
@@ -245,7 +257,9 @@
 	</xen:if>
 <xen:else />
 	<xen:foreach loop="{$widget.options}" key="$optionKey" value="$optionValue">
-		<input type="hidden" name="{$namePrefix}{$optionKey}" value="{$optionValue}" />
+		<xen:if is="!is_array({$optionValue})">
+			<input type="hidden" name="{$namePrefix}{$optionKey}" value="{$optionValue}" />
+		</xen:if>
 	</xen:foreach>
 </xen:if>]]></template>
     <template title="wf_widget_options_birthday"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 0}">
@@ -947,7 +961,7 @@ Arguments:
     <phrase title="wf_recent_status_show_update_form_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show an update form if the current user has permission to do so.]]></phrase>
     <phrase title="wf_register_date" version_id="1" version_string="0.9"><![CDATA[Register Date]]></phrase>
     <phrase title="wf_renderer" version_id="1" version_string="0.9"><![CDATA[Renderer]]></phrase>
-    <phrase title="wf_renderer_explain" version_id="1" version_string="0.9"><![CDATA[Select the renderer engine for this widget. There are some default renderer packed with Widget Framework. It's easy to develop widget renderer so I hope other developers will eventually release some in the near future. ]]></phrase>
+    <phrase title="wf_renderer_explain" version_id="96" version_string="2.5.0d"><![CDATA[Choose a renderer for this widget and configure its contents.]]></phrase>
     <phrase title="wf_requested_thread_does_not_have_poll" version_id="5" version_string="0.9.3"><![CDATA[The requested thread doesn't have a poll attached.]]></phrase>
     <phrase title="wf_requested_widget_not_found" version_id="1" version_string="0.9"><![CDATA[The requested Widget could not be found.]]></phrase>
     <phrase title="wf_requested_widget_page_not_found" version_id="54" version_string="2.2.3"><![CDATA[The requested widget page could not be found.]]></phrase>

@@ -369,9 +369,9 @@ class WidgetFramework_Template_Helper_Layout
 		return $mediaWidths;
 	}
 
-	public static function prepareConditionalParams(array $params, array $exclude = null)
+	public static function prepareConditionalParams(array $params, array $exclude = null, $level = 0)
 	{
-		if ($exclude === null)
+		if ($exclude === null AND $level == 0)
 		{
 			$exclude = array(
 				// list of keys from XenForo_Dependencies_Abstract
@@ -395,10 +395,28 @@ class WidgetFramework_Template_Helper_Layout
 				'viewName',
 				'controllerName',
 				'controllerAction',
+
+				// list of keys for PAGE_CONTAINER
+				'majorSection',
+				'tosUrl',
+				'jQuerySource',
+				'jQuerySourceLocal',
+				'homeTabId',
+				'homeLink',
+				'logoLink',
+				'title',
+				'h1',
+				'quickNavSelected',
+				'topctrl',
+				'debug_url',
 			);
 		}
 
 		$prepared = array();
+		if ($level > 1)
+		{
+			return $prepared;
+		}
 
 		if (isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS]))
 		{
@@ -406,13 +424,13 @@ class WidgetFramework_Template_Helper_Layout
 			if (isset($params['contentTemplate']) AND isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]))
 			{
 				// found content template params, use it
-				$params = $params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]->getParams();
+				$params = array_merge($params, $params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]->getParams());
 			}
 		}
 
 		foreach ($params as $key => &$value)
 		{
-			if (in_array($key, $exclude, true))
+			if (in_array($key, $exclude, true) OR substr($key, 0, 1) === '_')
 			{
 				// excluded
 			}
@@ -427,7 +445,7 @@ class WidgetFramework_Template_Helper_Layout
 				{
 					// only process object-like array
 					$valueExclude = array();
-					$valuePrepared = self::prepareConditionalParams($value, $valueExclude);
+					$valuePrepared = self::prepareConditionalParams($value, $valueExclude, $level + 1);
 
 					if (!empty($valuePrepared))
 					{
@@ -435,9 +453,19 @@ class WidgetFramework_Template_Helper_Layout
 					}
 				}
 			}
-			elseif (is_int($value))
+			elseif (is_numeric($value))
 			{
-				$prepared[$key] = $value;
+				if (strpos($key, '_id') !== false)
+				{
+					$prepared[$key] = $value;
+				}
+			}
+			elseif (is_string($value))
+			{
+				if (strlen($value) < 255 AND $level == 0)
+				{
+					$prepared[$key] = $value;
+				}
 			}
 		}
 
