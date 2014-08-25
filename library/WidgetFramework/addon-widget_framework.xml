@@ -1069,7 +1069,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="96" version_string="2.5.0d"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="98" version_string="2.5.0d"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1181,6 +1181,15 @@ All customization should go to wf_default_EXTRA.css
 
 .WidgetFramework_WidgetRenderer_Threads .unread > a { font-weight: bold; }
 .sidebar .WidgetFramework_WidgetRenderer_Threads .avatarList .username { display: inline; font-size: inherit; margin: 0; }
+
+.WidgetFramework_WidgetRenderer_Threads .discussionList {
+	overflow: scroll;
+	width: 100%:
+}
+.WidgetFramework_WidgetRenderer_Threads .DiscussionList {
+	min-width: 450px;
+	width: 100%;
+}
 
 .WidgetFramework_WidgetRenderer_Threads_FullThreadList {
 }
