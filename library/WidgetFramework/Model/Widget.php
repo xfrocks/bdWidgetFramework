@@ -4,6 +4,142 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 {
 	const SIMPLE_CACHE_KEY = 'widgets';
 
+	public function getDisplayOrderFromRelative($widgetId, $relativeDisplayOrder, $positionWidgetGroups, $positionWidget = null, array &$widgetsNeedUpdate = array())
+	{
+		$sameDisplayOrderLevels = array();
+		if (!empty($positionWidget))
+		{
+			// put into a group
+			foreach ($positionWidgetGroups as $positionWidgetGroup)
+			{
+				if (isset($positionWidgetGroup['widgets'][$positionWidget['widget_id']]))
+				{
+					$sameDisplayOrderLevels = $positionWidgetGroup['widgets'];
+				}
+			}
+		}
+		else
+		{
+			// put into a position
+			$sameDisplayOrderLevels = $positionWidgetGroups;
+		}
+
+		if (isset($sameDisplayOrderLevels[$widgetId]))
+		{
+			// ignore current widget before calculating display order
+			unset($sameDisplayOrderLevels[$widgetId]);
+		}
+
+		$currentDisplayOrder = 0;
+		$i = -1;
+		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
+		{
+			$i++;
+			if ($i < $relativeDisplayOrder)
+			{
+				// find the display order right before needed position
+				$currentDisplayOrder = $sameDisplayOrderLevel['display_order'];
+			}
+		}
+
+		// set display order for the widget
+		$currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
+		$foundDisplayOrder = $currentDisplayOrder;
+
+		$i = -1;
+		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
+		{
+			$i++;
+			if ($i >= $relativeDisplayOrder)
+			{
+				if ($sameDisplayOrderLevel['display_order'] <= $currentDisplayOrder)
+				{
+					$currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
+
+					// update widget/group display order below our widget
+					$this->updateDisplayOrderForWidget($sameDisplayOrderLevelWidgetId, $currentDisplayOrder - $sameDisplayOrderLevel['display_order'], $sameDisplayOrderLevels, $widgetsNeedUpdate);
+				}
+				else
+				{
+					$currentDisplayOrder = $sameDisplayOrderLevel['display_order'];
+				}
+			}
+		}
+
+		return $foundDisplayOrder;
+	}
+
+	public function updatePositionGroupAndDisplayOrderForWidgets($widgetId, $oldGroup, $newPosition, $newGroup, $newDisplayOrder, $oldPositionWidgets, array &$widgetsNeedUpdate)
+	{
+		$oldGroupWidgets = array();
+		foreach ($oldPositionWidgets as $oldPositionWidget)
+		{
+			if (!empty($oldPositionWidget['widgets']) AND $oldPositionWidget['name'] == $oldGroup)
+			{
+				$oldGroupWidgets = $oldPositionWidget['widgets'];
+			}
+		}
+
+		if (empty($oldGroupWidgets))
+		{
+			// group not found
+			return false;
+		}
+		$oldGroupWidgetIds = array_keys($oldGroupWidgets);
+		$firstWidgetId = reset($oldGroupWidgetIds);
+		if ($firstWidgetId != $widgetId)
+		{
+			// first widget in group is not our widget
+			return false;
+		}
+		unset($oldGroupWidgets[$widgetId]);
+
+		$i = -1;
+		$currentDisplayOrder = $newDisplayOrder;
+		foreach ($oldGroupWidgets as $oldGroupWidgetId => $oldGroupWidget)
+		{
+			$i++;
+
+			if ($oldGroupWidget['position'] != $newPosition)
+			{
+				$widgetsNeedUpdate[$oldGroupWidgetId]['position'] = $newPosition;
+			}
+
+			if ($oldGroupWidget['options']['tab_group'] !== $newGroup)
+			{
+				$widgetsNeedUpdate[$oldGroupWidgetId]['options'] = array_merge($oldGroupWidget['options'], array('tab_group' => $newGroup));
+			}
+
+			if ($oldGroupWidget['display_order'] <= $currentDisplayOrder)
+			{
+				$currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
+
+				// update widget/group display order below our widget
+				$this->updateDisplayOrderForWidget($oldGroupWidgetId, $currentDisplayOrder - $oldGroupWidget['display_order'], $oldGroupWidgets, $widgetsNeedUpdate);
+			}
+			else
+			{
+				$currentDisplayOrder = $oldGroupWidget['display_order'];
+			}
+		}
+
+		return true;
+	}
+
+	public function updateDisplayOrderForWidget($widgetId, $displayOrderOffset, $widgets, array &$widgetsNeedUpdate)
+	{
+		$widgetsNeedUpdate[$widgetId]['display_order'] = $widgets[$widgetId]['display_order'] + $displayOrderOffset;
+
+		if (!empty($widgets[$widgetId]['widgets']))
+		{
+			foreach (array_keys($widgets[$widgetId]['widgets']) as $subWidgetId)
+			{
+				// update all widgets within the updated group
+				$this->updateDisplayOrderForWidget($subWidgetId, $displayOrderOffset, $widgets[$widgetId]['widgets'], $widgetsNeedUpdate);
+			}
+		}
+	}
+
 	public function importFromFile($fileName, $deleteAll = false)
 	{
 		if (!file_exists($fileName) || !is_readable($fileName))

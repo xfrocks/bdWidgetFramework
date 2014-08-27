@@ -120,7 +120,9 @@ class _WidgetFramework_WidgetTitleDelayed
 		}
 		self::$_newInstances = array();
 
-		return strval($this->_prepared);
+		$this->_prepared = strval($this->_prepared);
+
+		return $this->_prepared;
 	}
 
 }

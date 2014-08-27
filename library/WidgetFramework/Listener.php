@@ -18,6 +18,7 @@ class WidgetFramework_Listener
 	public static $viewRenderer = null;
 
 	protected static $_navigationTabsForums = '';
+	protected static $_layoutEditorRendered = array();
 
 	public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
 	{
@@ -90,7 +91,6 @@ class WidgetFramework_Listener
 			if ($templateName === 'PAGE_CONTAINER')
 			{
 				$template->preloadTemplate('wf_hook_moderator_bar');
-				$template->preloadTemplate('wf_layout_editor_placeholder');
 
 				if (WidgetFramework_Option::get('indexNodeId'))
 				{
@@ -144,6 +144,29 @@ class WidgetFramework_Listener
 				}
 			}
 
+			if (WidgetFramework_Option::get('layoutEditorEnabled'))
+			{
+				switch ($templateName)
+				{
+					case 'wf_layout_editor_widget_wrapper':
+						self::$_layoutEditorRendered[$template->getParam('normalizedGroupId')] = $output;
+
+						$tabs = $template->getParam('tabs');
+						foreach ($tabs as $tab)
+						{
+							self::$_layoutEditorRendered[$tab['widget_id']] = array('normalizedGroupId' => $template->getParam('normalizedGroupId'));
+						}
+
+						$ourContainerData = WidgetFramework_Helper_LayoutEditor::generateWidgetGroupCss($containerData, count($tabs));
+						WidgetFramework_Template_Extended::WidgetFramework_mergeExtraContainerData($ourContainerData);
+						break;
+					case 'wf_layout_editor_widget':
+						$widget = $template->getParam('widget');
+						self::$_layoutEditorRendered[$widget['widget_id']] = $output;
+						break;
+				}
+			}
+
 			if ($templateName === 'PAGE_CONTAINER')
 			{
 				WidgetFramework_Template_Extended::WidgetFramework_processLateExtraData($output, $containerData, $template);
@@ -153,6 +176,7 @@ class WidgetFramework_Listener
 					$output = str_replace('<!-- navigation_tabs_forums for wf_home_navtab_links -->', self::$_navigationTabsForums, $output);
 				}
 			}
+
 		}
 	}
 
@@ -196,8 +220,12 @@ class WidgetFramework_Listener
 						'type' => 'hook',
 						'positionCode' => 'hook:' . $hookName,
 						'conditionalParams' => $conditionalParams,
+						'contents' => $contents,
 					);
-					$contents .= $template->create('wf_layout_editor_placeholder', $params);
+
+					$params['areaId'] = 'area-' . preg_replace('/[^a-zA-Z0-9\-]/', '', $params['positionCode']);
+
+					$contents = $template->create('wf_layout_editor_area', $params);
 				}
 			}
 		}
@@ -250,20 +278,25 @@ class WidgetFramework_Listener
 			$renderWidget = 0;
 			$renderWidget += (!WidgetFramework_Option::get('layoutEditorEnabled') ? 0 : 1);
 			$renderWidget += (empty($_REQUEST['_layoutEditor']) ? 0 : 1);
-			$renderWidget += (empty($_REQUEST['_widgetFrameworkRenderWidget']) ? 0 : 1);
-			$renderWidget += (empty($_REQUEST['_widgetId']) ? 0 : 1);
+			$renderWidget += (empty($_REQUEST['_getRender']) ? 0 : 1);
+			$renderWidget += (empty($_REQUEST['_renderedIds']) ? 0 : 1);
 
 			if ($renderWidget == 4)
 			{
 				$controllerResponse = new XenForo_ControllerResponse_View();
 				$controllerResponse->viewName = 'WidgetFramework_ViewPublic_Widget_Render';
-				$controllerResponse->params = array(
-					'_widgetId' => $_REQUEST['_widgetId'],
-					'_layoutEditorGroup' => !empty($_REQUEST['_layoutEditorGroup']) ? $_REQUEST['_layoutEditorGroup'] : '',
-				);
+				$controllerResponse->params = array('_renderedIds' => explode(',', $_REQUEST['_renderedIds']));
 
 				$viewRenderer = $fc->getDependencies()->getViewRenderer($fc->getResponse(), 'json', $fc->getRequest());
 				$output = $fc->renderView($controllerResponse, $viewRenderer);
+			}
+
+			if (WidgetFramework_Option::get('layoutEditorEnabled'))
+			{
+				foreach (self::$_layoutEditorRendered as $key => &$valueRef)
+				{
+					$fc->getResponse()->setHeader('X-Widget-Framework-Rendered', $key, false);
+				}
 			}
 
 			$core->shutdown();
@@ -334,6 +367,16 @@ class WidgetFramework_Listener
 	public static function file_health_check(XenForo_ControllerAdmin_Abstract $controller, array &$hashes)
 	{
 		$hashes += WidgetFramework_FileSums::getHashes();
+	}
+
+	public static function getLayoutEditorRendered($renderedId)
+	{
+		if (isset(self::$_layoutEditorRendered[$renderedId]))
+		{
+			return self::$_layoutEditorRendered[$renderedId];
+		}
+
+		return '';
 	}
 
 }

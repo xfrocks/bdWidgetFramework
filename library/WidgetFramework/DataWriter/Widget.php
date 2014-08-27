@@ -2,9 +2,15 @@
 
 class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 {
-
 	const EXTRA_DATA_SKIP_REBUILD = 'skipRebuild';
 	const EXTRA_DATA_TEMPLATE_FOR_HOOKS = 'templateForHooks';
+
+	protected $_isDelete = false;
+
+	public function isDelete()
+	{
+		return $this->_isDelete;
+	}
 
 	protected function _getFields()
 	{
@@ -99,6 +105,8 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 		}
 
 		WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
+
+		$this->_isDelete = true;
 	}
 
 	protected function _getUpdateCondition($tableName)

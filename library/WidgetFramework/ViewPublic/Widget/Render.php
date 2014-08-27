@@ -2,54 +2,44 @@
 
 class WidgetFramework_ViewPublic_Widget_Render extends XenForo_ViewPublic_Base
 {
+	public function renderHtml()
+	{
+		return '';
+	}
+
 	public function renderJson()
 	{
 		$core = WidgetFramework_Core::getInstance();
 		$params = $this->_params;
 
-		$widgetModel = $core->getModelFromCache('WidgetFramework_Model_Widget');
-		$widget = $widgetModel->getWidgetById($params['_widgetId']);
+		$output = $this->_renderer->getDefaultOutputArray(__CLASS__, $params, '');
 
-		if (!empty($widget))
-		{
-			$params['widget'] = $widget;
-			$params['html'] = $core->getRenderedHtmlByWidgetId($widget['widget_id']);
-		}
-		else
-		{
-			$params['widget'] = array();
-		}
+		$output = array_intersect_key($output, array_flip(array(
+			'css',
+			'js'
+		)));
 
-		$output = $this->_renderer->getDefaultOutputArray(get_class($this), $params, 'wf_layout_editor_widget');
-
-		if (!empty($widget))
+		if (!empty($params['_renderedIds']))
 		{
-			$widgetHtml = $core->getRenderedTemplateObjByWidgetId($widget['widget_id']);
-			if (!empty($widgetHtml))
+			foreach ($params['_renderedIds'] as $renderedId)
 			{
-				$output['templateHtml'] = $widgetHtml;
-			}
-		}
-		else
-		{
-			$output['templateHtml'] = '';
-		}
+				$rendered = WidgetFramework_Listener::getLayoutEditorRendered($renderedId);
 
-		if (!empty($params['_layoutEditorGroup']))
-		{
-			if (!empty($widget))
-			{
-				$groupId = $core->getRenderedGroupByWidgetId($widget['widget_id']);
-			}
-			else
-			{
-				$groupId = '';
-			}
-
-			if ($params['_layoutEditorGroup'] != $groupId)
-			{
-				$output['groupId'] = $params['_layoutEditorGroup'];
-				$output['groupHtml'] = $core->getRenderedTemplateObjByGroupId($params['_layoutEditorGroup']);
+				if (is_string($rendered))
+				{
+					$output['rendered'][$renderedId] = $rendered;
+				}
+				elseif (is_array($rendered))
+				{
+					if (!empty($rendered['normalizedGroupId']))
+					{
+						$groupRendered = WidgetFramework_Listener::getLayoutEditorRendered($rendered['normalizedGroupId']);
+						if (is_string($groupRendered))
+						{
+							$output['rendered'][$rendered['normalizedGroupId']] = $groupRendered;
+						}
+					}
+				}
 			}
 		}
 

@@ -11,9 +11,6 @@ class WidgetFramework_Core
 	protected $_templateForHooks = array();
 	protected $_models = array();
 
-	protected $_renderedTemplateObjByGroupId = array();
-	protected $_renderedGroupsByWidgetId = array();
-
 	public function __construct()
 	{
 		$renderers = array();
@@ -146,28 +143,25 @@ class WidgetFramework_Core
 				}
 				$positionsAdded[] = $position;
 
+				$groupFound = false;
 				if (!empty($widget['options']['tab_group']))
 				{
-					// this widget belongs to a tab group
-					if (!isset($this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']]))
+					foreach ($this->_positions[$position]['widgets'] as &$groupRef)
 					{
-						$this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']] = array(
-							'name' => $widget['options']['tab_group'],
-							'widgets' => array(),
-							'keys' => false,
-							'display_order' => $widget['display_order'],
-						);
+						if ($groupRef['name'] == $widget['options']['tab_group'])
+						{
+							$groupRef['widgets'][$widget['widget_id']] = &$widget;
+							$groupFound = true;
+						}
 					}
-
-					$this->_positions[$position]['widgets']['tabgroup_' . $widget['options']['tab_group']]['widgets'][$widget['widget_id']] = &$widget;
 				}
-				else
+
+				if (!$groupFound)
 				{
-					// no tab group
-					$this->_positions[$position]['widgets']['widget_' . $widget['widget_id']] = array(
-						'name' => 'no-name',
+					$this->_positions[$position]['widgets'][$widget['widget_id']] = array(
+						'name' => (!empty($widget['options']['tab_group']) ? $widget['options']['tab_group'] : ''),
 						'widgets' => array($widget['widget_id'] => &$widget),
-						'keys' => array($widget['widget_id']),
+						'keys' => false,
 						'display_order' => $widget['display_order'],
 					);
 				}
@@ -356,8 +350,9 @@ class WidgetFramework_Core
 				'type' => 'template',
 				'positionCode' => $templateName,
 				'conditionalParams' => $conditionalParams,
+				'contents' => $html,
 			);
-			$html .= $template->create('wf_layout_editor_placeholder', $params);
+			$html = strval($template->create('wf_layout_editor_area', $params));
 		}
 
 		if ($html != $originalHtml)
@@ -470,15 +465,17 @@ class WidgetFramework_Core
 
 					if (isset($position['html'][$widget['widget_id']]))
 					{
+						$widgetWithData = array_merge($widget, array(
+							'title' => WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget),
+							'html' => $position['html'][$widget['widget_id']],
+
+							'positionCode' => $positionCode,
+							WidgetFramework_WidgetRenderer::PARAM_IS_HOOK => !empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]),
+						));
+
 						if (empty($renderer) OR $renderer->useWrapper($widget))
 						{
-							$tabs[$widget['widget_id']] = array_merge($widget, array(
-								'title' => WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget),
-								'html' => $position['html'][$widget['widget_id']],
-
-								'positionCode' => $positionCode,
-								WidgetFramework_WidgetRenderer::PARAM_IS_HOOK => !empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]),
-							));
+							$tabs[$widget['widget_id']] = $widgetWithData;
 
 							if (!empty($position['extraData'][$widget['widget_id']]))
 							{
@@ -490,7 +487,7 @@ class WidgetFramework_Core
 							if (WidgetFramework_Option::get('layoutEditorEnabled'))
 							{
 								$noWrapper[$widget['widget_id']] = $template->create('wf_layout_editor_widget', array_merge($params, array(
-									'widget' => $widget,
+									'widget' => $widgetWithData,
 									'html' => $position['html'][$widget['widget_id']],
 								)));
 							}
@@ -533,7 +530,11 @@ class WidgetFramework_Core
 		$firstTab = reset($tabs);
 		$isColumns = strpos($groupId, 'columns') === 0;
 
-		$normalizedGroupId = sprintf('%s-%s', $groupId, substr(md5(serialize(array_keys($tabs))), 0, 5));
+		if (empty($groupId))
+		{
+			$groupId = 'group-' . $firstTab['widget_id'];
+		}
+		$normalizedGroupId = $groupId;
 		$normalizedGroupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $normalizedGroupId);
 
 		$wrapperTemplateName = 'wf_widget_wrapper';
@@ -550,29 +551,18 @@ class WidgetFramework_Core
 		{
 			$wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
 			$wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
+
+			$wrapperParams['tabHtmls'] = array();
+			foreach ($wrapperParams['tabs'] as $widget)
+			{
+				$wrapperParams['tabHtmls'][$widget['widget_id']] = $template->create('wf_layout_editor_widget', array_merge($wrapperParams, array(
+					'widget' => $widget,
+					'html' => $widget['html'],
+				)));
+			}
 		}
 
 		$wrapperTemplateObj = $template->create($wrapperTemplateName, $wrapperParams);
-
-		if (WidgetFramework_Option::get('layoutEditorEnabled'))
-		{
-			if (!empty($_REQUEST['_layoutEditorGroup']) AND $_REQUEST['_layoutEditorGroup'] == $normalizedGroupId)
-			{
-				$this->_renderedTemplateObjByGroupId[$normalizedGroupId] = $wrapperTemplateObj;
-			}
-
-			if (!empty($_REQUEST['_widgetId']))
-			{
-				foreach ($tabs as &$tabRef)
-				{
-					if ($_REQUEST['_widgetId'] == $tabRef['widget_id'])
-					{
-						$this->_renderedGroupsByWidgetId[$tabRef['widget_id']] = $normalizedGroupId;
-						$this->_renderedTemplateObjByGroupId[$normalizedGroupId] = $wrapperTemplateObj;
-					}
-				}
-			}
-		}
 
 		return $wrapperTemplateObj;
 	}

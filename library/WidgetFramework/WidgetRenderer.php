@@ -809,7 +809,7 @@ abstract class WidgetFramework_WidgetRenderer
 	{
 		if (!empty($widget['title']))
 		{
-			if (preg_match('/^{xen:phrase ([^}]+)}$/i', $widget['title'], $matches))
+			if (is_string($widget['title']) AND preg_match('/^{xen:phrase ([^}]+)}$/i', $widget['title'], $matches))
 			{
 				return new XenForo_Phrase($matches[1]);
 			}
