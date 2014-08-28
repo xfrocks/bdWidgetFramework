@@ -2,6 +2,15 @@
 
 class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_WidgetRenderer
 {
+	public function extraPrepare(array $widget, &$html)
+	{
+		$visitor = XenForo_Visitor::getInstance();
+		$html = str_replace('CSRF_TOKEN_PAGE', $visitor->get('csrf_token_page'), $html);
+		$html = str_replace('LINK_MEMBER_POST_VISITOR', XenForo_Link::buildPublicLink('members/post', $visitor), $html);
+
+		return parent::extraPrepare($widget, $html);
+	}
+
 	public function extraPrepareTitle(array $widget)
 	{
 		if (empty($widget['title']))
@@ -23,7 +32,7 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 	{
 		return array(
 			'name' => 'Profile Posts',
-			'options' => array('limit' => XenForo_Input::UINT, ),
+			'options' => array('limit' => XenForo_Input::UINT),
 			'useCache' => true,
 			'useUserCache' => true,
 			'cacheSeconds' => 3600, // cache for 1 hour
@@ -67,6 +76,23 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		$profilePosts = $this->_getProfilePosts($widget, $positionCode, $params, $renderTemplateObject);
+		$renderTemplateObject->setParam('profilePosts', $profilePosts);
+		$renderTemplateObject->setParam('canUpdateStatus', XenForo_Visitor::getInstance()->canUpdateStatus());
+
+		return $renderTemplateObject->render();
+	}
+
+	protected function _getProfilePosts(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+	{
+		if ($positionCode == 'forum_list' AND $widget['options']['limit'] == XenForo_Application::getOptions()->forumListNewProfilePosts)
+		{
+			if (!empty($params['profilePosts']))
+			{
+				return $params['profilePosts'];
+			}
+		}
+
 		$core = WidgetFramework_Core::getInstance();
 		$visitor = XenForo_Visitor::getInstance();
 		$profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
@@ -95,10 +121,8 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 			}
 		}
 		$profilePosts = array_slice($profilePosts, 0, $widget['options']['limit'], true);
-
-		$renderTemplateObject->setParam('profilePosts', $profilePosts);
-
-		return $renderTemplateObject->render();
+		
+		return $profilePosts;
 	}
 
 }

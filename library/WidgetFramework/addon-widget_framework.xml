@@ -1139,7 +1139,8 @@ All customization should go to wf_default_EXTRA.css
 		margin-top: 0;
 	}
 
-.WidgetFramework_WidgetRenderer_RecentStatus .statusPoster textarea {
+.widget .statusPoster textarea {
+	box-sizing: border-box;
 	width: 100%;
 	margin: 0;
 	resize: vertical;
@@ -1823,7 +1824,25 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_profile_posts" version_id="96" version_string="2.5.0d"><![CDATA[<ul>
+    <template title="wf_widget_profile_posts" version_id="98" version_string="2.5.0d"><![CDATA[<xen:if is="{$canUpdateStatus}">
+	<xen:require js="js/xenforo/quick_reply_profile.js" />
+	<xen:require js="js/WidgetFramework/default.js" />
+
+	<form action="LINK_MEMBER_POST_VISITOR" method="post"
+		  class="statusPoster AutoValidator"
+		  data-hide-submit="true"
+		  data-optInOut="OptIn"
+		  data-target="#widget-{$widget.widget_id} ul.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostList">
+		<textarea name="message" class="textCtrl StatusEditor UserTagger Elastic" placeholder="{xen:phrase update_your_status}..." rows="1" cols="40" data-statusEditorCounter="#statusEditorCounter"></textarea>
+		<div class="submitUnit">
+			<span id="statusEditorCounter" title="{xen:phrase characters_remaining}"></span>
+			<input type="submit" class="button primary" value="{xen:phrase post_verb}" />
+			<input type="hidden" name="_xfToken" value="CSRF_TOKEN_PAGE" />
+			<input type="hidden" name="simple" value="1" />
+		</div>
+	</form>
+</xen:if>
+<ul class="WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostList{xen:if $canUpdateStatus, ' nonInitial'}">
 	<xen:foreach loop="$profilePosts" value="$profilePost">
 		<xen:include template="wf_widget_profile_posts_profile_post" />
 	</xen:foreach>
