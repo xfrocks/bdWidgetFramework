@@ -32,7 +32,10 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 	{
 		return array(
 			'name' => 'Profile Posts',
-			'options' => array('limit' => XenForo_Input::UINT),
+			'options' => array(
+				'limit' => XenForo_Input::UINT,
+				'show_update_form' => XenForo_Input::BINARY,
+			),
 			'useCache' => true,
 			'useUserCache' => true,
 			'cacheSeconds' => 3600, // cache for 1 hour
@@ -78,7 +81,15 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 	{
 		$profilePosts = $this->_getProfilePosts($widget, $positionCode, $params, $renderTemplateObject);
 		$renderTemplateObject->setParam('profilePosts', $profilePosts);
-		$renderTemplateObject->setParam('canUpdateStatus', XenForo_Visitor::getInstance()->canUpdateStatus());
+
+		if (!empty($widget['options']['show_update_form']))
+		{
+			$renderTemplateObject->setParam('canUpdateStatus', XenForo_Visitor::getInstance()->canUpdateStatus());
+		}
+		else
+		{
+			$renderTemplateObject->setParam('canUpdateStatus', false);
+		}
 
 		return $renderTemplateObject->render();
 	}
@@ -121,7 +132,7 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 			}
 		}
 		$profilePosts = array_slice($profilePosts, 0, $widget['options']['limit'], true);
-		
+
 		return $profilePosts;
 	}
 

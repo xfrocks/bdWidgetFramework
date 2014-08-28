@@ -321,7 +321,13 @@
 </xen:checkboxunit>]]></template>
     <template title="wf_widget_options_profile_posts"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase profile_posts}"}</xen:explain>
-</xen:spinboxunit>]]></template>
+</xen:spinboxunit>
+
+<xen:radiounit label="{xen:phrase wf_recent_status_show_update_form}:" name="{$namePrefix}show_update_form">
+	<xen:option value="1" selected="{$options.show_update_form}">{xen:phrase yes}</xen:option>
+	<xen:option value="0" selected="!{$options.show_update_form}">{xen:phrase no}</xen:option>
+	<xen:explain>{xen:phrase wf_recent_status_show_update_form_explain}</xen:explain>
+</xen:radiounit>]]></template>
     <template title="wf_widget_options_recent_status"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_profile_posts}"}</xen:explain>
 </xen:spinboxunit>
@@ -1147,12 +1153,6 @@ All customization should go to wf_default_EXTRA.css
 	overflow: hidden;
 }
 
-.WidgetFramework_WidgetRenderer_RecentStatus .status .username {
-	display: inline;
-	font-size: inherit;
-	margin: 0;
-}
-
 .WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl {
     float: none;
 }
@@ -1839,6 +1839,10 @@ All customization should go to wf_default_EXTRA.css
 			<input type="submit" class="button primary" value="{xen:phrase post_verb}" />
 			<input type="hidden" name="_xfToken" value="CSRF_TOKEN_PAGE" />
 			<input type="hidden" name="simple" value="1" />
+
+			<xen:if is="{xen:helper WidgetFramework_getOption, applicationVersionId} < 1040000">
+				<input type="hidden" name="return" value="1" />
+			</xen:if>
 		</div>
 	</form>
 </xen:if>
