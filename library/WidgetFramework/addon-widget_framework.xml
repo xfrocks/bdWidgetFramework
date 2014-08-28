@@ -1447,7 +1447,7 @@ All customization should go to wf_default_EXTRA.css
 	 data-position="{$widget.positionCode}"
 	 data-display-order="{$widget.display_order}">
 	<div class="controls">
-		<a title="{$widget.display_order}" class="dnd-handle Tooltip">{xen:phrase wf_move}</a>
+		<a title="{$widget.display_order}" class="dnd-handle">{xen:phrase wf_move, 'display_order={$widget.display_order}'}</a>
 
 		<a href="{xen:adminlink widgets/delete, $widget}" target="_blank" class="wf-le-widget-link">
 			{xen:phrase delete}
@@ -1512,7 +1512,7 @@ All customization should go to wf_default_EXTRA.css
 		</div>
 
 		<div class="controls">
-			<a title="{$firstTab.display_order}" class="dnd-handle Tooltip">{xen:phrase wf_move}</a>
+			<a title="{$firstTab.display_order}" class="dnd-handle">{xen:phrase wf_move, 'display_order={$firstTab.display_order}'}</a>
 
 			<a href="{xen:adminlink widgets/add, '', 'position_widget={$firstTab.widget_id}', 'conditionalParams={xen:helper json, $conditionalParams}'}"
 				target="_blank"
