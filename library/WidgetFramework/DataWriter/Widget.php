@@ -12,6 +12,29 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 		return $this->_isDelete;
 	}
 
+	public function getWidgetOptions($existing = false)
+	{
+		if ($existing)
+		{
+			$options = $this->getExisting('options');
+		}
+		else
+		{
+			$options = $this->get('options');
+		}
+
+		if (is_string($options))
+		{
+			$options = unserialize($options);
+		}
+		if (!is_array($options))
+		{
+			$options = array();
+		}
+
+		return $options;
+	}
+
 	protected function _getFields()
 	{
 		return array('xf_widget' => array(

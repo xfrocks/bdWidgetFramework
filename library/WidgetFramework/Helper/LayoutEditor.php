@@ -9,7 +9,7 @@ class WidgetFramework_Helper_LayoutEditor
 			$changed[] = $dw->get('widget_id');
 
 			$existingPosition = $dw->getExisting('position');
-			$existingOptions = @unserialize($dw->getExisting('options'));
+			$existingOptions = $dw->getWidgetOptions(true);
 			$existingGroup = '';
 			if (!empty($existingOptions['tab_group']))
 			{
@@ -17,7 +17,7 @@ class WidgetFramework_Helper_LayoutEditor
 			}
 
 			$newPosition = $dw->get('position');
-			$newOptions = @unserialize($dw->get('options'));
+			$newOptions = $dw->getWidgetOptions();
 			$newGroup = '';
 			if (!empty($newOptions['tab_group']))
 			{
@@ -44,6 +44,12 @@ class WidgetFramework_Helper_LayoutEditor
 		elseif ($dw->isDelete())
 		{
 			$changed[] = $dw->get('widget_id');
+
+			$options = $dw->getWidgetOptions();
+			if (!empty($options['tab_group']))
+			{
+				$changed[] = $options['tab_group'];
+			}
 		}
 
 		return $changed;
