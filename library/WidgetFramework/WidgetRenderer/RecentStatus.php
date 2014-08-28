@@ -1,6 +1,6 @@
 <?php
 
-class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_WidgetRenderer
+class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_WidgetRenderer_ProfilePosts
 {
 	public function extraPrepareTitle(array $widget)
 	{
@@ -33,31 +33,12 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 		return 'wf_widget_options_recent_status';
 	}
 
-	protected function _validateOptionValue($optionKey, &$optionValue)
-	{
-		switch ($optionKey)
-		{
-			case 'limit':
-				if (empty($optionValue))
-				{
-					$optionValue = 5;
-				}
-				break;
-		}
-
-		return parent::_validateOptionValue($optionKey, $optionValue);
-	}
-
-	protected function _getRenderTemplate(array $widget, $positionCode, array $params)
-	{
-		return 'wf_widget_recent_status';
-	}
-
-	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+	protected function _getProfilePosts(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
 		$core = WidgetFramework_Core::getInstance();
 		$userModel = $core->getModelFromCache('XenForo_Model_User');
 		$userProfileModel = $core->getModelFromCache('XenForo_Model_UserProfile');
+		$profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
 
 		if (XenForo_Visitor::getUserId() == 0 OR empty($widget['options']['friends_only']))
 		{
@@ -69,7 +50,6 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 				));
 			$fetchOptions = array(
 				'join' => XenForo_Model_User::FETCH_USER_PROFILE,
-
 				'order' => WidgetFramework_XenForo_Model_User::ORDER_STATUS_DATE,
 				'direction' => 'desc',
 
@@ -86,11 +66,6 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 					unset($users[$userId]);
 				}
 			}
-			if (count($users) > $widget['options']['limit'])
-			{
-				// remove if there are too many users left
-				$users = array_slice($users, 0, $widget['options']['limit'], true);
-			}
 		}
 		else
 		{
@@ -106,47 +81,44 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
 			}
 		}
 
+		$profilePostIds = array();
 		if (!empty($widget['options']['show_duplicates']) AND !empty($users))
 		{
 			$userIds = array_keys($users);
 			$profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
 			$profilePostIds = $profilePostModel->WidgetFramework_getProfilePostIdsOfUserStatuses($userIds, intval($widget['options']['limit']));
-			$profilePosts = $profilePostModel->getProfilePostsByIds($profilePostIds);
-
-			$newUsers = array();
-			foreach ($profilePostIds as $profilePostId)
-			{
-				if (empty($profilePosts[$profilePostId]))
-				{
-					continue;
-				}
-				$profilePostRef = &$profilePosts[$profilePostId];
-
-				$newUsers[$profilePostId] = $users[$profilePostRef['user_id']];
-				$newUsers[$profilePostId]['status'] = $profilePostRef['message'];
-				$newUsers[$profilePostId]['status_date'] = $profilePostRef['post_date'];
-				$newUsers[$profilePostId]['status_profile_post_id'] = $profilePostRef['profile_post_id'];
-			}
-			$users = $newUsers;
 		}
-
-		$renderTemplateObject->setParam('users', $users);
-
-		if ($widget['options']['show_update_form'])
+		else
 		{
-			$renderTemplateObject->setParam('canUpdateStatus', XenForo_Visitor::getInstance()->canUpdateStatus());
+			foreach ($users as $user)
+			{
+				$profilePostIds[] = $user['status_profile_post_id'];
+			}
 		}
 
-		return $renderTemplateObject->render();
+		$profilePosts = $profilePostModel->getProfilePostsByIds($profilePostIds, array('join' => XenForo_Model_ProfilePost::FETCH_USER_POSTER | XenForo_Model_ProfilePost::FETCH_USER_RECEIVER | XenForo_Model_ProfilePost::FETCH_USER_RECEIVER_PRIVACY));
+		foreach ($profilePosts AS $id => &$profilePost)
+		{
+			$receivingUser = $profilePostModel->getProfileUserFromProfilePost($profilePost);
+
+			$profilePost = $profilePostModel->prepareProfilePost($profilePost, $receivingUser);
+			if (!empty($profilePost['isIgnored']))
+			{
+				unset($profilePosts[$id]);
+			}
+		}
+		uasort($profilePosts, array(
+			__CLASS__,
+			'_cmpFunction'
+		));
+		$profilePosts = array_slice($profilePosts, 0, $widget['options']['limit'], true);
+
+		return $profilePosts;
 	}
 
-	public function extraPrepare(array $widget, &$html)
+	protected static function _cmpFunction($a, $b)
 	{
-		$visitor = XenForo_Visitor::getInstance();
-		$html = str_replace('CSRF_TOKEN_PAGE', $visitor->get('csrf_token_page'), $html);
-		$html = str_replace('LINK_MEMBER_POST_VISITOR', XenForo_Link::buildPublicLink('members/post', $visitor), $html);
-
-		return parent::extraPrepare($widget, $html);
+		return $b['post_date'] - $a['post_date'];
 	}
 
 }
