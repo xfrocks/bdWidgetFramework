@@ -418,16 +418,6 @@ class WidgetFramework_Template_Helper_Layout
 			return $prepared;
 		}
 
-		if (isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS]))
-		{
-			// this is params array from page container
-			if (isset($params['contentTemplate']) AND isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]))
-			{
-				// found content template params, use it
-				$params = array_merge($params, $params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']]->getParams());
-			}
-		}
-
 		foreach ($params as $key => &$value)
 		{
 			if (in_array($key, $exclude, true) OR substr($key, 0, 1) === '_')

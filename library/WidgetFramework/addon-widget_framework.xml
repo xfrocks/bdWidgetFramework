@@ -303,7 +303,7 @@
 	<xen:option value="withContent">{xen:phrase wf_widget_feed_reader_display_mode_with_content}</xen:option>
 	<xen:option value="plusImage">{xen:phrase wf_widget_feed_reader_display_mode_plus_image}</xen:option>
 </xen:radiounit>]]></template>
-    <template title="wf_widget_options_html"><![CDATA[<xen:textboxunit name="{$namePrefix}html" label="HTML" value="{$options.html}" rows="5" inputclass="Elastic">
+    <template title="wf_widget_options_html"><![CDATA[<xen:textboxunit name="{$namePrefix}html" label="HTML" value="{$options.html}" rows="3" inputclass="Elastic">
 	<xen:explain>{xen:phrase wf_html_explain}</xen:explain>
 </xen:textboxunit>]]></template>
     <template title="wf_widget_options_online_users"><![CDATA[<input type="hidden" name="{$namePrefix}hide_following" value="1" />
@@ -936,6 +936,7 @@ Arguments:
     <phrase title="wf_non_existent_hook_x" version_id="37" version_string="1.5.4"><![CDATA[The specified hook "{hook}" could not be found in any public templates.]]></phrase>
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
+    <phrase title="wf_original_contents" version_id="98" version_string="2.5.0d"><![CDATA[Original Contents]]></phrase>
     <phrase title="wf_parent_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum (of the current one)]]></phrase>
     <phrase title="wf_parent_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum + its children]]></phrase>
     <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget" version_id="1" version_string="0.9"><![CDATA[Please confirm that you want to delete the following widget]]></phrase>
@@ -1002,7 +1003,7 @@ Arguments:
     <phrase title="wf_widget_callback_callback_explain" version_id="17" version_string="1.0.9"><![CDATA[Enter the callback to render this widget. Callback signature:<br/>
 array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject]]></phrase>
     <phrase title="wf_widget_empty_hide_visitor_panel" version_id="13" version_string="1.0.5"><![CDATA[hide visitor panel too?]]></phrase>
-    <phrase title="wf_widget_empty_layout_editor_explain" version_id="96" version_string="2.5.0d"><![CDATA[Contents above this point will be cleared.]]></phrase>
+    <phrase title="wf_widget_empty_layout_editor_explain" version_id="98" version_string="2.5.0d"><![CDATA[Original contents will be removed.]]></phrase>
     <phrase title="wf_widget_feed_reader_display_mode_plus_image" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content + Image (if any)]]></phrase>
     <phrase title="wf_widget_feed_reader_display_mode_title_only" version_id="44" version_string="2.0.6"><![CDATA[Title Only]]></phrase>
     <phrase title="wf_widget_feed_reader_display_mode_with_content" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content]]></phrase>
@@ -1348,6 +1349,15 @@ All customization should go to wf_default_EXTRA.css
 	background: yellow;
 }
 
+.WidgetFramework_LayoutEditor_Area .original-contents
+{
+	border: 1px solid {xen:property primaryLightish};
+	margin-left: 3px !important;
+	margin-right: 3px !important;
+	max-height: 150px;
+	overflow: scroll;
+}
+
 .WidgetFramework_LayoutEditor_Area .controls a
 {
 	display: inline-block;
@@ -1437,7 +1447,7 @@ All customization should go to wf_default_EXTRA.css
 	 data-position="{$widget.positionCode}"
 	 data-display-order="{$widget.display_order}">
 	<div class="controls">
-		<a class="dnd-handle">{xen:phrase wf_move}</a>
+		<a title="{$widget.display_order}" class="dnd-handle Tooltip">{xen:phrase wf_move}</a>
 
 		<a href="{xen:adminlink widgets/delete, $widget}" target="_blank" class="wf-le-widget-link">
 			{xen:phrase delete}
@@ -1502,7 +1512,7 @@ All customization should go to wf_default_EXTRA.css
 		</div>
 
 		<div class="controls">
-			<a class="dnd-handle">{xen:phrase wf_move}</a>
+			<a title="{$firstTab.display_order}" class="dnd-handle Tooltip">{xen:phrase wf_move}</a>
 
 			<a href="{xen:adminlink widgets/add, '', 'position_widget={$firstTab.widget_id}', 'conditionalParams={xen:helper json, $conditionalParams}'}"
 				target="_blank"

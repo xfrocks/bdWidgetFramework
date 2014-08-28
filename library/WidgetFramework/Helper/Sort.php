@@ -18,4 +18,12 @@ class WidgetFramework_Helper_Sort
 		}
 	}
 
+	public static function widgetGroupsAsc($a, $b)
+	{
+		$doa = $a['display_order'];
+		$dob = $b['display_order'];
+
+		return $doa - $dob;
+	}
+
 }

@@ -342,19 +342,6 @@ class WidgetFramework_Core
 			}
 		}
 
-		if (WidgetFramework_Option::get('layoutEditorEnabled'))
-		{
-			$conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
-
-			$params = array(
-				'type' => 'template',
-				'positionCode' => $templateName,
-				'conditionalParams' => $conditionalParams,
-				'contents' => $html,
-			);
-			$html = strval($template->create('wf_layout_editor_area', $params));
-		}
-
 		if ($html != $originalHtml)
 		{
 			$containerData['sidebar'] = utf8_trim($html);
@@ -385,10 +372,26 @@ class WidgetFramework_Core
 
 	protected function _renderWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template, $html)
 	{
+		$renderArea = WidgetFramework_Option::get('layoutEditorEnabled');
+		$renderArea = ($renderArea AND (empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]) OR in_array($positionCode, array(
+			'hook:ad_above_content',
+			'hook:ad_below_content',
+		))));
+
 		if (!isset($this->_positions[$positionCode]))
 		{
-			// stop rendering if no widget configured for this position
-			return $html;
+			if ($renderArea)
+			{
+				$this->_positions[$positionCode] = array(
+					'widgets' => array(),
+					'prepared' => true,
+				);
+			}
+			else
+			{
+				// stop rendering if no widget configured for this position
+				return $html;
+			}
 		}
 		$position = &$this->_positions[$positionCode];
 
@@ -396,6 +399,17 @@ class WidgetFramework_Core
 		{
 			// stop rendering if not prepared
 			return $html;
+		}
+
+		if ($renderArea AND !empty($html))
+		{
+			$html = WidgetFramework_Helper_String::createArrayOfStrings(array(
+				'<div title="',
+				new XenForo_Phrase('wf_original_contents'),
+				'" class="original-contents Tooltip">',
+				$html,
+				'</div>'
+			));
 		}
 
 		$widgetParams = $this->_prepareWidgetParams($params);
@@ -520,6 +534,19 @@ class WidgetFramework_Core
 					$html = WidgetFramework_Helper_String::createArrayOfStrings($htmls);
 				}
 			}
+		}
+
+		if ($renderArea)
+		{
+			$conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($widgetParams);
+
+			$areaParams = array(
+				'positionCode' => $positionCode,
+				'conditionalParams' => $conditionalParams,
+				'contents' => $html,
+			);
+
+			$html = $template->create('wf_layout_editor_area', $areaParams);
 		}
 
 		return $html;

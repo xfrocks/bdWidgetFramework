@@ -81,7 +81,13 @@
 			{
 				var $widget = $(this);
 
-				if ($widget.data('displayOrder') > displayOrder)
+				var widgetDisplayOrder = $widget.data('displayOrder');
+				if (!widgetDisplayOrder)
+				{
+					widgetDisplayOrder = 0;
+				}
+
+				if (widgetDisplayOrder > displayOrder)
 				{
 					// insert rendered element before the widget (use display order)
 					$rendered.xfInsert('insertBefore', $widget, 'show');
@@ -398,21 +404,57 @@
 				return false;
 			}
 
-			var displayOrder = 0;
+			var negativeDisplayOrderCount = 0;
+			var nonControlsParentCount = 0;
 			this.$widgets.children().each(function()
 			{
+				if ($item.is(this))
+				{
+					return;
+				}
+
+				var $this = $(this);
+				var displayOrder = $this.data('displayOrder') ? parseInt($this.data('displayOrder')) : 0;
+				if (displayOrder < 0)
+				{
+					negativeDisplayOrderCount++;
+				}
+				else
+				if (!$this.is('.controls-parent'))
+				{
+					nonControlsParentCount++;
+				}
+			});
+
+			var relativeDisplayOrder = 0;
+			if (negativeDisplayOrderCount > 0 || nonControlsParentCount > 0)
+			{
+				relativeDisplayOrder = (-1 * negativeDisplayOrderCount) - 1;
+			}
+
+			this.$widgets.children().each(function()
+			{
+				var $this = $(this);
+
 				if ($item.is(this))
 				{
 					return false;
 				}
 
-				displayOrder++;
+				if ($this.is('.controls-parent'))
+				{
+					relativeDisplayOrder++;
+				}
+				else
+				{
+					relativeDisplayOrder = Math.max(0, relativeDisplayOrder + 1);
+				}
 			});
 
 			XenForo.ajax(this.$parent.data('save'),
 			{
 				widget_id: widgetId,
-				relative_display_order: displayOrder,
+				relative_display_order: relativeDisplayOrder,
 				move_group: moveGroup,
 			}, $.context(this, 'saveSuccess'));
 		},

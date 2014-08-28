@@ -30,38 +30,64 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 			unset($sameDisplayOrderLevels[$widgetId]);
 		}
 
-		$currentDisplayOrder = 0;
-		$i = -1;
+		// sort asc by display order (ignore negative/positive)
+		uasort($sameDisplayOrderLevels, array(
+			'WidgetFramework_Helper_Sort',
+			'widgetGroupsAsc'
+		));
+		$isNegative = $relativeDisplayOrder < 0;
+		foreach (array_keys($sameDisplayOrderLevels) as $sameDisplayOrderLevelWidgetId)
+		{
+			if (($sameDisplayOrderLevels[$sameDisplayOrderLevelWidgetId]['display_order'] < 0) == $isNegative)
+			{
+				// same negative/positive
+			}
+			else
+			{
+				unset($sameDisplayOrderLevels[$sameDisplayOrderLevelWidgetId]);
+			}
+		}
+
+		$iStart = -1;
+		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
+		{
+			if ($sameDisplayOrderLevel['display_order'] < 0)
+			{
+				$iStart--;
+			}
+		}
+
+		$i = $iStart;
 		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
 		{
 			$i++;
 			if ($i < $relativeDisplayOrder)
 			{
-				// find the display order right before needed position
-				$currentDisplayOrder = $sameDisplayOrderLevel['display_order'];
+				// update widget/group display order above our widget
+				$currentDisplayOrder = ($isNegative ? $i - 1 : $i) * 10;
+
+				if ($sameDisplayOrderLevel['display_order'] != $currentDisplayOrder)
+				{
+					$this->updateDisplayOrderForWidget($sameDisplayOrderLevelWidgetId, $currentDisplayOrder - $sameDisplayOrderLevel['display_order'], $sameDisplayOrderLevels, $widgetsNeedUpdate);
+				}
 			}
 		}
 
 		// set display order for the widget
-		$currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
-		$foundDisplayOrder = $currentDisplayOrder;
+		$foundDisplayOrder = $relativeDisplayOrder * 10;
 
-		$i = -1;
+		$i = $iStart;
 		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
 		{
 			$i++;
 			if ($i >= $relativeDisplayOrder)
 			{
-				if ($sameDisplayOrderLevel['display_order'] <= $currentDisplayOrder)
-				{
-					$currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
+				// update widget/group display order below our widget
+				$currentDisplayOrder = ($isNegative ? $i : $i + 1) * 10;
 
-					// update widget/group display order below our widget
-					$this->updateDisplayOrderForWidget($sameDisplayOrderLevelWidgetId, $currentDisplayOrder - $sameDisplayOrderLevel['display_order'], $sameDisplayOrderLevels, $widgetsNeedUpdate);
-				}
-				else
+				if ($sameDisplayOrderLevel['display_order'] != $currentDisplayOrder)
 				{
-					$currentDisplayOrder = $sameDisplayOrderLevel['display_order'];
+					$this->updateDisplayOrderForWidget($sameDisplayOrderLevelWidgetId, $currentDisplayOrder - $sameDisplayOrderLevel['display_order'], $sameDisplayOrderLevels, $widgetsNeedUpdate);
 				}
 			}
 		}

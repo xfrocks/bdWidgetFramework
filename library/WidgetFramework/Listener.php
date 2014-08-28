@@ -204,30 +204,6 @@ class WidgetFramework_Listener
 					$contents = '';
 				}
 			}
-
-			static $layoutEditorHooks = array(
-				'ad_above_content',
-				'ad_below_content',
-			);
-
-			if (WidgetFramework_Option::get('layoutEditorEnabled'))
-			{
-				if (in_array($hookName, $layoutEditorHooks, true))
-				{
-					$conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($template->getParams());
-
-					$params = array(
-						'type' => 'hook',
-						'positionCode' => 'hook:' . $hookName,
-						'conditionalParams' => $conditionalParams,
-						'contents' => $contents,
-					);
-
-					$params['areaId'] = 'area-' . preg_replace('/[^a-zA-Z0-9\-]/', '', $params['positionCode']);
-
-					$contents = $template->create('wf_layout_editor_area', $params);
-				}
-			}
 		}
 	}
 
