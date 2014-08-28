@@ -4,6 +4,38 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 {
 	const SIMPLE_CACHE_KEY = 'widgets';
 
+	public function getLastDisplayOrder($positionWidgetGroups, $positionWidget = null)
+	{
+		$sameDisplayOrderLevels = array();
+		if (!empty($positionWidget))
+		{
+			// put into a group
+			foreach ($positionWidgetGroups as $positionWidgetGroup)
+			{
+				if (isset($positionWidgetGroup['widgets'][$positionWidget['widget_id']]))
+				{
+					$sameDisplayOrderLevels = $positionWidgetGroup['widgets'];
+				}
+			}
+		}
+		else
+		{
+			// put into a position
+			$sameDisplayOrderLevels = $positionWidgetGroups;
+		}
+
+		$maxDisplayOrder = false;
+		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevel)
+		{
+			if ($maxDisplayOrder === false OR $maxDisplayOrder < $sameDisplayOrderLevel['display_order'])
+			{
+				$maxDisplayOrder = $sameDisplayOrderLevel['display_order'];
+			}
+		}
+
+		return floor($maxDisplayOrder / 10) * 10 + 10;
+	}
+
 	public function getDisplayOrderFromRelative($widgetId, $relativeDisplayOrder, $positionWidgetGroups, $positionWidget = null, array &$widgetsNeedUpdate = array())
 	{
 		$sameDisplayOrderLevels = array();
@@ -241,12 +273,12 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		/* fallback to database */
 		if ($widgets === false)
 		{
-			$widgets = $this->fetchAllKeyed("
-					SELECT *
-					FROM `xf_widget`
-					WHERE `widget_page_id` = 0
-					ORDER BY display_order ASC
-					", 'widget_id');
+			$widgets = $this->fetchAllKeyed('
+				SELECT *
+				FROM `xf_widget`
+				WHERE `widget_page_id` = 0
+				ORDER BY display_order ASC, widget_id ASC
+			', 'widget_id');
 		}
 
 		foreach ($widgets as &$widget)

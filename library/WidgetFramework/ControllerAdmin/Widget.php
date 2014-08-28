@@ -33,9 +33,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			$positionWidgetPositions = explode(',', $positionWidget['position']);
 			$position = reset($positionWidgetPositions);
 
-			if (!empty($position['options']['tab_group']))
+			if (!empty($positionWidget['options']['tab_group']))
 			{
-				$options['tab_group'] = $position['options']['tab_group'];
+				$options['tab_group'] = $positionWidget['options']['tab_group'];
 			}
 			else
 			{
@@ -80,27 +80,11 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 				if (!empty($position))
 				{
 					$globalWidgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
-
 					$core = WidgetFramework_Core::getInstance();
 					$core->addWidgets($globalWidgets);
-
-					$minDisplayOrder = false;
-					$maxDisplayOrder = false;
 					$positionWidgetGroups = $core->getWidgetGroupsByPosition($position);
-					foreach ($positionWidgetGroups as $positionWidgetGroup)
-					{
-						if ($minDisplayOrder === false OR $minDisplayOrder > $positionWidgetGroup['display_order'])
-						{
-							$minDisplayOrder = $positionWidgetGroup['display_order'];
-						}
 
-						if ($maxDisplayOrder === false OR $maxDisplayOrder < $positionWidgetGroup['display_order'])
-						{
-							$maxDisplayOrder = $positionWidgetGroup['display_order'];
-						}
-					}
-
-					$displayOrder = floor($maxDisplayOrder / 10) * 10 + 10;
+					$displayOrder = $this->_getWidgetModel()->getLastDisplayOrder($positionWidgetGroups, $positionWidget);
 				}
 			}
 			else

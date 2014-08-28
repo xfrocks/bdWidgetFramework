@@ -162,6 +162,7 @@ class WidgetFramework_Core
 						'name' => (!empty($widget['options']['tab_group']) ? $widget['options']['tab_group'] : ''),
 						'widgets' => array($widget['widget_id'] => &$widget),
 						'keys' => false,
+						'widget_id' => $widget['widget_id'],
 						'display_order' => $widget['display_order'],
 					);
 				}

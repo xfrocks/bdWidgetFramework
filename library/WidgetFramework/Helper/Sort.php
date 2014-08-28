@@ -10,12 +10,19 @@ class WidgetFramework_Helper_Sort
 		if ($doa < 0 AND $doa < 0)
 		{
 			// both are negative display order
-			return $dob - $doa;
+			$result = $dob - $doa;
 		}
 		else
 		{
-			return $doa - $dob;
+			$result = $doa - $dob;
 		}
+
+		if ($result == 0)
+		{
+			$result = $a['widget_id'] - $b['widget_id'];
+		}
+
+		return $result;
 	}
 
 	public static function widgetGroupsAsc($a, $b)
@@ -23,7 +30,14 @@ class WidgetFramework_Helper_Sort
 		$doa = $a['display_order'];
 		$dob = $b['display_order'];
 
-		return $doa - $dob;
+		$result = $doa - $dob;
+
+		if ($result == 0)
+		{
+			$result = $a['widget_id'] - $b['widget_id'];
+		}
+
+		return $result;
 	}
 
 }
