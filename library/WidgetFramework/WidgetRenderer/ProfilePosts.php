@@ -79,6 +79,11 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 
 	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
 	{
+		if (empty($widget['options']['limit']))
+		{
+			$widget['options']['limit'] = 5;
+		}
+
 		$profilePosts = $this->_getProfilePosts($widget, $positionCode, $params, $renderTemplateObject);
 		$renderTemplateObject->setParam('profilePosts', $profilePosts);
 
