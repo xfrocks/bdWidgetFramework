@@ -73,7 +73,7 @@ class WidgetFramework_Installer
 				$db->query($patch['alterTableAddColumnQuery']);
 			}
 		}
-		
+
 		self::installCustomized($existingAddOn, $addOnData);
 	}
 
@@ -115,41 +115,51 @@ class WidgetFramework_Installer
 		if (empty($existingAddOn))
 		{
 			$db->query("
-					INSERT INTO `xf_widget`
+				INSERT INTO `xf_widget`
 					(title, class, options, position, display_order)
+				VALUES
+					('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'forum_list', 10),
+					('', 'WidgetFramework_WidgetRenderer_OnlineStaff', 0x613A303A7B7D, 'forum_list', 20),
+					('', 'WidgetFramework_WidgetRenderer_OnlineUsers', 0x613A303A7B7D, 'forum_list', 30),
+					('', 'WidgetFramework_WidgetRenderer_Stats', 0x613A303A7B7D, 'forum_list', 40),
+					('', 'WidgetFramework_WidgetRenderer_ShareThisPage', 0x613A303A7B7D, 'forum_list', 50)
+			");
+
+			if (XenForo_Application::$versionId > 1040000)
+			{
+				$db->query("
+					INSERT INTO `xf_widget`
+						(title, class, options, position, display_order)
 					VALUES
-					('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'forum_list', '0')
-					,('', 'WidgetFramework_WidgetRenderer_OnlineStaff', 0x613A303A7B7D, 'forum_list', '1')
-					,('', 'WidgetFramework_WidgetRenderer_OnlineUsers', 0x613A303A7B7D, 'forum_list', '2')
-					,('', 'WidgetFramework_WidgetRenderer_Stats', 0x613A303A7B7D, 'forum_list', '3')
-					,('', 'WidgetFramework_WidgetRenderer_ShareThisPage', 0x613A303A7B7D, 'forum_list', '4')
-					");
+						('', 'WidgetFramework_WidgetRenderer_ProfilePosts', 0x613A303A7B7D, 'forum_list', 30)
+				");
+			}
 
 			if (XenForo_Application::$versionId < 1020000)
 			{
 				$db->query("
 					INSERT INTO `xf_widget`
-					(title, class, options, position, display_order)
+						(title, class, options, position, display_order)
 					VALUES
-					('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_list', '0')
-					,('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_list', '1')
-					,('Highest-Posting Members', 'WidgetFramework_WidgetRenderer_Users', 0x613A373A7B733A353A226C696D6974223B693A31323B733A353A226F72646572223B733A31333A226D6573736167655F636F756E74223B733A393A22646972656374696F6E223B733A343A2244455343223B733A31313A22646973706C61794D6F6465223B733A31363A226176617461724F6E6C79426967676572223B733A393A227461625F67726F7570223B733A303A22223B733A31303A2265787072657373696F6E223B733A303A22223B733A31363A2265787072657373696F6E5F6465627567223B693A303B7D, 'member_list', '2')
-					,('Newest Members', 'WidgetFramework_WidgetRenderer_Users', 0x613A373A7B733A353A226C696D6974223B693A383B733A353A226F72646572223B733A31333A2272656769737465725F64617465223B733A393A22646972656374696F6E223B733A343A2244455343223B733A31313A22646973706C61794D6F6465223B733A31363A226176617461724F6E6C79426967676572223B733A393A227461625F67726F7570223B733A303A22223B733A31303A2265787072657373696F6E223B733A303A22223B733A31363A2265787072657373696F6E5F6465627567223B693A303B7D, 'member_list', '3')
-					,('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_list', '4')
-					");
+						('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_list', 10),
+						('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_list', 20),
+						('Highest-Posting Members', 'WidgetFramework_WidgetRenderer_Users', 0x613A373A7B733A353A226C696D6974223B693A31323B733A353A226F72646572223B733A31333A226D6573736167655F636F756E74223B733A393A22646972656374696F6E223B733A343A2244455343223B733A31313A22646973706C61794D6F6465223B733A31363A226176617461724F6E6C79426967676572223B733A393A227461625F67726F7570223B733A303A22223B733A31303A2265787072657373696F6E223B733A303A22223B733A31363A2265787072657373696F6E5F6465627567223B693A303B7D, 'member_list', 30),
+						('Newest Members', 'WidgetFramework_WidgetRenderer_Users', 0x613A373A7B733A353A226C696D6974223B693A383B733A353A226F72646572223B733A31333A2272656769737465725F64617465223B733A393A22646972656374696F6E223B733A343A2244455343223B733A31313A22646973706C61794D6F6465223B733A31363A226176617461724F6E6C79426967676572223B733A393A227461625F67726F7570223B733A303A22223B733A31303A2265787072657373696F6E223B733A303A22223B733A31363A2265787072657373696F6E5F6465627567223B693A303B7D, 'member_list', 40),
+						('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_list', 50)
+				");
 			}
 			else
 			{
 				$db->query("
 					INSERT INTO `xf_widget`
-					(title, class, options, position, display_order)
+						(title, class, options, position, display_order)
 					VALUES
-					('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_notable', '0')
-					,('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_notable', '1')
-					,('', 'WidgetFramework_WidgetRenderer_Birthday', 0x613A303A7B7D, 'member_notable', '2')
-					,('', 'WidgetFramework_WidgetRenderer_UsersStaff', 0x613A303A7B7D, 'member_notable', '3')
-					,('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_notable', '4')
-					");
+						('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_notable', 10),
+						('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_notable', 20),
+						('', 'WidgetFramework_WidgetRenderer_Birthday', 0x613A303A7B7D, 'member_notable', 30),
+						('', 'WidgetFramework_WidgetRenderer_UsersStaff', 0x613A303A7B7D, 'member_notable', 40),
+						('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_notable', 50)
+				");
 			}
 
 			XenForo_Model::create('WidgetFramework_Model_Widget')->buildCache();
@@ -178,7 +188,7 @@ class WidgetFramework_Installer
 
 		if ($effectiveVersionId > 0 AND $effectiveVersionId < 74)
 		{
-			// change definiation for widget.title and widget.class
+			// change definition for widget.title and widget.class
 			// since 2.4.4
 			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `title` TEXT");
 			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
