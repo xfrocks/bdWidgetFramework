@@ -132,25 +132,20 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		$oldGroupWidgets = array();
 		foreach ($oldPositionWidgets as $oldPositionWidget)
 		{
-			if (!empty($oldPositionWidget['widgets']) AND $oldPositionWidget['name'] == $oldGroup)
+			if (!empty($oldPositionWidget['widgets']) AND $oldPositionWidget['name'] == $oldGroup AND $oldPositionWidget['widget_id'] == $widgetId)
 			{
 				$oldGroupWidgets = $oldPositionWidget['widgets'];
 			}
 		}
-
 		if (empty($oldGroupWidgets))
 		{
 			// group not found
 			return false;
 		}
-		$oldGroupWidgetIds = array_keys($oldGroupWidgets);
-		$firstWidgetId = reset($oldGroupWidgetIds);
-		if ($firstWidgetId != $widgetId)
+		if (isset($oldGroupWidgets[$widgetId]))
 		{
-			// first widget in group is not our widget
-			return false;
+			unset($oldGroupWidgets[$widgetId]);
 		}
-		unset($oldGroupWidgets[$widgetId]);
 
 		$i = -1;
 		$currentDisplayOrder = $newDisplayOrder;

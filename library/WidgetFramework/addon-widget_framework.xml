@@ -768,7 +768,10 @@ Arguments:
     <phrase title="wf_delete_widget" version_id="1" version_string="0.9"><![CDATA[Delete Widget]]></phrase>
     <phrase title="wf_delete_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Delete Widget Page]]></phrase>
     <phrase title="wf_descending" version_id="1" version_string="0.9"><![CDATA[Descending]]></phrase>
+    <phrase title="wf_display_as_columns" version_id="98" version_string="2.5.0d"><![CDATA[Display as Columns]]></phrase>
+    <phrase title="wf_display_as_tabs" version_id="98" version_string="2.5.0d"><![CDATA[Display as Tabs]]></phrase>
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
+    <phrase title="wf_display_one_randomly" version_id="98" version_string="2.5.0d"><![CDATA[Display Randomly]]></phrase>
     <phrase title="wf_display_order_explain" version_id="37" version_string="1.5.4"><![CDATA[The position of this widget relative to other widgets in the same position. If the display order is negative, its contents will be inserted before the original contents of the position. Otherwise, it will be appended.]]></phrase>
     <phrase title="wf_duplicate" version_id="96" version_string="2.5.0d"><![CDATA[Duplicate]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
@@ -839,9 +842,9 @@ Arguments:
     <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
     <phrase title="wf_tab_group" version_id="69" version_string="2.4.1"><![CDATA[Widget Group]]></phrase>
-    <phrase title="wf_tab_group_explain" version_id="69" version_string="2.4.1"><![CDATA[You can group several widgets together and have them rendered in a tabbed layout if more than one has content. Special format for advanced grouping:<br/>
+    <phrase title="wf_tab_group_explain" version_id="98" version_string="2.5.0d"><![CDATA[You can group several widgets together and have them rendered in a tabbed layout if more than one has content. Special format for advanced grouping:<br/>
 - "random": only one widget of the group will be rendered at a time. You can also use "random1" or "random2" if you wish to have more than one random group in one position.<br/>
-- "columns": the widgets will be rendered in column layout, divided equally between widgets. Use "columns1" or similar to have many columned group in one position.]]></phrase>
+- "column": the widgets will be rendered in column layout, divided equally between widgets. Use "columns1" or similar to have many columned group in one position.]]></phrase>
     <phrase title="wf_template_explain" version_id="19" version_string="1.1.1"><![CDATA[Enter the title of the template you want to use here. It will be parsed and displayed just like using <xen:include /> in normal templates.]]></phrase>
     <phrase title="wf_threads" version_id="1" version_string="0.9"><![CDATA[threads]]></phrase>
     <phrase title="wf_threads_forums" version_id="7" version_string="0.9.5"><![CDATA[Forums]]></phrase>
@@ -1384,9 +1387,43 @@ All customization should go to wf_default_EXTRA.css
 					 '_params={$groupSaveParams}',
 					 'conditionalParams={xen:helper json, $conditionalParams}'}"
 				target="_blank"
-				title="{$layoutEditorGroup}" class="wf-le-widget-link Tooltip">
+				class="wf-le-widget-link">
 				{xen:phrase wf_add_widget}
 			</a>
+
+			<xen:if is="count({$tabs}) > 1">
+				<br />
+				<xen:if is="!{$isTabs}">
+					<a href="{xen:adminlink widgets/save-group-type,
+							 '',
+							 '_params={$groupSaveParams}',
+							 'type=tab'}"
+						target="_blank"
+						class="wf-le-widget-link NoOverlay">
+						{xen:phrase wf_display_as_tabs}
+					</a>
+				</xen:if>
+				<xen:if is="!{$isColumns}">
+					<a href="{xen:adminlink widgets/save-group-type,
+							 '',
+							 '_params={$groupSaveParams}',
+							 'type=column'}"
+						target="_blank"
+						class="wf-le-widget-link NoOverlay">
+						{xen:phrase wf_display_as_columns}
+					</a>
+				</xen:if>
+				<xen:if is="!{$isRandom}">
+					<a href="{xen:adminlink widgets/save-group-type,
+							 '',
+							 '_params={$groupSaveParams}',
+							 'type=random'}"
+						target="_blank"
+						class="wf-le-widget-link NoOverlay">
+						{xen:phrase wf_display_one_randomly}
+					</a>
+				</xen:if>
+			</xen:if>
 		</div>
 	</div>
 </div>

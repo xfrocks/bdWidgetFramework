@@ -4,6 +4,11 @@
 	{
 		renderStart: function(ajaxData)
 		{
+			if (!ajaxData.hasRenderData)
+			{
+				return false;
+			}
+
 			XenForo.ajax(window.location.href, $.extend(ajaxData,
 			{
 				_layoutEditor: 1,
@@ -199,6 +204,15 @@
 				}
 			}
 
+			if (this.$link.is('.NoOverlay'))
+			{
+				XenForo.ajax(this.$link.attr('href'),
+				{
+				}, $.context(this, 'renderStart'));
+
+				return true;
+			}
+
 			if (!this.OverlayLoader)
 			{
 				var href = this.$link.attr('href');
@@ -214,7 +228,6 @@
 				this.OverlayLoader = new XenForo.OverlayLoader(this.$link, false, options);
 				this.OverlayLoader.load($.context(this, 'overlaySuccess'));
 
-				e.preventDefault();
 				return true;
 			}
 
@@ -257,7 +270,7 @@
 				this.OverlayLoader.overlay.getOverlay().empty().remove();
 			}
 			delete (this.OverlayLoader);
-		},
+		}
 	});
 
 	// *********************************************************************

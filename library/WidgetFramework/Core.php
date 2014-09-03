@@ -454,7 +454,7 @@ class WidgetFramework_Core
 			{
 				$widgetGroup['keys'] = array_keys($widgetGroup['widgets']);
 
-				if ($isRandom)
+				if (WidgetFramework_Option::get('layoutEditorEnabled') == false AND $isRandom)
 				{
 					shuffle($widgetGroup['keys']);
 				}
@@ -591,7 +591,8 @@ class WidgetFramework_Core
 	protected function _wrapWidgets(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId)
 	{
 		$firstTab = reset($tabs);
-		$isColumns = strpos($groupId, 'columns') === 0;
+		$isColumns = strpos($groupId, 'column') === 0;
+		$isRandom = strpos($groupId, 'random') === 0;
 
 		if (empty($groupId))
 		{
@@ -606,7 +607,9 @@ class WidgetFramework_Core
 			'firstTab' => $firstTab,
 			'groupId' => $groupId,
 
+			'isTabs' => (!$isColumns AND !$isRandom),
 			'isColumns' => $isColumns,
+			'isRandom' => $isRandom,
 			'normalizedGroupId' => $normalizedGroupId,
 		));
 
