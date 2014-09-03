@@ -388,10 +388,6 @@ abstract class WidgetFramework_WidgetRenderer
 			$this->_configuration['options']['expression'] = XenForo_Input::STRING;
 			$this->_configuration['options']['conditional'] = XenForo_Input::ARRAY_SIMPLE;
 			$this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
-			$this->_configuration['options']['layout_row'] = XenForo_Input::UINT;
-			$this->_configuration['options']['layout_col'] = XenForo_Input::UINT;
-			$this->_configuration['options']['layout_sizeRow'] = XenForo_Input::UINT;
-			$this->_configuration['options']['layout_sizeCol'] = XenForo_Input::UINT;
 		}
 
 		return $this->_configuration;

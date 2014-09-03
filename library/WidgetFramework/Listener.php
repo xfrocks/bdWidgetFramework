@@ -30,22 +30,6 @@ class WidgetFramework_Listener
 				'WidgetFramework_Template_Helper_Core',
 				'snippet'
 			);
-
-			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_generatelayoutcss'] = array(
-				'WidgetFramework_Template_Helper_Layout',
-				'generateCss'
-			);
-		}
-		elseif ($dependencies instanceof XenForo_Dependencies_Admin)
-		{
-			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_layoutcontainersize'] = array(
-				'WidgetFramework_Template_Helper_Layout',
-				'getContainerSize'
-			);
-			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_layoutwidgetpositionandsize'] = array(
-				'WidgetFramework_Template_Helper_Layout',
-				'getWidgetPositionAndSize'
-			);
 		}
 
 		XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_getoption'] = array(
@@ -100,7 +84,7 @@ class WidgetFramework_Listener
 
 				WidgetFramework_Template_Extended::WidgetFramework_setPageContainer($template);
 
-				if (isset($params['contentTemplate']) AND $params['contentTemplate'] === 'wf_widget_page_index' AND empty($params['selectedTabId']))
+				if (isset($params['contentTemplate']) AND $params['contentTemplate'] === 'wf_widget_page' AND empty($params['selectedTabId']))
 				{
 					// make sure a navtab is selected if user is viewing our (as index) widget page
 					if (!XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab'))
@@ -184,7 +168,20 @@ class WidgetFramework_Listener
 	{
 		if (defined('WIDGET_FRAMEWORK_LOADED'))
 		{
-			WidgetFramework_Core::getInstance()->renderWidgetsForHook($hookName, $hookParams, $template, $contents);
+			$renderWidgets = true;
+
+			if ($template->getTemplateName() == 'PAGE_CONTAINER' AND $template->getParam('contentTemplate') == 'wf_widget_page')
+			{
+				if (WidgetFramework_Option::get('layoutEditorEnabled') AND $hookName != 'wf_widget_page_contents')
+				{
+					$renderWidgets = false;
+				}
+			}
+
+			if ($renderWidgets)
+			{
+				WidgetFramework_Core::getInstance()->renderWidgetsForHook($hookName, $hookParams, $template, $contents);
+			}
 
 			if ($hookName == 'moderator_bar')
 			{

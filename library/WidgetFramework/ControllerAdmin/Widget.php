@@ -60,17 +60,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			{
 				return $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404);
 			}
-
-			$widgetPageWidgets = $this->_getWidgetModel()->getWidgetPageWidgets($widgetPage['node_id']);
-			$maxRow = -1;
-			foreach ($widgetPageWidgets as $widgetPageWidget)
-			{
-				if (isset($widgetPageWidget['options']['layout_row']))
-				{
-					$maxRow = max($maxRow, $widgetPageWidget['options']['layout_row']);
-				}
-			}
-			$options['layout_row'] = $maxRow + 1;
 		}
 		else
 		{

@@ -264,9 +264,12 @@
 
 	XenForo.WidgetFramework_LayoutEditor_Widgets = function($dndHandle)
 	{
-		$dndHandle.show();
-
 		var $widgets = $dndHandle.closest('.widgets');
+		if ($widgets.length == 0)
+		{
+			return false;
+		}
+
 		var existing = $widgets.data('WidgetFramework_LayoutEditor_Widgets');
 		if (existing)
 		{
@@ -291,6 +294,8 @@
 
 		if (isOkie)
 		{
+			$dndHandle.show();
+
 			return this.__construct($widgets, $parent);
 		}
 	};

@@ -373,11 +373,36 @@ class WidgetFramework_Core
 
 	protected function _renderWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template, $html)
 	{
-		$renderArea = WidgetFramework_Option::get('layoutEditorEnabled');
-		$renderArea = ($renderArea AND (empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]) OR in_array($positionCode, array(
-			'hook:ad_above_content',
-			'hook:ad_below_content',
-		))));
+		$renderArea = false;
+		if (WidgetFramework_Option::get('layoutEditorEnabled'))
+		{
+			$areaSaveParams = array('position' => $positionCode);
+			if (!empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]))
+			{
+				// hook position, only render for some hooks
+				if ($positionCode == 'hook:wf_widget_page_contents')
+				{
+					$renderArea = true;
+					$areaSaveParams['widget_page_id'] = $params['widgetPage']['node_id'];
+				}
+				else
+				{
+					$renderArea = in_array($positionCode, array(
+						'hook:ad_above_content',
+						'hook:ad_below_content',
+					));
+				}
+			}
+			else
+			{
+				// page position, always render for sidebar
+				$renderArea = true;
+				if ($positionCode == 'wf_widget_page')
+				{
+					$areaSaveParams['widget_page_id'] = $params['widgetPage']['node_id'];
+				}
+			}
+		}
 
 		if (!isset($this->_positions[$positionCode]))
 		{
@@ -394,6 +419,11 @@ class WidgetFramework_Core
 				return $html;
 			}
 		}
+		elseif (WidgetFramework_Option::get('layoutEditorEnabled'))
+		{
+			$renderArea = true;
+		}
+
 		$position = &$this->_positions[$positionCode];
 
 		if (empty($position['prepared']))
@@ -540,10 +570,15 @@ class WidgetFramework_Core
 		if ($renderArea)
 		{
 			$conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($widgetParams);
+			if (!empty($areaSaveParams['widget_page_id']) AND !empty($conditionalParams['widgetPage']))
+			{
+				unset($conditionalParams['widgetPage']);
+			}
 
 			$areaParams = array(
 				'positionCode' => $positionCode,
 				'conditionalParams' => $conditionalParams,
+				'areaSaveParams' => $areaSaveParams,
 				'contents' => $html,
 			);
 
@@ -578,15 +613,17 @@ class WidgetFramework_Core
 		if (WidgetFramework_Option::get('layoutEditorEnabled'))
 		{
 			$wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
-			$wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
 
-			$wrapperParams['tabHtmls'] = array();
-			foreach ($wrapperParams['tabs'] as $widget)
+			$wrapperParams['groupSaveParams'] = array('position_widget' => $firstTab['widget_id']);
+			if (!empty($firstTab['widget_page_id']))
 			{
-				$wrapperParams['tabHtmls'][$widget['widget_id']] = $template->create('wf_layout_editor_widget', array_merge($wrapperParams, array(
-					'widget' => $widget,
-					'html' => $widget['html'],
-				)));
+				$wrapperParams['groupSaveParams']['widget_page_id'] = $firstTab['widget_page_id'];
+			}
+
+			$wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
+			if (!empty($wrapperParams['groupSaveParams']['widget_page_id']) AND !empty($wrapperParams['conditionalParams']['widgetPage']))
+			{
+				unset($wrapperParams['conditionalParams']['widgetPage']);
 			}
 		}
 

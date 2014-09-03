@@ -47,7 +47,7 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 			$this->_routeMatch->setSections(WidgetFramework_Option::get('indexTabId'));
 		}
 
-		return $this->responseView('WidgetFramework_ViewPublic_WidgetPage_Index', 'wf_widget_page_index', $viewParams);
+		return $this->responseView('WidgetFramework_ViewPublic_WidgetPage_View', 'wf_widget_page', $viewParams);
 	}
 
 	public function actionAsIndex()
