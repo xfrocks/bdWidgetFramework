@@ -738,7 +738,6 @@ Arguments:
     <phrase title="style_property_wf_threads_snippetMaxLength_master" version_id="69" version_string="2.4.1"><![CDATA[Snippet Maximum Length]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar layout.]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
-    <phrase title="wf_add_sidebar_widget" version_id="76" version_string="2.4.5"><![CDATA[Add Sidebar Widget]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
     <phrase title="wf_birthday_avatar_only" version_id="92" version_string="2.4.9e"><![CDATA[Ignore Users Without Avatar]]></phrase>
@@ -749,8 +748,6 @@ Arguments:
     <phrase title="wf_by" version_id="96" version_string="2.5.0d"><![CDATA[by]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
-    <phrase title="wf_column_gap" version_id="54" version_string="2.2.3"><![CDATA[Column Gap]]></phrase>
-    <phrase title="wf_column_width" version_id="54" version_string="2.2.3"><![CDATA[Column Width]]></phrase>
     <phrase title="wf_conditional" version_id="96" version_string="2.5.0d"><![CDATA[Conditional]]></phrase>
     <phrase title="wf_conditional_explain" version_id="96" version_string="2.5.0d"><![CDATA[Enter widget conditionals to control when the widget is shown. The syntax is similar to template conditional for &lt;xen:if /&gt; tag. You can also use <a href="{link}" target="_blank" tabindex="-1">Layout Editor</a> to learn which variables are available in which positions. Some commonly used conditionals:<br />
 <br />
@@ -795,8 +792,6 @@ Arguments:
 ]]></phrase>
     <phrase title="wf_layout_editor_widget_no_html" version_id="96" version_string="2.5.0d"><![CDATA[Nothing rendered, the widget currently has no contents and users will not see it.]]></phrase>
     <phrase title="wf_layout_editor_widget_no_renderer" version_id="96" version_string="2.5.0d"><![CDATA[This widget cannot be rendered because the renderer class is invalid.]]></phrase>
-    <phrase title="wf_layout_position" version_id="54" version_string="2.2.3"><![CDATA[Position]]></phrase>
-    <phrase title="wf_layout_size" version_id="54" version_string="2.2.3"><![CDATA[Size]]></phrase>
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
     <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
     <phrase title="wf_limit_zero_explain" version_id="58" version_string="2.3.2b"><![CDATA[Enter 0 (zero) to set no limitation.]]></phrase>
@@ -837,7 +832,6 @@ Arguments:
     <phrase title="wf_requested_widget_page_not_found" version_id="54" version_string="2.2.3"><![CDATA[The requested widget page could not be found.]]></phrase>
     <phrase title="wf_resources" version_id="47" version_string="2.1.1"><![CDATA[resources]]></phrase>
     <phrase title="wf_resource_count" version_id="47" version_string="2.1.1"><![CDATA[Resource Count]]></phrase>
-    <phrase title="wf_row_gap" version_id="54" version_string="2.2.3"><![CDATA[Row Gap]]></phrase>
     <phrase title="wf_save_widget" version_id="1" version_string="0.9"><![CDATA[Save Widget]]></phrase>
     <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
@@ -880,10 +874,6 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
     <phrase title="wf_widget_online_users_rich" version_id="47" version_string="2.1.1"><![CDATA[Show rich usernames]]></phrase>
     <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
-    <phrase title="wf_widget_page_widget_col_explain" version_id="76" version_string="2.4.5"><![CDATA[Widget position vertically: left-most column is 0.]]></phrase>
-    <phrase title="wf_widget_page_widget_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Widget position horizontally: top row is 0.]]></phrase>
-    <phrase title="wf_widget_page_widget_size_col_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of columns to occupy]]></phrase>
-    <phrase title="wf_widget_page_widget_size_row_explain" version_id="76" version_string="2.4.5"><![CDATA[Number of rows to occupy]]></phrase>
     <phrase title="wf_widget_profile_posts_type_recent" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
