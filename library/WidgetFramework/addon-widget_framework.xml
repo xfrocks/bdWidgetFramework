@@ -106,7 +106,6 @@
 		<xen:if is="{$options.expression}">
 			<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="3">
 				<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
-				<xen:explain>{xen:if '{$_layoutEditor}', '', {xen:phrase wf_expression_explain}}</xen:explain>
 			</xen:textboxunit>
 		</xen:if>
 
@@ -760,11 +759,11 @@ Arguments:
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
     <phrase title="wf_conditional" version_id="96" version_string="2.5.0d"><![CDATA[Conditional]]></phrase>
-    <phrase title="wf_conditional_explain" version_id="96" version_string="2.5.0d"><![CDATA[Enter widget conditionals to control when the widget is shown. The syntax is similar to template conditional for &lt;xen:if /&gt; tag. You can also use <a href="{link}" target="_blank" tabindex="-1">Layout Editor</a> to learn which variables are available in which positions. Some commonly used conditionals:<br />
+    <phrase title="wf_conditional_explain" version_id="100" version_string="2.5.0d"><![CDATA[Enter widget conditionals to control when the widget is shown. The syntax is similar to template conditional for &lt;xen:if /&gt; tag. You can also use <a href="{link}" target="_blank" tabindex="-1">Layout Editor</a> to learn which variables are available in which positions. Some commonly used conditionals:<br />
 <br />
 {$visitor.user_id} > 0 (show up for logged in users only)<br />
 <br />
-{xen:helper ismemberof, $visitor, 3} (show up for users of user group #3 only, which is admins)]]></phrase>
+{xen:helper ismemberof, $visitor, 3} (show up for users of user group #3 only, which is the admin group)]]></phrase>
     <phrase title="wf_confirm_deletion_of_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Confirm Deletion of Widget Page]]></phrase>
     <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
