@@ -73,7 +73,7 @@ class WidgetFramework_Installer
 				$db->query($patch['alterTableAddColumnQuery']);
 			}
 		}
-
+		
 		self::installCustomized($existingAddOn, $addOnData);
 	}
 
@@ -106,7 +106,7 @@ class WidgetFramework_Installer
 
 	/* End auto-generated lines of code. Feel free to make changes below */
 
-	private static function installCustomized($existingAddOn, $addOnData)
+	public static function installCustomized($existingAddOn, $addOnData)
 	{
 		$db = XenForo_Application::getDb();
 
@@ -193,9 +193,16 @@ class WidgetFramework_Installer
 			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `title` TEXT");
 			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
 		}
+
+		if ($effectiveVersionId > 0 AND $effectiveVersionId < 101)
+		{
+			// update widget within widget pages to use group/display order instead of layout
+			// row/column
+			self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
+		}
 	}
 
-	private static function uninstallCustomized()
+	public static function uninstallCustomized()
 	{
 		$db = XenForo_Application::getDb();
 
@@ -208,6 +215,51 @@ class WidgetFramework_Installer
 		XenForo_Application::setSimpleCacheData(WidgetFramework_Helper_Index::SIMPLE_CACHE_CHILD_NODES, false);
 		XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Cache::INVALIDED_CACHE_ITEM_NAME, false);
 		XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Widget::SIMPLE_CACHE_KEY, false);
+	}
+
+	protected static function _updatePositionGroupAndDisplayOrderForWidgetsOfPages()
+	{
+		$widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');
+		$widgetPages = $widgetModel->getModelFromCache('WidgetFramework_Model_WidgetPage')->getWidgetPages();
+
+		foreach ($widgetPages as $widgetPage)
+		{
+			$widgets = $widgetModel->getWidgetPageWidgets($widgetPage['node_id'], false);
+
+			// update sidebar widgets
+			foreach (array_keys($widgets) as $widgetId)
+			{
+				if ($widgets[$widgetId]['position'] == 'sidebar')
+				{
+					$widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+					$widgetDw->setExistingData($widgets[$widgetId], true);
+					$widgetDw->set('position', 'wf_widget_page');
+
+					$widgetDw->save();
+				}
+				elseif (!empty($widgets[$widgetId]['position']))
+				{
+					unset($widgets[$widgetId]);
+				}
+			}
+
+			if (!empty($widgets))
+			{
+				$widgetsCloned = $widgets;
+				WidgetFramework_Helper_OldPageLayout::buildLayoutTree($widgetsCloned);
+
+				foreach (array_keys($widgets) as $widgetId)
+				{
+					$widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+					$widgetDw->setExistingData($widgets[$widgetId], true);
+					$widgetDw->set('position', $widgetsCloned[$widgetId]['position']);
+					$widgetDw->set('display_order', $widgetsCloned[$widgetId]['display_order']);
+					$widgetDw->set('options', $widgetsCloned[$widgetId]['options']);
+
+					$widgetDw->save();
+				}
+			}
+		}
 	}
 
 }

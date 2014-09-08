@@ -341,23 +341,51 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 		$dw->setExistingData($widget, true);
 
+		$tabGroup = '';
 		$widgetsNeedUpdate = array();
-		$tabGroup = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
 
 		if (!empty($positionWidget))
 		{
-			$dwInput['position'] = $positionWidget['position'];
-
-			if (!empty($positionWidget['options']['tab_group']))
+			if ($positionWidget['widget_id'] != $widget['widget_id'])
 			{
-				$tabGroup = $positionWidget['options']['tab_group'];
+				$dwInput['position'] = $positionWidget['position'];
+
+				if (!empty($positionWidget['options']['tab_group']))
+				{
+					$tabGroup = $positionWidget['options']['tab_group'];
+				}
+				else
+				{
+					$tabGroup = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
+					$widgetsNeedUpdate[$positionWidget['widget_id']] = array('options' => array_merge($positionWidget['options'], array('tab_group' => $tabGroup)));
+				}
+
+				if (!empty($dwInput['move_group']))
+				{
+					if (!empty($widget['options']['tab_group']))
+					{
+						$groupIdParts = explode('/', $widget['options']['tab_group']);
+						$groupIdLastPart = array_pop($groupIdParts);
+						$tabGroup .= '/' . $groupIdLastPart;
+					}
+				}
 			}
 			else
 			{
-				$widgetsNeedUpdate[$positionWidget['widget_id']] = array('options' => array_merge($positionWidget['options'], array('tab_group' => $tabGroup)));
+				$tabGroup = $widget['options']['tab_group'];
 			}
 		}
-		$dw->set('options', array_merge($widget['options'], array('tab_group' => $tabGroup)));
+		else
+		{
+			if (!empty($dwInput['move_group']))
+			{
+				if (!empty($widget['options']['tab_group']))
+				{
+					$tabGroup = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
+				}
+			}
+		}
+		$dw->setWidgetOption('tab_group', $tabGroup);
 
 		if (!empty($dwInput['position']))
 		{
@@ -382,14 +410,13 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			)));
 		}
 
-		if (!empty($dwInput['move_group']) AND !empty($widget['options']['tab_group']))
+		if (!empty($dwInput['move_group']))
 		{
 			call_user_func_array(array(
 				$this->_getWidgetModel(),
 				'updatePositionGroupAndDisplayOrderForWidgets'
 			), array(
 				$widget['widget_id'],
-				$widget['options']['tab_group'],
 				$dw->get('position'),
 				$tabGroup,
 				$dw->get('display_order'),
@@ -397,7 +424,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 				&$widgetsNeedUpdate,
 			));
 		}
-
+		//var_dump($tabGroup, $dw->get('display_order'), $widgetsNeedUpdate);exit ;
 		XenForo_Db::beginTransaction();
 
 		$dw->save();
@@ -406,7 +433,13 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		{
 			$needUpdateDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 			$needUpdateDw->setExistingData($needUpdateId);
-			$needUpdateDw->bulkSet($needUpdateData);
+
+			$needUpdateDw->bulkSet($needUpdateData, array('ignoreInvalidFields' => true));
+			if (isset($needUpdateData['tab_group']))
+			{
+				$needUpdateDw->setWidgetOption('tab_group', $needUpdateData['tab_group']);
+			}
+
 			$needUpdateDw->save();
 
 			$changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($needUpdateDw, $changedRenderedId);
@@ -446,6 +479,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		if (!in_array($newType, array(
 			'tab',
 			'column',
+			'row',
 			'random'
 		), true))
 		{
@@ -453,18 +487,19 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		}
 		$newGroup = $newType . '-' . substr(md5(XenForo_Application::$time), 0, 5);
 
-		$widgetGroup = null;
 		$widgetGroups = $core->getWidgetGroupsByPosition($positionWidget['position']);
-		foreach ($widgetGroups as $_widgetGroup)
-		{
-			if ($_widgetGroup['widget_id'] == $positionWidget['widget_id'])
-			{
-				$widgetGroup = $_widgetGroup;
-			}
-		}
-		if (empty($widgetGroup))
+		$widgetsContainsWidgetId = $this->_getWidgetModel()->getWidgetsContainsWidgetId($widgetGroups, $positionWidget['widget_id']);
+		if (empty($widgetsContainsWidgetId))
 		{
 			return $this->responseNoPermission();
+		}
+
+		if (!empty($positionWidget['options']['tab_group']))
+		{
+			$groupIdParts = explode('/', $positionWidget['options']['tab_group']);
+			$groupIdLastPart = array_pop($groupIdParts);
+			$groupIdParts[] = $newGroup;
+			$newGroup = implode('/', $groupIdParts);
 		}
 
 		$widgetsNeedUpdate = array();
@@ -473,7 +508,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			'updatePositionGroupAndDisplayOrderForWidgets'
 		), array(
 			$positionWidget['widget_id'],
-			$widgetGroup['name'],
 			$positionWidget['position'],
 			$newGroup,
 			$positionWidget['display_order'],
@@ -492,7 +526,13 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		{
 			$needUpdateDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 			$needUpdateDw->setExistingData($needUpdateId);
-			$needUpdateDw->bulkSet($needUpdateData);
+
+			$needUpdateDw->bulkSet($needUpdateData, array('ignoreInvalidFields' => true));
+			if (isset($needUpdateData['tab_group']))
+			{
+				$needUpdateDw->setWidgetOption('tab_group', $needUpdateData['tab_group']);
+			}
+
 			$needUpdateDw->save();
 
 			$changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($needUpdateDw, $changedRenderedId);

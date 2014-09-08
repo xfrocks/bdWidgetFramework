@@ -28,16 +28,16 @@ class WidgetFramework_Helper_LayoutEditor
 			{
 				if (!empty($existingGroup))
 				{
-					$changed[] = $existingGroup;
+					$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($existingGroup);
 				}
 				else
 				{
-					$changed[] = 'group-' . $dw->get('widget_id');
+					$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId('group-' . $dw->get('widget_id'));
 				}
 
 				if (!empty($newGroup))
 				{
-					$changed[] = $newGroup;
+					$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($newGroup);
 				}
 			}
 		}
@@ -48,7 +48,7 @@ class WidgetFramework_Helper_LayoutEditor
 			$options = $dw->getWidgetOptions();
 			if (!empty($options['tab_group']))
 			{
-				$changed[] = $options['tab_group'];
+				$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($options['tab_group']);
 			}
 		}
 
@@ -85,24 +85,24 @@ class WidgetFramework_Helper_LayoutEditor
 
 			$head[$containerDataHeadKey] = <<<EOF
 <style>
-.{$widgetGroupCssClass} > .stretcher
+.{$widgetGroupCssClass}.columns > .stretcher
 {
 	min-width: 100%;
 	width: {$stretcherWidth}px;
 }
 
-.{$widgetGroupCssClass} > .stretcher > .widgets
+.{$widgetGroupCssClass}.columns > .stretcher > .widgets
 {
 	min-width: {$widgetsMinWidth}%;
 	width: {$widgetsWidth}px;
 }
-	.{$widgetGroupCssClass} > .stretcher > .widgets > div
+	.{$widgetGroupCssClass}.columns > .stretcher > .widgets > div
 	{
 		min-width: {$widgetMinWidth}%;
 		width: {$widgetWidth}px;
 	}
 
-.{$widgetGroupCssClass} > .stretcher > .controls
+.{$widgetGroupCssClass}.columns > .stretcher > .controls
 {
 	min-width: {$controlsMinWidth}%;
 	width: {$controlsWidth}px;

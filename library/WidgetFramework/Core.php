@@ -122,6 +122,7 @@ class WidgetFramework_Core
 			}
 
 			$widgetPositions = explode(',', $widget['position']);
+			$widget['tab_group'] = (!empty($widget['options']['tab_group']) ? $widget['options']['tab_group'] : '');
 
 			foreach ($widgetPositions as $position)
 			{
@@ -136,36 +137,11 @@ class WidgetFramework_Core
 					$this->_positions[$position] = array(
 						'widgets' => array(),
 						'prepared' => false,
-						'html' => array(),
-						// since 1.0.9
-						'extraData' => array(),
 					);
 				}
 				$positionsAdded[] = $position;
 
-				$groupFound = false;
-				if (!empty($widget['options']['tab_group']))
-				{
-					foreach ($this->_positions[$position]['widgets'] as &$groupRef)
-					{
-						if ($groupRef['name'] == $widget['options']['tab_group'])
-						{
-							$groupRef['widgets'][$widget['widget_id']] = &$widget;
-							$groupFound = true;
-						}
-					}
-				}
-
-				if (!$groupFound)
-				{
-					$this->_positions[$position]['widgets'][$widget['widget_id']] = array(
-						'name' => (!empty($widget['options']['tab_group']) ? $widget['options']['tab_group'] : ''),
-						'widgets' => array($widget['widget_id'] => &$widget),
-						'keys' => false,
-						'widget_id' => $widget['widget_id'],
-						'display_order' => $widget['display_order'],
-					);
-				}
+				$this->_addWidgets_addWidgetToWidgetsByGroup($widget, $this->_positions[$position]['widgets']);
 
 				// get template for hooks data from the widget
 				// merge it to template for hook property of this object
@@ -202,6 +178,78 @@ class WidgetFramework_Core
 				'WidgetFramework_Helper_Sort',
 				'widgetGroups'
 			));
+		}
+	}
+
+	protected function _addWidgets_addWidgetToWidgetsByGroup(array &$newWidget, array &$widgets, $groupPrefix = '')
+	{
+		$group = '';
+
+		if (!empty($newWidget['tab_group']))
+		{
+			$group = $newWidget['tab_group'];
+
+			foreach ($widgets as &$widgetRef)
+			{
+				if (empty($widgetRef['name']) OR !isset($widgetRef['widgets']))
+				{
+					// not a group
+					continue;
+				}
+
+				if ($group === $widgetRef['name'])
+				{
+					$widgetRef['widgets'][$newWidget['widget_id']] = &$newWidget;
+
+					return true;
+				}
+				elseif (strpos($group, $widgetRef['name']) === 0)
+				{
+					$added = $this->_addWidgets_addWidgetToWidgetsByGroup($newWidget, $widgetRef['widgets'], $widgetRef['name']);
+
+					if ($added)
+					{
+						return true;
+					}
+				}
+			}
+		}
+
+		$groupWithoutPrefix = substr($group, strlen($groupPrefix));
+		$groupWithoutPrefix = trim($groupWithoutPrefix, '/');
+
+		if (empty($groupWithoutPrefix))
+		{
+			$widgets[$newWidget['widget_id']] = array(
+				'name' => $newWidget['tab_group'],
+				'widgets' => array($newWidget['widget_id'] => &$newWidget),
+
+				'widget_id' => $newWidget['widget_id'],
+				'position' => $newWidget['position'],
+				'tab_group' => $newWidget['tab_group'],
+				'display_order' => $newWidget['display_order'],
+			);
+
+			return true;
+		}
+		else
+		{
+			$groupPrefixParts = preg_split('#/#', $groupPrefix, -1, PREG_SPLIT_NO_EMPTY);
+			$groupWithoutPrefixParts = preg_split('#/#', $groupWithoutPrefix, -1, PREG_SPLIT_NO_EMPTY);
+			$groupPrefixParts[] = array_shift($groupWithoutPrefixParts);
+			$groupPrefixAppended = implode('/', $groupPrefixParts);
+
+			$widgets[$newWidget['widget_id']] = array(
+				'name' => $groupPrefixAppended,
+				'widgets' => array(),
+
+				'widget_id' => $newWidget['widget_id'],
+				'position' => $newWidget['position'],
+				'tab_group' => $groupPrefixAppended,
+				'display_order' => $newWidget['display_order'],
+			);
+			
+			return $this->_addWidgets_addWidgetToWidgetsByGroup($newWidget, $widgets, $groupPrefix);
 		}
 	}
 
@@ -254,13 +302,8 @@ class WidgetFramework_Core
 
 					if (!empty($this->_positions[$positionCode]['widgets']))
 					{
-						foreach ($this->_positions[$positionCode]['widgets'] as &$widgetGroup)
-						{
-							if (isset($widgetGroup['widgets'][$allWidget['widget_id']]))
-							{
-								$found = true;
-							}
-						}
+						$widgetsContainsWidgetId = $this->_getModelWidget()->getWidgetsContainsWidgetId($this->_positions[$positionCode]['widgets'], $allWidget['widget_id']);
+						$found = !empty($widgetsContainsWidgetId);
 					}
 
 					if (!$found)
@@ -286,11 +329,25 @@ class WidgetFramework_Core
 		$position = &$this->_positions[$positionCode];
 
 		$widgetParams = $this->_prepareWidgetParams($params);
+		$this->_prepareWidgetsFor_prepareWidgets($position['widgets'], $positionCode, $widgetParams, $template);
 
-		foreach ($position['widgets'] as &$widgetGroup)
+		$position['prepared'] = true;
+
+		return true;
+	}
+
+	protected function _prepareWidgetsFor_prepareWidgets(array &$widgets, $positionCode, array $widgetParams, XenForo_Template_Abstract $template)
+	{
+		foreach ($widgets as &$widget)
 		{
-			foreach ($widgetGroup['widgets'] as &$widget)
+			if (isset($widget['widgets']))
 			{
+				// this is a group
+				$this->_prepareWidgetsFor_prepareWidgets($widget['widgets'], $positionCode, $widgetParams, $template);
+			}
+			else
+			{
+				// this is a widget
 				$renderer = self::getRenderer($widget['class'], false);
 				if ($renderer)
 				{
@@ -298,10 +355,6 @@ class WidgetFramework_Core
 				}
 			}
 		}
-
-		$position['prepared'] = true;
-
-		return true;
 	}
 
 	protected function _prepareWidgetParams(array $params)
@@ -444,128 +497,7 @@ class WidgetFramework_Core
 		}
 
 		$widgetParams = $this->_prepareWidgetParams($params);
-
-		foreach ($position['widgets'] as &$widgetGroup)
-		{
-			$count = 0;
-			$isRandom = strpos($widgetGroup['name'], 'random') === 0;
-
-			if ($widgetGroup['keys'] === false)
-			{
-				$widgetGroup['keys'] = array_keys($widgetGroup['widgets']);
-
-				if (WidgetFramework_Option::get('layoutEditorEnabled') == false AND $isRandom)
-				{
-					shuffle($widgetGroup['keys']);
-				}
-			}
-
-			foreach ($widgetGroup['keys'] as $key)
-			{
-				$widget = &$widgetGroup['widgets'][$key];
-				$widgetHtml = '';
-				$renderer = self::getRenderer($widget['class'], false);
-
-				if (!empty($renderer))
-				{
-					$widgetHtml = strval($renderer->render($widget, $positionCode, $widgetParams, $template, $html));
-
-					// extra-preparation (this will be run everytime the widget is ready to display)
-					// this method can change the final html in some way if it needs to do that
-					// the changed html won't be store in the cache (caching is processed inside
-					// WidgetFramework_Renderer::render())
-					$position['extraData'][$widget['widget_id']] = $renderer->extraPrepare($widget, $widgetHtml);
-				}
-				elseif (WidgetFramework_Option::get('layoutEditorEnabled'))
-				{
-					$widgetHtml = new XenForo_Phrase('wf_layout_editor_widget_no_renderer');
-				}
-
-				if (!empty($widgetHtml) OR WidgetFramework_Option::get('layoutEditorEnabled'))
-				{
-					$position['html'][$widget['widget_id']] = $widgetHtml;
-
-					$count++;
-				}
-
-				if (!WidgetFramework_Option::get('layoutEditorEnabled') AND $isRandom AND $count > 0)
-				{
-					// we are in random group
-					// at least 1 widget is rendered
-					// stop the foreach loop now
-					// sondh@2014-08-01: do not break in layout editor
-					break;
-				}
-			}
-
-			if ($count > 0)
-			{
-				$tabs = array();
-				$noWrapper = array();
-
-				foreach ($widgetGroup['keys'] as $key)
-				{
-					$widget = &$widgetGroup['widgets'][$key];
-					$renderer = self::getRenderer($widget['class'], false);
-
-					if (isset($position['html'][$widget['widget_id']]))
-					{
-						$widgetWithData = array_merge($widget, array(
-							'title' => WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget),
-							'html' => $position['html'][$widget['widget_id']],
-
-							'positionCode' => $positionCode,
-							WidgetFramework_WidgetRenderer::PARAM_IS_HOOK => !empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]),
-						));
-
-						if (empty($renderer) OR $renderer->useWrapper($widget))
-						{
-							$tabs[$widget['widget_id']] = $widgetWithData;
-
-							if (!empty($position['extraData'][$widget['widget_id']]))
-							{
-								$tabs[$widget['widget_id']]['extraData'] = $position['extraData'][$widget['widget_id']];
-							}
-						}
-						else
-						{
-							if (WidgetFramework_Option::get('layoutEditorEnabled'))
-							{
-								$noWrapper[$widget['widget_id']] = $template->create('wf_layout_editor_widget', array_merge($params, array(
-									'widget' => $widgetWithData,
-									'html' => $position['html'][$widget['widget_id']],
-								)));
-							}
-							else
-							{
-								$noWrapper[$widget['widget_id']] = $position['html'][$widget['widget_id']];
-							}
-						}
-					}
-				}
-
-				$htmls = $noWrapper;
-
-				if (!empty($tabs))
-				{
-					$htmls[] = $this->_wrapWidgets($tabs, $widgetParams, $template, $widgetGroup['name']);
-				}
-
-				if (count($htmls) > 0)
-				{
-					if ($widgetGroup['display_order'] >= 0)
-					{
-						array_unshift($htmls, $html);
-					}
-					else
-					{
-						$htmls[] = $html;
-					}
-
-					$html = WidgetFramework_Helper_String::createArrayOfStrings($htmls);
-				}
-			}
-		}
+		$this->_renderWidgetsFor_renderWidgetsContainer($position, $positionCode, $widgetParams, $template, $html);
 
 		if ($renderArea)
 		{
@@ -588,18 +520,133 @@ class WidgetFramework_Core
 		return $html;
 	}
 
+	protected function _renderWidgetsFor_renderWidgetsContainer(array &$widgetsContainer, $positionCode, array $widgetParams, XenForo_Template_Abstract $template, &$html)
+	{
+		foreach ($widgetsContainer['widgets'] as &$widgetElement)
+		{
+			$rendered = array();
+
+			if (empty($widgetElement['keys']))
+			{
+				if (!empty($widgetElement['widgets']))
+				{
+					// the element is a group
+					$widgetElement['keys'] = array_keys($widgetElement['widgets']);
+				}
+				elseif (!empty($widgetElement['widget_id']))
+				{
+					// the widget element is a widget
+					$widgetElement['keys'] = array($widgetElement['widget_id']);
+				}
+			}
+
+			foreach ($widgetElement['keys'] as $key)
+			{
+				if (isset($widgetElement['widgets'][$key]))
+				{
+					$widget = &$widgetElement['widgets'][$key];
+				}
+				elseif (!empty($widgetElement['widget_id']) AND $widgetElement['widget_id'] == $key)
+				{
+					$widget = &$widgetElement;
+				}
+				$widgetHtml = '';
+				$renderer = null;
+
+				if (!empty($widget['widgets']))
+				{
+					// the sub-element is a group
+					// we do not pass the $html itself but we use $widgetHtml instead
+					// that means Empty renderer will not work if it is a member a group
+					$subWidgetsContainer = array('widgets' => array($key => &$widget));
+					$this->_renderWidgetsFor_renderWidgetsContainer($subWidgetsContainer, $positionCode, $widgetParams, $template, $widgetHtml);
+				}
+				elseif (!empty($widget['class']))
+				{
+					$renderer = self::getRenderer($widget['class'], false);
+
+					if (!empty($renderer))
+					{
+						$widgetHtml = strval($renderer->render($widget, $positionCode, $widgetParams, $template, $html));
+
+						// extra-preparation (this will be run everytime the widget is ready to display)
+						// this method can change the final html in some way if it needs to do that
+						// the changed html won't be store in the cache (caching is processed inside
+						// WidgetFramework_Renderer::render())
+						$widget['extraData'] = $renderer->extraPrepare($widget, $widgetHtml);
+
+						$widget['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget);
+					}
+					elseif (WidgetFramework_Option::get('layoutEditorEnabled'))
+					{
+						$widgetHtml = new XenForo_Phrase('wf_layout_editor_widget_no_renderer');
+					}
+				}
+
+				if (!empty($widgetHtml) OR WidgetFramework_Option::get('layoutEditorEnabled'))
+				{
+					$rendered[$key] = array_merge($widget, array(
+						'html' => $widgetHtml,
+						'positionCode' => $positionCode,
+
+						WidgetFramework_WidgetRenderer::PARAM_IS_HOOK => !empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]),
+						WidgetFramework_WidgetRenderer::PARAM_IS_GROUP => !empty($widget['widgets']),
+					));
+
+					if (!empty($renderer))
+					{
+						$rendered[$key]['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget);
+					}
+				}
+			}
+
+			if (count($rendered) > 0)
+			{
+				$wrapped = $this->_wrapWidgets($rendered, $widgetParams, $template, $widgetElement['name']);
+
+				if (empty($html))
+				{
+					$html = $wrapped;
+				}
+				elseif ($widgetElement['display_order'] >= 0)
+				{
+					$html = WidgetFramework_Helper_String::createArrayOfStrings(array(
+						$html,
+						$wrapped
+					));
+				}
+				else
+				{
+					$html = WidgetFramework_Helper_String::createArrayOfStrings(array(
+						$wrapped,
+						$html
+					));
+				}
+			}
+		}
+	}
+
 	protected function _wrapWidgets(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId)
 	{
+		$groupIdParts = explode('/', $groupId);
+		$groupIdLastPart = array_pop($groupIdParts);
+		$isColumns = strpos($groupIdLastPart, 'column') === 0;
+		$isRows = strpos($groupIdLastPart, 'row') === 0;
+		$isRandom = strpos($groupIdLastPart, 'random') === 0;
+
+		if (WidgetFramework_Option::get('layoutEditorEnabled') == false AND $isRandom)
+		{
+			$randomKey = array_rand($tabs, 1);
+			$tabs = array($randomKey => $tabs[$randomKey]);
+		}
 		$firstTab = reset($tabs);
-		$isColumns = strpos($groupId, 'column') === 0;
-		$isRandom = strpos($groupId, 'random') === 0;
 
 		if (empty($groupId))
 		{
 			$groupId = 'group-' . $firstTab['widget_id'];
 		}
 		$normalizedGroupId = $groupId;
-		$normalizedGroupId = preg_replace('/[^a-zA-Z0-9\-]/', '', $normalizedGroupId);
+		$normalizedGroupId = WidgetFramework_Helper_String::normalizeHtmlElementId($normalizedGroupId);
 
 		$wrapperTemplateName = 'wf_widget_wrapper';
 		$wrapperParams = array_merge($params, array(
@@ -607,8 +654,9 @@ class WidgetFramework_Core
 			'firstTab' => $firstTab,
 			'groupId' => $groupId,
 
-			'isTabs' => (!$isColumns AND !$isRandom),
+			'isTabs' => (!$isColumns AND !$isRows AND !$isRandom),
 			'isColumns' => $isColumns,
+			'isRows' => $isRows,
 			'isRandom' => $isRandom,
 			'normalizedGroupId' => $normalizedGroupId,
 		));

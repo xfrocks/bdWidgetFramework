@@ -283,12 +283,6 @@
 			return false;
 		}
 
-		var existing = $widgets.data('WidgetFramework_LayoutEditor_Widgets');
-		if (existing)
-		{
-			return false;
-		}
-
 		var isOkie = false;
 		var $parent = $widgets.parent();
 
@@ -309,7 +303,11 @@
 		{
 			$dndHandle.show();
 
-			return this.__construct($widgets, $parent);
+			var existing = $widgets.data('WidgetFramework_LayoutEditor_Widgets');
+			if (!existing)
+			{
+				return this.__construct($widgets, $parent);
+			}
 		}
 	};
 

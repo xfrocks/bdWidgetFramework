@@ -4,19 +4,35 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 {
 	const SIMPLE_CACHE_KEY = 'widgets';
 
+	public function getWidgetsContainsWidgetId(array $widgets, $widgetId)
+	{
+		foreach (array_keys($widgets) as $_widgetId)
+		{
+			if (isset($widgets[$_widgetId]['widgets']))
+			{
+				$response = $this->getWidgetsContainsWidgetId($widgets[$_widgetId]['widgets'], $widgetId);
+
+				if (!empty($response))
+				{
+					return $response;
+				}
+			}
+			elseif ($_widgetId === $widgetId)
+			{
+				return $widgets;
+			}
+		}
+
+		return array();
+	}
+
 	public function getLastDisplayOrder($positionWidgetGroups, $positionWidget = null)
 	{
 		$sameDisplayOrderLevels = array();
 		if (!empty($positionWidget))
 		{
 			// put into a group
-			foreach ($positionWidgetGroups as $positionWidgetGroup)
-			{
-				if (isset($positionWidgetGroup['widgets'][$positionWidget['widget_id']]))
-				{
-					$sameDisplayOrderLevels = $positionWidgetGroup['widgets'];
-				}
-			}
+			$sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id']);
 		}
 		else
 		{
@@ -42,13 +58,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		if (!empty($positionWidget))
 		{
 			// put into a group
-			foreach ($positionWidgetGroups as $positionWidgetGroup)
-			{
-				if (isset($positionWidgetGroup['widgets'][$positionWidget['widget_id']]))
-				{
-					$sameDisplayOrderLevels = $positionWidgetGroup['widgets'];
-				}
-			}
+			$sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id']);
 		}
 		else
 		{
@@ -127,16 +137,10 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		return $foundDisplayOrder;
 	}
 
-	public function updatePositionGroupAndDisplayOrderForWidgets($widgetId, $oldGroup, $newPosition, $newGroup, $newDisplayOrder, $oldPositionWidgets, array &$widgetsNeedUpdate)
+	public function updatePositionGroupAndDisplayOrderForWidgets($widgetId, $newPosition, $newGroup, $newDisplayOrder, $oldPositionWidgets, array &$widgetsNeedUpdate)
 	{
-		$oldGroupWidgets = array();
-		foreach ($oldPositionWidgets as $oldPositionWidget)
-		{
-			if (!empty($oldPositionWidget['widgets']) AND $oldPositionWidget['name'] == $oldGroup AND $oldPositionWidget['widget_id'] == $widgetId)
-			{
-				$oldGroupWidgets = $oldPositionWidget['widgets'];
-			}
-		}
+		$oldGroupWidgets = $this->getWidgetsContainsWidgetId($oldPositionWidgets, $widgetId);
+		$oldGroup = '';
 		if (empty($oldGroupWidgets))
 		{
 			// group not found
@@ -144,6 +148,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		}
 		if (isset($oldGroupWidgets[$widgetId]))
 		{
+			if (!empty($oldGroupWidgets[$widgetId]['options']['tab_group']))
+			{
+				$oldGroup = $oldGroupWidgets[$widgetId]['options']['tab_group'];
+			}
+
 			unset($oldGroupWidgets[$widgetId]);
 		}
 
@@ -158,11 +167,6 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 				$widgetsNeedUpdate[$oldGroupWidgetId]['position'] = $newPosition;
 			}
 
-			if ($oldGroupWidget['options']['tab_group'] !== $newGroup)
-			{
-				$widgetsNeedUpdate[$oldGroupWidgetId]['options'] = array_merge($oldGroupWidget['options'], array('tab_group' => $newGroup));
-			}
-
 			if ($oldGroupWidget['display_order'] <= $currentDisplayOrder)
 			{
 				$currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
@@ -174,6 +178,24 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 			{
 				$currentDisplayOrder = $oldGroupWidget['display_order'];
 			}
+
+			if ($oldGroupWidget['tab_group'] !== $newGroup)
+			{
+				if (!empty($oldGroupWidget['widgets']))
+				{
+					foreach (array_keys($oldGroupWidget['widgets']) as $subWidgetId)
+					{
+						// update all widgets within the updated group
+						$subWidgetNewGroup = preg_replace('#^' . preg_quote($oldGroup) . '#', $newGroup, $oldGroupWidget['widgets'][$subWidgetId]['tab_group']);
+						$this->updatePositionGroupAndDisplayOrderForWidgets($subWidgetId, $newPosition, $subWidgetNewGroup, $currentDisplayOrder, $oldGroupWidget['widgets'], $widgetsNeedUpdate);
+					}
+				}
+				else
+				{
+					$widgetsNeedUpdate[$oldGroupWidgetId]['tab_group'] = $newGroup;
+				}
+			}
+
 		}
 
 		return true;

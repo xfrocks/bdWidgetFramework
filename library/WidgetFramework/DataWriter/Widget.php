@@ -35,6 +35,41 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 		return $options;
 	}
 
+	public function setWidgetOption($optionKey, $optionValue = null)
+	{
+		$options = $this->getWidgetOptions();
+
+		if (is_array($optionKey))
+		{
+			$options = XenForo_Application::mapMerge($options, $optionKey);
+		}
+		elseif ($optionValue !== null)
+		{
+			$options[$optionKey] = $optionValue;
+		}
+		elseif (isset($options[$optionKey]))
+		{
+			unset($options[$optionKey]);
+		}
+
+		$this->set('options', $options);
+	}
+
+	protected function _rebuildGlobalCache()
+	{
+		if (!$this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD))
+		{
+			if ($this->get('widget_page_id') == 0)
+			{
+				$this->_getWidgetModel()->buildCache();
+			}
+			elseif ($this->isUpdate() AND $this->getExisting('widget_page_id') == 0)
+			{
+				$this->_getWidgetModel()->buildCache();
+			}
+		}
+	}
+
 	protected function _getFields()
 	{
 		return array('xf_widget' => array(
@@ -112,20 +147,14 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
 	protected function _postSaveAfterTransaction()
 	{
-		if (!$this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD))
-		{
-			$this->_getWidgetModel()->buildCache();
-		}
+		$this->_rebuildGlobalCache();
 
 		WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
 	}
 
 	protected function _postDelete()
 	{
-		if (!$this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD))
-		{
-			$this->_getWidgetModel()->buildCache();
-		}
+		$this->_rebuildGlobalCache();
 
 		WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
 
