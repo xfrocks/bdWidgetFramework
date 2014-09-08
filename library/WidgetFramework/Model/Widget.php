@@ -201,6 +201,28 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		return true;
 	}
 
+	public function updateGroupForWidgets($oldGroup, $newGroup, array $widgets, array &$widgetsNeedUpdate)
+	{
+		$pattern = '#(^|/)' . preg_quote($oldGroup) . '($|/)#';
+		$replacement = '$1' . $newGroup . '$2';
+
+		foreach ($widgets as $widgetElement)
+		{
+			if (isset($widgetElement['widgets']))
+			{
+				$this->updateGroupForWidgets($oldGroup, $newGroup, $widgetElement['widgets'], $widgetsNeedUpdate);
+			}
+			else
+			{
+				$replaced = preg_replace($pattern, $replacement, $widgetElement['tab_group'], 1, $count);
+				if ($count > 0)
+				{
+					$widgetsNeedUpdate[$widgetElement['widget_id']]['tab_group'] = $replaced;
+				}
+			}
+		}
+	}
+
 	public function updateDisplayOrderForWidget($widgetId, $displayOrderOffset, $widgets, array &$widgetsNeedUpdate)
 	{
 		$widgetsNeedUpdate[$widgetId]['display_order'] = $widgets[$widgetId]['display_order'] + $displayOrderOffset;

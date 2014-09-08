@@ -442,8 +442,17 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
 		$changedRenderedId = array();
 
-		$positionWidgetId = $this->_input->filterSingle('position_widget', XenForo_Input::UINT);
-		$positionWidget = $this->_getWidgetOrError($positionWidgetId);
+		$position = $this->_input->filterSingle('position', XenForo_Input::STRING);
+		if (empty($position))
+		{
+			return $this->responseNoPermission();
+		}
+
+		$oldGroup = $this->_input->filterSingle('group', XenForo_Input::STRING);
+		if (empty($oldGroup))
+		{
+			return $this->responseNoPermission();
+		}
 
 		$globalWidgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
 		$core = WidgetFramework_Core::getInstance();
@@ -470,40 +479,20 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		}
 		$newGroup = $newType . '-' . substr(md5(XenForo_Application::$time), 0, 5);
 
-		$widgetGroups = $core->getWidgetGroupsByPosition($positionWidget['position']);
-		$widgetsContainsWidgetId = $this->_getWidgetModel()->getWidgetsContainsWidgetId($widgetGroups, $positionWidget['widget_id']);
-		if (empty($widgetsContainsWidgetId))
-		{
-			return $this->responseNoPermission();
-		}
-
-		if (!empty($positionWidget['options']['tab_group']))
-		{
-			$groupIdParts = explode('/', $positionWidget['options']['tab_group']);
-			$groupIdLastPart = array_pop($groupIdParts);
-			$groupIdParts[] = $newGroup;
-			$newGroup = implode('/', $groupIdParts);
-		}
+		$widgetGroups = $core->getWidgetGroupsByPosition($position);
 
 		$widgetsNeedUpdate = array();
 		call_user_func_array(array(
 			$this->_getWidgetModel(),
-			'updatePositionGroupAndDisplayOrderForWidgets'
+			'updateGroupForWidgets'
 		), array(
-			$positionWidget['widget_id'],
-			$positionWidget['position'],
+			$oldGroup,
 			$newGroup,
-			$positionWidget['display_order'],
 			$widgetGroups,
 			&$widgetsNeedUpdate,
 		));
 
 		XenForo_Db::beginTransaction();
-
-		$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-		$dw->setExistingData($positionWidget, true);
-		$dw->set('options', array_merge($positionWidget['options'], array('tab_group' => $newGroup)));
-		$dw->save();
 
 		foreach ($widgetsNeedUpdate as $needUpdateId => $needUpdateData)
 		{
@@ -523,7 +512,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
 		XenForo_Db::commit();
 
-		$changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($dw, $changedRenderedId);
 		$viewParams = array('changedRenderedId' => $changedRenderedId);
 
 		return $this->responseView('WidgetFramework_ViewAdmin_Widget_Save', '', $viewParams);
