@@ -30,10 +30,6 @@ class WidgetFramework_Helper_LayoutEditor
 				{
 					$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($existingGroup);
 				}
-				else
-				{
-					$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId('group-' . $dw->get('widget_id'));
-				}
 
 				if (!empty($newGroup))
 				{

@@ -37,15 +37,16 @@
 			{
 				for (var renderedId in ajaxData.rendered)
 				{
+					self.renderSuccess_deleteById(renderedId);
+				}
+
+				for (var renderedId in ajaxData.rendered)
+				{
 					if (ajaxData.rendered[renderedId])
 					{
 						var $rendered = $(ajaxData.rendered[renderedId]);
 
 						self.renderSuccess_insertRendered($rendered);
-					}
-					else
-					{
-						self.renderSuccess_deleteById(renderedId);
 					}
 				}
 			});
@@ -54,7 +55,7 @@
 		renderSuccess_insertRendered: function($rendered)
 		{
 			var self = this;
-			this.renderSuccess_deleteById($rendered.attr('id'));
+
 			if ($rendered.is('.widget-container'))
 			{
 				$rendered.find('.WidgetFramework_LayoutEditor_Widget').each(function()
@@ -78,6 +79,16 @@
 			if ($widgets === null)
 			{
 				return false;
+			}
+
+			var parentGroup = $rendered.data('parentGroup');
+			if (parentGroup)
+			{
+				var $parentGroup = $widgets.find('.WidgetFramework_LayoutEditor_Group#layout-editor-' + parentGroup);
+				if ($parentGroup.length == 1)
+				{
+					$widgets = $parentGroup.children('.stretcher').children('.widgets');
+				}
 			}
 
 			var displayOrder = $rendered.data('displayOrder');
@@ -127,6 +138,7 @@
 			}
 
 			var $widgets = $e.closest('.widgets');
+			$e.attr('id', '');
 
 			// remove the widget/group
 			$e.empty().xfRemove('', function()

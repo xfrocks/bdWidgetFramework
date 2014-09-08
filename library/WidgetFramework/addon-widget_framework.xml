@@ -1345,7 +1345,6 @@ All customization should go to wf_default_EXTRA.css
 	<xen:set var="$widgetContainerColumnsClass"> columns</xen:set>
 </xen:if>
 
-
 <xen:set var="$layoutEditorWidgetWidth">{xen:calc '{xen:property sidebar.width} - 50'}px</xen:set>
 <xen:set var="$layoutEditorWidgetMinWidth">{xen:calc '100 / {xen:count $tabs}'}%</xen:set>
 <xen:set var="$layoutEditorWidgetStyle">min-width: {$layoutEditorWidgetMinWidth}; width: {$layoutEditorWidgetWidth};</xen:set>
@@ -1361,7 +1360,7 @@ All customization should go to wf_default_EXTRA.css
 				'',
 				'_params={$groupSaveParams}'}"
 	 data-first-id="{$firstTab.widget_id}"
-	 data-position="{$firstTab.positionCode}"
+	 data-position="{$firstTab.positionCode}"{xen:if '{$groupParentGroupNameNormalized}', ' data-parent-group="{$groupParentGroupNameNormalized}"'}
 	 data-display-order="{$firstTab.display_order}">
 	<div class="stretcher">
 		<div class="widgets">
@@ -2101,10 +2100,10 @@ All customization should go to wf_default_EXTRA.css
     <template title="wf_widget_wrapper" version_id="100" version_string="2.5.0d"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{$_WidgetFramework_isHook}">
-	<xen:set var="$classSection">section sectionMain widget-container {$groupId} act-as-sidebar sidebar</xen:set>
+	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}', 'section sectionMain '}widget-container {$groupId} act-as-sidebar sidebar</xen:set>
 	<xen:set var="$classInnerSection">widget</xen:set>
 <xen:else />
-	<xen:set var="$classSection">section {$groupId}</xen:set>
+	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}', 'section '}{$groupId}</xen:set>
 	<xen:set var="$classInnerSection">secondaryContent widget</xen:set>
 </xen:if>
 

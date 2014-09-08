@@ -540,6 +540,12 @@ class WidgetFramework_Core
 				}
 			}
 
+			$widgetElementName = $widgetElement['name'];
+			if (empty($widgetElementName))
+			{
+				$widgetElementName = 'widgets-' . substr(md5(implode(',', $widgetElement['keys'])), 0, 5);
+			}
+
 			foreach ($widgetElement['keys'] as $key)
 			{
 				if (isset($widgetElement['widgets'][$key]))
@@ -559,7 +565,9 @@ class WidgetFramework_Core
 					// we do not pass the $html itself but we use $widgetHtml instead
 					// that means Empty renderer will not work if it is a member a group
 					$subWidgetsContainer = array('widgets' => array($key => &$widget));
-					$this->_renderWidgetsFor_renderWidgetsContainer($subWidgetsContainer, $positionCode, $widgetParams, $template, $widgetHtml);
+					$subWidgetParams = $widgetParams;
+					$subWidgetParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME] = $widgetElementName;
+					$this->_renderWidgetsFor_renderWidgetsContainer($subWidgetsContainer, $positionCode, $subWidgetParams, $template, $widgetHtml);
 				}
 				elseif (!empty($widget['class']))
 				{
@@ -603,7 +611,7 @@ class WidgetFramework_Core
 
 			if (count($rendered) > 0)
 			{
-				$wrapped = $this->_wrapWidgets($rendered, $widgetParams, $template, $widgetElement['name']);
+				$wrapped = $this->_wrapWidgets($rendered, $widgetParams, $template, $widgetElementName);
 
 				if (empty($html))
 				{
@@ -629,6 +637,7 @@ class WidgetFramework_Core
 
 	protected function _wrapWidgets(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId)
 	{
+		$normalizedGroupId = WidgetFramework_Helper_String::normalizeHtmlElementId($groupId);
 		$groupIdParts = explode('/', $groupId);
 		$groupIdLastPart = array_pop($groupIdParts);
 		$isColumns = strpos($groupIdLastPart, 'column') === 0;
@@ -641,13 +650,6 @@ class WidgetFramework_Core
 			$tabs = array($randomKey => $tabs[$randomKey]);
 		}
 		$firstTab = reset($tabs);
-
-		if (empty($groupId))
-		{
-			$groupId = 'group-' . $firstTab['widget_id'];
-		}
-		$normalizedGroupId = $groupId;
-		$normalizedGroupId = WidgetFramework_Helper_String::normalizeHtmlElementId($normalizedGroupId);
 
 		$wrapperTemplateName = 'wf_widget_wrapper';
 		$wrapperParams = array_merge($params, array(
@@ -676,6 +678,11 @@ class WidgetFramework_Core
 			if (!empty($wrapperParams['groupSaveParams']['widget_page_id']) AND !empty($wrapperParams['conditionalParams']['widgetPage']))
 			{
 				unset($wrapperParams['conditionalParams']['widgetPage']);
+			}
+
+			if (!empty($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME]))
+			{
+				$wrapperParams['groupParentGroupNameNormalized'] = WidgetFramework_Helper_String::normalizeHtmlElementId($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME]);
 			}
 		}
 
