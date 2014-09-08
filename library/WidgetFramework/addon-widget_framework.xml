@@ -813,6 +813,7 @@ Arguments:
 - The "all" position will make the widget show up in the sidebar of all pages.<br/>
 - Or you can input a comma separated list of templates that need the widget. Popular templates: forum_list (the index page), forum_view (the individual forum page), thread_view (the thread page).<br/>
 - Or you can input a comma separated list in the format of "hook:hook_name" to render the widget directly to the hook. For example: "hook:page_container_content_top" will make the widget visible at the top of the page, on every page.]]></phrase>
+    <phrase title="wf_position_x_requires_widget_page" version_id="100" version_string="2.5.0d"><![CDATA[Position {position} cannot be used manually.]]></phrase>
     <phrase title="wf_posted_by_lowercase" version_id="44" version_string="2.0.6"><![CDATA[posted by]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>

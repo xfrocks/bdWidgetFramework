@@ -226,6 +226,7 @@ class WidgetFramework_Core
 
 				'widget_id' => $newWidget['widget_id'],
 				'position' => $newWidget['position'],
+				'widget_page_id' => $newWidget['widget_page_id'],
 				'tab_group' => $newWidget['tab_group'],
 				'display_order' => $newWidget['display_order'],
 			);
@@ -245,6 +246,7 @@ class WidgetFramework_Core
 
 				'widget_id' => $newWidget['widget_id'],
 				'position' => $newWidget['position'],
+				'widget_page_id' => $newWidget['widget_page_id'],
 				'tab_group' => $groupPrefixAppended,
 				'display_order' => $newWidget['display_order'],
 			);
@@ -611,6 +613,11 @@ class WidgetFramework_Core
 
 			if (count($rendered) > 0)
 			{
+				$widgetParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME] = '';
+				if (!empty($widgetElement['name']))
+				{
+					$widgetParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME] = $widgetElement['name'];
+				}
 				$wrapped = $this->_wrapWidgets($rendered, $widgetParams, $template, $widgetElementName);
 
 				if (empty($html))
@@ -668,15 +675,19 @@ class WidgetFramework_Core
 		{
 			$wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
 
-			$wrapperParams['groupSaveParams'] = array('position_widget' => $firstTab['widget_id']);
-			if (!empty($firstTab['widget_page_id']))
+			$wrapperParams['groupSaveParams'] = array(
+				'position_widget' => $firstTab['widget_id'],
+				'position' => $firstTab['position'],
+			);
+			if (!empty($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME]))
 			{
-				$wrapperParams['groupSaveParams']['widget_page_id'] = $firstTab['widget_page_id'];
+				$wrapperParams['groupSaveParams']['group'] = $wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME];
 			}
 
 			$wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
-			if (!empty($wrapperParams['groupSaveParams']['widget_page_id']) AND !empty($wrapperParams['conditionalParams']['widgetPage']))
+			if (!empty($firstTab['widget_page_id']) AND !empty($wrapperParams['conditionalParams']['widgetPage']))
 			{
+				$wrapperParams['groupSaveParams']['widget_page_id'] = $firstTab['widget_page_id'];
 				unset($wrapperParams['conditionalParams']['widgetPage']);
 			}
 

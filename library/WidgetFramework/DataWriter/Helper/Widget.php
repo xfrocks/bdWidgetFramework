@@ -57,6 +57,15 @@ class WidgetFramework_DataWriter_Helper_Widget
 				continue;
 			}
 
+			if (in_array($position, array(
+				'wf_widget_page',
+				'hook:wf_widget_page_contents'
+			), true) AND !$dw->get('widget_page_id'))
+			{
+				$dw->error(new XenForo_Phrase('wf_position_x_requires_widget_page', array('position' => $position)), $fieldName);
+				return false;
+			}
+
 			// sondh@2012-08-25
 			// added support for hook:hook_name
 			if (substr($position, 0, 5) == 'hook:')

@@ -20,36 +20,20 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 	{
 		$options = array();
 
+		$position = $this->_input->filterSingle('position', XenForo_Input::STRING);
+		$options['tab_group'] = $this->_input->filterSingle('group', XenForo_Input::STRING);
+
 		$positionWidgetId = $this->_input->filterSingle('position_widget', XenForo_Input::UINT);
 		$positionWidget = null;
 		if (!empty($positionWidgetId))
 		{
 			$positionWidget = $this->_getWidgetOrError($positionWidgetId);
-		}
 
-		$position = '';
-		if (!empty($positionWidget))
-		{
-			$positionWidgetPositions = explode(',', $positionWidget['position']);
-			$position = reset($positionWidgetPositions);
-
-			if (!empty($positionWidget['options']['tab_group']))
-			{
-				$options['tab_group'] = $positionWidget['options']['tab_group'];
-			}
-			else
+			if (empty($options['tab_group']))
 			{
 				$options['tab_group'] = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
 			}
 		}
-
-		$inputPosition = $this->_input->filterSingle('position', XenForo_Input::STRING);
-		if (!empty($inputPosition))
-		{
-			$position = $inputPosition;
-		}
-
-		$displayOrder = 10;
 
 		$widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
 		if (!empty($widgetPageId))
@@ -58,32 +42,24 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			$widgetPage = $this->_getWidgetPageOrError($widgetPageId);
 		}
 
-		$inputDisplayOrder = $this->_input->filterSingle('display_order', XenForo_Input::INT, array('default' => 'na'));
-		if ($inputDisplayOrder == 'na')
+		$displayOrder = $this->_input->filterSingle('display_order', XenForo_Input::INT, array('default' => 'na'));
+		if ($displayOrder == 'na' AND !empty($position))
 		{
-			if (!empty($position))
+			$core = WidgetFramework_Core::getInstance();
+
+			if (empty($widgetPage))
 			{
-				$core = WidgetFramework_Core::getInstance();
-
-				if (empty($widgetPage))
-				{
-					$globalWidgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
-					$core->addWidgets($globalWidgets);
-				}
-				else
-				{
-					$widgetPageWidgets = $this->_getWidgetModel()->getWidgetPageWidgets($widgetPage['node_id'], false);
-					$core->addWidgets($widgetPageWidgets);
-				}
-
-				$positionWidgetGroups = $core->getWidgetGroupsByPosition($position);
-
-				$displayOrder = $this->_getWidgetModel()->getLastDisplayOrder($positionWidgetGroups, $positionWidget);
+				$globalWidgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
+				$core->addWidgets($globalWidgets);
 			}
-		}
-		else
-		{
-			$displayOrder = $inputDisplayOrder;
+			else
+			{
+				$widgetPageWidgets = $this->_getWidgetModel()->getWidgetPageWidgets($widgetPage['node_id'], false);
+				$core->addWidgets($widgetPageWidgets);
+			}
+
+			$positionWidgetGroups = $core->getWidgetGroupsByPosition($position);
+			$displayOrder = $this->_getWidgetModel()->getLastDisplayOrder($positionWidgetGroups, $positionWidget);
 		}
 
 		$widget = array(
@@ -200,8 +176,13 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			$positionWidget = $this->_getWidgetOrError($positionWidgetId);
 		}
 
+		$widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
+		if (!empty($widgetPageId))
+		{
+			$widgetPage = $this->_getWidgetPageOrError($widgetPageId);
+		}
+
 		$dwInput = $this->_input->filter(array(
-			'widget_page_id' => XenForo_Input::UINT,
 			'class' => XenForo_Input::STRING,
 			'title' => XenForo_Input::STRING,
 			'position' => XenForo_Input::STRING,
@@ -213,6 +194,10 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		if ($widgetId)
 		{
 			$dw->setExistingData($widget, true);
+		}
+		if ($widgetPageId)
+		{
+			$dw->set('widget_page_id', $widgetPageId);
 		}
 		$dw->bulkSet($dwInput);
 
@@ -332,6 +317,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
 		$dwInput = $this->_input->filter(array(
 			'position' => XenForo_Input::STRING,
+			'group' => XenForo_Input::STRING,
 			'display_order' => XenForo_Input::STRING,
 			'relative_display_order' => XenForo_Input::STRING,
 			'widget_page_id' => XenForo_Input::UINT,
@@ -341,23 +327,20 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 		$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 		$dw->setExistingData($widget, true);
 
-		$tabGroup = '';
 		$widgetsNeedUpdate = array();
 
 		if (!empty($positionWidget))
 		{
 			if ($positionWidget['widget_id'] != $widget['widget_id'])
 			{
-				$dwInput['position'] = $positionWidget['position'];
-
-				if (!empty($positionWidget['options']['tab_group']))
+				if (empty($dwInput['group']))
 				{
-					$tabGroup = $positionWidget['options']['tab_group'];
+					$dwInput['group'] = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
 				}
-				else
+
+				if (empty($positionWidget['options']['tab_group']))
 				{
-					$tabGroup = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
-					$widgetsNeedUpdate[$positionWidget['widget_id']] = array('options' => array_merge($positionWidget['options'], array('tab_group' => $tabGroup)));
+					$widgetsNeedUpdate[$positionWidget['widget_id']]['tab_group'] = $dwInput['group'];
 				}
 
 				if (!empty($dwInput['move_group']))
@@ -370,10 +353,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 					}
 				}
 			}
-			else
-			{
-				$tabGroup = $widget['options']['tab_group'];
-			}
 		}
 		else
 		{
@@ -381,11 +360,16 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			{
 				if (!empty($widget['options']['tab_group']))
 				{
-					$tabGroup = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
+					$dwInput['group'] = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
 				}
 			}
 		}
-		$dw->setWidgetOption('tab_group', $tabGroup);
+		$dw->setWidgetOption('tab_group', $dwInput['group']);
+
+		if (!empty($dwInput['widget_page_id']))
+		{
+			$dw->set('widget_page_id', $dwInput['widget_page_id']);
+		}
 
 		if (!empty($dwInput['position']))
 		{
@@ -418,13 +402,12 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			), array(
 				$widget['widget_id'],
 				$dw->get('position'),
-				$tabGroup,
+				$dwInput['group'],
 				$dw->get('display_order'),
 				$core->getWidgetGroupsByPosition($widget['position']),
 				&$widgetsNeedUpdate,
 			));
 		}
-		//var_dump($tabGroup, $dw->get('display_order'), $widgetsNeedUpdate);exit ;
 		XenForo_Db::beginTransaction();
 
 		$dw->save();
