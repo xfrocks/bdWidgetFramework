@@ -376,16 +376,12 @@ abstract class WidgetFramework_WidgetRenderer
 
 			$this->_configuration = XenForo_Application::mapMerge($default, $this->_getConfiguration());
 
-			if ($this->_configuration['useWrapper'])
-			{
-				$this->_configuration['options']['tab_group'] = XenForo_Input::STRING;
-			}
-
 			if ($this->_configuration['useCache'])
 			{
 				$this->_configuration['options']['cache_seconds'] = XenForo_Input::STRING;
 			}
 
+			$this->_configuration['options']['tab_group'] = XenForo_Input::STRING;
 			$this->_configuration['options']['expression'] = XenForo_Input::STRING;
 			$this->_configuration['options']['conditional'] = XenForo_Input::ARRAY_SIMPLE;
 			$this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;

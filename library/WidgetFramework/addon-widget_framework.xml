@@ -78,10 +78,14 @@
 	</div>
 	
 	<fieldset>
-		<xen:if is="!{$widget.widget_page_id} AND !{$_layoutEditor}">
+		<xen:if is="!{$_layoutEditor}">
 
 			<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
 				<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
+			</xen:textboxunit>
+
+			<xen:textboxunit label="{xen:phrase wf_tab_group}:" name="{$namePrefix}tab_group" value="{$options.tab_group}">
+				<xen:explain>{xen:phrase wf_tab_group_explain}</xen:explain>
 			</xen:textboxunit>
 
 			<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
@@ -90,16 +94,9 @@
 
 		<xen:else />
 
-			<input type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
 			<input type="hidden" name="position" value="{$widget.position}" />
-
-			<xen:if is="!{$_layoutEditor}">
-				<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
-					<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
-				</xen:spinboxunit>
-			<xen:else />
+			<input type="hidden" name="{$namePrefix}tab_group" value="{$options.tab_group}" />
 			<input type="hidden" name="display_order" value="{$widget.display_order}" />
-			</xen:if>
 
 		</xen:if>
 
@@ -139,6 +136,7 @@
 	</xen:submitunit>
 	
 	<input type="hidden" name="widget_id" value="{$widget.widget_id}" />
+	<input type="hidden" name="widget_page_id" value="{$widget.widget_page_id}" />
 	<input type="hidden" name="position_widget" value="{$positionWidget.widget_id}" />
 	<input type="hidden" name="_layoutEditor" value="{$_layoutEditor}" />
 </xen:form>]]></template>
@@ -228,16 +226,6 @@
 </xen:if>
 
 <xen:if is="{$options_loaded}">
-	<xen:if is="{$rendererConfiguration.useWrapper}">
-		<xen:if is="{$_layoutEditor}">
-			<input type="hidden" name="{$namePrefix}tab_group" value="{$options.tab_group}" />
-		<xen:else />
-			<xen:textboxunit label="{xen:phrase wf_tab_group}:" name="{$namePrefix}tab_group" value="{$options.tab_group}">
-				<xen:explain>{xen:phrase wf_tab_group_explain}</xen:explain>
-			</xen:textboxunit>
-		</xen:if>
-	</xen:if>
-
 	<xen:if is="{$rendererConfiguration.useCache}">
 		<xen:textboxunit name="{$namePrefix}cache_seconds" label="{xen:phrase wf_cache_seconds}" value="{$options.cache_seconds}" placeholder="{$rendererConfiguration.cacheSeconds}">
 			<xen:explain>{xen:phrase wf_cache_seconds_explain}</xen:explain>
@@ -2121,7 +2109,7 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>
 
 <xen:if is="{xen:count $tabs} > 1 AND !{$isRows}">
-	<xen:if is="!{$isColumns}">
+	<xen:if is="{$isTabs}">
 
 		<xen:comment>We are rendering tabs</xen:comment>
 		<div class="{$classSection} widget-tabs">
@@ -2159,7 +2147,7 @@ All customization should go to wf_default_EXTRA.css
 							<div class="{$classInnerSection} {$tab.class}">
 								{xen:raw $tab.html}
 							</div>
-						<xen:else />
+						<xen:elseif is="{$tab.useWrapper}" />
 							<div class="{$classInnerSection} {$tab.class}" id="widget-{$tab.widget_id}">
 								<h3>
 									<xen:if is="{$tab.extraData.link}">
@@ -2171,6 +2159,8 @@ All customization should go to wf_default_EXTRA.css
 
 								{xen:raw $tab.html}
 							</div>
+						<xen:else />
+							{xen:raw $tab.html}
 						</xen:if>
 					</div>
 				</xen:foreach>
@@ -2189,7 +2179,7 @@ All customization should go to wf_default_EXTRA.css
 						<div class="{$classInnerSection}">
 							{xen:raw $tab.html}
 						</div>
-					<xen:else />
+					<xen:elseif is="{$tab.useWrapper}" />
 						<div class="{$classInnerSection} {$tab.class}" id="widget-{$tab.widget_id}">
 							<h3>
 								<xen:if is="{$tab.extraData.link}">
@@ -2200,6 +2190,8 @@ All customization should go to wf_default_EXTRA.css
 							</h3>
 							{xen:raw $tab.html}
 						</div>
+					<xen:else />
+						{xen:raw $tab.html}
 					</xen:if>
 				</xen:foreach>
 			</xen:contentcheck>

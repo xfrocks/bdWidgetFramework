@@ -248,7 +248,7 @@ class WidgetFramework_Core
 				'tab_group' => $groupPrefixAppended,
 				'display_order' => $newWidget['display_order'],
 			);
-			
+
 			return $this->_addWidgets_addWidgetToWidgetsByGroup($newWidget, $widgets, $groupPrefix);
 		}
 	}
@@ -595,6 +595,7 @@ class WidgetFramework_Core
 
 					if (!empty($renderer))
 					{
+						$rendered[$key]['useWrapper'] = $renderer->useWrapper($widget);
 						$rendered[$key]['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget);
 					}
 				}
