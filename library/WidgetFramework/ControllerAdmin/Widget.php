@@ -342,15 +342,15 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 				{
 					$widgetsNeedUpdate[$positionWidget['widget_id']]['tab_group'] = $dwInput['group'];
 				}
+			}
 
-				if (!empty($dwInput['move_group']))
+			if (!empty($dwInput['move_group']))
+			{
+				if (!empty($widget['options']['tab_group']))
 				{
-					if (!empty($widget['options']['tab_group']))
-					{
-						$groupIdParts = explode('/', $widget['options']['tab_group']);
-						$groupIdLastPart = array_pop($groupIdParts);
-						$dwInput['group'] .= '/' . $groupIdLastPart;
-					}
+					$groupIdParts = explode('/', $widget['options']['tab_group']);
+					$groupIdLastPart = array_pop($groupIdParts);
+					$dwInput['group'] .= '/' . $groupIdLastPart;
 				}
 			}
 		}
