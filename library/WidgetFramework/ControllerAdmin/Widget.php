@@ -321,49 +321,41 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 			'display_order' => XenForo_Input::STRING,
 			'relative_display_order' => XenForo_Input::STRING,
 			'widget_page_id' => XenForo_Input::UINT,
-			'move_group' => XenForo_Input::UINT,
+			'move_group' => XenForo_Input::STRING,
 		));
+		$dwInputGroup = $dwInput['group'];
 
 		$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
 		$dw->setExistingData($widget, true);
 
 		$widgetsNeedUpdate = array();
 
+		$newGroupParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($dwInput['group']);
 		if (!empty($positionWidget))
 		{
 			if ($positionWidget['widget_id'] != $widget['widget_id'])
 			{
 				if (empty($dwInput['group']))
 				{
-					$dwInput['group'] = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
+					$newGroupParts[] = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
 				}
 
 				if (empty($positionWidget['options']['tab_group']))
 				{
-					$widgetsNeedUpdate[$positionWidget['widget_id']]['tab_group'] = $dwInput['group'];
-				}
-			}
-
-			if (!empty($dwInput['move_group']))
-			{
-				if (!empty($widget['options']['tab_group']))
-				{
-					$groupIdParts = explode('/', $widget['options']['tab_group']);
-					$groupIdLastPart = array_pop($groupIdParts);
-					$dwInput['group'] .= '/' . $groupIdLastPart;
+					// need to update group for the position widget too
+					$widgetsNeedUpdate[$positionWidget['widget_id']]['tab_group'] = implode('/', $newGroupParts);
 				}
 			}
 		}
-		else
+		if (!empty($dwInput['move_group']))
 		{
-			if (!empty($dwInput['move_group']))
+			if (!empty($widget['options']['tab_group']))
 			{
-				if (!empty($widget['options']['tab_group']))
-				{
-					$dwInput['group'] = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
-				}
+				$widgetGroupParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($widget['options']['tab_group']);
+				$newGroupParts[] = array_pop($widgetGroupParts);
 			}
 		}
+		$dwInput['group'] = implode('/', $newGroupParts);
 		$dw->setWidgetOption('tab_group', $dwInput['group']);
 
 		if (!empty($dwInput['widget_page_id']))
@@ -387,6 +379,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 				'getDisplayOrderFromRelative'
 			), array(
 				$dw->get('widget_id'),
+				$dwInputGroup,
 				intval($dwInput['relative_display_order']),
 				$core->getWidgetGroupsByPosition($dw->get('position')),
 				$positionWidget,

@@ -390,11 +390,11 @@
 			}
 
 			var widgetId = 0;
-			var moveGroup = 0;
+			var moveGroup = '';
 			if ($item.is('.WidgetFramework_LayoutEditor_Group'))
 			{
 				widgetId = parseInt($item.data('firstId'));
-				moveGroup = 1;
+				moveGroup = $item.data('group');
 			}
 			else
 			{

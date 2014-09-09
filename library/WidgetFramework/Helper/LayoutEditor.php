@@ -64,6 +64,11 @@ class WidgetFramework_Helper_LayoutEditor
 	{
 		return self::$_widgetChanges;
 	}
+	
+	public static function splitGroupParts($groupName)
+	{
+		return preg_split('#/#', $groupName, -1, PREG_SPLIT_NO_EMPTY);
+	}
 
 	public static function getChangedRenderedId(WidgetFramework_DataWriter_Widget $dw, array $changed = array())
 	{

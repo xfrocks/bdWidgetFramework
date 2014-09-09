@@ -4,16 +4,21 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 {
 	const SIMPLE_CACHE_KEY = 'widgets';
 
-	public function getWidgetsContainsWidgetId(array $widgets, $widgetId)
+	public function getWidgetsContainsWidgetId(array $widgets, $widgetId, $group = '')
 	{
 		foreach (array_keys($widgets) as $_widgetId)
 		{
 			if (isset($widgets[$_widgetId]['widgets']))
 			{
-				$response = $this->getWidgetsContainsWidgetId($widgets[$_widgetId]['widgets'], $widgetId);
+				$response = $this->getWidgetsContainsWidgetId($widgets[$_widgetId]['widgets'], $widgetId, $group);
 
 				if (!empty($response))
 				{
+					if (!empty($group) AND $widgets[$_widgetId]['name'] == $group)
+					{
+						return $widgets[$_widgetId]['widgets'];
+					}
+
 					return $response;
 				}
 			}
@@ -24,6 +29,25 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		}
 
 		return array();
+	}
+
+	public function countRealWidgetInWidgets(array $widgets)
+	{
+		$count = 0;
+
+		foreach (array_keys($widgets) as $_widgetId)
+		{
+			if (isset($widgets[$_widgetId]['widgets']))
+			{
+				$count += countRealWidgetInWidgets($widgets[$_widgetId]['widgets']);
+			}
+			else
+			{
+				$count++;
+			}
+		}
+
+		return $count;
 	}
 
 	public function getLastDisplayOrder($positionWidgetGroups, $positionWidget = null)
@@ -52,24 +76,18 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		return floor($maxDisplayOrder / 10) * 10 + 10;
 	}
 
-	public function getDisplayOrderFromRelative($widgetId, $relativeDisplayOrder, $positionWidgetGroups, $positionWidget = null, array &$widgetsNeedUpdate = array())
+	public function getDisplayOrderFromRelative($widgetId, $targetGroup, $relativeDisplayOrder, $positionWidgetGroups, $positionWidget = null, array &$widgetsNeedUpdate = array())
 	{
 		$sameDisplayOrderLevels = array();
 		if (!empty($positionWidget))
 		{
 			// put into a group
-			$sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id']);
+			$sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id'], $targetGroup);
 		}
 		else
 		{
 			// put into a position
 			$sameDisplayOrderLevels = $positionWidgetGroups;
-		}
-
-		if (isset($sameDisplayOrderLevels[$widgetId]))
-		{
-			// ignore current widget before calculating display order
-			unset($sameDisplayOrderLevels[$widgetId]);
 		}
 
 		// sort asc by display order (ignore negative/positive)
@@ -90,55 +108,73 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 			}
 		}
 
-		$iStart = -1;
+		$reorderedWidgets = array();
+		$thisWidget = false;
 		$smallestDisplayOrder = false;
+		if (isset($sameDisplayOrderLevels[$widgetId]))
+		{
+			$smallestDisplayOrder = $sameDisplayOrderLevels[$widgetId]['display_order'];
+			$thisWidget = $sameDisplayOrderLevels[$widgetId];
+
+			// ignore current widget before calculating display order
+			unset($sameDisplayOrderLevels[$widgetId]);
+		}
+
+		$iStart = -1;
 		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
 		{
 			if ($sameDisplayOrderLevel['display_order'] < 0)
 			{
+				// calculate correct starting relative order for negative orders
 				$iStart--;
 			}
-			
+		}
+
+		$i = $iStart;
+		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
+		{
+			$i++;
+
+			if ($i == $relativeDisplayOrder)
+			{
+				// insert our widget
+				$reorderedWidgets[$widgetId] = $thisWidget;
+			}
+
+			$reorderedWidgets[$sameDisplayOrderLevelWidgetId] = $sameDisplayOrderLevel;
+
 			if ($smallestDisplayOrder === false OR $smallestDisplayOrder > $sameDisplayOrderLevel['display_order'])
 			{
 				$smallestDisplayOrder = $sameDisplayOrderLevel['display_order'];
 			}
 		}
-
-		$i = $iStart;
-		$displayOrderOffset = $smallestDisplayOrder - (($i + 1) * 10);
-		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
+		if (!isset($reorderedWidgets[$widgetId]))
 		{
-			$i++;
-			if ($i < $relativeDisplayOrder)
-			{
-				// update widget/group display order above our widget
-				$currentDisplayOrder = ($isNegative ? $i - 1 : $i) * 10 + $displayOrderOffset;
-
-				if ($sameDisplayOrderLevel['display_order'] != $currentDisplayOrder)
-				{
-					$this->updateDisplayOrderForWidget($sameDisplayOrderLevelWidgetId, $currentDisplayOrder - $sameDisplayOrderLevel['display_order'], $sameDisplayOrderLevels, $widgetsNeedUpdate);
-				}
-			}
+			// our widget is the last in the reordered list
+			$reorderedWidgets[$widgetId] = $thisWidget;
 		}
 
-		// set display order for the widget
-		$foundDisplayOrder = $relativeDisplayOrder * 10 + $displayOrderOffset;
-
-		$i = $iStart;
-		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
+		$currentDisplayOrder = $smallestDisplayOrder;
+		if ($isNegative)
 		{
-			$i++;
-			if ($i >= $relativeDisplayOrder)
-			{
-				// update widget/group display order below our widget
-				$currentDisplayOrder = ($isNegative ? $i : $i + 1) * 10 + $displayOrderOffset;
+			// for negative orders, we have to make sure display order does not reach 0
+			$currentDisplayOrder = min($currentDisplayOrder, $this->countRealWidgetInWidgets($reorderedWidgets) * -10);
+		}
 
-				if ($sameDisplayOrderLevel['display_order'] != $currentDisplayOrder)
-				{
-					$this->updateDisplayOrderForWidget($sameDisplayOrderLevelWidgetId, $currentDisplayOrder - $sameDisplayOrderLevel['display_order'], $sameDisplayOrderLevels, $widgetsNeedUpdate);
-				}
+		$foundDisplayOrder = PHP_INT_MAX;
+		foreach ($reorderedWidgets as $reorderedWidgetId => $reorderedWidget)
+		{
+			if ($currentDisplayOrder != $reorderedWidget['display_order'])
+			{
+				$this->updateDisplayOrderForWidget($reorderedWidgetId, $currentDisplayOrder - $reorderedWidget['display_order'], $reorderedWidgets, $widgetsNeedUpdate);
 			}
+
+			if ($reorderedWidgetId == $widgetId)
+			{
+				$foundDisplayOrder = $currentDisplayOrder;
+			}
+
+			$currentDisplayOrder += 10;
 		}
 
 		return $foundDisplayOrder;

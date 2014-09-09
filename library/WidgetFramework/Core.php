@@ -235,8 +235,8 @@ class WidgetFramework_Core
 		}
 		else
 		{
-			$groupPrefixParts = preg_split('#/#', $groupPrefix, -1, PREG_SPLIT_NO_EMPTY);
-			$groupWithoutPrefixParts = preg_split('#/#', $groupWithoutPrefix, -1, PREG_SPLIT_NO_EMPTY);
+			$groupPrefixParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($groupPrefix);
+			$groupWithoutPrefixParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($groupWithoutPrefix);
 			$groupPrefixParts[] = array_shift($groupWithoutPrefixParts);
 			$groupPrefixAppended = implode('/', $groupPrefixParts);
 
@@ -613,10 +613,10 @@ class WidgetFramework_Core
 
 			if (count($rendered) > 0)
 			{
-				$widgetParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME] = '';
+				$widgetParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME] = '';
 				if (!empty($widgetElement['name']))
 				{
-					$widgetParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME] = $widgetElement['name'];
+					$widgetParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME] = $widgetElement['name'];
 				}
 				$wrapped = $this->_wrapWidgets($rendered, $widgetParams, $template, $widgetElementName);
 
@@ -645,7 +645,7 @@ class WidgetFramework_Core
 	protected function _wrapWidgets(array $tabs, array $params, XenForo_Template_Abstract $template, $groupId)
 	{
 		$normalizedGroupId = WidgetFramework_Helper_String::normalizeHtmlElementId($groupId);
-		$groupIdParts = explode('/', $groupId);
+		$groupIdParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($groupId);
 		$groupIdLastPart = array_pop($groupIdParts);
 		$isColumns = strpos($groupIdLastPart, 'column') === 0;
 		$isRows = strpos($groupIdLastPart, 'row') === 0;
@@ -679,9 +679,9 @@ class WidgetFramework_Core
 				'position_widget' => $firstTab['widget_id'],
 				'position' => $firstTab['position'],
 			);
-			if (!empty($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME]))
+			if (!empty($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME]))
 			{
-				$wrapperParams['groupSaveParams']['group'] = $wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME];
+				$wrapperParams['groupSaveParams']['group'] = $wrapperParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME];
 			}
 
 			$wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
@@ -691,6 +691,7 @@ class WidgetFramework_Core
 				unset($wrapperParams['conditionalParams']['widgetPage']);
 			}
 
+			$wrapperParams['groupParentGroupNameNormalized'] = '';
 			if (!empty($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME]))
 			{
 				$wrapperParams['groupParentGroupNameNormalized'] = WidgetFramework_Helper_String::normalizeHtmlElementId($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME]);

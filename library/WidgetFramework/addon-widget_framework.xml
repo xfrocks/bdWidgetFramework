@@ -1361,7 +1361,8 @@ All customization should go to wf_default_EXTRA.css
 				'',
 				'_params={$groupSaveParams}'}"
 	 data-first-id="{$firstTab.widget_id}"
-	 data-position="{$firstTab.positionCode}"{xen:if '{$groupParentGroupNameNormalized}', ' data-parent-group="{$groupParentGroupNameNormalized}"'}
+	 data-position="{$firstTab.positionCode}"
+	 data-group="{$groupSaveParams.group}"{xen:if '{$groupParentGroupNameNormalized}', ' data-parent-group="{$groupParentGroupNameNormalized}"'}
 	 data-display-order="{$firstTab.display_order}">
 	<div class="stretcher">
 		<div class="widgets">
