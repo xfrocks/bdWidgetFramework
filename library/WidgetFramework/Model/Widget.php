@@ -91,22 +91,29 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		}
 
 		$iStart = -1;
+		$smallestDisplayOrder = false;
 		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
 		{
 			if ($sameDisplayOrderLevel['display_order'] < 0)
 			{
 				$iStart--;
 			}
+			
+			if ($smallestDisplayOrder === false OR $smallestDisplayOrder > $sameDisplayOrderLevel['display_order'])
+			{
+				$smallestDisplayOrder = $sameDisplayOrderLevel['display_order'];
+			}
 		}
 
 		$i = $iStart;
+		$displayOrderOffset = $smallestDisplayOrder - (($i + 1) * 10);
 		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
 		{
 			$i++;
 			if ($i < $relativeDisplayOrder)
 			{
 				// update widget/group display order above our widget
-				$currentDisplayOrder = ($isNegative ? $i - 1 : $i) * 10;
+				$currentDisplayOrder = ($isNegative ? $i - 1 : $i) * 10 + $displayOrderOffset;
 
 				if ($sameDisplayOrderLevel['display_order'] != $currentDisplayOrder)
 				{
@@ -116,7 +123,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 		}
 
 		// set display order for the widget
-		$foundDisplayOrder = $relativeDisplayOrder * 10;
+		$foundDisplayOrder = $relativeDisplayOrder * 10 + $displayOrderOffset;
 
 		$i = $iStart;
 		foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel)
@@ -125,7 +132,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 			if ($i >= $relativeDisplayOrder)
 			{
 				// update widget/group display order below our widget
-				$currentDisplayOrder = ($isNegative ? $i : $i + 1) * 10;
+				$currentDisplayOrder = ($isNegative ? $i : $i + 1) * 10 + $displayOrderOffset;
 
 				if ($sameDisplayOrderLevel['display_order'] != $currentDisplayOrder)
 				{

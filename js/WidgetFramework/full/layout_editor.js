@@ -345,7 +345,6 @@
 
 				out: $.context(this, 'onOut'),
 				over: $.context(this, 'onOver'),
-				receive: $.context(this, 'onReceive'),
 				update: $.context(this, 'onUpdate')
 			});
 
@@ -371,32 +370,6 @@
 
 			$area.find('.dnd-over').removeClass('dnd-over');
 			this.$widgets.addClass('dnd-over');
-		},
-
-		onReceive: function(e, ui)
-		{
-			var $item = ui.item;
-			var cancel = true;
-
-			if (!ui.sender)
-			{
-				// sorting within the same area/group, don't need to check
-				return;
-			}
-
-			if (this.parentIsArea)
-			{
-				// area accepts all kind of widgets
-				return;
-			}
-
-			if ($(ui.sender).data('WidgetFramework_LayoutEditor_Widgets').parentIsArea == false)
-			{
-				// the sender is also a group, accept it
-				return;
-			}
-
-			$(ui.sender).sortable('cancel');
 		},
 
 		onUpdate: function(e, ui)
