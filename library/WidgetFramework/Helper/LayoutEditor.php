@@ -2,6 +2,69 @@
 
 class WidgetFramework_Helper_LayoutEditor
 {
+	protected static $_widgetChanges = array();
+
+	public static function keepWidgetChanges($widgetId, WidgetFramework_DataWriter_Widget $dw, array $newData)
+	{
+		if (!XenForo_Application::debugMode())
+		{
+			return false;
+		}
+
+		foreach ($newData as $key => $value)
+		{
+			if ($key == 'options')
+			{
+				$existingOptions = $dw->getWidgetOptions(true);
+				$options = $dw->getWidgetOptions();
+				$optionKeys = array_unique(array_merge(array_keys($existingOptions), array_keys($options)));
+
+				foreach ($optionKeys as $optionKey)
+				{
+					$existingSerialized = null;
+					if (isset($existingOptions[$optionKey]))
+					{
+						$existingSerialized = $existingOptions[$optionKey];
+					}
+					if (!is_string($existingSerialized))
+					{
+						$existingSerialized = serialize($existingSerialized);
+					}
+
+					$optionSerialized = null;
+					if (isset($options[$optionKey]))
+					{
+						$optionSerialized = $options[$optionKey];
+					}
+					if (!is_string($optionSerialized))
+					{
+						$optionSerialized = serialize($optionSerialized);
+					}
+
+					if ($existingSerialized !== $optionSerialized)
+					{
+						self::$_widgetChanges[$widgetId]['options'][$optionKey] = array(
+							$existingSerialized,
+							$optionSerialized
+						);
+					}
+				}
+			}
+			else
+			{
+				self::$_widgetChanges[$widgetId][$key] = array(
+					$dw->getExisting($key),
+					$value
+				);
+			}
+		}
+	}
+
+	public static function getWidgetChanges()
+	{
+		return self::$_widgetChanges;
+	}
+
 	public static function getChangedRenderedId(WidgetFramework_DataWriter_Widget $dw, array $changed = array())
 	{
 		if ($dw->isChanged('position') OR $dw->isChanged('display_order') OR $dw->isChanged('options'))

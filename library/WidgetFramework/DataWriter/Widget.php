@@ -142,6 +142,11 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 			$this->set('template_for_hooks', $templateForHooks);
 		}
 
+		if ($this->get('widget_id') AND !empty($this->_newData['xf_widget']))
+		{
+			WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this, $this->_newData['xf_widget']);
+		}
+
 		return parent::_preSave();
 	}
 

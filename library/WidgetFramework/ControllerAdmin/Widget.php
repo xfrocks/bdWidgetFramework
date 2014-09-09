@@ -349,7 +349,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 					{
 						$groupIdParts = explode('/', $widget['options']['tab_group']);
 						$groupIdLastPart = array_pop($groupIdParts);
-						$tabGroup .= '/' . $groupIdLastPart;
+						$dwInput['group'] .= '/' . $groupIdLastPart;
 					}
 				}
 			}
