@@ -35,10 +35,7 @@ class WidgetFramework_WidgetRenderer_OnlineUsers extends WidgetFramework_WidgetR
 	{
 		return array(
 			'name' => 'Users Online Now',
-			'options' => array(
-				'hide_following' => XenForo_Input::UINT,
-				'rich' => XenForo_Input::UINT,
-			),
+			'options' => array('hide_following' => XenForo_Input::UINT),
 		);
 	}
 

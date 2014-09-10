@@ -6,7 +6,7 @@ class WidgetFramework_WidgetRenderer_Html extends WidgetFramework_WidgetRenderer
 	{
 		return array(
 			'name' => '[Advanced] HTML',
-			'options' => array('html' => XenForo_Input::STRING, ),
+			'options' => array('html' => XenForo_Input::STRING),
 		);
 	}
 

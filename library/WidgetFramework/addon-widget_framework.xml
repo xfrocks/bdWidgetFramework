@@ -287,7 +287,6 @@
 
 <xen:checkboxunit label="" value="">
 	<xen:option name="{$namePrefix}hide_following" value="0" selected="!{$options.hide_following}">{xen:phrase wf_widget_online_users_following}</xen:option>
-	<xen:option name="{$namePrefix}rich" value="1" selected="{$options.rich}">{xen:phrase wf_widget_online_users_rich}</xen:option>
 </xen:checkboxunit>]]></template>
     <template title="wf_widget_options_poll"><![CDATA[<xen:textboxunit label="{xen:phrase wf_poll_thread_id}:" name="{$namePrefix}thread_id" value="{$options.thread_id}">
 	<xen:explain>{xen:phrase wf_poll_thread_id_explain}</xen:explain>
@@ -712,6 +711,8 @@ Arguments:
     <phrase title="style_property_group_WidgetFramework_master_desc" version_id="100" version_string="2.5.0d"><![CDATA[Controls how widgets appear.]]></phrase>
     <phrase title="style_property_group_WidgetFramework_Threads_master" version_id="100" version_string="2.5.0d"><![CDATA[[bd] Widget Framework - Threads]]></phrase>
     <phrase title="style_property_group_WidgetFramework_Threads_master_desc" version_id="100" version_string="2.5.0d"><![CDATA[Style properties for Threads widgets]]></phrase>
+    <phrase title="style_property_group_WidgetFramework_ZZZZ_master" version_id="102" version_string="2.5.0d"><![CDATA[[bd] Widget Framework - Others]]></phrase>
+    <phrase title="style_property_group_WidgetFramework_ZZZZ_master_desc" version_id="102" version_string="2.5.0d"><![CDATA[Style properties for other widgets.]]></phrase>
     <phrase title="style_property_wf_contentWidgetContainer_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_contentWidgetContainer_master" version_id="100" version_string="2.5.0d"><![CDATA[Content Widget (container)]]></phrase>
     <phrase title="style_property_wf_homeLinksChildNodes_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to show links to child nodes for Widget Page navigation tab. Please note that no permission check will be perform.]]></phrase>
@@ -722,6 +723,8 @@ Arguments:
     <phrase title="style_property_wf_homeNavTab_master" version_id="78" version_string="2.4.5c"><![CDATA[Navtab for Index Page]]></phrase>
     <phrase title="style_property_wf_hookWidget_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_hookWidget_master" version_id="100" version_string="2.5.0d"><![CDATA[Content Widget]]></phrase>
+    <phrase title="style_property_wf_onlineUsers_rich_description_master" version_id="102" version_string="2.5.0d"><![CDATA[By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets.]]></phrase>
+    <phrase title="style_property_wf_onlineUsers_rich_master" version_id="102" version_string="2.5.0d"><![CDATA[Users Online Now: Show Rich Usernames]]></phrase>
     <phrase title="style_property_wf_sidebarWidget_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_sidebarWidget_master" version_id="100" version_string="2.5.0d"><![CDATA[Sidebar Widget]]></phrase>
     <phrase title="style_property_wf_threads_fullDate_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -946,6 +949,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_widgetTabsPanes" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (panes container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1020" sub_group=""><![CDATA[{"border-bottom-color":"@primaryLighter","border-bottom-left-radius":"10px","border-bottom-right-radius":"10px","border-bottom-style":"solid","border-bottom-width":"1px","border-left-color":"@primaryLighter","border-left-style":"solid","border-left-width":"1px","border-right-color":"@primaryLighter","border-right-style":"solid","border-right-width":"1px","padding-all":"10px"}]]></property>
     <property property_name="wf_widgetTabsTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1010" sub_group=""><![CDATA[{"background-none":"1"}]]></property>
     <property property_name="wf_contentWidgetContainer" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="200" sub_group=""><![CDATA[{"extra":"float: none;\nfont-size: inherit;","width":"auto"}]]></property>
+    <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Usernames" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
     <group group_name="WidgetFramework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Controls how widgets appear.</description>
@@ -953,6 +957,10 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <group group_name="WidgetFramework_Threads" display_order="9999">
       <title>[bd] Widget Framework - Threads</title>
       <description>Style properties for Threads widgets</description>
+    </group>
+    <group group_name="WidgetFramework_ZZZZ" display_order="9999">
+      <title>[bd] Widget Framework - Others</title>
+      <description>Style properties for other widgets.</description>
     </group>
   </style_properties>
   <templates>
@@ -1553,7 +1561,7 @@ All customization should go to wf_default_EXTRA.css
 	</ul>
 </div>
 </xen:if>]]></template>
-    <template title="wf_widget_online_users" version_id="58" version_string="2.3.2b"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
+    <template title="wf_widget_online_users" version_id="102" version_string="2.5.0d"><![CDATA[<div class="userList WidgetFramework_WidgetRenderer_OnlineUsers">
 	<xen:if is="{$onlineUsers.records}">
 		<xen:if is="{$widget.options.hide_following} == 0 AND {$visitor.user_id}">
 			<xen:if hascontent="true">
@@ -1576,7 +1584,7 @@ All customization should go to wf_default_EXTRA.css
 				<xen:if is="{$i} <= {$onlineUsers.limit}">
 					<li class="user-{$user.user_id}">
 					<xen:if is="{$user.user_id}">
-						<xen:username user="$user" rich="{$widget.options.rich}" class="{xen:if '!{$user.visible}', ' invisible'}{xen:if {$user.followed}, ' followed'}" /><xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
+						<xen:username user="$user" rich="{xen:property wf_onlineUsers_rich}" class="{xen:if '!{$user.visible}', ' invisible'}{xen:if {$user.followed}, ' followed'}" /><xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
 					<xen:else />
 						{xen:phrase guest}<xen:if is="{$i} < {$onlineUsers.limit}">,</xen:if>
 					</xen:if>
