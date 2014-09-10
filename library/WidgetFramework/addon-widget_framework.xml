@@ -724,7 +724,7 @@ Arguments:
     <phrase title="style_property_wf_hookWidget_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_hookWidget_master" version_id="100" version_string="2.5.0d"><![CDATA[Content Widget]]></phrase>
     <phrase title="style_property_wf_onlineUsers_rich_description_master" version_id="102" version_string="2.5.0d"><![CDATA[By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets.]]></phrase>
-    <phrase title="style_property_wf_onlineUsers_rich_master" version_id="102" version_string="2.5.0d"><![CDATA[Users Online Now: Show Rich Usernames]]></phrase>
+    <phrase title="style_property_wf_onlineUsers_rich_master" version_id="102" version_string="2.5.0d"><![CDATA[Users Online Now: Show Rich Username]]></phrase>
     <phrase title="style_property_wf_sidebarWidget_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_sidebarWidget_master" version_id="100" version_string="2.5.0d"><![CDATA[Sidebar Widget]]></phrase>
     <phrase title="style_property_wf_threads_fullDate_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -741,6 +741,8 @@ Arguments:
     <phrase title="style_property_wf_threads_fullUser_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Poster]]></phrase>
     <phrase title="style_property_wf_threads_fullViewCount_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullViewCount_master" version_id="77" version_string="2.4.5b"><![CDATA[Show View Count]]></phrase>
+    <phrase title="style_property_wf_threads_rich_description_master" version_id="102" version_string="2.5.0d"><![CDATA[By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Threads widgets.]]></phrase>
+    <phrase title="style_property_wf_threads_rich_master" version_id="102" version_string="2.5.0d"><![CDATA[Show Rich Username]]></phrase>
     <phrase title="style_property_wf_threads_showPrefix_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar layout.]]></phrase>
     <phrase title="style_property_wf_threads_showPrefix_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Thread Prefix]]></phrase>
     <phrase title="style_property_wf_threads_snippetMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar + snippet layout.]]></phrase>
@@ -949,7 +951,8 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_widgetTabsPanes" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (panes container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1020" sub_group=""><![CDATA[{"border-bottom-color":"@primaryLighter","border-bottom-left-radius":"10px","border-bottom-right-radius":"10px","border-bottom-style":"solid","border-bottom-width":"1px","border-left-color":"@primaryLighter","border-left-style":"solid","border-left-width":"1px","border-right-color":"@primaryLighter","border-right-style":"solid","border-right-width":"1px","padding-all":"10px"}]]></property>
     <property property_name="wf_widgetTabsTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1010" sub_group=""><![CDATA[{"background-none":"1"}]]></property>
     <property property_name="wf_contentWidgetContainer" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="200" sub_group=""><![CDATA[{"extra":"float: none;\nfont-size: inherit;","width":"auto"}]]></property>
-    <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Usernames" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
+    <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
+    <property property_name="wf_threads_rich" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Threads widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group=""><![CDATA[1]]></property>
     <group group_name="WidgetFramework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Controls how widgets appear.</description>
@@ -1825,7 +1828,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="96" version_string="2.5.0d"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="102" version_string="2.5.0d"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 	<xen:if hascontent="true">
 		<div class="avatarList">
@@ -1834,10 +1837,11 @@ All customization should go to wf_default_EXTRA.css
 					<xen:if is="{$widget.options.type} == 'recent' OR {$widget.options.type} == 'latest_replies'">
 
 						<xen:foreach loop="$threads" value="$thread">
+							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_replied, 'user=<a href="{xen:link 'members', $thread}" class="username">{$thread.username}</a>'} <xen:datetime time="{$thread.last_post_date}" />
+									{xen:phrase wf_x_replied, 'user={xen:raw $user}'} <xen:datetime time="{$thread.last_post_date}" />
 								</xen:set>
 							</xen:include>
 						</xen:foreach>
@@ -1845,9 +1849,10 @@ All customization should go to wf_default_EXTRA.css
 					<xen:elseif is="{$widget.options.type} == 'most_replied'" />
 
 						<xen:foreach loop="$threads" value="$thread">
+							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}" class="username">{$thread.username}</a>'}, {xen:phrase replies}: {xen:number $thread.reply_count}
+									{xen:phrase wf_x_posted, 'user={xen:raw $user}'}, {xen:phrase replies}: {xen:number $thread.reply_count}
 								</xen:set>
 							</xen:include>
 						</xen:foreach>
@@ -1855,9 +1860,10 @@ All customization should go to wf_default_EXTRA.css
 					<xen:elseif is="{$widget.options.type} == 'most_liked'" />
 
 						<xen:foreach loop="$threads" value="$thread">
+							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}" class="username">{$thread.username}</a>'},
+									{xen:phrase wf_x_posted, 'user={xen:raw $user}'},
 									{xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
 								</xen:set>
 							</xen:include>
@@ -1866,9 +1872,10 @@ All customization should go to wf_default_EXTRA.css
 					<xen:else />
 
 						<xen:foreach loop="$threads" value="$thread">
+							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
 							<xen:include template="wf_widget_threads_thread_sidebar">
 								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user=<a href="{xen:link 'members', {$thread}}" class="username">{$thread.username}</a>'} <xen:datetime time="{$thread.post_date}" />
+									{xen:phrase wf_x_posted, 'user={xen:raw $user}'} <xen:datetime time="{$thread.post_date}" />
 								</xen:set>
 							</xen:include>
 						</xen:foreach>
@@ -1969,7 +1976,7 @@ All customization should go to wf_default_EXTRA.css
 	</xen:if>
 
 </div>]]></template>
-    <template title="wf_widget_threads_thread_full_info" version_id="96" version_string="2.5.0d"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_threads_thread_full_info" version_id="102" version_string="2.5.0d"><![CDATA[<xen:if hascontent="true">
 	<div class="counters">
 		<xen:contentcheck>
 			<xen:hook name="wf_widget_threads_thread_full_info_counters" params="{xen:array 'thread={$thread}'}">
@@ -1999,7 +2006,7 @@ All customization should go to wf_default_EXTRA.css
 			<xen:hook name="wf_widget_threads_thread_full_info_main" params="{xen:array 'thread={$thread}'}">
 
 			<xen:if is="{xen:property wf_threads_fullUser}">
-				<span class="user">{xen:phrase wf_by} <xen:username user="$thread" rich="true" /></span><xen:comment>
+				<span class="user">{xen:phrase wf_by} <xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></span><xen:comment>
 				</xen:comment><xen:if is="{xen:property wf_threads_fullForum} OR {xen:property wf_threads_fullDate}"><span class="divider">,</span></xen:if>
 			</xen:if>
 

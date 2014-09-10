@@ -247,7 +247,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 		// that get hidden because of deep permissions like viewOthers or viewContent
 		$fetchOptions = array(
 			'limit' => $widget['options']['limit'] * 3,
-			'join' => XenForo_Model_Thread::FETCH_AVATAR,
+			'join' => XenForo_Model_Thread::FETCH_USER,
 		);
 
 		// process sticky
