@@ -673,7 +673,7 @@ Arguments:
   <email_template_modifications/>
   <optiongroups>
     <group group_id="widget_framework" display_order="9999" debug_only="0"/>
-    <option option_id="WidgetFramework_indexNodeId" edit_format="callback" data_type="unsigned_integer" can_backup="1">
+    <option option_id="wf_indexNodeId" edit_format="callback" data_type="unsigned_integer" can_backup="1">
       <default_value>0</default_value>
       <edit_format_params>WidgetFramework_Option::renderWidgetPages</edit_format_params>
       <sub_options></sub_options>
@@ -702,10 +702,10 @@ Arguments:
     <phrase title="node_type_WF_WidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page]]></phrase>
     <phrase title="option_group_widget_framework" version_id="96" version_string="2.5.0d"><![CDATA[[bd] Widget Framework]]></phrase>
     <phrase title="option_group_widget_framework_description" version_id="96" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="option_wf_indexNodeId" version_id="102" version_string="2.5.0d"><![CDATA[Widget Page As Index]]></phrase>
+    <phrase title="option_wf_indexNodeId_explain" version_id="102" version_string="2.5.0d"><![CDATA[You can choose to have a widget page take over the index page. The option "Index Page Route" will be ignored and it is recommended to leave the option "Home Page URL" blank.]]></phrase>
     <phrase title="option_wf_layoutEditor" version_id="96" version_string="2.5.0d"><![CDATA[Use Layout Editor]]></phrase>
     <phrase title="option_wf_layoutEditor_explain" version_id="96" version_string="2.5.0d"><![CDATA[Enable this option to turn on layout editor tool for admin.]]></phrase>
-    <phrase title="option_WidgetFramework_indexNodeId" version_id="69" version_string="2.4.1"><![CDATA[Widget Page As Index]]></phrase>
-    <phrase title="option_WidgetFramework_indexNodeId_explain" version_id="78" version_string="2.4.5c"><![CDATA[You can choose to have a widget page take over the index page. The option "Index Page Route" will be ignored and it is recommended to leave the option "Home Page URL" blank.]]></phrase>
     <phrase title="permission_group_wfWidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page Permissions]]></phrase>
     <phrase title="style_property_group_WidgetFramework_master" version_id="100" version_string="2.5.0d"><![CDATA[[bd] Widget Framework]]></phrase>
     <phrase title="style_property_group_WidgetFramework_master_desc" version_id="100" version_string="2.5.0d"><![CDATA[Controls how widgets appear.]]></phrase>
@@ -894,7 +894,6 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_feed_reader_display_mode_with_content" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content]]></phrase>
     <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
-    <phrase title="wf_widget_online_users_rich" version_id="47" version_string="2.1.1"><![CDATA[Show rich usernames]]></phrase>
     <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
     <phrase title="wf_widget_profile_posts_type_recent" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
@@ -949,7 +948,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_hookWidget" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="210" sub_group=""><![CDATA[[]]]></property>
     <property property_name="wf_widgetTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (outer container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1000" sub_group=""><![CDATA[{"border-color":"black","border-style":"none","border-width":"0","margin-all":"0","padding-all":"0"}]]></property>
     <property property_name="wf_widgetTabsPanes" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (panes container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1020" sub_group=""><![CDATA[{"border-bottom-color":"@primaryLighter","border-bottom-left-radius":"10px","border-bottom-right-radius":"10px","border-bottom-style":"solid","border-bottom-width":"1px","border-left-color":"@primaryLighter","border-left-style":"solid","border-left-width":"1px","border-right-color":"@primaryLighter","border-right-style":"solid","border-right-width":"1px","padding-all":"10px"}]]></property>
-    <property property_name="wf_widgetTabsTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1010" sub_group=""><![CDATA[{"background-none":"1"}]]></property>
+    <property property_name="wf_widgetTabsTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1010" sub_group=""><![CDATA[[]]]></property>
     <property property_name="wf_contentWidgetContainer" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="200" sub_group=""><![CDATA[{"extra":"float: none;\nfont-size: inherit;","width":"auto"}]]></property>
     <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
     <property property_name="wf_threads_rich" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Threads widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group=""><![CDATA[1]]></property>
