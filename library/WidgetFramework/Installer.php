@@ -131,7 +131,7 @@ class WidgetFramework_Installer
 					INSERT INTO `xf_widget`
 						(title, class, options, position, display_order)
 					VALUES
-						('', 'WidgetFramework_WidgetRenderer_ProfilePosts', 0x613A303A7B7D, 'forum_list', 30)
+						('', 'WidgetFramework_WidgetRenderer_ProfilePosts', 'a:1:{s:16:\"show_update_form\";s:1:\"1\";}', 'forum_list', 30)
 				");
 			}
 
