@@ -708,14 +708,22 @@ Arguments:
     <phrase title="option_WidgetFramework_indexNodeId" version_id="69" version_string="2.4.1"><![CDATA[Widget Page As Index]]></phrase>
     <phrase title="option_WidgetFramework_indexNodeId_explain" version_id="78" version_string="2.4.5c"><![CDATA[You can choose to have a widget page take over the index page. The option "Index Page Route" will be ignored and it is recommended to leave the option "Home Page URL" blank.]]></phrase>
     <phrase title="permission_group_wfWidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page Permissions]]></phrase>
-    <phrase title="style_property_group_widget_framework_master" version_id="33" version_string="1.5"><![CDATA[[bd] Widget Framework]]></phrase>
-    <phrase title="style_property_group_widget_framework_master_desc" version_id="33" version_string="1.5"><![CDATA[Widget display settings for this style.]]></phrase>
+    <phrase title="style_property_group_WidgetFramework_master" version_id="100" version_string="2.5.0d"><![CDATA[[bd] Widget Framework]]></phrase>
+    <phrase title="style_property_group_WidgetFramework_master_desc" version_id="100" version_string="2.5.0d"><![CDATA[Controls how widgets appear.]]></phrase>
+    <phrase title="style_property_group_WidgetFramework_Threads_master" version_id="100" version_string="2.5.0d"><![CDATA[[bd] Widget Framework - Threads]]></phrase>
+    <phrase title="style_property_group_WidgetFramework_Threads_master_desc" version_id="100" version_string="2.5.0d"><![CDATA[Style properties for Threads widgets]]></phrase>
+    <phrase title="style_property_wf_contentWidgetContainer_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="style_property_wf_contentWidgetContainer_master" version_id="100" version_string="2.5.0d"><![CDATA[Content Widget (container)]]></phrase>
     <phrase title="style_property_wf_homeLinksChildNodes_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to show links to child nodes for Widget Page navigation tab. Please note that no permission check will be perform.]]></phrase>
     <phrase title="style_property_wf_homeLinksChildNodes_master" version_id="78" version_string="2.4.5c"><![CDATA[Show child nodes in navtab]]></phrase>
     <phrase title="style_property_wf_homeLinksForums_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to copy links under "Forums" navigation tab to the one for Widget Page.]]></phrase>
     <phrase title="style_property_wf_homeLinksForums_master" version_id="78" version_string="2.4.5c"><![CDATA[Show links from Forums navtab]]></phrase>
     <phrase title="style_property_wf_homeNavTab_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to render a "Home" navigation tab for the selected Widget Page.]]></phrase>
     <phrase title="style_property_wf_homeNavTab_master" version_id="78" version_string="2.4.5c"><![CDATA[Navtab for Index Page]]></phrase>
+    <phrase title="style_property_wf_hookWidget_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="style_property_wf_hookWidget_master" version_id="100" version_string="2.5.0d"><![CDATA[Content Widget]]></phrase>
+    <phrase title="style_property_wf_sidebarWidget_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="style_property_wf_sidebarWidget_master" version_id="100" version_string="2.5.0d"><![CDATA[Sidebar Widget]]></phrase>
     <phrase title="style_property_wf_threads_fullDate_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullDate_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Posted Date]]></phrase>
     <phrase title="style_property_wf_threads_fullFirstPostLikes_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -736,6 +744,12 @@ Arguments:
     <phrase title="style_property_wf_threads_snippetMaxLength_master" version_id="69" version_string="2.4.1"><![CDATA[Snippet Maximum Length]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar layout.]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
+    <phrase title="style_property_wf_widgetTabsPanes_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="style_property_wf_widgetTabsPanes_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (panes container)]]></phrase>
+    <phrase title="style_property_wf_widgetTabsTabs_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="style_property_wf_widgetTabsTabs_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (container)]]></phrase>
+    <phrase title="style_property_wf_widgetTabs_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="style_property_wf_widgetTabs_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (outer container)]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
     <phrase title="wf_birthday_avatar_only" version_id="92" version_string="2.4.9e"><![CDATA[Ignore Users Without Avatar]]></phrase>
@@ -796,7 +810,7 @@ Arguments:
     <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
     <phrase title="wf_limit_zero_explain" version_id="58" version_string="2.3.2b"><![CDATA[Enter 0 (zero) to set no limitation.]]></phrase>
     <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
-    <phrase title="wf_move" version_id="100" version_string="2.5.0d"><![CDATA[Move]]></phrase>
+    <phrase title="wf_move" version_id="100" version_string="2.5.0d"><![CDATA[{display_order}]]></phrase>
     <phrase title="wf_non_existent_hook_x" version_id="37" version_string="1.5.4"><![CDATA[The specified hook "{hook}" could not be found in any public templates.]]></phrase>
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
@@ -913,240 +927,70 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </route_type>
   </route_prefixes>
   <style_properties>
-    <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Title Maximum Length" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="Threads"><![CDATA[35]]></property>
-    <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="widget_framework" title="Snippet Maximum Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="Threads"><![CDATA[0]]></property>
-    <property property_name="wf_threads_showPrefix" property_type="scalar" definition="1" group_name="widget_framework" title="Show Thread Prefix" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="Threads"><![CDATA[0]]></property>
-    <property property_name="wf_threads_fullViewCount" property_type="scalar" definition="1" group_name="widget_framework" title="Show View Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="Threads"><![CDATA[1]]></property>
-    <property property_name="wf_threads_fullFirstPostLikes" property_type="scalar" definition="1" group_name="widget_framework" title="Show Like Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="Threads"><![CDATA[1]]></property>
-    <property property_name="wf_threads_fullReplyCount" property_type="scalar" definition="1" group_name="widget_framework" title="Show Reply Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1130" sub_group="Threads"><![CDATA[1]]></property>
-    <property property_name="wf_threads_fullUser" property_type="scalar" definition="1" group_name="widget_framework" title="Show Poster" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1010" sub_group="Threads"><![CDATA[1]]></property>
-    <property property_name="wf_threads_fullForum" property_type="scalar" definition="1" group_name="widget_framework" title="Show Forum Origin" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1020" sub_group="Threads"><![CDATA[0]]></property>
-    <property property_name="wf_threads_fullDate" property_type="scalar" definition="1" group_name="widget_framework" title="Show Posted Date" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1030" sub_group="Threads"><![CDATA[1]]></property>
-    <property property_name="wf_threads_fullInfoBottom" property_type="scalar" definition="1" group_name="widget_framework" title="Show information at bottom" description="By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1000" sub_group="Threads"><![CDATA[1]]></property>
-    <property property_name="wf_homeNavTab" property_type="scalar" definition="1" group_name="widget_framework" title="Navtab for Index Page" description="Enable this property to render a &quot;Home&quot; navigation tab for the selected Widget Page." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1000" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
-    <property property_name="wf_homeLinksForums" property_type="scalar" definition="1" group_name="widget_framework" title="Show links from Forums navtab" description="Enable this property to copy links under &quot;Forums&quot; navigation tab to the one for Widget Page." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
-    <property property_name="wf_homeLinksChildNodes" property_type="scalar" definition="1" group_name="widget_framework" title="Show child nodes in navtab" description="Enable this property to show links to child nodes for Widget Page navigation tab. Please note that no permission check will be perform." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1100" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
-    <group group_name="widget_framework" display_order="9999">
+    <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Title Maximum Length" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="sidebar"><![CDATA[35]]></property>
+    <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Snippet Maximum Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="sidebar"><![CDATA[0]]></property>
+    <property property_name="wf_threads_showPrefix" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Thread Prefix" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="sidebar"><![CDATA[0]]></property>
+    <property property_name="wf_threads_fullViewCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show View Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="full"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullFirstPostLikes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Like Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="full"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullReplyCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Reply Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1130" sub_group="full"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullUser" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Poster" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1010" sub_group="full"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullForum" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Forum Origin" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1020" sub_group="full"><![CDATA[0]]></property>
+    <property property_name="wf_threads_fullDate" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Posted Date" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1030" sub_group="full"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullInfoBottom" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show information at bottom" description="By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1000" sub_group="full"><![CDATA[1]]></property>
+    <property property_name="wf_homeNavTab" property_type="scalar" definition="1" group_name="WidgetFramework" title="Navtab for Index Page" description="Enable this property to render a &quot;Home&quot; navigation tab for the selected Widget Page." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1000" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
+    <property property_name="wf_homeLinksForums" property_type="scalar" definition="1" group_name="WidgetFramework" title="Show links from Forums navtab" description="Enable this property to copy links under &quot;Forums&quot; navigation tab to the one for Widget Page." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
+    <property property_name="wf_homeLinksChildNodes" property_type="scalar" definition="1" group_name="WidgetFramework" title="Show child nodes in navtab" description="Enable this property to show links to child nodes for Widget Page navigation tab. Please note that no permission check will be perform." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1100" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
+    <property property_name="wf_sidebarWidget" property_type="css" definition="1" group_name="WidgetFramework" title="Sidebar Widget" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="100" sub_group=""><![CDATA[[]]]></property>
+    <property property_name="wf_hookWidget" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="210" sub_group=""><![CDATA[[]]]></property>
+    <property property_name="wf_widgetTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (outer container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1000" sub_group=""><![CDATA[{"border-color":"black","border-style":"none","border-width":"0","margin-all":"0","padding-all":"0"}]]></property>
+    <property property_name="wf_widgetTabsPanes" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (panes container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1020" sub_group=""><![CDATA[{"border-bottom-color":"@primaryLighter","border-bottom-left-radius":"10px","border-bottom-right-radius":"10px","border-bottom-style":"solid","border-bottom-width":"1px","border-left-color":"@primaryLighter","border-left-style":"solid","border-left-width":"1px","border-right-color":"@primaryLighter","border-right-style":"solid","border-right-width":"1px","padding-all":"10px"}]]></property>
+    <property property_name="wf_widgetTabsTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1010" sub_group=""><![CDATA[{"background-none":"1"}]]></property>
+    <property property_name="wf_contentWidgetContainer" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="200" sub_group=""><![CDATA[{"extra":"float: none;\nfont-size: inherit;","width":"auto"}]]></property>
+    <group group_name="WidgetFramework" display_order="9999">
       <title>[bd] Widget Framework</title>
-      <description>Widget display settings for this style.</description>
+      <description>Controls how widgets appear.</description>
+    </group>
+    <group group_name="WidgetFramework_Threads" display_order="9999">
+      <title>[bd] Widget Framework - Threads</title>
+      <description>Style properties for Threads widgets</description>
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="98" version_string="2.5.0d"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="102" version_string="2.5.0d"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
 
-.section.sectionMain.widget-container.widget-tabs {
-	border: 0;
-	margin: 0;
-	padding: 0;
-}
-	.section.sectionMain.widget-container.widget-tabs .widget-panes {
-		{xen:property primaryContent.padding};
-		border-right: 1px solid {xen:property primaryLighter};
-		border-bottom: 1px solid {xen:property primaryLighter};
-		border-left: 1px solid {xen:property primaryLighter};
-
-		<xen:comment>should find a better way other than hardcoding border radius here</xen:comment>
-		border-bottom-left-radius: 10px;
-		border-bottom-right-radius: 10px;
-	}
-
 .widget-container.sidebar.act-as-sidebar {
-	float: none;
-	font-size: inherit;
-	width: auto;
+	{xen:property wf_contentWidgetContainer}
 }
 
-.widget-tabs .tabs {
-	background: none;
+.sidebar-widget {
+	{xen:property wf_sidebarWidget}
 }
 
-.widget-tabs .tabs li a {
-	font-weight: bold;
+.hook-widget {
+	{xen:property wf_hookWidget}
 }
 
-.widget-tabs .primaryContent {
-	padding: 0;
-	background: none;
-	border: 0;
+.widget-tabs {
+	{xen:property wf_widgetTabs}
 }
-
-.widget-poll .pollBlock .pollContent {
-	padding-left: 0;
-	width: auto;
-}
-
-.widget-poll .pollBlock .pollOptions,
-.widget-poll .pollBlock .pollResults {
-	border: 0;
-}
-
-.widget-poll .pollBlock .pollResult h3.optionText {
-	border: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.widget-poll .pollBlock .pollResult .count {
-	padding: 0;
-}
-
-.avatarList .WidgetFramework_nextToAvatar {
-	margin-left: 41px;
-}
-	.avatarList .WidgetFramework_nextToAvatar .username {
-		margin-top: 0;
+	.widget-tabs .tabs {
+		{xen:property wf_widgetTabsTabs}
 	}
 
-.widget .statusPoster textarea {
-	box-sizing: border-box;
-	width: 100%;
-	margin: 0;
-	resize: vertical;
-	overflow: hidden;
-}
-
-.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl {
-    float: none;
-}
-
-.WidgetFramework_WidgetRenderer_FeedReader_Entries {
-}
-	.WidgetFramework_WidgetRenderer_FeedReader_Entries .limitedHeight {
-		max-height: {xen:calc 'floor({xen:property sidebar.font-size} * 1.27 * 4) - 1'}px; <xen:comment>1.27 is the default line-height for body</xen:comment>
+	.widget-tabs .widget-panes {
+		{xen:property wf_widgetTabsPanes}
 	}
-
-	.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry {
-		text-align: justify;
-		display: block;
-		overflow: hidden;
-		margin-bottom: 3px;
-	}
-
-	.WidgetFramework_WidgetRenderer_FeedReader_Entries img.WidgetFramework_WidgetRenderer_FeedReader_Thumbnail {
-		width: auto;
-		float: right;
-		margin-left: 3px;
-	}
-		.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry:nth-child(2n) img.WidgetFramework_WidgetRenderer_FeedReader_Thumbnail { float: left; margin-right: 3px; }
-
-.WidgetFramework_WidgetRenderer_XFRM_Resources .Hint {
-	float: right;
-}
-
-.WidgetFramework_WidgetRenderer_Threads .unread > a { font-weight: bold; }
-.sidebar .WidgetFramework_WidgetRenderer_Threads .avatarList .username { display: inline; font-size: inherit; margin: 0; }
-
-.WidgetFramework_WidgetRenderer_Threads .discussionList {
-	overflow: scroll;
-	width: 100%:
-}
-.WidgetFramework_WidgetRenderer_Threads .DiscussionList {
-	min-width: 450px;
-	width: 100%;
-}
-
-.WidgetFramework_WidgetRenderer_Threads_FullThreadList {
-}
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .subHeading {
-		font-size: 1.3em;
-	}
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info {
-		padding: 5px 10px;
-
-		<xen:if is="{xen:property wf_threads_fullInfoBottom}">
-			border-top: 1px dashed {xen:property primaryLighterStill};
-		<xen:else />
-			border-bottom: 1px dashed {xen:property primaryLighterStill};
-		</xen:if>
-	}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .counters {
-			float: right;
-		}
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message {
-		margin-bottom: 10px;
-	}
-	{xen:helper clearfix, '.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message'}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageInfo {
-			padding: 5px 10px;
-		}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator
-		{
-			{xen:property messageNewIndicator}
-
-			margin-right: -{xen:calc '{xen:property content.padding-right} + 5'}px;
-		}
-			.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator span
-			{
-				{xen:property messageNewIndicatorInner}
-			}
-
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageText .readMoreLink {
-		display: block;
-		text-align: right;
-	}
-
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem
-{
-	overflow: hidden; zoom: 1;
-
-	margin: 5px 0;
-	padding-top: 5px;
-	border-top: 1px solid {xen:property primaryLighterStill};
-}
-
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem:first-child
-{
-	border-top: none;
-	padding-top: 0;
-}
-
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .avatar
-{
-	float: left;
-	font-size: 0;
-}
-
-	.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .avatar img
-	{
-		width: 24px;
-		height: 24px;
-	}
-
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageInfo
-{
-	margin-left: 34px;
-}
-
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageContent article,
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageContent blockquote
-{
-	display: inline;
-}
-
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .poster
-{
-	font-weight: bold;
-}
-
-.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageMeta
-{
-	overflow: hidden; zoom: 1;
-	font-size: 11px;
-	line-height: 14px;
-	padding-top: 4px;
-}
 
 .widget .avatarHeap {
-	<xen:comment>avatarHeap last avatar of a row will need some space at
-		the end, but because our avatarHeap doesn't have enough space, 
-		there will be only 3 columns in stead of 4 columns of avatars.</xen:comment>
 	margin-right: -10px;
 }
 
+<xen:include template="wf_profile_posts.css" />
+<xen:include template="wf_threads.css" />
+<xen:include template="wf_others.css" />
 <xen:include template="wf_default_EXTRA.css" />
 
 <xen:comment>
@@ -1481,6 +1325,163 @@ All customization should go to wf_default_EXTRA.css
 		</ol>
 	</xen:if>
 </li>]]></template>
+    <template title="wf_others.css" version_id="102" version_string="2.5.0d"><![CDATA[.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl {
+    float: none;
+}
+
+.WidgetFramework_WidgetRenderer_FeedReader_Entries {
+}
+	.WidgetFramework_WidgetRenderer_FeedReader_Entries .limitedHeight {
+		max-height: {xen:calc 'floor({xen:property sidebar.font-size} * 1.27 * 4) - 1'}px; <xen:comment>1.27 is the default line-height for body</xen:comment>
+	}
+
+	.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry {
+		text-align: justify;
+		display: block;
+		overflow: hidden;
+		margin-bottom: 3px;
+	}
+
+	.WidgetFramework_WidgetRenderer_FeedReader_Entries img.WidgetFramework_WidgetRenderer_FeedReader_Thumbnail {
+		width: auto;
+		float: right;
+		margin-left: 3px;
+	}
+		.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry:nth-child(2n) img.WidgetFramework_WidgetRenderer_FeedReader_Thumbnail { float: left; margin-right: 3px; }
+
+.WidgetFramework_WidgetRenderer_XFRM_Resources .Hint {
+	float: right;
+}]]></template>
+    <template title="wf_profile_posts.css" version_id="102" version_string="2.5.0d"><![CDATA[.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem
+{
+	overflow: hidden; zoom: 1;
+
+	margin: 5px 0;
+	padding-top: 5px;
+	border-top: 1px solid {xen:property primaryLighterStill};
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem:first-child
+{
+	border-top: none;
+	padding-top: 0;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .avatar
+{
+	float: left;
+	font-size: 0;
+}
+
+	.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .avatar img
+	{
+		width: 24px;
+		height: 24px;
+	}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageInfo
+{
+	margin-left: 34px;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageContent article,
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageContent blockquote
+{
+	display: inline;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .poster
+{
+	font-weight: bold;
+}
+
+.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem .messageMeta
+{
+	overflow: hidden; zoom: 1;
+	font-size: 11px;
+	line-height: 14px;
+	padding-top: 4px;
+}
+
+.widget .statusPoster textarea {
+	box-sizing: border-box;
+	width: 100%;
+	margin: 0;
+	resize: vertical;
+	overflow: hidden;
+}]]></template>
+    <template title="wf_threads.css" version_id="102" version_string="2.5.0d"><![CDATA[.WidgetFramework_WidgetRenderer_Threads .unread > a { font-weight: bold; }
+.WidgetFramework_WidgetRenderer_Threads .avatarList .username { display: inline; font-size: inherit; margin: 0; }
+
+.WidgetFramework_WidgetRenderer_Threads .discussionList {
+	overflow: scroll;
+	width: 100%:
+}
+.WidgetFramework_WidgetRenderer_Threads .DiscussionList {
+	min-width: 450px;
+	width: 100%;
+}
+
+.WidgetFramework_WidgetRenderer_Threads_FullThreadList {
+}
+	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .subHeading {
+		font-size: 1.3em;
+	}
+	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info {
+		padding: 5px 10px;
+
+		<xen:if is="{xen:property wf_threads_fullInfoBottom}">
+			border-top: 1px dashed {xen:property primaryLighterStill};
+		<xen:else />
+			border-bottom: 1px dashed {xen:property primaryLighterStill};
+		</xen:if>
+	}
+		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .counters {
+			float: right;
+		}
+	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message {
+		margin-bottom: 10px;
+	}
+	{xen:helper clearfix, '.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message'}
+		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageInfo {
+			padding: 5px 10px;
+		}
+		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator
+		{
+			{xen:property messageNewIndicator}
+
+			margin-right: -{xen:calc '{xen:property content.padding-right} + 5'}px;
+		}
+			.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator span
+			{
+				{xen:property messageNewIndicatorInner}
+			}
+
+	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageText .readMoreLink {
+		display: block;
+		text-align: right;
+	}
+
+.widget-poll .pollBlock .pollContent {
+	padding-left: 0;
+	width: auto;
+}
+
+.widget-poll .pollBlock .pollOptions,
+.widget-poll .pollBlock .pollResults {
+	border: 0;
+}
+
+.widget-poll .pollBlock .pollResult h3.optionText {
+	border: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.widget-poll .pollBlock .pollResult .count {
+	padding: 0;
+}]]></template>
     <template title="wf_widget_birthday" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{xen:count $users} == 1">
 	<h4 class="minorHeading">{xen:phrase wf_widget_birthday_today_is_xs_birthday, 'username={$users.0.username}'}</h4>
 	<div class="avatarList">
@@ -1798,37 +1799,6 @@ All customization should go to wf_default_EXTRA.css
 		</div>
 	</li>
 </xen:if>]]></template>
-    <template title="wf_widget_recent_status" version_id="86" version_string="2.4.7c"><![CDATA[<xen:if is="{$users}">
-    <xen:require css="wf_default.css" />
-    
-    <div class="avatarList">
-        <ul>
-        	<xen:foreach loop="$users" value="$user">
-			<li class="user-{$user.user_id} user-profile-post-{$user.status_profile_post_id}">
-        		<xen:avatar user="$user" size="s" img="true" />
-        		<div class="WidgetFramework_nextToAvatar">
-        			<xen:username user="$user" rich="true" />
-					<div class="status">{xen:helper bodyText, $user.status}</div>
-        			<a href="{xen:link 'profile-posts', {xen:array 'profile_post_id={$user.status_profile_post_id}'}}" class="userTitle"><xen:datetime time="$user.status_date" /></a>
-        		</div>
-        	</li>
-        	</xen:foreach>
-        </ul>
-
-        <xen:comment>The below block of status posting form was copied from `navigation_visitor_tab`</xen:comment>
-        <xen:if is="{$canUpdateStatus}">
-        	<form action="LINK_MEMBER_POST_VISITOR" method="post" class="statusPoster AutoValidator" data-optInOut="OptIn">
-        		<textarea name="message" class="textCtrl StatusEditor Elastic" placeholder="{xen:phrase update_your_status}..." rows="1" cols="40" style="height:14px" data-statusEditorCounter="#visMenuSEdCount-{$widget.widget_id}" data-nofocus="true"></textarea>
-        		<div class="submitUnit">
-        			<span id="visMenuSEdCount-{$widget.widget_id}" title="{xen:phrase characters_remaining}"></span>
-        			<input type="submit" class="button primary MenuCloser" value="{xen:phrase post_verb}" accesskey="s" />
-        			<input type="hidden" name="_xfToken" value="CSRF_TOKEN_PAGE" /><xen:comment>This will be updated in WidgetFramework_WidgetRenderer_RecentStatus::extraPrepare()</xen:comment>
-        			<input type="hidden" name="return" value="1" /> 
-        		</div>
-        	</form>
-        </xen:if>
-    </div>
-</xen:if>]]></template>
     <template title="wf_widget_share_page" version_id="92" version_string="2.4.9e"><![CDATA[<xen:if hascontent="true">
 	<xen:require css="wf_default.css" />
 
@@ -2103,10 +2073,10 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:if is="{$_WidgetFramework_isHook}">
 	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}', 'section sectionMain '}widget-container {$groupId} act-as-sidebar sidebar</xen:set>
-	<xen:set var="$classInnerSection">widget</xen:set>
+	<xen:set var="$classInnerSection">widget hook-widget</xen:set>
 <xen:else />
 	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}', 'section '}{$groupId}</xen:set>
-	<xen:set var="$classInnerSection">secondaryContent widget</xen:set>
+	<xen:set var="$classInnerSection">secondaryContent widget sidebar-widget</xen:set>
 </xen:if>
 
 <xen:if is="{xen:count $tabs} > 1 AND !{$isRows}">
@@ -2114,17 +2084,19 @@ All customization should go to wf_default_EXTRA.css
 
 		<xen:comment>We are rendering tabs</xen:comment>
 		<div class="{$classSection} widget-tabs">
-			<div class="primaryContent">
 				<ul class="tabs Tabs" data-panes="#widget-tabs-{$normalizedGroupId} > li">
 					<xen:foreach loop="$tabs" value="$tab">
 						<li>
 							<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
-								{xen:raw $tab.title}
+								<xen:if hascontent="true">
+									<xen:contentcheck>{xen:raw $tab.title}</xen:contentcheck>
+								<xen:else />
+									{xen:phrase wf_widgets}
+								</xen:if>
 							</a>
 						</li>
 					</xen:foreach>
 				</ul>
-			</div>
 			<div class="{$classInnerSection} widget-panes">
 				<ul id="widget-tabs-{$normalizedGroupId}">
 					<xen:foreach loop="$tabs" value="$tab">
