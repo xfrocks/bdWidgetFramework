@@ -678,6 +678,7 @@ Arguments:
       <edit_format_params>WidgetFramework_Option::renderWidgetPages</edit_format_params>
       <sub_options></sub_options>
       <relation group_id="basicBoard" display_order="100"/>
+      <relation group_id="widget_framework" display_order="9000"/>
     </option>
     <option option_id="wf_layoutEditor" edit_format="onoff" data_type="unsigned_integer" can_backup="1">
       <default_value>1</default_value>
