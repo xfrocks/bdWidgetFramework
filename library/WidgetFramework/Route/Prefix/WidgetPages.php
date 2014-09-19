@@ -25,7 +25,7 @@ class WidgetFramework_Route_Prefix_WidgetPages implements XenForo_Route_Interfac
 			}
 			elseif (empty($action))
 			{
-				return WidgetFramework_Helper_Index::buildBasicLink('widget-page-index', '', $extension);
+				return new XenForo_Link(XenForo_Link::buildPublicLink('widget-page-index', null, $extraParams));
 			}
 		}
 
