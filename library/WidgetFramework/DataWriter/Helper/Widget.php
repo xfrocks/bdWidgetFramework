@@ -76,6 +76,12 @@ class WidgetFramework_DataWriter_Helper_Widget
 					FROM `xf_template_compiled`
 					WHERE template_compiled LIKE " . XenForo_Db::quoteLike('callTemplateHook(\'' . substr($position, 5) . '\',', 'lr') . "
 				");
+
+				if (empty($templates) AND $position === 'hook:wf_widget_page_contents')
+				{
+					$templates = array( array('title' => 'wf_widget_page'));
+				}
+
 				if (count($templates) > 0)
 				{
 					$templateForHooks[$position] = array();
@@ -93,8 +99,7 @@ class WidgetFramework_DataWriter_Helper_Widget
 			}
 			else
 			{
-				$found = $templateModel->getTemplateInStyleByTitle($position);
-				if (!$found)
+				if ($position !== 'wf_widget_page' AND !$templateModel->getTemplateInStyleByTitle($position))
 				{
 					$dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
 					return false;

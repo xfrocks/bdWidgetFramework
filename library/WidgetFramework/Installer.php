@@ -236,6 +236,7 @@ class WidgetFramework_Installer
 					$widgetDw->set('position', 'wf_widget_page');
 
 					$widgetDw->save();
+					unset($widgets[$widgetId]);
 				}
 				elseif (!empty($widgets[$widgetId]['position']))
 				{
