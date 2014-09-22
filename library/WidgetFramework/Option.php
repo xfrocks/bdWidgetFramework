@@ -47,7 +47,7 @@ class WidgetFramework_Option
 	public static function setIndexNodeId($nodeId)
 	{
 		$optionDw = XenForo_DataWriter::create('XenForo_DataWriter_Option');
-		$optionDw->setExistingData('WidgetFramework_indexNodeId');
+		$optionDw->setExistingData('wf_indexNodeId');
 		$optionDw->set('option_value', $nodeId);
 		$optionDw->save();
 	}
