@@ -1,22 +1,23 @@
 <?php
+
 class WidgetFramework_Installer
 {
 
-	/* Start auto-generated lines of code. Change made will be overwriten... */
+    /* Start auto-generated lines of code. Change made will be overwriten... */
 
-	protected static $_tables = array(
-		'widget_page' => array(
-			'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widgetframework_widget_page` (
+    protected static $_tables = array(
+        'widget_page' => array(
+            'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widgetframework_widget_page` (
 				`node_id` INT(10) UNSIGNED NOT NULL
 				,`widgets` MEDIUMBLOB
 				,`options` MEDIUMBLOB
 				, PRIMARY KEY (`node_id`)
 				
 			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
-			'dropQuery' => 'DROP TABLE IF EXISTS `xf_widgetframework_widget_page`',
-		),
-		'xf_widget' => array(
-			'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widget` (
+            'dropQuery' => 'DROP TABLE IF EXISTS `xf_widgetframework_widget_page`',
+        ),
+        'xf_widget' => array(
+            'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widget` (
 				`widget_id` INT(10) UNSIGNED AUTO_INCREMENT
 				,`title` TEXT
 				,`class` TEXT NOT NULL
@@ -28,93 +29,84 @@ class WidgetFramework_Installer
 				, PRIMARY KEY (`widget_id`)
 				
 			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
-			'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`',
-		),
-	);
-	protected static $_patches = array(
-		array(
-			'table' => 'xf_widget',
-			'field' => 'template_for_hooks',
-			'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
-			'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'template_for_hooks\'',
-			'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB',
-			'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `template_for_hooks`',
-		),
-		array(
-			'table' => 'xf_widget',
-			'field' => 'widget_page_id',
-			'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
-			'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
-			'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
-			'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
-		),
-	);
+            'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`',
+        ),
+    );
+    protected static $_patches = array(
+        array(
+            'table' => 'xf_widget',
+            'field' => 'template_for_hooks',
+            'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
+            'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'template_for_hooks\'',
+            'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB',
+            'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `template_for_hooks`',
+        ),
+        array(
+            'table' => 'xf_widget',
+            'field' => 'widget_page_id',
+            'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
+            'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
+            'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
+        ),
+    );
 
-	public static function install($existingAddOn, $addOnData)
-	{
-		$db = XenForo_Application::get('db');
+    public static function install($existingAddOn, $addOnData)
+    {
+        $db = XenForo_Application::get('db');
 
-		foreach (self::$_tables as $table)
-		{
-			$db->query($table['createQuery']);
-		}
+        foreach (self::$_tables as $table) {
+            $db->query($table['createQuery']);
+        }
 
-		foreach (self::$_patches as $patch)
-		{
-			$tableExisted = $db->fetchOne($patch['showTablesQuery']);
-			if (empty($tableExisted))
-			{
-				continue;
-			}
+        foreach (self::$_patches as $patch) {
+            $tableExisted = $db->fetchOne($patch['showTablesQuery']);
+            if (empty($tableExisted)) {
+                continue;
+            }
 
-			$existed = $db->fetchOne($patch['showColumnsQuery']);
-			if (empty($existed))
-			{
-				$db->query($patch['alterTableAddColumnQuery']);
-			}
-		}
-		
-		self::installCustomized($existingAddOn, $addOnData);
-	}
+            $existed = $db->fetchOne($patch['showColumnsQuery']);
+            if (empty($existed)) {
+                $db->query($patch['alterTableAddColumnQuery']);
+            }
+        }
 
-	public static function uninstall()
-	{
-		$db = XenForo_Application::get('db');
+        self::installCustomized($existingAddOn, $addOnData);
+    }
 
-		foreach (self::$_patches as $patch)
-		{
-			$tableExisted = $db->fetchOne($patch['showTablesQuery']);
-			if (empty($tableExisted))
-			{
-				continue;
-			}
+    public static function uninstall()
+    {
+        $db = XenForo_Application::get('db');
 
-			$existed = $db->fetchOne($patch['showColumnsQuery']);
-			if (!empty($existed))
-			{
-				$db->query($patch['alterTableDropColumnQuery']);
-			}
-		}
+        foreach (self::$_patches as $patch) {
+            $tableExisted = $db->fetchOne($patch['showTablesQuery']);
+            if (empty($tableExisted)) {
+                continue;
+            }
 
-		foreach (self::$_tables as $table)
-		{
-			$db->query($table['dropQuery']);
-		}
+            $existed = $db->fetchOne($patch['showColumnsQuery']);
+            if (!empty($existed)) {
+                $db->query($patch['alterTableDropColumnQuery']);
+            }
+        }
 
-		self::uninstallCustomized();
-	}
+        foreach (self::$_tables as $table) {
+            $db->query($table['dropQuery']);
+        }
 
-	/* End auto-generated lines of code. Feel free to make changes below */
+        self::uninstallCustomized();
+    }
 
-	public static function installCustomized($existingAddOn, $addOnData)
-	{
-		$db = XenForo_Application::getDb();
+    /* End auto-generated lines of code. Feel free to make changes below */
 
-		$effectiveVersionId = 0;
+    public static function installCustomized($existingAddOn, $addOnData)
+    {
+        $db = XenForo_Application::getDb();
 
-		if (empty($existingAddOn))
-		{
-			$db->query("
+        $effectiveVersionId = 0;
+
+        if (empty($existingAddOn)) {
+            $db->query("
 				INSERT INTO `xf_widget`
 					(title, class, options, position, display_order)
 				VALUES
@@ -125,19 +117,17 @@ class WidgetFramework_Installer
 					('', 'WidgetFramework_WidgetRenderer_ShareThisPage', 0x613A303A7B7D, 'forum_list', 50)
 			");
 
-			if (XenForo_Application::$versionId > 1040000)
-			{
-				$db->query("
+            if (XenForo_Application::$versionId > 1040000) {
+                $db->query("
 					INSERT INTO `xf_widget`
 						(title, class, options, position, display_order)
 					VALUES
 						('', 'WidgetFramework_WidgetRenderer_ProfilePosts', 'a:1:{s:16:\"show_update_form\";s:1:\"1\";}', 'forum_list', 30)
 				");
-			}
+            }
 
-			if (XenForo_Application::$versionId < 1020000)
-			{
-				$db->query("
+            if (XenForo_Application::$versionId < 1020000) {
+                $db->query("
 					INSERT INTO `xf_widget`
 						(title, class, options, position, display_order)
 					VALUES
@@ -147,10 +137,8 @@ class WidgetFramework_Installer
 						('Newest Members', 'WidgetFramework_WidgetRenderer_Users', 0x613A373A7B733A353A226C696D6974223B693A383B733A353A226F72646572223B733A31333A2272656769737465725F64617465223B733A393A22646972656374696F6E223B733A343A2244455343223B733A31313A22646973706C61794D6F6465223B733A31363A226176617461724F6E6C79426967676572223B733A393A227461625F67726F7570223B733A303A22223B733A31303A2265787072657373696F6E223B733A303A22223B733A31363A2265787072657373696F6E5F6465627567223B693A303B7D, 'member_list', 40),
 						('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_list', 50)
 				");
-			}
-			else
-			{
-				$db->query("
+            } else {
+                $db->query("
 					INSERT INTO `xf_widget`
 						(title, class, options, position, display_order)
 					VALUES
@@ -160,107 +148,104 @@ class WidgetFramework_Installer
 						('', 'WidgetFramework_WidgetRenderer_UsersStaff', 0x613A303A7B7D, 'member_notable', 40),
 						('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_notable', 50)
 				");
-			}
+            }
 
-			XenForo_Model::create('WidgetFramework_Model_Widget')->buildCache();
-		}
-		else
-		{
-			$effectiveVersionId = $existingAddOn['version_id'];
-		}
+            /** @var WidgetFramework_Model_Widget $widgetModel */
+            $widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');
+            $widgetModel->buildCache();
+        } else {
+            $effectiveVersionId = $existingAddOn['version_id'];
+        }
 
-		if ($effectiveVersionId < 55)
-		{
-			// node type definition
-			// since 2.3
-			// new XenForo_Phrase('node_type_WF_WidgetPage')
-			$db->insert('xf_node_type', array(
-				'node_type_id' => 'WF_WidgetPage',
-				'handler_class' => 'WidgetFramework_NodeHandler_WidgetPage',
-				'controller_admin_class' => 'WidgetFramework_ControllerAdmin_WidgetPage',
-				'datawriter_class' => 'WidgetFramework_DataWriter_WidgetPage',
-				'permission_group_id' => 'wfWidgetPage',
-				'moderator_interface_group_id' => '',
-				'public_route_prefix' => 'widget-pages',
-			));
-			XenForo_Model::create('XenForo_Model_Node')->rebuildNodeTypeCache();
-		}
+        if ($effectiveVersionId < 55) {
+            // node type definition
+            // since 2.3
+            // new XenForo_Phrase('node_type_WF_WidgetPage')
+            $db->insert('xf_node_type', array(
+                'node_type_id' => 'WF_WidgetPage',
+                'handler_class' => 'WidgetFramework_NodeHandler_WidgetPage',
+                'controller_admin_class' => 'WidgetFramework_ControllerAdmin_WidgetPage',
+                'datawriter_class' => 'WidgetFramework_DataWriter_WidgetPage',
+                'permission_group_id' => 'wfWidgetPage',
+                'moderator_interface_group_id' => '',
+                'public_route_prefix' => 'widget-pages',
+            ));
 
-		if ($effectiveVersionId > 0 AND $effectiveVersionId < 74)
-		{
-			// change definition for widget.title and widget.class
-			// since 2.4.4
-			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `title` TEXT");
-			$db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
-		}
+            /** @var XenForo_Model_Node $nodeModel */
+            $nodeModel = XenForo_Model::create('XenForo_Model_Node');
+            $nodeModel->rebuildNodeTypeCache();
+        }
 
-		if ($effectiveVersionId > 0 AND $effectiveVersionId < 101)
-		{
-			// update widget within widget pages to use group/display order instead of layout
-			// row/column
-			self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
-		}
-	}
+        if ($effectiveVersionId > 0 AND $effectiveVersionId < 74) {
+            // change definition for widget.title and widget.class
+            // since 2.4.4
+            $db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `title` TEXT");
+            $db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
+        }
 
-	public static function uninstallCustomized()
-	{
-		$db = XenForo_Application::getDb();
+        if ($effectiveVersionId > 0 AND $effectiveVersionId < 101) {
+            // update widget within widget pages to use group/display order instead of layout
+            // row/column
+            self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
+        }
+    }
 
-		$db->query("DROP TABLE IF EXISTS `xf_widget`");
-		$db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
-		$db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE '" . WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . "%'");
-		$db->query("DELETE FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
-		$db->query("DELETE FROM `xf_node` WHERE `node_type_id` = 'WF_WidgetPage'");
+    public static function uninstallCustomized()
+    {
+        $db = XenForo_Application::getDb();
 
-		XenForo_Application::setSimpleCacheData(WidgetFramework_Helper_Index::SIMPLE_CACHE_CHILD_NODES, false);
-		XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Cache::INVALIDED_CACHE_ITEM_NAME, false);
-		XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Widget::SIMPLE_CACHE_KEY, false);
-	}
+        $db->query("DROP TABLE IF EXISTS `xf_widget`");
+        $db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
+        $db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE '" . WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . "%'");
+        $db->query("DELETE FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
+        $db->query("DELETE FROM `xf_node` WHERE `node_type_id` = 'WF_WidgetPage'");
 
-	protected static function _updatePositionGroupAndDisplayOrderForWidgetsOfPages()
-	{
-		$widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');
-		$widgetPages = $widgetModel->getModelFromCache('WidgetFramework_Model_WidgetPage')->getWidgetPages();
+        XenForo_Application::setSimpleCacheData(WidgetFramework_Helper_Index::SIMPLE_CACHE_CHILD_NODES, false);
+        XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Cache::INVALIDED_CACHE_ITEM_NAME, false);
+        XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Widget::SIMPLE_CACHE_KEY, false);
+    }
 
-		foreach ($widgetPages as $widgetPage)
-		{
-			$widgets = $widgetModel->getWidgetPageWidgets($widgetPage['node_id'], false);
+    protected static function _updatePositionGroupAndDisplayOrderForWidgetsOfPages()
+    {
+        /** @var WidgetFramework_Model_Widget $widgetModel */
+        $widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');
+        /** @var WidgetFramework_Model_WidgetPage $widgetPageModel */
+        $widgetPageModel = $widgetModel->getModelFromCache('WidgetFramework_Model_WidgetPage');
 
-			// update sidebar widgets
-			foreach (array_keys($widgets) as $widgetId)
-			{
-				if ($widgets[$widgetId]['position'] == 'sidebar')
-				{
-					$widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-					$widgetDw->setExistingData($widgets[$widgetId], true);
-					$widgetDw->set('position', 'wf_widget_page');
+        $widgetPages = $widgetPageModel->getWidgetPages();
 
-					$widgetDw->save();
-					unset($widgets[$widgetId]);
-				}
-				elseif (!empty($widgets[$widgetId]['position']))
-				{
-					unset($widgets[$widgetId]);
-				}
-			}
+        foreach ($widgetPages as $widgetPage) {
+            $widgets = $widgetModel->getWidgetPageWidgets($widgetPage['node_id'], false);
 
-			if (!empty($widgets))
-			{
-				$widgetsCloned = $widgets;
-				WidgetFramework_Helper_OldPageLayout::buildLayoutTree($widgetsCloned);
+            // update sidebar widgets
+            foreach (array_keys($widgets) as $widgetId) {
+                if ($widgets[$widgetId]['position'] == 'sidebar') {
+                    $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                    $widgetDw->setExistingData($widgets[$widgetId], true);
+                    $widgetDw->set('position', 'wf_widget_page');
 
-				foreach (array_keys($widgets) as $widgetId)
-				{
-					$widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-					$widgetDw->setExistingData($widgets[$widgetId], true);
-					$widgetDw->set('position', $widgetsCloned[$widgetId]['position']);
-					$widgetDw->set('display_order', $widgetsCloned[$widgetId]['display_order']);
-					$widgetDw->set('options', $widgetsCloned[$widgetId]['options']);
+                    $widgetDw->save();
+                    unset($widgets[$widgetId]);
+                } elseif (!empty($widgets[$widgetId]['position'])) {
+                    unset($widgets[$widgetId]);
+                }
+            }
 
-					$widgetDw->save();
-				}
-			}
-		}
-	}
+            if (!empty($widgets)) {
+                $widgetsCloned = $widgets;
+                WidgetFramework_Helper_OldPageLayout::buildLayoutTree($widgetsCloned);
+
+                foreach (array_keys($widgets) as $widgetId) {
+                    $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                    $widgetDw->setExistingData($widgets[$widgetId], true);
+                    $widgetDw->set('position', $widgetsCloned[$widgetId]['position']);
+                    $widgetDw->set('display_order', $widgetsCloned[$widgetId]['display_order']);
+                    $widgetDw->set('options', $widgetsCloned[$widgetId]['options']);
+
+                    $widgetDw->save();
+                }
+            }
+        }
+    }
 
 }

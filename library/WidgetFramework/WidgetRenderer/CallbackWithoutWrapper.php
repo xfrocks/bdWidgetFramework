@@ -2,14 +2,14 @@
 
 class WidgetFramework_WidgetRenderer_CallbackWithoutWrapper extends WidgetFramework_WidgetRenderer_Callback
 {
-	protected function _getConfiguration()
-	{
-		$configuration = parent::_getConfiguration();
+    protected function _getConfiguration()
+    {
+        $configuration = parent::_getConfiguration();
 
-		$configuration['name'] = '[Advanced] PHP Callback (without wrapper)';
-		$configuration['useWrapper'] = false;
+        $configuration['name'] = '[Advanced] PHP Callback (without wrapper)';
+        $configuration['useWrapper'] = false;
 
-		return $configuration;
-	}
+        return $configuration;
+    }
 
 }

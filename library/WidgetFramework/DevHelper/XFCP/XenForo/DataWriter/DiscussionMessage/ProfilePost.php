@@ -1,0 +1,5 @@
+<?php
+
+abstract class XFCP_WidgetFramework_XenForo_DataWriter_DiscussionMessage_ProfilePost extends XenForo_DataWriter_DiscussionMessage_ProfilePost
+{
+}

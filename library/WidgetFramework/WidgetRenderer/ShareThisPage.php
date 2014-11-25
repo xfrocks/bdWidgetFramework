@@ -2,71 +2,67 @@
 
 class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_WidgetRenderer
 {
-	public function extraPrepareTitle(array $widget)
-	{
-		if (empty($widget['title']))
-		{
-			return new XenForo_Phrase('share_this_page');
-		}
+    public function extraPrepareTitle(array $widget)
+    {
+        if (empty($widget['title'])) {
+            return new XenForo_Phrase('share_this_page');
+        }
 
-		return parent::extraPrepareTitle($widget);
-	}
+        return parent::extraPrepareTitle($widget);
+    }
 
-	protected function _getConfiguration()
-	{
-		return array(
-			'name' => 'Share This Page',
-			'useWrapper' => false
-		);
-	}
+    protected function _getConfiguration()
+    {
+        return array(
+            'name' => 'Share This Page',
+            'useWrapper' => false
+        );
+    }
 
-	protected function _getOptionsTemplate()
-	{
-		return false;
-	}
+    protected function _getOptionsTemplate()
+    {
+        return false;
+    }
 
-	protected function _getRenderTemplate(array $widget, $positionCode, array $params)
-	{
-		return 'wf_widget_share_page';
-	}
+    protected function _getRenderTemplate(array $widget, $positionCode, array $params)
+    {
+        return 'wf_widget_share_page';
+    }
 
-	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-	{
-		if (!isset($params['url']))
-		{
-			// try to detect the correct url for different templates
-			$autoDetectedUrl = false;
+    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+    {
+        if (!isset($params['url'])) {
+            // try to detect the correct url for different templates
+            $autoDetectedUrl = false;
 
-			switch ($positionCode)
-			{
-				case 'forum_list':
-					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:forums');
-					break;
-				case 'forum_view':
-					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:forums', $params['forum']);
-					break;
-				case 'member_view':
-					// this widget on member_view, seriously?
-					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:members', $params['user']);
-					break;
-				case 'resource_author_view':
-					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:resources/authors', $params['user']);
-					break;
-				case 'resource_view':
-					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:resources', $params['resource']);
-					break;
-				case 'thread_view':
-					$autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:threads', $params['thread']);
-					break;
-			}
+            switch ($positionCode) {
+                case 'forum_list':
+                    $autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:forums');
+                    break;
+                case 'forum_view':
+                    $autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:forums', $params['forum']);
+                    break;
+                case 'member_view':
+                    // this widget on member_view, seriously?
+                    $autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:members', $params['user']);
+                    break;
+                case 'resource_author_view':
+                    $autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:resources/authors', $params['user']);
+                    break;
+                case 'resource_view':
+                    $autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:resources', $params['resource']);
+                    break;
+                case 'thread_view':
+                    $autoDetectedUrl = XenForo_Link::buildPublicLink('canonical:threads', $params['thread']);
+                    break;
+            }
 
-			if ($autoDetectedUrl !== false)
-			{
-				$renderTemplateObject->setParam('url', $autoDetectedUrl);
-			}
-		}
+            if ($autoDetectedUrl !== false) {
+                $renderTemplateObject->setParam('url', $autoDetectedUrl);
+            }
+        }
 
-		return $renderTemplateObject->render();
-	}
+        return $renderTemplateObject->render();
+    }
 
 }

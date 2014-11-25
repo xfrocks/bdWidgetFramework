@@ -2,175 +2,168 @@
 
 class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRenderer
 {
-	public function extraPrepareTitle(array $widget)
-	{
-		if (empty($widget['title']))
-		{
-			return new XenForo_Phrase('birthday');
-		}
+    public function extraPrepareTitle(array $widget)
+    {
+        if (empty($widget['title'])) {
+            return new XenForo_Phrase('birthday');
+        }
 
-		return parent::extraPrepareTitle($widget);
-	}
+        return parent::extraPrepareTitle($widget);
+    }
 
-	protected function _getConfiguration()
-	{
-		return array(
-			'name' => 'Birthday',
-			'options' => array(
-				'limit' => XenForo_Input::UINT,
-				'avatar_only' => XenForo_Input::UINT,
-				'whitelist_user_groups' => XenForo_Input::ARRAY_SIMPLE,
-				'blacklist_user_groups' => XenForo_Input::ARRAY_SIMPLE,
-			),
-			'useCache' => true,
-			'cacheSeconds' => 3600, // cache for 1 hour
-		);
-	}
+    protected function _getConfiguration()
+    {
+        return array(
+            'name' => 'Birthday',
+            'options' => array(
+                'limit' => XenForo_Input::UINT,
+                'avatar_only' => XenForo_Input::UINT,
+                'whitelist_user_groups' => XenForo_Input::ARRAY_SIMPLE,
+                'blacklist_user_groups' => XenForo_Input::ARRAY_SIMPLE,
+            ),
+            'useCache' => true,
+            'cacheSeconds' => 3600, // cache for 1 hour
+        );
+    }
 
-	protected function _getOptionsTemplate()
-	{
-		return 'wf_widget_options_birthday';
-	}
+    protected function _getOptionsTemplate()
+    {
+        return 'wf_widget_options_birthday';
+    }
 
-	protected function _renderOptions(XenForo_Template_Abstract $template)
-	{
-		$params = $template->getParams();
-		$userGroups = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_UserGroup')->getAllUserGroupTitles();
+    protected function _renderOptions(XenForo_Template_Abstract $template)
+    {
+        $params = $template->getParams();
 
-		$whitelistUserGroups = array();
-		$blacklistUserGroups = array();
+        /** @var XenForo_Model_UserGroup $userGroupModel */
+        $userGroupModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_UserGroup');
+        $userGroups = $userGroupModel->getAllUserGroupTitles();
 
-		$optionWhitelist = array();
-		if (!empty($params['options']['whitelist_user_groups']))
-		{
-			$optionWhitelist = $params['options']['whitelist_user_groups'];
-		}
+        $whitelistUserGroups = array();
+        $blacklistUserGroups = array();
 
-		$optionBlacklist = array();
-		if (!empty($params['options']['blacklist_user_groups']))
-		{
-			$optionBlacklist = $params['options']['blacklist_user_groups'];
-		}
+        $optionWhitelist = array();
+        if (!empty($params['options']['whitelist_user_groups'])) {
+            $optionWhitelist = $params['options']['whitelist_user_groups'];
+        }
 
-		foreach ($userGroups as $userGroupId => $title)
-		{
-			$whitelistSelected = in_array($userGroupId, $optionWhitelist);
-			$whitelistUserGroups[] = array(
-				'value' => $userGroupId,
-				'label' => $title,
-				'selected' => $whitelistSelected,
-			);
+        $optionBlacklist = array();
+        if (!empty($params['options']['blacklist_user_groups'])) {
+            $optionBlacklist = $params['options']['blacklist_user_groups'];
+        }
 
-			$blacklistSelected = in_array($userGroupId, $optionBlacklist);
-			$blacklistUserGroups[] = array(
-				'value' => $userGroupId,
-				'label' => $title,
-				'selected' => $blacklistSelected,
-			);
-		}
+        foreach ($userGroups as $userGroupId => $title) {
+            $whitelistSelected = in_array($userGroupId, $optionWhitelist);
+            $whitelistUserGroups[] = array(
+                'value' => $userGroupId,
+                'label' => $title,
+                'selected' => $whitelistSelected,
+            );
 
-		$template->setParam('whitelistUserGroups', $whitelistUserGroups);
-		$template->setParam('blacklistUserGroups', $blacklistUserGroups);
+            $blacklistSelected = in_array($userGroupId, $optionBlacklist);
+            $blacklistUserGroups[] = array(
+                'value' => $userGroupId,
+                'label' => $title,
+                'selected' => $blacklistSelected,
+            );
+        }
 
-		return parent::_renderOptions($template);
-	}
+        $template->setParam('whitelistUserGroups', $whitelistUserGroups);
+        $template->setParam('blacklistUserGroups', $blacklistUserGroups);
 
-	protected function _validateOptionValue($optionKey, &$optionValue)
-	{
-		switch ($optionKey)
-		{
-			case 'limit':
-				if (empty($optionValue))
-				{
-					$optionValue = 0;
-				}
-				break;
-		}
+        return parent::_renderOptions($template);
+    }
 
-		return parent::_validateOptionValue($optionKey, $optionValue);
-	}
+    protected function _validateOptionValue($optionKey, &$optionValue)
+    {
+        switch ($optionKey) {
+            case 'limit':
+                if (empty($optionValue)) {
+                    $optionValue = 0;
+                }
+                break;
+        }
 
-	protected function _getRenderTemplate(array $widget, $positionCode, array $params)
-	{
-		return 'wf_widget_birthday';
-	}
+        return parent::_validateOptionValue($optionKey, $optionValue);
+    }
 
-	protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-	{
-		$userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
-		$userProfileModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_UserProfile');
+    protected function _getRenderTemplate(array $widget, $positionCode, array $params)
+    {
+        return 'wf_widget_birthday';
+    }
 
-		$todayStart = XenForo_Locale::getDayStartTimestamps();
-		$todayStart = $todayStart['today'];
-		$day = XenForo_Locale::getFormattedDate($todayStart, 'd');
-		$month = XenForo_Locale::getFormattedDate($todayStart, 'm');
+    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+    {
+        $core = WidgetFramework_Core::getInstance();
+        /** @var XenForo_Model_User $userModel */
+        $userModel = $core->getModelFromCache('XenForo_Model_User');
+        /** @var XenForo_Model_UserProfile $userProfileModel */
+        $userProfileModel = $core->getModelFromCache('XenForo_Model_UserProfile');
 
-		$conditions = array(
-			WidgetFramework_XenForo_Model_User::CONDITIONS_DOB => array(
-				'd' => $day,
-				'm' => $month
-			),
+        $todayStart = XenForo_Locale::getDayStartTimestamps();
+        $todayStart = $todayStart['today'];
+        $day = XenForo_Locale::getFormattedDate($todayStart, 'd');
+        $month = XenForo_Locale::getFormattedDate($todayStart, 'm');
 
-			// checks for user state and banned status
-			// since 1.1.2
-			'user_state' => 'valid',
-			'is_banned' => false,
-		);
-		$fetchOptions = array(
-			'order' => 'username',
-			'join' => XenForo_Model_User::FETCH_USER_PROFILE + XenForo_Model_User::FETCH_USER_OPTION,
-		);
+        $conditions = array(
+            WidgetFramework_XenForo_Model_User::CONDITIONS_DOB => array(
+                'd' => $day,
+                'm' => $month
+            ),
 
-		if (!empty($widget['options']['limit']))
-		{
-			$fetchOptions['limit'] = $widget['options']['limit'];
-		}
+            // checks for user state and banned status
+            // since 1.1.2
+            'user_state' => 'valid',
+            'is_banned' => false,
+        );
+        $fetchOptions = array(
+            'order' => 'username',
+            'join' => XenForo_Model_User::FETCH_USER_PROFILE + XenForo_Model_User::FETCH_USER_OPTION,
+        );
 
-		if (!empty($widget['options']['avatar_only']))
-		{
-			$conditions[WidgetFramework_XenForo_Model_User::CONDITIONS_HAS_AVATAR] = true;
-		}
+        if (!empty($widget['options']['limit'])) {
+            $fetchOptions['limit'] = $widget['options']['limit'];
+        }
 
-		$users = $userModel->getUsers($conditions, $fetchOptions);
+        if (!empty($widget['options']['avatar_only'])) {
+            $conditions[WidgetFramework_XenForo_Model_User::CONDITIONS_HAS_AVATAR] = true;
+        }
 
-		foreach (array_keys($users) as $userId)
-		{
-			$user = &$users[$userId];
+        $users = $userModel->getUsers($conditions, $fetchOptions);
 
-			if (!empty($widget['options']['whitelist_user_groups']))
-			{
-				// check for whitelist user groups
-				if (!$userModel->isMemberOfUserGroup($user, $widget['options']['whitelist_user_groups']))
-				{
-					unset($users[$userId]);
-					continue;
-				}
-			}
+        foreach (array_keys($users) as $userId) {
+            $user = &$users[$userId];
 
-			if (!empty($widget['options']['blacklist_user_groups']))
-			{
-				// check for blacklist user groups
-				if ($userModel->isMemberOfUserGroup($user, $widget['options']['blacklist_user_groups']))
-				{
-					unset($users[$userId]);
-					continue;
-				}
-			}
+            if (!empty($widget['options']['whitelist_user_groups'])) {
+                // check for whitelist user groups
+                if (!$userModel->isMemberOfUserGroup($user, $widget['options']['whitelist_user_groups'])) {
+                    unset($users[$userId]);
+                    continue;
+                }
+            }
 
-			// we can call XenForo_Model_User::prepareUserCard instead
-			$user['age'] = $userProfileModel->getUserAge($user);
-		}
+            if (!empty($widget['options']['blacklist_user_groups'])) {
+                // check for blacklist user groups
+                if ($userModel->isMemberOfUserGroup($user, $widget['options']['blacklist_user_groups'])) {
+                    unset($users[$userId]);
+                    continue;
+                }
+            }
 
-		$renderTemplateObject->setParam('users', array_values($users));
+            // we can call XenForo_Model_User::prepareUserCard instead
+            $user['age'] = $userProfileModel->getUserAge($user);
+        }
 
-		return $renderTemplateObject->render();
-	}
+        $renderTemplateObject->setParam('users', array_values($users));
 
-	protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
-	{
-		$suffix[] = XenForo_Locale::getTimeZoneOffset();
+        return $renderTemplateObject->render();
+    }
 
-		return parent::_getCacheId($widget, $positionCode, $params, $suffix);
-	}
+    protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
+    {
+        $suffix[] = XenForo_Locale::getTimeZoneOffset();
+
+        return parent::_getCacheId($widget, $positionCode, $params, $suffix);
+    }
 
 }

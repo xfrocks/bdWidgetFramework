@@ -2,152 +2,131 @@
 
 class WidgetFramework_Helper_LayoutEditor
 {
-	protected static $_widgetChanges = array();
+    protected static $_widgetChanges = array();
 
-	public static function keepWidgetChanges($widgetId, WidgetFramework_DataWriter_Widget $dw, array $newData)
-	{
-		if (!XenForo_Application::debugMode())
-		{
-			return false;
-		}
+    public static function keepWidgetChanges($widgetId, WidgetFramework_DataWriter_Widget $dw, array $newData)
+    {
+        if (!XenForo_Application::debugMode()) {
+            return false;
+        }
 
-		foreach ($newData as $key => $value)
-		{
-			if ($key == 'options')
-			{
-				$existingOptions = $dw->getWidgetOptions(true);
-				$options = $dw->getWidgetOptions();
-				$optionKeys = array_unique(array_merge(array_keys($existingOptions), array_keys($options)));
+        foreach ($newData as $key => $value) {
+            if ($key == 'options') {
+                $existingOptions = $dw->getWidgetOptions(true);
+                $options = $dw->getWidgetOptions();
+                $optionKeys = array_unique(array_merge(array_keys($existingOptions), array_keys($options)));
 
-				foreach ($optionKeys as $optionKey)
-				{
-					$existingSerialized = null;
-					if (isset($existingOptions[$optionKey]))
-					{
-						$existingSerialized = $existingOptions[$optionKey];
-					}
-					if (!is_string($existingSerialized))
-					{
-						$existingSerialized = serialize($existingSerialized);
-					}
+                foreach ($optionKeys as $optionKey) {
+                    $existingSerialized = null;
+                    if (isset($existingOptions[$optionKey])) {
+                        $existingSerialized = $existingOptions[$optionKey];
+                    }
+                    if (!is_string($existingSerialized)) {
+                        $existingSerialized = serialize($existingSerialized);
+                    }
 
-					$optionSerialized = null;
-					if (isset($options[$optionKey]))
-					{
-						$optionSerialized = $options[$optionKey];
-					}
-					if (!is_string($optionSerialized))
-					{
-						$optionSerialized = serialize($optionSerialized);
-					}
+                    $optionSerialized = null;
+                    if (isset($options[$optionKey])) {
+                        $optionSerialized = $options[$optionKey];
+                    }
+                    if (!is_string($optionSerialized)) {
+                        $optionSerialized = serialize($optionSerialized);
+                    }
 
-					if ($existingSerialized !== $optionSerialized)
-					{
-						self::$_widgetChanges[$widgetId]['options'][$optionKey] = array(
-							$existingSerialized,
-							$optionSerialized
-						);
-					}
-				}
-			}
-			else
-			{
-				self::$_widgetChanges[$widgetId][$key] = array(
-					$dw->getExisting($key),
-					$value
-				);
-			}
-		}
-	}
+                    if ($existingSerialized !== $optionSerialized) {
+                        self::$_widgetChanges[$widgetId]['options'][$optionKey] = array(
+                            $existingSerialized,
+                            $optionSerialized
+                        );
+                    }
+                }
+            } else {
+                self::$_widgetChanges[$widgetId][$key] = array(
+                    $dw->getExisting($key),
+                    $value
+                );
+            }
+        }
 
-	public static function getWidgetChanges()
-	{
-		return self::$_widgetChanges;
-	}
-	
-	public static function splitGroupParts($groupName)
-	{
-		return preg_split('#/#', $groupName, -1, PREG_SPLIT_NO_EMPTY);
-	}
+        return true;
+    }
 
-	public static function getChangedRenderedId(WidgetFramework_DataWriter_Widget $dw, array $changed = array())
-	{
-		if ($dw->isChanged('position') OR $dw->isChanged('display_order') OR $dw->isChanged('options'))
-		{
-			$changed[] = $dw->get('widget_id');
+    public static function getWidgetChanges()
+    {
+        return self::$_widgetChanges;
+    }
 
-			$existingPosition = $dw->getExisting('position');
-			$existingOptions = $dw->getWidgetOptions(true);
-			$existingGroup = '';
-			if (!empty($existingOptions['tab_group']))
-			{
-				$existingGroup .= $existingOptions['tab_group'];
-			}
+    public static function splitGroupParts($groupName)
+    {
+        return preg_split('#/#', $groupName, -1, PREG_SPLIT_NO_EMPTY);
+    }
 
-			$newPosition = $dw->get('position');
-			$newOptions = $dw->getWidgetOptions();
-			$newGroup = '';
-			if (!empty($newOptions['tab_group']))
-			{
-				$newGroup .= $newOptions['tab_group'];
-			}
+    public static function getChangedRenderedId(WidgetFramework_DataWriter_Widget $dw, array $changed = array())
+    {
+        if ($dw->isChanged('position') OR $dw->isChanged('display_order') OR $dw->isChanged('options')) {
+            $changed[] = $dw->get('widget_id');
 
-			if ($existingPosition !== $newPosition OR $existingGroup !== $newGroup)
-			{
-				if (!empty($existingGroup))
-				{
-					$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($existingGroup);
-				}
+            $existingPosition = $dw->getExisting('position');
+            $existingOptions = $dw->getWidgetOptions(true);
+            $existingGroup = '';
+            if (!empty($existingOptions['tab_group'])) {
+                $existingGroup .= $existingOptions['tab_group'];
+            }
 
-				if (!empty($newGroup))
-				{
-					$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($newGroup);
-				}
-			}
-		}
-		elseif ($dw->isDelete())
-		{
-			$changed[] = $dw->get('widget_id');
+            $newPosition = $dw->get('position');
+            $newOptions = $dw->getWidgetOptions();
+            $newGroup = '';
+            if (!empty($newOptions['tab_group'])) {
+                $newGroup .= $newOptions['tab_group'];
+            }
 
-			$options = $dw->getWidgetOptions();
-			if (!empty($options['tab_group']))
-			{
-				$changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($options['tab_group']);
-			}
-		}
+            if ($existingPosition !== $newPosition OR $existingGroup !== $newGroup) {
+                if (!empty($existingGroup)) {
+                    $changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($existingGroup);
+                }
 
-		return $changed;
-	}
+                if (!empty($newGroup)) {
+                    $changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($newGroup);
+                }
+            }
+        } elseif ($dw->isDelete()) {
+            $changed[] = $dw->get('widget_id');
 
-	public static function generateWidgetGroupCss(array &$containerData, $count)
-	{
-		$head = array();
+            $options = $dw->getWidgetOptions();
+            if (!empty($options['tab_group'])) {
+                $changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($options['tab_group']);
+            }
+        }
 
-		for ($i = $count - 1; $i <= $count + 1; $i++)
-		{
-			if ($i <= 0)
-			{
-				continue;
-			}
+        return $changed;
+    }
 
-			$containerDataHeadKey = __METHOD__ . $i;
-			if (isset($containerData['head'][$containerDataHeadKey]))
-			{
-				continue;
-			}
+    public static function generateWidgetGroupCss(array &$containerData, $count)
+    {
+        $head = array();
 
-			$widgetGroupCssClass = sprintf('widget-group-%d-widgets', $i);
-			$sidebarWidth = intval(XenForo_Template_Helper_Core::styleProperty('sidebar.width'));
+        for ($i = $count - 1; $i <= $count + 1; $i++) {
+            if ($i <= 0) {
+                continue;
+            }
 
-			$widgetMinWidth = 100 / $i;
-			$widgetWidth = $sidebarWidth - 50;
-			$controlsMinWidth = 100 / ($i * 2 + 1);
-			$controlsWidth = $widgetWidth / 2;
-			$widgetsMinWidth = 100 - $controlsMinWidth;
-			$widgetsWidth = $i * $widgetWidth;
-			$stretcherWidth = $widgetsWidth + $controlsWidth;
+            $containerDataHeadKey = __METHOD__ . $i;
+            if (isset($containerData['head'][$containerDataHeadKey])) {
+                continue;
+            }
 
-			$head[$containerDataHeadKey] = <<<EOF
+            $widgetGroupCssClass = sprintf('widget-group-%d-widgets', $i);
+            $sidebarWidth = intval(XenForo_Template_Helper_Core::styleProperty('sidebar.width'));
+
+            $widgetMinWidth = 100 / $i;
+            $widgetWidth = $sidebarWidth - 50;
+            $controlsMinWidth = 100 / ($i * 2 + 1);
+            $controlsWidth = $widgetWidth / 2;
+            $widgetsMinWidth = 100 - $controlsMinWidth;
+            $widgetsWidth = $i * $widgetWidth;
+            $stretcherWidth = $widgetsWidth + $controlsWidth;
+
+            $head[$containerDataHeadKey] = <<<EOF
 <style>
 .{$widgetGroupCssClass}.columns > .stretcher
 {
@@ -173,12 +152,13 @@ class WidgetFramework_Helper_LayoutEditor
 }
 </style>
 EOF;
-		}
+        }
 
-		if (!empty($head))
-		{
-			return array('head' => $head);
-		}
-	}
+        if (!empty($head)) {
+            return array('head' => $head);
+        } else {
+            return array();
+        }
+    }
 
 }

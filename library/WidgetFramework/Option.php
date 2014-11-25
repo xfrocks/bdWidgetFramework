@@ -2,77 +2,74 @@
 
 class WidgetFramework_Option
 {
-	protected static $_layoutEditorEnabled = null;
+    protected static $_layoutEditorEnabled = null;
 
-	public static function get($key)
-	{
-		$options = XenForo_Application::get('options');
+    public static function get($key)
+    {
+        $options = XenForo_Application::get('options');
 
-		switch ($key)
-		{
-			case 'applicationVersionId':
-				return XenForo_Application::$versionId;
-			case 'cacheCutoffDays':
-				return 7;
-			case 'indexTabId':
-				return 'WidgetFramework_home';
-			case 'layoutEditorEnabled':
-				if (self::$_layoutEditorEnabled === null)
-				{
-					$session = XenForo_Application::get('session');
-					if (empty($session))
-					{
-						// no session yet...
-						return false;
-					}
-					self::$_layoutEditorEnabled = ($session->get('_WidgetFramework_layoutEditor') === true);
+        switch ($key) {
+            case 'applicationVersionId':
+                return XenForo_Application::$versionId;
+            case 'cacheCutoffDays':
+                return 7;
+            case 'indexTabId':
+                return 'WidgetFramework_home';
+            case 'layoutEditorEnabled':
+                if (self::$_layoutEditorEnabled === null) {
+                    $session = XenForo_Application::get('session');
+                    if (empty($session)) {
+                        // no session yet...
+                        return false;
+                    }
+                    self::$_layoutEditorEnabled = ($session->get('_WidgetFramework_layoutEditor') === true);
 
-					if (!self::$_layoutEditorEnabled AND !empty($_REQUEST['_layoutEditor']))
-					{
-						$visitor = XenForo_Visitor::getInstance();
-						if ($visitor->hasAdminPermission('style'))
-						{
-							self::$_layoutEditorEnabled = true;
-						}
-					}
-				}
+                    if (!self::$_layoutEditorEnabled AND !empty($_REQUEST['_layoutEditor'])) {
+                        $visitor = XenForo_Visitor::getInstance();
+                        if ($visitor->hasAdminPermission('style')) {
+                            self::$_layoutEditorEnabled = true;
+                        }
+                    }
+                }
 
-				// use the cached value
-				return self::$_layoutEditorEnabled;
-		}
+                // use the cached value
+                return self::$_layoutEditorEnabled;
+        }
 
-		return $options->get('wf_' . $key);
-	}
+        return $options->get('wf_' . $key);
+    }
 
-	public static function setIndexNodeId($nodeId)
-	{
-		$optionDw = XenForo_DataWriter::create('XenForo_DataWriter_Option');
-		$optionDw->setExistingData('wf_indexNodeId');
-		$optionDw->set('option_value', $nodeId);
-		$optionDw->save();
-	}
+    public static function setIndexNodeId($nodeId)
+    {
+        $optionDw = XenForo_DataWriter::create('XenForo_DataWriter_Option');
+        $optionDw->setExistingData('wf_indexNodeId');
+        $optionDw->set('option_value', $nodeId);
+        $optionDw->save();
+    }
 
-	public static function renderWidgetPages(XenForo_View $view, $fieldPrefix, array $preparedOption, $canEdit)
-	{
-		$widgetPages = XenForo_Model::create('WidgetFramework_Model_WidgetPage')->getList();
-		$choices = array(0 => '');
-		foreach ($widgetPages as $widgetPageId => $widgetPageTitle)
-		{
-			$choices[$widgetPageId] = $widgetPageTitle;
-		}
+    public static function renderWidgetPages(XenForo_View $view, $fieldPrefix, array $preparedOption, $canEdit)
+    {
+        /** @var WidgetFramework_Model_WidgetPage $widgetPageModel */
+        $widgetPageModel = XenForo_Model::create('WidgetFramework_Model_WidgetPage');
 
-		$editLink = $view->createTemplateObject('option_list_option_editlink', array(
-			'preparedOption' => $preparedOption,
-			'canEditOptionDefinition' => $canEdit
-		));
+        $widgetPages = $widgetPageModel->getList();
+        $choices = array(0 => '');
+        foreach ($widgetPages as $widgetPageId => $widgetPageTitle) {
+            $choices[$widgetPageId] = $widgetPageTitle;
+        }
 
-		return $view->createTemplateObject('option_list_option_select', array(
-			'fieldPrefix' => $fieldPrefix,
-			'listedFieldName' => $fieldPrefix . '_listed[]',
-			'preparedOption' => $preparedOption,
-			'formatParams' => $choices,
-			'editLink' => $editLink,
-		));
-	}
+        $editLink = $view->createTemplateObject('option_list_option_editlink', array(
+            'preparedOption' => $preparedOption,
+            'canEditOptionDefinition' => $canEdit
+        ));
+
+        return $view->createTemplateObject('option_list_option_select', array(
+            'fieldPrefix' => $fieldPrefix,
+            'listedFieldName' => $fieldPrefix . '_listed[]',
+            'preparedOption' => $preparedOption,
+            'formatParams' => $choices,
+            'editLink' => $editLink,
+        ));
+    }
 
 }
