@@ -278,7 +278,7 @@ class WidgetFramework_Listener
 
         if (defined('WIDGET_FRAMEWORK_LOADED') AND !empty($class)) {
             // check for empty($class) to avoid a bug with XenForo 1.2.0
-            // http://xenforo.com/community/threads/resolvedynamicclass-when-class-is-empty.57064/
+            // http://xenforo.com/community/threads/57064/
 
             if (empty($extended1)) {
                 $extend[] = 'WidgetFramework_XenForo_View1';
