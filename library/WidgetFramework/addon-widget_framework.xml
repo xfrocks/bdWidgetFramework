@@ -106,7 +106,7 @@
 			</xen:textboxunit>
 		</xen:if>
 
-		<xen:textboxunit name="{$namePrefix}conditional[raw]" label="{xen:phrase wf_conditional}" value="{$options.conditional.raw}" rows="3" inputclass="Elastic">
+		<xen:textboxunit name="{$namePrefix}conditional[raw]" label="{xen:phrase wf_conditional}" value="{xen:if '{$options.conditional}', $options.conditional.raw}" rows="3" inputclass="Elastic">
 			<xen:explain>
 				{xen:if '{$_layoutEditor}', '', {xen:phrase wf_conditional_explain,
 					'link={xen:link misc/wf-layout-editor, '', 'redirect={xen:link canonical:index}'}'
