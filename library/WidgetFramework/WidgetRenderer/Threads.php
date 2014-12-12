@@ -195,7 +195,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         return parent::_getCacheId($widget, $positionCode, $params, $suffix);
     }
 
-    protected function _getThreads(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+    protected function _getThreads($widget, $positionCode, $params, $renderTemplateObject)
     {
         $core = WidgetFramework_Core::getInstance();
         $layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
