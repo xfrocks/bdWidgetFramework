@@ -100,15 +100,15 @@ class WidgetFramework_Listener
 
                 if ($rendered) {
                     // get a copy of container data for widget rendered
-                    $positionCode = $template->getParam(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE);
+                    $positionCode = $template->getParam(WidgetFramework_Core::PARAM_POSITION_CODE);
                     if ($positionCode !== null) {
                         WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
                     }
 
-                    if (!isset($containerData[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS])) {
-                        $containerData[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS] = array();
+                    if (!isset($containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS])) {
+                        $containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS] = array();
                     }
-                    $containerData[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$templateName] = $template;
+                    $containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS][$templateName] = $template;
                 }
             }
 
@@ -204,7 +204,7 @@ class WidgetFramework_Listener
 
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             if ($controllerResponse instanceof XenForo_ControllerResponse_View) {
-                WidgetFramework_WidgetRenderer::markTemplateToProcess($controllerResponse);
+                self::_markTemplateToProcess($controllerResponse);
             }
         }
     }
@@ -306,6 +306,18 @@ class WidgetFramework_Listener
         }
 
         return '';
+    }
+
+    protected static function _markTemplateToProcess(XenForo_ControllerResponse_View $view)
+    {
+        if (!empty($view->templateName)) {
+            $view->params[WidgetFramework_Core::PARAM_TO_BE_PROCESSED] = $view->templateName;
+        }
+
+        if (!empty($view->subView)) {
+            // also mark any direct sub view to be processed
+            self::_markTemplateToProcess($view->subView);
+        }
     }
 
 }

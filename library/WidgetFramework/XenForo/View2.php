@@ -6,7 +6,7 @@ class WidgetFramework_XenForo_View2 extends XFCP_WidgetFramework_XenForo_View2
     {
         $params = parent::getParams();
 
-        $params[WidgetFramework_WidgetRenderer::PARAM_VIEW_OBJECT] = $this;
+        $params[WidgetFramework_Core::PARAM_VIEW_OBJECT] = $this;
 
         return $params;
     }

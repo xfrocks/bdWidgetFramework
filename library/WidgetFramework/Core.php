@@ -2,6 +2,16 @@
 
 class WidgetFramework_Core
 {
+    const PARAM_TO_BE_PROCESSED = '_WidgetFramework_toBeProcessed';
+    const PARAM_POSITION_CODE = '_WidgetFramework_positionCode';
+    const PARAM_IS_HOOK = '_WidgetFramework_isHook';
+    const PARAM_IS_GROUP = '_WidgetFramework_isGroup';
+    const PARAM_GROUP_NAME = '_WidgetFramework_groupName';
+    const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupName';
+    const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
+    const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
+    const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
+
     const NO_VISITOR_PANEL_MARKUP = '<!-- no visitor panel please -->';
     const NO_VISITOR_PANEL_FLAG = 'WidgetFramework_WidgetRenderer_Empty.noVisitorPanel';
 
@@ -234,7 +244,7 @@ class WidgetFramework_Core
 
     public function prepareWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template)
     {
-        if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName, $params)) {
+        if ($this->_isIgnoredTemplate($templateName, $params)) {
             return false;
         }
 
@@ -323,12 +333,12 @@ class WidgetFramework_Core
 
     protected function _prepareWidgetParams(array $params)
     {
-        if (isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS])) {
+        if (isset($params[self::PARAM_TEMPLATE_OBJECTS])) {
             // this is params array from page container
-            if (isset($params['contentTemplate']) AND isset($params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']])) {
+            if (isset($params['contentTemplate']) AND isset($params[self::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']])) {
                 // found content template params, merge it
                 /** @var XenForo_Template_Abstract $templateObj */
-                $templateObj = $params[WidgetFramework_WidgetRenderer::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']];
+                $templateObj = $params[self::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']];
                 $params = array_merge($templateObj->getParams(), $params);
             }
         }
@@ -338,13 +348,13 @@ class WidgetFramework_Core
 
     public function renderWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template, array &$containerData)
     {
-        if (WidgetFramework_WidgetRenderer::isIgnoredTemplate($templateName, $params)) {
+        if ($this->_isIgnoredTemplate($templateName, $params)) {
             return false;
         }
 
         $originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
 
-        $html = $this->_renderWidgetsFor($templateName, array_merge($params, array(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
+        $html = $this->_renderWidgetsFor($templateName, array_merge($params, array(self::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
 
         if (defined(self::NO_VISITOR_PANEL_FLAG)) {
             // the flag is used to avoid string searching as much as possible
@@ -370,9 +380,9 @@ class WidgetFramework_Core
 
     public function renderWidgetsForHook($hookName, array $hookParams, XenForo_Template_Abstract $template, &$hookHtml)
     {
-        $hookParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_TEMPLATE] = $template->getTemplateName();
-        $hookParams[WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE] = 'hook:' . $hookName;
-        $hookParams[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK] = true;
+        $hookParams[self::PARAM_PARENT_TEMPLATE] = $template->getTemplateName();
+        $hookParams[self::PARAM_POSITION_CODE] = 'hook:' . $hookName;
+        $hookParams[self::PARAM_IS_HOOK] = true;
 
         // sondh@2013-04-02
         // merge hook params with template's params
@@ -388,7 +398,7 @@ class WidgetFramework_Core
         $renderArea = false;
         if (WidgetFramework_Option::get('layoutEditorEnabled')) {
             $areaSaveParams = array('position' => $positionCode);
-            if (!empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK])) {
+            if (!empty($params[self::PARAM_IS_HOOK])) {
                 // hook position, only render for some hooks
                 if ($positionCode == 'hook:wf_widget_page_contents') {
                     $renderArea = true;
@@ -496,7 +506,7 @@ class WidgetFramework_Core
                     // that means Empty renderer will not work if it is a member a group
                     $subWidgetsContainer = array('widgets' => array($key => &$widget));
                     $subWidgetParams = $widgetParams;
-                    $subWidgetParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME] = $widgetElementName;
+                    $subWidgetParams[self::PARAM_PARENT_GROUP_NAME] = $widgetElementName;
                     $this->_renderWidgetsFor_renderWidgetsContainer($subWidgetsContainer, $positionCode, $subWidgetParams, $template, $widgetHtml);
                 } elseif (!empty($widget['class'])) {
                     $renderer = self::getRenderer($widget['class'], false);
@@ -521,8 +531,8 @@ class WidgetFramework_Core
                         'html' => $widgetHtml,
                         'positionCode' => $positionCode,
 
-                        WidgetFramework_WidgetRenderer::PARAM_IS_HOOK => !empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK]),
-                        WidgetFramework_WidgetRenderer::PARAM_IS_GROUP => !empty($widget['widgets']),
+                        self::PARAM_IS_HOOK => !empty($params[self::PARAM_IS_HOOK]),
+                        self::PARAM_IS_GROUP => !empty($widget['widgets']),
                     ));
 
                     if (!empty($renderer)) {
@@ -533,9 +543,9 @@ class WidgetFramework_Core
             }
 
             if (count($rendered) > 0) {
-                $widgetParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME] = '';
+                $widgetParams[self::PARAM_GROUP_NAME] = '';
                 if (!empty($widgetElement['name'])) {
-                    $widgetParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME] = $widgetElement['name'];
+                    $widgetParams[self::PARAM_GROUP_NAME] = $widgetElement['name'];
                 }
                 $wrapped = $this->_wrapWidgets($rendered, $widgetParams, $template, $widgetElementName);
 
@@ -591,8 +601,8 @@ class WidgetFramework_Core
                 'position_widget' => $firstTab['widget_id'],
                 'position' => $firstTab['position'],
             );
-            if (!empty($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME])) {
-                $wrapperParams['groupSaveParams']['group'] = $wrapperParams[WidgetFramework_WidgetRenderer::PARAM_GROUP_NAME];
+            if (!empty($wrapperParams[self::PARAM_GROUP_NAME])) {
+                $wrapperParams['groupSaveParams']['group'] = $wrapperParams[self::PARAM_GROUP_NAME];
             }
 
             $wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
@@ -602,8 +612,8 @@ class WidgetFramework_Core
             }
 
             $wrapperParams['groupParentGroupNameNormalized'] = '';
-            if (!empty($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME])) {
-                $wrapperParams['groupParentGroupNameNormalized'] = WidgetFramework_Helper_String::normalizeHtmlElementId($wrapperParams[WidgetFramework_WidgetRenderer::PARAM_PARENT_GROUP_NAME]);
+            if (!empty($wrapperParams[self::PARAM_PARENT_GROUP_NAME])) {
+                $wrapperParams['groupParentGroupNameNormalized'] = WidgetFramework_Helper_String::normalizeHtmlElementId($wrapperParams[self::PARAM_PARENT_GROUP_NAME]);
             }
         }
 
@@ -736,6 +746,17 @@ class WidgetFramework_Core
     protected function _getModelWidget()
     {
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
+    }
+
+    protected function _isIgnoredTemplate($templateName, array $templateParams)
+    {
+        if (empty($templateParams[WidgetFramework_Core::PARAM_TO_BE_PROCESSED])
+            || $templateParams[WidgetFramework_Core::PARAM_TO_BE_PROCESSED] != $templateName
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     public static function preloadCachedWidget($cacheId, $useUserCache, $useLiveCache)

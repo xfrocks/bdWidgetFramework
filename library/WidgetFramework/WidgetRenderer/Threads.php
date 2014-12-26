@@ -129,7 +129,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         $layoutNeedPost = false;
         if (empty($widget['options']['layout'])) {
-            if (!empty($params[WidgetFramework_WidgetRenderer::PARAM_IS_HOOK])) {
+            if (!empty($params[WidgetFramework_Core::PARAM_IS_HOOK])) {
                 $layout = 'list';
             } else {
                 $layout = 'sidebar';

@@ -2,6 +2,8 @@
 
 abstract class WidgetFramework_WidgetRenderer
 {
+    // these constants are kept here for compatibility only
+    // please use constants from WidgetFramework_Core from now on
     const PARAM_TO_BE_PROCESSED = '_WidgetFramework_toBeProcessed';
     const PARAM_POSITION_CODE = '_WidgetFramework_positionCode';
     const PARAM_IS_HOOK = '_WidgetFramework_isHook';
@@ -11,6 +13,7 @@ abstract class WidgetFramework_WidgetRenderer
     const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
     const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
     const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
+    // please use constants from WidgetFramework_Core from now on
 
     /**
      * Required method: define basic configuration of the renderer.
@@ -325,7 +328,6 @@ abstract class WidgetFramework_WidgetRenderer
         return $viewableNodeList;
     }
 
-    protected static $_widgetTemplates = array();
     protected $_configuration = false;
 
     public function getConfiguration()
@@ -453,7 +455,6 @@ abstract class WidgetFramework_WidgetRenderer
         $renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
         if (!empty($renderTemplate)) {
             $template->preloadTemplate($renderTemplate);
-            self::$_widgetTemplates[$renderTemplate] = true;
         }
 
         if ($this->useCache($widget)) {
@@ -779,35 +780,6 @@ abstract class WidgetFramework_WidgetRenderer
         return 'options_';
     }
 
-    public static function markTemplateToProcess(XenForo_ControllerResponse_View $view)
-    {
-        if (!empty($view->templateName)) {
-            $view->params[self::PARAM_TO_BE_PROCESSED] = $view->templateName;
-        }
-
-        if (!empty($view->subView)) {
-            // also mark any direct sub view to be processed
-            self::markTemplateToProcess($view->subView);
-        }
-    }
-
-    public static function isIgnoredTemplate($templateName, array $templateParams)
-    {
-        if (!empty(self::$_widgetTemplates[$templateName])) {
-            // our templates are ignored, of course
-            return true;
-        }
-
-        // sondh@2013-04-02
-        // switch to use custom parameter set by markTemplateToProcess
-        // to determine which template to ignore
-        if (empty($templateParams[self::PARAM_TO_BE_PROCESSED]) OR $templateParams[self::PARAM_TO_BE_PROCESSED] != $templateName) {
-            return true;
-        }
-
-        return false;
-    }
-
     public static function setContainerData($widget, array $containerData)
     {
         if (is_array($widget)) {
@@ -830,11 +802,11 @@ abstract class WidgetFramework_WidgetRenderer
 
     public static function getViewObject(array $params, XenForo_Template_Abstract $templateObj)
     {
-        if (isset($params[self::PARAM_VIEW_OBJECT])) {
-            return $params[self::PARAM_VIEW_OBJECT];
+        if (isset($params[WidgetFramework_Core::PARAM_VIEW_OBJECT])) {
+            return $params[WidgetFramework_Core::PARAM_VIEW_OBJECT];
         }
 
-        $viewObj = $templateObj->getParam(self::PARAM_VIEW_OBJECT);
+        $viewObj = $templateObj->getParam(WidgetFramework_Core::PARAM_VIEW_OBJECT);
         if (!empty($viewObj)) {
             return $viewObj;
         }

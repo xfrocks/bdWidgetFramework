@@ -43,11 +43,11 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
             $rendered = $output = '';
 
             if (!empty($widget['options']['noVisitorPanel'])) {
-                if (!defined(self::NO_VISITOR_PANEL_FLAG)) {
-                    define(self::NO_VISITOR_PANEL_FLAG, true);
+                if (!defined(WidgetFramework_Core::NO_VISITOR_PANEL_FLAG)) {
+                    define(WidgetFramework_Core::NO_VISITOR_PANEL_FLAG, true);
                 }
 
-                $output .= self::NO_VISITOR_PANEL_MARKUP;
+                $output .= WidgetFramework_Core::NO_VISITOR_PANEL_MARKUP;
             }
         }
 
