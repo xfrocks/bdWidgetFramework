@@ -2,8 +2,6 @@
 
 class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRenderer
 {
-    const NO_VISITOR_PANEL_MARKUP = '<!-- no visitor panel please -->';
-    const NO_VISITOR_PANEL_FLAG = 'WidgetFramework_WidgetRenderer_Empty.noVisitorPanel';
     const RENDERED = 'RENDERED';
 
     protected function _getConfiguration()

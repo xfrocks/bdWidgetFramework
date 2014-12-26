@@ -2,6 +2,9 @@
 
 class WidgetFramework_Core
 {
+    const NO_VISITOR_PANEL_MARKUP = '<!-- no visitor panel please -->';
+    const NO_VISITOR_PANEL_FLAG = 'WidgetFramework_WidgetRenderer_Empty.noVisitorPanel';
+
     protected static $_instance;
     protected static $_debug;
     protected static $_rendererInstances = array();
@@ -343,11 +346,11 @@ class WidgetFramework_Core
 
         $html = $this->_renderWidgetsFor($templateName, array_merge($params, array(WidgetFramework_WidgetRenderer::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
 
-        if (defined(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_FLAG)) {
+        if (defined(self::NO_VISITOR_PANEL_FLAG)) {
             // the flag is used to avoid string searching as much as possible
             // the string search is also required to confirm the noVisitorPanel request
             $count = 0;
-            $html = str_replace(WidgetFramework_WidgetRenderer_Empty::NO_VISITOR_PANEL_MARKUP, '', $html, $count);
+            $html = str_replace(self::NO_VISITOR_PANEL_MARKUP, '', $html, $count);
 
             if ($count > 0) {
                 $containerData['noVisitorPanel'] = true;
