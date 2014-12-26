@@ -2,11 +2,16 @@
 
 class WidgetFramework_Option
 {
+    /** @var XenForo_Options */
+    protected static $_options = null;
+
     protected static $_layoutEditorEnabled = null;
 
     public static function get($key)
     {
-        $options = XenForo_Application::get('options');
+        if (self::$_options === null) {
+            self::$_options = XenForo_Application::get('options');
+        }
 
         switch ($key) {
             case 'applicationVersionId':
@@ -36,7 +41,7 @@ class WidgetFramework_Option
                 return self::$_layoutEditorEnabled;
         }
 
-        return $options->get('wf_' . $key);
+        return self::$_options->get('wf_' . $key);
     }
 
     public static function setIndexNodeId($nodeId)
