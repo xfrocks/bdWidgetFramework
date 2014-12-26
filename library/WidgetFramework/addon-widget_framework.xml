@@ -1051,7 +1051,7 @@ All customization should go to wf_default_EXTRA.css
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
 </xen:if>]]></template>
-    <template title="wf_layout_editor.css" version_id="100" version_string="2.5.0d"><![CDATA[.WidgetFramework_LayoutEditor_Area > .widgets > div
+    <template title="wf_layout_editor.css" version_id="106" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area > .widgets > div
 {
 	margin: 10px 0;
 }
@@ -1066,8 +1066,8 @@ All customization should go to wf_default_EXTRA.css
 	border: 1px solid {xen:property primaryLightish};
 	margin-left: 3px !important;
 	margin-right: 3px !important;
-	max-height: 150px;
-	overflow: scroll;
+	max-height: 200px;
+	overflow: hidden;
 }
 
 .WidgetFramework_LayoutEditor_Area .controls > *
@@ -1121,6 +1121,8 @@ All customization should go to wf_default_EXTRA.css
 		border: 1px solid {xen:property primaryLightish};
 		border-top: 0;
 		margin: 0 3px 3px 3px;
+		max-height: 200px;
+		overflow: hidden;
 		padding: 3px;
 	}]]></template>
     <template title="wf_layout_editor_area" version_id="98" version_string="2.5.0d"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
