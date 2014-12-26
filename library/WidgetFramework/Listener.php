@@ -182,14 +182,18 @@ class WidgetFramework_Listener
 
     public static function init_router_public(XenForo_Dependencies_Abstract $dependencies, XenForo_Router $router)
     {
-        $rules = $router->getRules();
-        $router->resetRules();
+        if (WidgetFramework_Option::get('indexNodeId') > 0) {
+            // one of our widget pages was selected as the index page
+            // modify the router rules to serve http://domain.com/xenforo/page-x urls
+            $rules = $router->getRules();
+            $router->resetRules();
 
-        // insert our filter as the first rule
-        $router->addRule(new WidgetFramework_Route_Filter_PageX(), 'WidgetFramework_Route_Filter_PageX');
+            // insert our filter as the first rule
+            $router->addRule(new WidgetFramework_Route_Filter_PageX(), 'WidgetFramework_Route_Filter_PageX');
 
-        foreach ($rules as $ruleName => $rule) {
-            $router->addRule($rule, $ruleName);
+            foreach ($rules as $ruleName => $rule) {
+                $router->addRule($rule, $ruleName);
+            }
         }
     }
 
