@@ -22,11 +22,11 @@ class WidgetFramework_Option
                 return 'WidgetFramework_home';
             case 'layoutEditorEnabled':
                 if (self::$_layoutEditorEnabled === null) {
-                    $session = XenForo_Application::get('session');
-                    if (empty($session)) {
+                    if (!XenForo_Application::isRegistered('session')) {
                         // no session yet...
                         return false;
                     }
+                    $session = XenForo_Application::getSession();
                     self::$_layoutEditorEnabled = ($session->get('_WidgetFramework_layoutEditor') === true);
 
                     if (!self::$_layoutEditorEnabled AND !empty($_REQUEST['_layoutEditor'])) {
