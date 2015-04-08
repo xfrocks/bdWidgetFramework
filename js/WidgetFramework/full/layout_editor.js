@@ -9,7 +9,19 @@
 				return false;
 			}
 
-			XenForo.ajax(window.location.href, $.extend(ajaxData,
+            var data = {};
+            for (var i in ajaxData) {
+                var typeOf = typeof ajaxData[i];
+                switch (typeOf) {
+                    case 'object':
+                    case 'array':
+                        break;
+                    default:
+                        data[i] = ajaxData[i];
+                }
+            }
+
+			XenForo.ajax(window.location.href, $.extend(data,
 			{
 				_layoutEditor: 1,
 				_xfResponseType: 'html'

@@ -115,11 +115,18 @@ class WidgetFramework_Listener
             if (WidgetFramework_Option::get('layoutEditorEnabled')) {
                 switch ($templateName) {
                     case 'wf_layout_editor_widget_wrapper':
-                        self::$_layoutEditorRendered[$template->getParam('normalizedGroupId')] = $output;
+                        $normalizedGroupId = $template->getParam('normalizedGroupId');
+                        if (!empty($normalizedGroupId)) {
+                            self::$_layoutEditorRendered[$normalizedGroupId] = $output;
+                        }
 
                         $tabs = $template->getParam('tabs');
                         foreach ($tabs as $tab) {
-                            self::$_layoutEditorRendered[$tab['widget_id']] = array('normalizedGroupId' => $template->getParam('normalizedGroupId'));
+                            if (!empty($normalizedGroupId)) {
+                                self::$_layoutEditorRendered[$tab['widget_id']] = array('normalizedGroupId' => $normalizedGroupId);
+                            } else {
+                                self::$_layoutEditorRendered[$tab['widget_id']] = $output;
+                            }
                         }
 
                         $ourContainerData = WidgetFramework_Helper_LayoutEditor::generateWidgetGroupCss($containerData, count($tabs));

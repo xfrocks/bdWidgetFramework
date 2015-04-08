@@ -2,11 +2,6 @@
 
 class WidgetFramework_ViewPublic_Widget_Render extends XenForo_ViewPublic_Base
 {
-    public function renderHtml()
-    {
-        return '';
-    }
-
     public function renderJson()
     {
         $params = $this->_params;
