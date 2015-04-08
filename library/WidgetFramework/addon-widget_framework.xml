@@ -1495,6 +1495,7 @@ All customization should go to wf_default_EXTRA.css
 .widget-poll .pollBlock .pollResult .count {
 	padding: 0;
 }]]></template>
+    <template title="wf_widget_ajax" version_id="106" version_string="2.6.0-dev"><![CDATA[<xen:hook name="wf_widget_ajax" />]]></template>
     <template title="wf_widget_birthday" version_id="47" version_string="2.1.1"><![CDATA[<xen:if is="{xen:count $users} == 1">
 	<h4 class="minorHeading">{xen:phrase wf_widget_birthday_today_is_xs_birthday, 'username={$users.0.username}'}</h4>
 	<div class="avatarList">
@@ -2100,26 +2101,34 @@ All customization should go to wf_default_EXTRA.css
 	<xen:if is="{$isTabs}">
 
 		<xen:comment>We are rendering tabs</xen:comment>
+
+		<xen:require js="js/WidgetFramework/default.js" />
 		<div class="{$classSection} widget-tabs">
-				<ul class="tabs Tabs" data-panes="#widget-tabs-{$normalizedGroupId} > li">
-					<xen:foreach loop="$tabs" value="$tab">
-						<li>
-							<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
-								<xen:if hascontent="true">
-									<xen:contentcheck>{xen:raw $tab.title}</xen:contentcheck>
-								<xen:else />
-									{xen:phrase wf_widgets}
-								</xen:if>
-							</a>
-						</li>
-					</xen:foreach>
-				</ul>
+			<ul class="tabs Tabs" data-panes="#widget-tabs-{$normalizedGroupId} > li">
+				<xen:foreach loop="$tabs" value="$tab">
+					<li>
+						<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
+							<xen:if hascontent="true">
+								<xen:contentcheck>{xen:raw $tab.title}</xen:contentcheck>
+							<xen:else />
+								{xen:phrase wf_widgets}
+							</xen:if>
+						</a>
+					</li>
+				</xen:foreach>
+			</ul>
 			<div class="{$classInnerSection} widget-panes">
 				<ul id="widget-tabs-{$normalizedGroupId}">
 					<xen:foreach loop="$tabs" value="$tab">
-						<li class="widget {$tab.class}" id="widget-tab-{$tab.widget_id}">
-							{xen:raw $tab.html}
+						<li class="widget {$tab.class}" id="widget-tab-{$tab.widget_id}"{xen:if '{$tab.ajaxLoadUrl}',
+							' data-loadUrl="{$tab.ajaxLoadUrl}"'}>
+							<xen:if is="{$tab.ajaxLoadUrl}">
+								{xen:phrase loading}...
+							<xen:else />
+								{xen:raw $tab.html}
+							</xen:if>
 						</li>
+				</li>
 					</xen:foreach>
 				</ul>
 			</div>
@@ -2160,7 +2169,16 @@ All customization should go to wf_default_EXTRA.css
 		</div>
 
 	</xen:if>
+<xen:elseif is="count({$tabs}) == 1 && isset({$firstTab._ajaxLoadParams})" />
+
+	<xen:comment>We are rendering tab via AJAX</xen:comment>
+
+	<div>{xen:raw $firstTab.html}</div>
+
 <xen:else />
+
+	<xen:comment>We are rendering row(s)</xen:comment>
+
 	<xen:if hascontent="true">
 		<xen:set var="$skipWidgetContainer"><xen:if is="count({$tabs}) == 1 AND !{$firstTab.useWrapper}">1</xen:if></xen:set>
 		<xen:if is="!{$skipWidgetContainer}"><div class="{$classSection}"></xen:if>

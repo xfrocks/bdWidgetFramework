@@ -60,6 +60,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             'useCache' => true,
             'useUserCache' => true,
             'cacheSeconds' => 300, // cache for 5 minutes
+            'canAjaxLoad' => true,
         );
     }
 
@@ -185,10 +186,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
     protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
     {
-        if ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
-            // we have to use special cache id when special forum ids are used
+        if (isset($widget['_ajaxLoadParams'])) {
+            if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
+                $suffix[] = 'f' . implode('', $widget['_ajaxLoadParams']['forumIds']);
+            }
+        } elseif ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
             if (isset($params['forum'])) {
-                $suffix[] = 'f' . $params['forum']['node_id'];
+                $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
+                $suffix[] = 'f' . implode('', $forumIds);
             }
         }
 
@@ -204,6 +209,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
         $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
+        if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
+            $forumIds = $widget['_ajaxLoadParams']['forumIds'];
+        }
         if (empty($forumIds)) {
             // no forum ids?! Save the effort and return asap
             // btw, because XenForo_Model_Thread::prepareThreadConditions ignores empty
@@ -464,5 +472,18 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
         }
     }
+
+    protected function _getAjaxLoadParams(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
+    {
+        $ajaxLoadParams = parent::_getAjaxLoadParams($widget, $positionCode, $params, $template);
+
+        if ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
+            $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
+            $ajaxLoadParams['forumIds'] = $forumIds;
+        }
+
+        return $ajaxLoadParams;
+    }
+
 
 }

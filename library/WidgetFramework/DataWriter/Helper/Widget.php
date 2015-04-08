@@ -60,6 +60,13 @@ class WidgetFramework_DataWriter_Helper_Widget
                 return false;
             }
 
+            if (in_array($position, array(
+                'wf_widget_ajax',
+            ), true)) {
+                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
+                return false;
+            }
+
             // sondh@2012-08-25
             // added support for hook:hook_name
             if (substr($position, 0, 5) == 'hook:') {
@@ -69,10 +76,6 @@ class WidgetFramework_DataWriter_Helper_Widget
 					FROM `xf_template_compiled`
 					WHERE template_compiled LIKE " . XenForo_Db::quoteLike('callTemplateHook(\'' . substr($position, 5) . '\',', 'lr') . "
 				");
-
-                if (empty($templates) AND $position === 'hook:wf_widget_page_contents') {
-                    $templates = array(array('title' => 'wf_widget_page'));
-                }
 
                 if (count($templates) > 0) {
                     $templateForHooks[$position] = array();
@@ -84,11 +87,9 @@ class WidgetFramework_DataWriter_Helper_Widget
                     $dw->error(new XenForo_Phrase('wf_non_existent_hook_x', array('hook' => substr($position, 5))), $fieldName);
                     return false;
                 }
-            } else {
-                if ($position !== 'wf_widget_page' AND !$templateModel->getTemplateInStyleByTitle($position)) {
-                    $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
-                    return false;
-                }
+            } elseif (!$templateModel->getTemplateInStyleByTitle($position)) {
+                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
+                return false;
             }
 
             $positionsGood[] = $position;

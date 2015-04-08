@@ -18,6 +18,7 @@ class WidgetFramework_Listener
     public static $viewRenderer = null;
 
     protected static $_navigationTabsForums = '';
+    protected static $_saveLayoutEditorRendered = false;
     protected static $_layoutEditorRendered = array();
 
     public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
@@ -112,8 +113,9 @@ class WidgetFramework_Listener
                 }
             }
 
-            if (WidgetFramework_Option::get('layoutEditorEnabled')) {
+            if (self::$_saveLayoutEditorRendered) {
                 switch ($templateName) {
+                    case 'wf_widget_wrapper':
                     case 'wf_layout_editor_widget_wrapper':
                         $normalizedGroupId = $template->getParam('normalizedGroupId');
                         if (!empty($normalizedGroupId)) {
@@ -217,6 +219,10 @@ class WidgetFramework_Listener
             if ($controllerResponse instanceof XenForo_ControllerResponse_View) {
                 self::_markTemplateToProcess($controllerResponse);
             }
+
+            if (WidgetFramework_Option::get('layoutEditorEnabled')) {
+                self::saveLayoutEditorRendered(true);
+            }
         }
     }
 
@@ -225,16 +231,10 @@ class WidgetFramework_Listener
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             $core = WidgetFramework_Core::getInstance();
 
-            $renderWidget = 0;
-            $renderWidget += (!WidgetFramework_Option::get('layoutEditorEnabled') ? 0 : 1);
-            $renderWidget += (empty($_REQUEST['_layoutEditor']) ? 0 : 1);
-            $renderWidget += (empty($_REQUEST['_getRender']) ? 0 : 1);
-            $renderWidget += (empty($_REQUEST['_renderedIds']) ? 0 : 1);
-
-            if ($renderWidget == 4) {
+            if (!empty($_REQUEST['_getRender']) && !empty($_REQUEST['_renderedIds'])) {
                 $controllerResponse = new XenForo_ControllerResponse_View();
                 $controllerResponse->viewName = 'WidgetFramework_ViewPublic_Widget_Render';
-                $controllerResponse->params = array('_renderedIds' => explode(',', $_REQUEST['_renderedIds']));
+                $controllerResponse->params = $_REQUEST;
 
                 $viewRenderer = $fc->getDependencies()->getViewRenderer($fc->getResponse(), 'json', $fc->getRequest());
                 $output = $fc->renderView($controllerResponse, $viewRenderer);
@@ -308,6 +308,11 @@ class WidgetFramework_Listener
     public static function file_health_check(XenForo_ControllerAdmin_Abstract $controller, array &$hashes)
     {
         $hashes += WidgetFramework_FileSums::getHashes();
+    }
+
+    public static function saveLayoutEditorRendered($enabled)
+    {
+        self::$_saveLayoutEditorRendered = $enabled;
     }
 
     public static function getLayoutEditorRendered($renderedId)

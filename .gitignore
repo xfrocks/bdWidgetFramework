@@ -3,3 +3,4 @@
 library/WidgetFramework/DevHelper/Generated/*
 library/WidgetFramework/FileSums.php
 js/WidgetFramework/*.js
+library/WidgetFramework/DevHelper/XFCP

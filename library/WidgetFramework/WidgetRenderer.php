@@ -22,23 +22,17 @@ abstract class WidgetFramework_WidgetRenderer
      *    - options: An array of renderer's options
      *    - useCache: Flag to determine the renderer can be cached or not
      *    - useUserCache: Flag to determine the renderer needs to be cached by an
-     *                    user-basis.
-     *                    Internally, this is implemented by getting the current user permission
-     *                    combination id (not the user id as normally expected). This is done to
-     *                    make sure the cache is used effectively
-     *    - useLiveCache: Flag to determine the renderer wants to by pass writing to
-     *                    database
-     *                    when it's being cached. This may be crucial if the renderer does a lot
-     *                    of thing on a big board. It's recommended to use a option for this
-     *                    because not all forum owner has a live cache system setup
-     *                    (XCache/memcached)
-     *    - cacheSeconds: A numeric value to specify the maximum age of the cache (in
-     *                    seconds).
-     *                    If the cache is too old, the widget will be rendered from scratch
-     *    - useWrapper: Flag to determine the widget should be wrapped with a wrapper.
-     *                    Renderers
-     *                    that support wrapper will have an additional benefits of tabs: only
-     *                    wrapper-enabled widgets will be possible to use in tabbed interface
+     *                      user-basis. Internally, this is implemented by getting the current user
+     *                      permission combination id (not the user id as normally expected). This is
+     *                      done to make sure the cache is used effectively.
+     *    - useLiveCache: Flag to determine the renderer wants to by pass writing to database when
+     *                      it's being cached. This may be crucial if the renderer does many things
+     *                      on a big board. It's recommended to use a option for this because not
+     *                      all forum owners has a live cache system setup (XCache/memcached).
+     *    - cacheSeconds: A numeric value to specify the maximum age of the cache (in seconds).
+     *                      If the cache is too old, the widget will be rendered from scratch.
+     *    - useWrapper: Flag to determine the widget should be wrapped with a wrapper
+     *    - canAjaxLoad: Flag to determine the widget can be loaded via ajax
      */
     abstract protected function _getConfiguration();
 
@@ -265,6 +259,8 @@ abstract class WidgetFramework_WidgetRenderer
             }
         }
 
+        sort($forumIds);
+
         return $forumIds;
     }
 
@@ -336,13 +332,15 @@ abstract class WidgetFramework_WidgetRenderer
             $default = array(
                 'name' => 'Name',
                 'options' => array(),
-                'useCache' => false, // output of this widget can be cached
-                'useUserCache' => false, // output should be cached by user permission (must have
-                // `useCache` enabled)
-                'useLiveCache' => false, // output will be cached with live cache only (bypass
-                // database completely)
-                'cacheSeconds' => 0, // cache older will be ignored, 0 means forever
+
+                'useCache' => false,
+                'useUserCache' => false,
+                'useLiveCache' => false,
+                'cacheSeconds' => 0,
+
                 'useWrapper' => true,
+
+                'canAjaxLoad' => false,
             );
 
             $this->_configuration = XenForo_Application::mapMerge($default, $this->_getConfiguration());
@@ -392,6 +390,12 @@ abstract class WidgetFramework_WidgetRenderer
     {
         $configuration = $this->getConfiguration();
         return !empty($configuration['useLiveCache']);
+    }
+
+    public function canAjaxLoad(array $widget)
+    {
+        $configuration = $this->getConfiguration();
+        return !empty($configuration['canAjaxLoad']);
     }
 
     public function requireLock(array $widget)
@@ -448,9 +452,7 @@ abstract class WidgetFramework_WidgetRenderer
 
     public function prepare(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
     {
-        if ($this->useWrapper($widget)) {
-            $template->preloadTemplate('wf_widget_wrapper');
-        }
+        $template->preloadTemplate('wf_widget_wrapper');
 
         $renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
         if (!empty($renderTemplate)) {
@@ -499,6 +501,12 @@ abstract class WidgetFramework_WidgetRenderer
 
     protected function _testConditional(array $widget, array $params)
     {
+        if (isset($widget['_ajaxLoadParams'])) {
+            // ignore for ajax load, it should be tested before the tab is rendered
+            // there is a small security risk here but nothing too serious
+            return true;
+        }
+
         if (!empty($widget['options']['conditional'])) {
             $conditional = $widget['options']['conditional'];
 
@@ -693,6 +701,22 @@ abstract class WidgetFramework_WidgetRenderer
         }
 
         return $html;
+    }
+
+    public function getAjaxLoadUrl(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
+    {
+        $ajaxLoadParams = $this->_getAjaxLoadParams($widget, $positionCode, $params, $template);
+        return XenForo_Link::buildPublicLink('full:misc/wf-widget', null, array(
+            'widget_id' => $widget['widget_id'],
+            'alp' => json_encode($ajaxLoadParams),
+        ));
+    }
+
+    protected function _getAjaxLoadParams(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
+    {
+        return array(
+            self::PARAM_IS_HOOK => !empty($params[self::PARAM_IS_HOOK]),
+        );
     }
 
     public function extraPrepare(array $widget, &$html)
