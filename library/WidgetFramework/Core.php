@@ -119,6 +119,13 @@ class WidgetFramework_Core
         return $this->_models[$class];
     }
 
+    public function addRenderer($renderer)
+    {
+        if (!in_array($renderer, $this->_renderers, true)) {
+            $this->_renderers[] = $renderer;
+        }
+    }
+
     public function addWidgets(array $widgets)
     {
         $this->_widgetCount += count($widgets);
