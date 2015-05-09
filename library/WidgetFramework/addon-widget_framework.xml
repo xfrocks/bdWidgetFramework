@@ -1113,6 +1113,18 @@ All customization should go to wf_default_EXTRA.css
 }
 {xen:helper clearfix, '.WidgetFramework_LayoutEditor_Group > div'}
 
+<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - 2'}</xen:set>
+.WidgetFramework_LayoutEditor_Group.columns > .stretcher > .widgets > div
+{
+	border: 1px solid transparent;
+	width: {$widgetWidth}px;
+}
+
+.WidgetFramework_LayoutEditor_Group.columns > .stretcher > .controls
+{
+	width: {xen:calc '{$widgetWidth} / 2'}px;
+}
+
 .WidgetFramework_LayoutEditor_Widget
 {
 	background: {xen:property primaryLightest};
@@ -1136,6 +1148,7 @@ All customization should go to wf_default_EXTRA.css
 		max-height: 200px;
 		overflow: hidden;
 		padding: 3px;
+		pointer-events: none;
 	}]]></template>
     <template title="wf_layout_editor_area" version_id="98" version_string="2.5.0d"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
 <xen:require js="js/WidgetFramework/jquery-ui.js" />
@@ -1205,7 +1218,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_layout_editor_widget_wrapper" version_id="100" version_string="2.5.0d"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_layout_editor_widget_wrapper" version_id="109" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="wf_layout_editor.css" />
 
 <xen:if is="{$_WidgetFramework_isHook}">
@@ -1213,16 +1226,14 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>
 <xen:if is="!{$isRows}">
 	<xen:set var="$widgetContainerColumnsClass"> columns</xen:set>
-</xen:if>
 
-<xen:set var="$layoutEditorWidgetWidth">{xen:calc '{xen:property sidebar.width} - 50'}px</xen:set>
-<xen:set var="$layoutEditorWidgetMinWidth">{xen:calc '100 / {xen:count $tabs}'}%</xen:set>
-<xen:set var="$layoutEditorWidgetStyle">min-width: {$layoutEditorWidgetMinWidth}; width: {$layoutEditorWidgetWidth};</xen:set>
-<xen:set var="$layoutEditorControlsWidth">{xen:calc '{$layoutEditorWidgetWidth} / 2'}px</xen:set>
-<xen:set var="$layoutEditorControlsMinWidth">{xen:calc '100 / ({xen:count $tabs} * 2 + 1)'}%</xen:set>
-<xen:set var="$layoutEditorGroupMinWidth">{xen:calc '100 - {$layoutEditorControlsMinWidth}'}%</xen:set>
-<xen:set var="$layoutEditorGroupWidth">{xen:calc '{xen:count $tabs} * {$layoutEditorWidgetWidth}'}px</xen:set>
-<xen:set var="$widgetGroupCssClass">widget-group-{xen:count $tabs}-widgets</xen:set>
+	<xen:comment>These variables should match those in wf_layout_editor.css</xen:comment>
+	<xen:set var="$borderWidth">2</xen:set>
+	<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - {$borderWidth}'}</xen:set>
+	<xen:set var="$widgetsWidth">{xen:calc '({$widgetWidth} + {$borderWidth}) * {xen:count $tabs}'}</xen:set>
+	<xen:set var="$controlsWidth">{xen:calc '{$widgetWidth} / 2'}</xen:set>
+	<xen:set var="$stretcherWidth">{xen:calc '{$widgetsWidth} + {$controlsWidth}'}</xen:set>
+</xen:if>
 
 <div class="widget-container widget-group-{xen:count $tabs}-widgets controls-parent WidgetFramework_LayoutEditor_Group{$widgetContainerClass}{$widgetContainerColumnsClass}"
 	 id="layout-editor-{$normalizedGroupId}"
@@ -1233,8 +1244,8 @@ All customization should go to wf_default_EXTRA.css
 	 data-position="{$firstTab.positionCode}"
 	 data-group="{$groupSaveParams.group}"{xen:if '{$groupParentGroupNameNormalized}', ' data-parent-group="{$groupParentGroupNameNormalized}"'}
 	 data-display-order="{$firstTab.display_order}">
-	<div class="stretcher">
-		<div class="widgets">
+	<div class="stretcher"{xen:if '{$stretcherWidth}', ' style="width: {$stretcherWidth}px;"'}>
+		<div class="widgets"{xen:if '{$widgetsWidth}', ' style="width: {$widgetsWidth}px;"'}>
 			<xen:foreach loop="$tabs" value="$widget">
 				<xen:if is="{$widget._WidgetFramework_isGroup}">
 					{xen:raw $widget.html}

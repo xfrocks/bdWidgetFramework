@@ -130,9 +130,6 @@ class WidgetFramework_Listener
                                 self::$_layoutEditorRendered[$tab['widget_id']] = $output;
                             }
                         }
-
-                        $ourContainerData = WidgetFramework_Helper_LayoutEditor::generateWidgetGroupCss($containerData, count($tabs));
-                        WidgetFramework_Template_Extended::WidgetFramework_mergeExtraContainerData($ourContainerData);
                         break;
                     case 'wf_layout_editor_widget':
                         $widget = $template->getParam('widget');

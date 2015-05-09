@@ -410,6 +410,16 @@
 			});
 			if (!found)
 			{
+                if (this.$widgets.children().length == 0)
+                {
+                    var $controlsParent = this.$widgets.closest('.controls-parent');
+                    if ($controlsParent.is('.WidgetFramework_LayoutEditor_Group'))
+                    {
+                        // also remove the parent group because it is empty
+                        $controlsParent.empty().xfRemove();
+                    }
+                }
+
 				return;
 			}
 
