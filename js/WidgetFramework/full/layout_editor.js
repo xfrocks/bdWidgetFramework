@@ -299,13 +299,23 @@
 
 	// *********************************************************************
 
-	XenForo.WidgetFramework_LayoutEditor_Widgets = function($dndHandle)
+	XenForo.WidgetFramework_LayoutEditor_Widgets = function($target)
 	{
-		var $widgets = $dndHandle.closest('.widgets');
-		if ($widgets.length == 0)
-		{
-			return false;
-		}
+        var $dndHandle = null;
+        var $widgets = null;
+
+        if ($target.is('.widgets'))
+        {
+            $widgets = $target;
+        }
+        else
+        {
+            $dndHandle = $target;
+            $widgets = $dndHandle.closest('.widgets');
+            if ($widgets.length == 0) {
+                return;
+            }
+        }
 
 		var isOkie = false;
 		var $parent = $widgets.parent();
@@ -325,7 +335,9 @@
 
 		if (isOkie)
 		{
-			$dndHandle.show();
+            if ($dndHandle) {
+                $dndHandle.show();
+            }
 
 			var existing = $widgets.data('WidgetFramework_LayoutEditor_Widgets');
 			if (!existing)
@@ -485,5 +497,6 @@
 
 	XenForo.register('a.wf-le-widget-link', 'XenForo.WidgetFramework_LayoutEditor_WidgetLink');
 	XenForo.register('a.dnd-handle', 'XenForo.WidgetFramework_LayoutEditor_Widgets');
+    XenForo.register('.widgets', 'XenForo.WidgetFramework_LayoutEditor_Widgets');
 
 }(jQuery, this, document);

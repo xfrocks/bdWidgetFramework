@@ -1051,14 +1051,24 @@ All customization should go to wf_default_EXTRA.css
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
 </xen:if>]]></template>
-    <template title="wf_layout_editor.css" version_id="106" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area > .widgets > div
+    <template title="wf_layout_editor.css" version_id="109" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area
+{
+	background: {xen:property primaryLightest};
+}
+
+.WidgetFramework_LayoutEditor_Area > .widgets > div
 {
 	margin: 10px 0;
 }
 
+.WidgetFramework_LayoutEditor_Area .widgets.dnd-widgets
+{
+	min-height: 30px;
+}
+
 .WidgetFramework_LayoutEditor_Area .widgets.dnd-over
 {
-	background: yellow;
+	background: {xen:property secondaryLightest};
 }
 
 .WidgetFramework_LayoutEditor_Area .original-contents
@@ -1084,6 +1094,7 @@ All customization should go to wf_default_EXTRA.css
 
 .WidgetFramework_LayoutEditor_Group
 {
+	border: 1px solid transparent;
 	margin: 0;
 	overflow-x: scroll;
 	overflow-y: hidden;
@@ -1091,7 +1102,7 @@ All customization should go to wf_default_EXTRA.css
 }
 	.WidgetFramework_LayoutEditor_Group:hover
 	{
-		background: {xen:property primaryLightest};
+		border: 1px solid {xen:property primaryLighterStill};
 	}
 
 .WidgetFramework_LayoutEditor_Group.columns > .stretcher > .widgets,
@@ -1104,6 +1115,7 @@ All customization should go to wf_default_EXTRA.css
 
 .WidgetFramework_LayoutEditor_Widget
 {
+	background: {xen:property primaryLightest};
 	display: block;
 }
 	.WidgetFramework_LayoutEditor_Widget:hover
