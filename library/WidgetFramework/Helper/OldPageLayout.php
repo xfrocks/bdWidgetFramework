@@ -255,6 +255,11 @@ class _Layout_Single
         $this->_options = $options;
 
         $widget['position'] = $options['position'];
+        $widget['template_for_hooks'] = array(
+            $options['position'] => array(
+                'wf_widget_page',
+            ),
+        );
 
         if (!empty($options['tab_group'])) {
             $widget['options']['tab_group'] = $options['tab_group'];

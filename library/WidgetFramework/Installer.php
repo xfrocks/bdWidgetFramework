@@ -183,7 +183,7 @@ class WidgetFramework_Installer
             $db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
         }
 
-        if ($effectiveVersionId > 0 AND $effectiveVersionId < 101) {
+        if ($effectiveVersionId > 0 AND $effectiveVersionId <= 102) {
             // update widget within widget pages to use group/display order instead of layout
             // row/column
             self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
@@ -217,16 +217,21 @@ class WidgetFramework_Installer
         foreach ($widgetPages as $widgetPage) {
             $widgets = $widgetModel->getWidgetPageWidgets($widgetPage['node_id'], false);
 
-            // update sidebar widgets
             foreach (array_keys($widgets) as $widgetId) {
                 if ($widgets[$widgetId]['position'] == 'sidebar') {
+                    // update sidebar widgets
                     $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                    $widgetDw->setImportMode(true);
                     $widgetDw->setExistingData($widgets[$widgetId], true);
-                    $widgetDw->set('position', 'wf_widget_page');
+                    $widgetDw->set('position', 'wf_widget_page', '', array(
+                        'runVerificationCallback' => false,
+                    ));
 
                     $widgetDw->save();
                     unset($widgets[$widgetId]);
                 } elseif (!empty($widgets[$widgetId]['position'])) {
+                    // in older versions, page widgets' positions are either "sidebar" or empty
+                    // it looks like this widget has been converted or something, ignore it
                     unset($widgets[$widgetId]);
                 }
             }
@@ -236,9 +241,14 @@ class WidgetFramework_Installer
                 WidgetFramework_Helper_OldPageLayout::buildLayoutTree($widgetsCloned);
 
                 foreach (array_keys($widgets) as $widgetId) {
+                    // update layout widgets
                     $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                    $widgetDw->setImportMode(true);
                     $widgetDw->setExistingData($widgets[$widgetId], true);
-                    $widgetDw->set('position', $widgetsCloned[$widgetId]['position']);
+                    $widgetDw->set('position', $widgetsCloned[$widgetId]['position'], '', array(
+                        'runVerificationCallback' => false,
+                    ));
+                    $widgetDw->set('template_for_hooks', $widgetsCloned[$widgetId]['template_for_hooks']);
                     $widgetDw->set('display_order', $widgetsCloned[$widgetId]['display_order']);
                     $widgetDw->set('options', $widgetsCloned[$widgetId]['options']);
 
@@ -246,6 +256,8 @@ class WidgetFramework_Installer
                 }
             }
         }
+
+        $widgetModel->buildCache();
     }
 
 }
