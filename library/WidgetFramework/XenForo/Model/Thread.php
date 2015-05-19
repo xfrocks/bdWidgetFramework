@@ -39,7 +39,27 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 
     public function prepareThreadFetchOptions(array $fetchOptions)
     {
-        $result = parent::prepareThreadFetchOptions($fetchOptions);
+        $proxyFetchOptions = $fetchOptions;
+
+        if (!empty($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN])
+            && empty($fetchOptions['join'])
+        ) {
+            $proxyFetchOptions['join'] = $fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN];
+
+            $lastPostJoins = array(
+                self::FETCH_USER,
+                self::FETCH_AVATAR,
+                self::FETCH_FIRSTPOST,
+            );
+            foreach ($lastPostJoins as $join) {
+                if ($proxyFetchOptions['join'] & $join) {
+                    // remove last post joins from fetch options
+                    $proxyFetchOptions['join'] ^= $join;
+                }
+            }
+        }
+
+        $result = parent::prepareThreadFetchOptions($proxyFetchOptions);
         $selectFields = $result['selectFields'];
         $joinTables = $result['joinTables'];
         $orderClause = $result['orderClause'];
@@ -52,7 +72,9 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 					(poll.content_type = \'thread\' AND content_id = thread.thread_id)';
         }
 
-        if (!empty($fetchOptions[self::FETCH_OPTIONS_FORUM_FULL_JOIN]) AND empty($fetchOptions['join'])) {
+        if (!empty($fetchOptions[self::FETCH_OPTIONS_FORUM_FULL_JOIN])
+            && empty($fetchOptions['join'])
+        ) {
             $selectFields .= ',
 					forum.*';
             $joinTables .= '
@@ -60,7 +82,11 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 					(forum.node_id = thread.node_id)';
         }
 
-        if (!empty($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN]) AND empty($fetchOptions['join'])) {
+        if (!empty($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN])
+            && empty($fetchOptions['join'])
+        ) {
+            // IMPORTANT: update $proxyFetchOptions['join'] calculation if more fetch flags are supported
+
             if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_USER) {
                 $selectFields .= ',
 						1 AS fetched_last_post_user, user.*';
@@ -82,6 +108,8 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 					LEFT JOIN xf_post AS post ON
 						(post.post_id = thread.last_post_id)';
             }
+
+            // IMPORTANT: update $proxyFetchOptions['join'] calculation if more fetch flags are supported
         }
 
         if (!empty($fetchOptions['order'])) {
