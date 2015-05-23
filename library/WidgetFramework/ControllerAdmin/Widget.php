@@ -315,7 +315,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         if (!empty($positionWidget)) {
             if ($positionWidget['widget_id'] != $widget['widget_id']) {
                 if (empty($dwInput['group'])) {
-                    $newGroupParts[] = 'group-' . substr(md5(XenForo_Application::$time), 0, 5);
+                    $newGroupParts[] = 'group-' . XenForo_Application::$time;
                 }
 
                 if (empty($positionWidget['options']['tab_group'])) {
@@ -344,32 +344,29 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         if ($dwInput['display_order'] !== '') {
             $dw->set('display_order', $dwInput['display_order']);
         } elseif ($dwInput['relative_display_order'] !== '') {
-            $dw->set('display_order', call_user_func_array(array(
-                $this->_getWidgetModel(),
-                'getDisplayOrderFromRelative'
-            ), array(
-                $dw->get('widget_id'),
-                $dwInputGroup,
-                intval($dwInput['relative_display_order']),
-                $core->getWidgetGroupsByPosition($dw->get('position')),
-                $positionWidget,
-                &$widgetsNeedUpdate,
-            )));
+            $dw->set('display_order',
+                $this->_getWidgetModel()->getDisplayOrderFromRelative(
+                    $dw->get('widget_id'),
+                    $dwInputGroup,
+                    intval($dwInput['relative_display_order']),
+                    $core->getWidgetGroupsByPosition($dw->get('position')),
+                    $positionWidget,
+                    $widgetsNeedUpdate
+                )
+            );
         }
 
         if (!empty($dwInput['move_group'])) {
-            call_user_func_array(array(
-                $this->_getWidgetModel(),
-                'updatePositionGroupAndDisplayOrderForWidgets'
-            ), array(
+            $this->_getWidgetModel()->updatePositionGroupAndDisplayOrderForWidgets(
                 $widget['widget_id'],
                 $dw->get('position'),
                 $dwInput['group'],
                 $dw->get('display_order'),
                 $core->getWidgetGroupsByPosition($widget['position']),
-                &$widgetsNeedUpdate,
-            ));
+                $widgetsNeedUpdate
+            );
         }
+
         XenForo_Db::beginTransaction();
 
         $dw->save();

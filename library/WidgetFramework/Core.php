@@ -606,7 +606,12 @@ class WidgetFramework_Core
             $wrapperParams[self::PARAM_GROUP_NAME] = $widgetElement['name'];
         }
         $wrapperParams['groupId'] = $wrapperParams[self::PARAM_GROUP_NAME];
+
         $wrapperParams['normalizedGroupId'] = WidgetFramework_Helper_String::normalizeHtmlElementId($wrapperParams[self::PARAM_GROUP_NAME]);
+        if (empty($wrapperParams['normalizedGroupId'])) {
+            $wrapperParams['normalizedGroupId'] = md5(implode(array_keys($tabs)));
+        }
+
         $wrapperParams['firstTab'] = reset($tabs);
         $wrapperParams['isColumns'] = $widgetElement['isColumns'];
         $wrapperParams['isRows'] = $widgetElement['isRows'];

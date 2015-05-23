@@ -817,6 +817,7 @@ Arguments:
     <phrase title="wf_limit_zero_explain" version_id="58" version_string="2.3.2b"><![CDATA[Enter 0 (zero) to set no limitation.]]></phrase>
     <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
     <phrase title="wf_move" version_id="100" version_string="2.5.0d"><![CDATA[{display_order}]]></phrase>
+    <phrase title="wf_move_group" version_id="111" version_string="2.6.0-dev"><![CDATA[Move Group ({display_order})]]></phrase>
     <phrase title="wf_non_existent_hook_x" version_id="37" version_string="1.5.4"><![CDATA[The specified hook "{hook}" could not be found in any public templates.]]></phrase>
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
@@ -1051,14 +1052,9 @@ All customization should go to wf_default_EXTRA.css
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
 </xen:if>]]></template>
-    <template title="wf_layout_editor.css" version_id="109" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area
+    <template title="wf_layout_editor.css" version_id="111" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area
 {
 	background: {xen:property primaryLightest};
-}
-
-.WidgetFramework_LayoutEditor_Area > .widgets > div
-{
-	margin: 10px 0;
 }
 
 .WidgetFramework_LayoutEditor_Area .widgets.dnd-widgets
@@ -1073,17 +1069,31 @@ All customization should go to wf_default_EXTRA.css
 
 .WidgetFramework_LayoutEditor_Area .original-contents
 {
+	background: {xen:property primaryDarker};
 	border: 1px solid {xen:property primaryLightish};
 	margin-left: 3px !important;
 	margin-right: 3px !important;
 	max-height: 200px;
 	overflow: hidden;
 }
+	.WidgetFramework_LayoutEditor_Area .original-contents > *
+	{
+		opacity: 0.3;
+	}
 
-.WidgetFramework_LayoutEditor_Area .controls > *
+.WidgetFramework_LayoutEditor_Area > .controls
 {
-	display: inline-block;
-	padding: 3px;
+	border: 1px solid {xen:property primaryLightish};
+	font-size: 1.5em;
+	font-weight: bold;
+	margin: 5px;
+	text-align: center;
+}
+
+.WidgetFramework_LayoutEditor_Area .controls
+{
+	padding: 5px;
+	padding-bottom: 0;
 }
 
 .controls .dnd-handle
@@ -1105,24 +1115,19 @@ All customization should go to wf_default_EXTRA.css
 		border: 1px solid {xen:property primaryLighterStill};
 	}
 
-.WidgetFramework_LayoutEditor_Group.columns > .stretcher > .widgets,
-.WidgetFramework_LayoutEditor_Group.columns > .stretcher > .widgets > div,
-.WidgetFramework_LayoutEditor_Group.columns > .stretcher > .controls
+.WidgetFramework_LayoutEditor_Group.columns > .widgets,
+.WidgetFramework_LayoutEditor_Group.columns > .widgets > div
 {
 	float: left;
 }
-{xen:helper clearfix, '.WidgetFramework_LayoutEditor_Group > div'}
+{xen:helper clearfix, '.WidgetFramework_LayoutEditor_Group.columns > div'}
 
-<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - 2'}</xen:set>
-.WidgetFramework_LayoutEditor_Group.columns > .stretcher > .widgets > div
+<xen:set var="$borderWidth">2</xen:set>
+<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - {$borderWidth}'}</xen:set>
+.WidgetFramework_LayoutEditor_Group.columns > .widgets > div
 {
 	border: 1px solid transparent;
 	width: {$widgetWidth}px;
-}
-
-.WidgetFramework_LayoutEditor_Group.columns > .stretcher > .controls
-{
-	width: {xen:calc '{$widgetWidth} / 2'}px;
 }
 
 .WidgetFramework_LayoutEditor_Widget
@@ -1144,13 +1149,20 @@ All customization should go to wf_default_EXTRA.css
 	{
 		border: 1px solid {xen:property primaryLightish};
 		border-top: 0;
+		display: block;
 		margin: 0 3px 3px 3px;
 		max-height: 200px;
 		overflow: hidden;
-		padding: 3px;
+		padding: 5px;
 		pointer-events: none;
-	}]]></template>
-    <template title="wf_layout_editor_area" version_id="98" version_string="2.5.0d"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
+	}
+		.WidgetFramework_LayoutEditor_Widget > a.widget-html
+		{
+			pointer-events: inherit;
+			text-align: center;
+			text-decoration: none;
+		}]]></template>
+    <template title="wf_layout_editor_area" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
 <xen:require js="js/WidgetFramework/jquery-ui.js" />
 <xen:require css="wf_layout_editor.css" />
 
@@ -1177,8 +1189,9 @@ All customization should go to wf_default_EXTRA.css
 </div>
 
 <xen:edithint template="wf_layout_editor_widget_wrapper" />
-<xen:edithint template="wf_layout_editor_widget" />]]></template>
-    <template title="wf_layout_editor_widget" version_id="100" version_string="2.5.0d"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
+<xen:edithint template="wf_layout_editor_widget" />
+<xen:edithint template="wf_layout_editor_widget_add" />]]></template>
+    <template title="wf_layout_editor_widget" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
 <xen:require js="js/WidgetFramework/jquery-ui.js" />
 <xen:require css="wf_layout_editor.css" />
 
@@ -1188,7 +1201,7 @@ All customization should go to wf_default_EXTRA.css
 	 data-position="{$widget.positionCode}"
 	 data-display-order="{$widget.display_order}">
 	<div class="controls">
-		<a title="{$widget.tab_group}#{$widget.widget_id}/{$widget.display_order}" class="dnd-handle">{xen:phrase wf_move, 'display_order={$widget.display_order}'}</a>
+		<a title="{xen:phrase display_order}" class="dnd-handle">{xen:phrase wf_move, 'display_order={$widget.display_order}'}</a>
 
 		<a href="{xen:adminlink widgets/delete, $widget}" target="_blank" class="wf-le-widget-link">
 			{xen:phrase delete}
@@ -1218,7 +1231,19 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_layout_editor_widget_wrapper" version_id="109" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_layout_editor_widget_add" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
+<xen:require js="js/WidgetFramework/jquery-ui.js" />
+<xen:require css="wf_layout_editor.css" />
+
+<div class="WidgetFramework_LayoutEditor_Widget">
+	<div class="controls">&nbsp;</div>
+	<a href="{xen:raw $addLink}" target="_blank" class="wf-le-widget-link widget-html">
+		{xen:phrase wf_add_widget}
+		
+		<div>&nbsp;</div>
+	</a>
+</div>]]></template>
+    <template title="wf_layout_editor_widget_wrapper" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="wf_layout_editor.css" />
 
 <xen:if is="{$_WidgetFramework_isHook}">
@@ -1230,9 +1255,7 @@ All customization should go to wf_default_EXTRA.css
 	<xen:comment>These variables should match those in wf_layout_editor.css</xen:comment>
 	<xen:set var="$borderWidth">2</xen:set>
 	<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - {$borderWidth}'}</xen:set>
-	<xen:set var="$widgetsWidth">{xen:calc '({$widgetWidth} + {$borderWidth}) * {xen:count $tabs}'}</xen:set>
-	<xen:set var="$controlsWidth">{xen:calc '{$widgetWidth} / 2'}</xen:set>
-	<xen:set var="$stretcherWidth">{xen:calc '{$widgetsWidth} + {$controlsWidth}'}</xen:set>
+	<xen:set var="$widgetsWidth">{xen:calc '({$widgetWidth} + {$borderWidth}) * ({xen:count $tabs} + 1)'}</xen:set>
 </xen:if>
 
 <div class="widget-container widget-group-{xen:count $tabs}-widgets controls-parent WidgetFramework_LayoutEditor_Group{$widgetContainerClass}{$widgetContainerColumnsClass}"
@@ -1244,32 +1267,11 @@ All customization should go to wf_default_EXTRA.css
 	 data-position="{$firstTab.positionCode}"
 	 data-group="{$groupSaveParams.group}"{xen:if '{$groupParentGroupNameNormalized}', ' data-parent-group="{$groupParentGroupNameNormalized}"'}
 	 data-display-order="{$firstTab.display_order}">
-	<div class="stretcher"{xen:if '{$stretcherWidth}', ' style="width: {$stretcherWidth}px;"'}>
-		<div class="widgets"{xen:if '{$widgetsWidth}', ' style="width: {$widgetsWidth}px;"'}>
-			<xen:foreach loop="$tabs" value="$widget">
-				<xen:if is="{$widget._WidgetFramework_isGroup}">
-					{xen:raw $widget.html}
-				<xen:else />
-					<xen:include template="wf_layout_editor_widget">
-						<xen:set var="$html">{xen:raw $widget.html}</xen:set>
-					</xen:include>
-				</xen:if>
-			</xen:foreach>
-		</div>
 
-		<div class="controls">
-			<a title="{$firstTab.tab_group}/{$firstTab.display_order}" class="dnd-handle">{xen:phrase wf_move, 'display_order={$firstTab.display_order}'}</a>
+		<xen:if is="count({$tabs}) > 1">
+			<div class="controls">
+				<a title="{xen:phrase display_order}" class="dnd-handle">{xen:phrase wf_move_group, 'display_order={$firstTab.display_order}'}</a>
 
-			<a href="{xen:adminlink widgets/add,
-					 '',
-					 '_params={$groupSaveParams}',
-					 'conditionalParams={xen:helper json, $conditionalParams}'}"
-				target="_blank"
-				class="wf-le-widget-link">
-				{xen:phrase wf_add_widget}
-			</a>
-
-			<xen:if is="count({$tabs}) > 1">
 				<div>
 					{xen:phrase wf_display_as}:
 
@@ -1317,9 +1319,28 @@ All customization should go to wf_default_EXTRA.css
 							class="wf-le-widget-link NoOverlay">{xen:phrase wf_display_as_random}</a>
 					</xen:if>
 				</div>
-			</xen:if>
-		</div>
-	</div>
+			</div><!-- .controls -->
+		</xen:if>
+
+		<div class="widgets"{xen:if '{$widgetsWidth}', ' style="width: {$widgetsWidth}px;"'}>
+			<xen:foreach loop="$tabs" value="$widget">
+				<xen:if is="{$widget._WidgetFramework_isGroup}">
+					{xen:raw $widget.html}
+				<xen:else />
+					<xen:include template="wf_layout_editor_widget">
+						<xen:set var="$html">{xen:raw $widget.html}</xen:set>
+					</xen:include>
+				</xen:if>
+			</xen:foreach>
+
+			<xen:include template="wf_layout_editor_widget_add">
+				<xen:set var="$addLink">{xen:adminlink widgets/add,
+					 '',
+					 '_params={$groupSaveParams}',
+					 'conditionalParams={xen:helper json, $conditionalParams}'}</xen:set>
+			</xen:include>
+		</div><!-- .widgets -->
+
 </div>
 
 <xen:edithint template="wf_layout_editor_widget" />]]></template>

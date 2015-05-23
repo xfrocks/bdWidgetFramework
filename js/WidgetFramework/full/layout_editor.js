@@ -99,7 +99,7 @@
 				var $parentGroup = $widgets.find('.WidgetFramework_LayoutEditor_Group#layout-editor-' + parentGroup);
 				if ($parentGroup.length == 1)
 				{
-					$widgets = $parentGroup.children('.stretcher').children('.widgets');
+					$widgets = $parentGroup.children('.widgets');
 				}
 			}
 
@@ -155,7 +155,7 @@
 			// remove the widget/group
 			$e.empty().xfRemove('', function()
 			{
-				if ($widgets.children().length == 0)
+				if ($widgets.children('[id]').length == 0)
 				{
 					var $controlsParent = $widgets.closest('.controls-parent');
 					if ($controlsParent.is('.WidgetFramework_LayoutEditor_Group'))
@@ -326,7 +326,6 @@
 		}
 		else
 		{
-			$parent = $parent.parent();
 			if ($parent.is('.WidgetFramework_LayoutEditor_Group'))
 			{
 				isOkie = true;
@@ -440,7 +439,6 @@
 			}
 
 			var negativeDisplayOrderCount = 0;
-			var nonControlsParentCount = 0;
 			this.$widgets.children().each(function()
 			{
 				if ($item.is(this))
@@ -454,36 +452,22 @@
 				{
 					negativeDisplayOrderCount++;
 				}
-				else
-				if (!$this.is('.controls-parent'))
-				{
-					nonControlsParentCount++;
-				}
 			});
 
 			var relativeDisplayOrder = 0;
-			if (negativeDisplayOrderCount > 0 || nonControlsParentCount > 0)
+			if (negativeDisplayOrderCount > 0)
 			{
 				relativeDisplayOrder = (-1 * negativeDisplayOrderCount) - 1;
 			}
 
 			this.$widgets.children().each(function()
 			{
-				var $this = $(this);
-
 				if ($item.is(this))
 				{
 					return false;
 				}
 
-				if ($this.is('.controls-parent'))
-				{
-					relativeDisplayOrder++;
-				}
-				else
-				{
-					relativeDisplayOrder = Math.max(0, relativeDisplayOrder + 1);
-				}
+                relativeDisplayOrder = Math.max(0, relativeDisplayOrder + 1);
 			});
 
 			XenForo.ajax(this.$parent.data('save'),
