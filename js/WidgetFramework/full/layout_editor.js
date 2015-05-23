@@ -491,6 +491,7 @@
 				widget_id: widgetId,
 				relative_display_order: relativeDisplayOrder,
 				move_group: moveGroup,
+                _layoutEditor: 1
 			}, $.context(this, 'saveSuccess'));
 		},
 

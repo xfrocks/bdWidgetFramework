@@ -7,6 +7,23 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $this->assertAdminPermission('style');
     }
 
+    protected function _setupSession($action)
+    {
+        if (!XenForo_Application::isRegistered('session')) {
+            if ($this->_noRedirect()
+                && $this->_routeMatch->getResponseType() === 'json'
+                && $this->_input->filterSingle('_layoutEditor', XenForo_Input::BOOLEAN)
+            ) {
+                // use public session if the page is being requested within layout editor
+                // this poses a slight security risk but UX benefit is tremendous
+                // TODO: keep an eye on it
+                XenForo_Session::startPublicSession($this->_request);
+            }
+        }
+
+        parent::_setupSession($action);
+    }
+
     public function actionIndex()
     {
         $widgets = $this->_getWidgetModel()->getGlobalWidgets(false);
