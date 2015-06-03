@@ -27,6 +27,35 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
             }
         }
 
+        if (!empty($widget['class']) && isset($this->_params['renderers'])) {
+            $rendererFound = false;
+
+            foreach ($this->_params['renderers'] as &$rendererRef) {
+                if ($rendererRef['value'] === $widget['class']) {
+                    $rendererFound = true;
+                    $rendererRef['selected'] = true;
+                }
+            }
+
+            if (!$rendererFound) {
+                $this->_params['renderers'][] = array(
+                    'value' => $widget['class'],
+                    'label' => new XenForo_Phrase('wf_unknown_renderer', array('class' => $widget['class'])),
+                );
+            }
+        }
+
+        if (!empty($this->_params['renderers'])) {
+            foreach (array_keys($this->_params['renderers']) as $rendererKey) {
+                if (!empty($this->_params['renderers'][$rendererKey]['is_hidden'])
+                    && empty($this->_params['renderers'][$rendererKey]['selected'])
+                ) {
+                    // remove hidden renderer if it's not already selected
+                    unset($this->_params['renderers'][$rendererKey]);
+                }
+            }
+        }
+
         parent::prepareParams();
     }
 

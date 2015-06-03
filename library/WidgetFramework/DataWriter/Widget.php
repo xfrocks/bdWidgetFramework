@@ -133,6 +133,17 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
         parent::_preSave();
     }
 
+    protected function _postSave()
+    {
+        if ($this->_isTemplateWidget($this->get('class'))) {
+            $this->_getWidgetRendererTemplateModel()->dwPostSave($this->getMergedData(), $this->getWidgetOptions());
+        } elseif ($this->isChanged('class') && $this->_isTemplateWidget($this->getExisting('class'))) {
+            $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedExistingData(), $this->getWidgetOptions(true));
+        }
+
+        parent::_postSave();
+    }
+
     protected function _postSaveAfterTransaction()
     {
         $this->_rebuildGlobalCache();
@@ -142,6 +153,10 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _postDelete()
     {
+        if ($this->_isTemplateWidget($this->get('class'))) {
+            $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedData(), $this->getWidgetOptions());
+        }
+
         $this->_rebuildGlobalCache();
 
         WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
@@ -154,12 +169,30 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
         return 'widget_id = ' . $this->_db->quote($this->getExisting('widget_id'));
     }
 
+    protected function _isTemplateWidget($class)
+    {
+        return in_array($class, array(
+            'WidgetFramework_WidgetRenderer_Html',
+            'WidgetFramework_WidgetRenderer_HtmlWithoutWrapper',
+            'WidgetFramework_WidgetRenderer_Template',
+            'WidgetFramework_WidgetRenderer_TemplateWithoutWrapper',
+        ), true);
+    }
+
     /**
      * @return WidgetFramework_Model_Widget
      */
     protected function _getWidgetModel()
     {
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
+    }
+
+    /**
+     * @return WidgetFramework_Model_WidgetRenderer_Template
+     */
+    protected function _getWidgetRendererTemplateModel()
+    {
+        return $this->getModelFromCache('WidgetFramework_Model_WidgetRenderer_Template');
     }
 
 }

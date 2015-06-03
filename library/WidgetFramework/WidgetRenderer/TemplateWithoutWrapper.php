@@ -6,7 +6,7 @@ class WidgetFramework_WidgetRenderer_TemplateWithoutWrapper extends WidgetFramew
     {
         $configuration = parent::_getConfiguration();
 
-        $configuration['name'] = '[Advanced] Template (without wrapper)';
+        $configuration['name'] = '[Advanced] HTML & Template (without wrapper)';
         $configuration['useWrapper'] = false;
 
         return $configuration;

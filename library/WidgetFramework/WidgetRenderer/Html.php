@@ -1,32 +1,13 @@
 <?php
 
-class WidgetFramework_WidgetRenderer_Html extends WidgetFramework_WidgetRenderer
+class WidgetFramework_WidgetRenderer_Html extends WidgetFramework_WidgetRenderer_Template
 {
     protected function _getConfiguration()
     {
-        return array(
-            'name' => '[Advanced] HTML',
-            'options' => array('html' => XenForo_Input::STRING),
-        );
-    }
+        $configuration = parent::_getConfiguration();
+        $configuration['isHidden'] = true;
 
-    protected function _getOptionsTemplate()
-    {
-        return 'wf_widget_options_html';
-    }
-
-    protected function _getRenderTemplate(array $widget, $positionCode, array $params)
-    {
-        return false;
-    }
-
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $justAnTemplate)
-    {
-        if (empty($widget['options']['html'])) {
-            return '';
-        }
-
-        return $widget['options']['html'];
+        return $configuration;
     }
 
 }

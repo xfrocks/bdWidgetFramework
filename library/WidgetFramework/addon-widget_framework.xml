@@ -280,9 +280,6 @@
 	<xen:option value="withContent">{xen:phrase wf_widget_feed_reader_display_mode_with_content}</xen:option>
 	<xen:option value="plusImage">{xen:phrase wf_widget_feed_reader_display_mode_plus_image}</xen:option>
 </xen:radiounit>]]></template>
-    <template title="wf_widget_options_html"><![CDATA[<xen:textboxunit name="{$namePrefix}html" label="HTML" value="{$options.html}" rows="3" inputclass="Elastic">
-	<xen:explain>{xen:phrase wf_html_explain}</xen:explain>
-</xen:textboxunit>]]></template>
     <template title="wf_widget_options_online_users"><![CDATA[<input type="hidden" name="{$namePrefix}hide_following" value="1" />
 
 <xen:checkboxunit label="" value="">
@@ -327,9 +324,23 @@
 </xen:radiounit>]]></template>
     <template title="wf_widget_options_template"><![CDATA[<xen:require css="widget_framework.css" />
 
-<xen:textboxunit name="{$namePrefix}template" label="{xen:phrase template}" value="{$options.template}">
-	<xen:explain>{xen:phrase wf_template_explain}</xen:explain>
-</xen:textboxunit>
+<xen:radiounit name="_" label="" value="{xen:if '{$text} === null', 'template', 'text'}">
+	<xen:option value="template" label="{xen:phrase wf_use_an_existing_template}:">
+		<xen:disabled>
+			<xen:textbox name="{$namePrefix}template" value="{xen:if '{$text} === null', $options.template}"
+						 inputclass="AutoComplete AcSingle"
+						 data-acurl="{xen:adminlink 'template-modifications/auto-complete'}" />
+		</xen:disabled>
+	</xen:option>
+
+	<xen:option value="text" label="{xen:phrase wf_or_enter_it_here}...">
+		<xen:disabled>
+			<xen:textbox name="{$namePrefix}text" value="{$text}" rows="3" inputclass="Elastic" />
+		</xen:disabled>
+	</xen:option>
+</xen:radiounit>
+
+
 
 <xen:controlunit label="{xen:phrase wf_template_controller}:">
 	<xen:html>
@@ -798,7 +809,6 @@ Arguments:
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
     <phrase title="wf_feed_reader" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
     <phrase title="wf_home_navtab" global_cache="1" version_id="78" version_string="2.4.5c"><![CDATA[Home]]></phrase>
-    <phrase title="wf_html_explain" version_id="1" version_string="0.9"><![CDATA[Enter HTML code here. It will be displayed as is.]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_from_uploaded_file" version_id="96" version_string="2.5.0d"><![CDATA[Import from uploaded file]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
@@ -822,6 +832,7 @@ Arguments:
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
     <phrase title="wf_original_contents" version_id="98" version_string="2.5.0d"><![CDATA[Original Contents]]></phrase>
+    <phrase title="wf_or_enter_it_here" version_id="111" version_string="2.6.0-dev"><![CDATA[Or enter it here]]></phrase>
     <phrase title="wf_parent_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum (of the current one)]]></phrase>
     <phrase title="wf_parent_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum + its children]]></phrase>
     <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget" version_id="1" version_string="0.9"><![CDATA[Please confirm that you want to delete the following widget]]></phrase>
@@ -863,7 +874,6 @@ Arguments:
 - "column": the widgets will be rendered in column layout, divided equally between widgets. Use "column1" or similar to have many columned group in one position.]]></phrase>
     <phrase title="wf_template_controller" version_id="99" version_string="2.5.0d"><![CDATA[Controller]]></phrase>
     <phrase title="wf_template_controller_explain" version_id="99" version_string="2.5.0d"><![CDATA[Some template needs its data to render properly. Enter the controller name and action here to obtain the required data.]]></phrase>
-    <phrase title="wf_template_explain" version_id="19" version_string="1.1.1"><![CDATA[Enter the title of the template you want to use here. It will be parsed and displayed just like using <xen:include /> in normal templates.]]></phrase>
     <phrase title="wf_threads" version_id="1" version_string="0.9"><![CDATA[threads]]></phrase>
     <phrase title="wf_threads_forums" version_id="7" version_string="0.9.5"><![CDATA[Forums]]></phrase>
     <phrase title="wf_threads_forums_explain" version_id="69" version_string="2.4.1"><![CDATA[Select the forums you want to search for threads. Leave nothing selected to include all viewable forums.]]></phrase>
@@ -879,6 +889,7 @@ Arguments:
     <phrase title="wf_title_explain" version_id="65" version_string="2.3.6"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer. Or you can use a phrase by using {xen:phrase title} format.]]></phrase>
     <phrase title="wf_unknown_renderer" version_id="96" version_string="2.5.0d"><![CDATA[Unknown Renderer ({class})]]></phrase>
     <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
+    <phrase title="wf_use_an_existing_template" version_id="111" version_string="2.6.0-dev"><![CDATA[Use an existing template]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
     <phrase title="wf_viewing_home_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing home page]]></phrase>
     <phrase title="wf_viewing_widget_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing page]]></phrase>

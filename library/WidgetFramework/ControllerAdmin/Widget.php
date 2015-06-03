@@ -78,6 +78,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             'display_order' => $displayOrder,
             'widget_page_id' => $widgetPageId,
             'options' => $options,
+
+            'class' => $this->_input->filterSingle('class', XenForo_Input::STRING),
         );
 
         $viewParams = array();
@@ -626,9 +628,12 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $renderers = WidgetFramework_Core::getRenderers();
         $options = array();
         foreach ($renderers as $renderer) {
+            $rendererObj = WidgetFramework_Core::getRenderer($renderer);
+
             $options[] = array(
                 'value' => $renderer,
-                'label' => WidgetFramework_Core::getRenderer($renderer)->getName(),
+                'label' => $rendererObj->getName(),
+                'is_hidden' => $rendererObj->isHidden(),
             );
         }
 

@@ -847,20 +847,11 @@ class WidgetFramework_Core
      */
     public static function getRenderer($class, $throw = true)
     {
-        $instance = self::getInstance();
         try {
-            if (in_array($class, $instance->_renderers)) {
-                if (!isset(self::$_rendererInstances[$class])) {
-                    self::$_rendererInstances[$class] = WidgetFramework_WidgetRenderer::create($class);
-                }
-                return self::$_rendererInstances[$class];
-            } elseif ($class == 'WidgetFramework_WidgetRenderer_None') {
-                return WidgetFramework_WidgetRenderer::create($class);
-            } else {
-                if ($throw) {
-                    throw new XenForo_Exception(new XenForo_Phrase('wf_invalid_widget_renderer_x', array('renderer' => $class)), true);
-                }
+            if (!isset(self::$_rendererInstances[$class])) {
+                self::$_rendererInstances[$class] = WidgetFramework_WidgetRenderer::create($class);
             }
+            return self::$_rendererInstances[$class];
         } catch (Exception $e) {
             if ($throw) {
                 throw $e;

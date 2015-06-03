@@ -20,7 +20,8 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
     protected function _getConfiguration()
     {
         return array(
-            'name' => '[Advanced] Template',
+            'name' => '[Advanced] HTML & Template',
+
             'options' => array(
                 'template' => XenForo_Input::STRING,
                 'controller_name' => XenForo_Input::STRING,
@@ -34,26 +35,72 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
         return 'wf_widget_options_template';
     }
 
+    protected function _renderOptions(XenForo_Template_Abstract $template)
+    {
+        $text = null;
+
+        $widget = $template->getParam('widget');
+        if (!empty($widget['widget_id'])) {
+            $widgetOptions = $template->getParam('options');
+
+            if (!empty($widgetOptions['html'])) {
+                // backward compatibility for Html renderers
+                // html should be saved as template after the next save
+                $text = $widgetOptions['html'];
+            } elseif (!empty($widgetOptions['_text'])) {
+                $model = $this->_getWidgetRendererTemplateModel();
+                $widgetTemplateTitle = $model->getWidgetTemplateTitle($widget['widget_id']);
+                $text = $model->getTemplateText($widgetTemplateTitle);
+            }
+        }
+
+        $template->setParam('text', $text);
+
+        return parent::_renderOptions($template);
+    }
+
+    public function parseOptionsInput(XenForo_Input $input, array $widget)
+    {
+        $options = parent::parseOptionsInput($input, $widget);
+
+        $options['html'] = null;
+        $options['_text'] = $input->filterSingle(self::getNamePrefix() . 'text', XenForo_Input::STRING);
+
+        return $options;
+    }
+
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
-        return $widget['options']['template'];
+        if (!empty($widget['options']['_text'])) {
+            return $this->_getWidgetRendererTemplateModel()->getWidgetTemplateTitle($widget['widget_id']);
+        } else {
+            return $widget['options']['template'];
+        }
     }
 
     protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
     {
-        if (!empty($widget['options']['controller_name']) AND !empty($widget['options']['controller_action'])) {
+        $templateTitle = $this->_getRenderTemplate($widget, $positionCode, $params);
+
+        if (!empty($widget['options']['controller_name'])
+            && !empty($widget['options']['controller_action'])
+        ) {
             $controllerResponse = $this->_dispatch($widget, $widget['options']['controller_name'], $widget['options']['controller_action']);
 
             if (!empty($controllerResponse)) {
-                if ($controllerResponse instanceof XenForo_ControllerResponse_View AND !empty($widget['options']['template'])) {
-                    $controllerResponse = $this->_findViewForTemplate($widget, $controllerResponse, $widget['options']['template']);
+                if ($controllerResponse instanceof XenForo_ControllerResponse_View
+                    && !empty($templateTitle)
+                ) {
+                    $controllerResponse = $this->_findViewForTemplate($widget, $controllerResponse, $templateTitle);
                 }
 
                 $renderedView = $this->_renderView($widget, $controllerResponse);
 
                 return $renderedView;
             }
-        } elseif (!empty($widget['options']['template']) AND $widget['options']['template'] == $renderTemplateObject->getTemplateName()) {
+        } elseif (!empty($templateTitle)
+            && $templateTitle == $renderTemplateObject->getTemplateName()
+        ) {
             return $renderTemplateObject->render();
         }
 
@@ -118,6 +165,14 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
         self::$_extraContainerDatas[$widget['widget_id']] = WidgetFramework_Listener::$fc->getDependencies()->getExtraContainerData();
 
         return $renderedView;
+    }
+
+    /**
+     * @return WidgetFramework_Model_WidgetRenderer_Template
+     */
+    protected function _getWidgetRendererTemplateModel()
+    {
+        return WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_WidgetRenderer_Template');
     }
 
 }

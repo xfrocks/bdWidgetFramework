@@ -19,6 +19,7 @@ abstract class WidgetFramework_WidgetRenderer
      * Required method: define basic configuration of the renderer.
      * Available configuration parameters:
      *    - name: The display name of the renderer
+     *    - isHidden: Flag to hide the renderer when creating new widget
      *    - options: An array of renderer's options
      *    - useCache: Flag to determine the renderer can be cached or not
      *    - useUserCache: Flag to determine the renderer needs to be cached by an
@@ -362,6 +363,12 @@ abstract class WidgetFramework_WidgetRenderer
     {
         $configuration = $this->getConfiguration();
         return $configuration['name'];
+    }
+
+    public function isHidden()
+    {
+        $configuration = $this->getConfiguration();
+        return !empty($configuration['isHidden']);
     }
 
     public function useWrapper(array $widget)

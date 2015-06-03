@@ -1,13 +1,11 @@
 <?php
 
-class WidgetFramework_WidgetRenderer_HtmlWithoutWrapper extends WidgetFramework_WidgetRenderer_Html
+class WidgetFramework_WidgetRenderer_HtmlWithoutWrapper extends WidgetFramework_WidgetRenderer_TemplateWithoutWrapper
 {
     protected function _getConfiguration()
     {
         $configuration = parent::_getConfiguration();
-
-        $configuration['name'] = '[Advanced] HTML (without wrapper)';
-        $configuration['useWrapper'] = false;
+        $configuration['isHidden'] = true;
 
         return $configuration;
     }
