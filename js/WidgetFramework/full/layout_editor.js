@@ -170,6 +170,8 @@
 		}
 	};
 
+    // *********************************************************************
+
 	XenForo.WidgetFramework_LayoutEditor_WidgetLink = function($link)
 	{
 		this.__construct($link);
@@ -278,9 +280,15 @@
 					{
 						e.preventDefault();
 
-						self.renderStart(e.ajaxData);
-
 						overlayApi.close();
+
+                        if (self.$link.data('simple')) {
+                            // adding widget to a simple area
+                            // do not render, just refresh the page
+                            window.location.reload();
+                        } else {
+                            self.renderStart(e.ajaxData);
+                        }
 					}
 				}
 			});
@@ -296,6 +304,42 @@
 			delete (this.OverlayLoader);
 		}
 	});
+
+    // *********************************************************************
+
+    XenForo.WidgetFramework_LayoutEditor_ButtonLink = function ($link) {
+        this.__construct($link);
+    };
+
+    XenForo.WidgetFramework_LayoutEditor_ButtonLink.prototype = {
+        __construct: function($link) {
+            this.$link = $link;
+
+            $link.click($.context(this, 'click'));
+        },
+
+        click: function(e) {
+            var $overlay = $('<div class="xenForm formOverlay" />');
+            var $ul = $('<ul />').appendTo($overlay);
+
+            $('.WidgetFramework_LayoutEditor_AreaSimple').each(function() {
+                var $simpleArea = $(this);
+
+                $('<a />')
+                    .addClass('wf-le-widget-link')
+                    .attr('href', $simpleArea.data('href'))
+                    .text($simpleArea.data('position'))
+                    .data('simple', true)
+                    .appendTo($('<li />'))
+                    .parent().appendTo($ul);
+            });
+
+            var overlay = XenForo.createOverlay(this.$link, $overlay);
+            overlay.load();
+
+            e.preventDefault();
+        }
+    };
 
 	// *********************************************************************
 
@@ -491,6 +535,7 @@
 	// *********************************************************************
 
 	XenForo.register('a.wf-le-widget-link', 'XenForo.WidgetFramework_LayoutEditor_WidgetLink');
+    XenForo.register('a.wf-le-button-link', 'XenForo.WidgetFramework_LayoutEditor_ButtonLink');
 	XenForo.register('a.dnd-handle', 'XenForo.WidgetFramework_LayoutEditor_Widgets');
     XenForo.register('.widgets', 'XenForo.WidgetFramework_LayoutEditor_Widgets');
 

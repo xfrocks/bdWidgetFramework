@@ -415,19 +415,32 @@ class WidgetFramework_Core
 
     protected function _renderWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template, $html)
     {
+        static $renderedPositions = array();
         $renderArea = false;
+        $renderSimpleArea = false;
+
         if (WidgetFramework_Option::get('layoutEditorEnabled')) {
+            if (isset($renderedPositions[$positionCode])) {
+                // during layout editor, only run through each position once
+                return $html;
+            }
+            $renderedPositions[$positionCode] = true;
+
             $areaSaveParams = array('position' => $positionCode);
             if (!empty($params[self::PARAM_IS_HOOK])) {
                 // hook position, only render for some hooks
-                if ($positionCode == 'hook:wf_widget_page_contents') {
-                    $renderArea = true;
+                if ($positionCode === 'hook:wf_widget_page_contents') {
                     $areaSaveParams['widget_page_id'] = $params['widgetPage']['node_id'];
-                } else {
-                    $renderArea = in_array($positionCode, array(
-                        'hook:ad_above_content',
-                        'hook:ad_below_content',
-                    ));
+                    $renderArea = true;
+                } elseif (in_array($positionCode, array(
+                    'hook:ad_above_content',
+                    'hook:ad_below_content',
+                ), true)) {
+                    $renderArea = true;
+                } elseif ($template->getTemplateName() !== 'PAGE_CONTAINER') {
+                    // render simple area for content template hooks
+                    $renderArea = true;
+                    $renderSimpleArea = true;
                 }
             } else {
                 // page position, always render for sidebar
@@ -440,7 +453,7 @@ class WidgetFramework_Core
 
         if (!isset($this->_positions[$positionCode])) {
             if ($renderArea) {
-                $this->_positions[$positionCode] = array(
+                $position = array(
                     'widgets' => array(),
                     'prepared' => true,
                 );
@@ -448,24 +461,28 @@ class WidgetFramework_Core
                 // stop rendering if no widget configured for this position
                 return $html;
             }
-        } elseif (WidgetFramework_Option::get('layoutEditorEnabled')) {
-            $renderArea = true;
-        }
+        } else {
+            $position = &$this->_positions[$positionCode];
 
-        $position = &$this->_positions[$positionCode];
+            if (WidgetFramework_Option::get('layoutEditorEnabled')) {
+                $renderArea = true;
+            }
+
+            $renderSimpleArea = false;
+        }
 
         if (empty($position['prepared'])) {
             // stop rendering if not prepared
             return $html;
         }
 
-        if ($renderArea AND !empty($html)) {
+        if ($renderArea && !$renderSimpleArea && !empty($html)) {
             $html = WidgetFramework_Helper_String::createArrayOfStrings(array(
                 '<div title="',
                 new XenForo_Phrase('wf_original_contents'),
                 '" class="original-contents Tooltip">',
                 $html,
-                '</div>'
+                '</div>',
             ));
         }
 
@@ -485,7 +502,9 @@ class WidgetFramework_Core
                 'contents' => $html,
             );
 
-            $html = $template->create('wf_layout_editor_area', $areaParams);
+            $areaTemplate = ($renderSimpleArea ? 'wf_layout_editor_area_simple' : 'wf_layout_editor_area');
+
+            $html = $template->create($areaTemplate, $areaParams);
         }
 
         return $html;

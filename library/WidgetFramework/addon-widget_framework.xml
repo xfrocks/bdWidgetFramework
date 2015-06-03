@@ -1058,6 +1058,16 @@ All customization should go to wf_default_EXTRA.css
 </ul>
 
 <xen:edithint template="navigation" />]]></template>
+    <template title="wf_hook_footer" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:if is="{xen:helper WidgetFramework_getOption, layoutEditorEnabled}">
+	<xen:require js="js/WidgetFramework/layout_editor.js" />
+	<xen:require css="wf_layout_editor.css" />
+
+	<div class="WidgetFramework_LayoutEditor_Fab">
+		<a href="{xen:adminlink widgets/add}" target="_blank" class="wf-le-button-link">
+			+
+		</a>
+	</div>
+</xen:if>]]></template>
     <template title="wf_hook_moderator_bar" version_id="96" version_string="2.5.0d"><![CDATA[<xen:if is="{$hasAdminPermStyle} AND {xen:helper WidgetFramework_getOption, layoutEditor}">
 	<a href="{xen:link misc/wf-layout-editor}" class="adminLink{xen:if '{xen:helper WidgetFramework_getOption, layoutEditorEnabled}', ' permissionTest'}">
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
@@ -1172,7 +1182,34 @@ All customization should go to wf_default_EXTRA.css
 			pointer-events: inherit;
 			text-align: center;
 			text-decoration: none;
-		}]]></template>
+		}
+
+.WidgetFramework_LayoutEditor_Fab
+{
+	bottom: 0;
+	position: fixed;
+	right: 0;
+}
+	.WidgetFramework_LayoutEditor_Fab a
+	{
+		background: {xen:property primaryMedium};
+		border: 1px solid {xen:property primaryLightish};
+		border-radius: 50px;
+		color: {xen:property secondaryMedium};
+		font-size: 50px;
+		height: 50px;
+		display: block;
+		line-height: 48px;
+		margin: 20px;
+		text-align: center;
+		text-decoration: none;
+		width: 50px;
+	}
+	.WidgetFramework_LayoutEditor_Fab a:hover
+	{
+		background: {xen:property primaryDarker};
+		text-decoration: none;
+	}]]></template>
     <template title="wf_layout_editor_area" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
 <xen:require js="js/WidgetFramework/jquery-ui.js" />
 <xen:require css="wf_layout_editor.css" />
@@ -1199,9 +1236,19 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 </div>
 
+<xen:edithint template="wf_layout_editor_area_simple" />
+<xen:edithint template="wf_layout_editor_button" />
 <xen:edithint template="wf_layout_editor_widget_wrapper" />
 <xen:edithint template="wf_layout_editor_widget" />
 <xen:edithint template="wf_layout_editor_widget_add" />]]></template>
+    <template title="wf_layout_editor_area_simple" version_id="111" version_string="2.6.0-dev"><![CDATA[{xen:raw $contents}
+
+<div class="WidgetFramework_LayoutEditor_AreaSimple"
+	 data-position="{$positionCode}"
+	 data-href="{xen:adminlink widgets/add,
+				 '',
+				 '_params={$areaSaveParams}',
+				 'conditionalParams={xen:helper json, $conditionalParams}'}"></div>]]></template>
     <template title="wf_layout_editor_widget" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
 <xen:require js="js/WidgetFramework/jquery-ui.js" />
 <xen:require css="wf_layout_editor.css" />
