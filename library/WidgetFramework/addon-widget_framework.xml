@@ -198,23 +198,48 @@
 
 	<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $widgets}</span>', 'total={xen:count $widgets}'}</p>
 </xen:form>]]></template>
-    <template title="wf_widget_list_item"><![CDATA[<xen:listitem
-	id="{$widget.widget_id}"
-	href="{xen:adminlink 'widgets/edit', $widget}"
-	delete="{xen:adminlink 'widgets/delete', $widget}"
-	label="{xen:if '{$widget.title}', '{xen:raw $widget.title}', '{$widget.rendererName}'}"
-	labelclass="{xen:if '!{$widget.active}', 'disabled'}"
-	snippet="{xen:if '{$widget.title}', '{$widget.rendererName} ({xen:number $widget.display_order})', '({xen:number $widget.display_order})'}"
-	toggle="{$widget.active}"
-	toggletitle="{xen:phrase enable_disable_x, 'title={$widget.title}'}">>
-	<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
-		<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
-		<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>
-		<xen:link href="{xen:adminlink 'widgets/delete', $widget}">{xen:phrase delete}</xen:link>
-		<xen:link href="{xen:adminlink 'widgets/edit', $widget}">{xen:phrase edit}</xen:link>
-		<xen:link href="{xen:adminlink 'widgets/duplicate', $widget}">{xen:phrase wf_duplicate}</xen:link>
-	</xen:popup>
-</xen:listitem>]]></template>
+    <template title="wf_widget_list_item"><![CDATA[<xen:set var="$canToggle">{xen:helper WidgetFramework_canToggle, $widget}</xen:set>
+<xen:set var="$href">{xen:adminlink 'widgets/edit', $widget}</xen:set>
+<xen:set var="$delete">{xen:adminlink 'widgets/delete', $widget}</xen:set>
+<xen:set var="$label">{xen:if '{$widget.title}', '{xen:raw $widget.title}', '{$widget.rendererName}'}</xen:set>
+<xen:set var="$labelClass">{xen:if '!{$widget.active}', 'disabled'}</xen:set>
+<xen:set var="$snippet">{xen:if '{$widget.title}', '{$widget.rendererName} ({xen:number $widget.display_order})', '({xen:number $widget.display_order})'}</xen:set>
+
+<xen:if is="{$canToggle}">
+	<xen:listitem
+		id="{$widget.widget_id}"
+		href="{$href}"
+		delete="{$delete}"
+		label="{$label}"
+		labelclass="{$labelClass}"
+		snippet="{$snippet}"
+		toggle="{$widget.active}"
+		toggletitle="{xen:phrase enable_disable_x, 'title={$widget.title}'}">>
+		<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
+			<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/delete', $widget}">{xen:phrase delete}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/edit', $widget}">{xen:phrase edit}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/duplicate', $widget}">{xen:phrase wf_duplicate}</xen:link>
+		</xen:popup>
+	</xen:listitem>
+<xen:else />
+	<xen:listitem
+		id="{$widget.widget_id}"
+		href="{$href}"
+		delete="{$delete}"
+		label="{$label}"
+		labelclass="{$labelClass}"
+		snippet="{$snippet}">
+		<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
+			<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/delete', $widget}">{xen:phrase delete}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/edit', $widget}">{xen:phrase edit}</xen:link>
+			<xen:link href="{xen:adminlink 'widgets/duplicate', $widget}">{xen:phrase wf_duplicate}</xen:link>
+		</xen:popup>
+	</xen:listitem>
+</xen:if>]]></template>
     <template title="wf_widget_options"><![CDATA[<input type="hidden" name="options_loaded" value="{$options_loaded}" />
 
 <xen:if hascontent="true">

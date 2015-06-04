@@ -25,14 +25,17 @@ class WidgetFramework_Listener
     {
         self::$dependencies = $dependencies;
 
-        if ($dependencies instanceof XenForo_Dependencies_Public) {
-            XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_snippet'] = array(
-                'WidgetFramework_Template_Helper_Core',
-                'snippet'
-            );
-        }
+        XenForo_Template_Helper_Core::$helperCallbacks[strtolower('WidgetFramework_snippet')] = array(
+            'WidgetFramework_Template_Helper_Core',
+            'snippet'
+        );
 
-        XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_getoption'] = array(
+        XenForo_Template_Helper_Core::$helperCallbacks[strtolower('WidgetFramework_canToggle')] = array(
+            'WidgetFramework_Template_Helper_Core',
+            'canToggle'
+        );
+
+        XenForo_Template_Helper_Core::$helperCallbacks[strtolower('WidgetFramework_getOption')] = array(
             'WidgetFramework_Option',
             'get'
         );

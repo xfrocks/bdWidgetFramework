@@ -87,4 +87,9 @@ class WidgetFramework_Template_Helper_Core
         return $string;
     }
 
+    public static function canToggle(array $widget)
+    {
+        return strpos($widget['position'], ',') === false;
+    }
+
 }
