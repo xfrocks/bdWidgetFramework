@@ -203,7 +203,7 @@
 				<xen:foreach loop="$position.widgets" value="$widget">
 					<xen:if is="{$widget.widgets}">
 						<li class="widget-list-tab-group">
-							<h3 class="textHeading">{xen:phrase wf_tab_group}: {$position.position}/{$widget.tabGroup} <span class="count">({xen:count $widget.widgets})</span></h3>
+							<h3 class="textHeading">{xen:phrase wf_tab_group} <span class="count">({xen:count $widget.widgets})</span></h3>
 							<ol>
 								<xen:foreach loop="$widget.widgets" value="$tabWidget">
 									<xen:include template="wf_widget_list_item">
@@ -849,7 +849,7 @@ Arguments:
     <phrase title="wf_display_as_rows" version_id="100" version_string="2.5.0d"><![CDATA[Rows]]></phrase>
     <phrase title="wf_display_as_tabs" version_id="100" version_string="2.5.0d"><![CDATA[Tabs]]></phrase>
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
-    <phrase title="wf_display_order_explain" version_id="37" version_string="1.5.4"><![CDATA[The position of this widget relative to other widgets in the same position. If the display order is negative, its contents will be inserted before the original contents of the position. Otherwise, it will be appended.]]></phrase>
+    <phrase title="wf_display_order_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[The position of this widget relative to other widgets in the same position.]]></phrase>
     <phrase title="wf_duplicate" version_id="96" version_string="2.5.0d"><![CDATA[Duplicate]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
     <phrase title="wf_edit_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Edit Widget Page]]></phrase>
@@ -890,10 +890,10 @@ Arguments:
     <phrase title="wf_poll_thread_id_explain" version_id="69" version_string="2.4.1"><![CDATA[Enter the thread ID of the thread you want to display. Leave it blank to get the latest poll, enter "random" to get a random one each time.]]></phrase>
     <phrase title="wf_position" version_id="1" version_string="0.9"><![CDATA[Position]]></phrase>
     <phrase title="wf_position_can_not_be_empty" version_id="22" version_string="1.2.2"><![CDATA[Widget position can not be empty.]]></phrase>
-    <phrase title="wf_position_explain" version_id="96" version_string="2.5.0d"><![CDATA[There are three types of positions:<br/>
-- The "all" position will make the widget show up in the sidebar of all pages.<br/>
-- Or you can input a comma separated list of templates that need the widget. Popular templates: forum_list (the index page), forum_view (the individual forum page), thread_view (the thread page).<br/>
-- Or you can input a comma separated list in the format of "hook:hook_name" to render the widget directly to the hook. For example: "hook:page_container_content_top" will make the widget visible at the top of the page, on every page.]]></phrase>
+    <phrase title="wf_position_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[There are three types of positions:<br/>
+- Use "all" position will make the widget show up in the sidebar of all pages.<br/>
+- Or enter template title of the target page. Popular templates: forum_list (the index page), forum_view (the individual forum page), thread_view (the thread page).<br/>
+- Or enter hook position in the format of "hook:hook_name" to render the widget directly to the hook. For example: "hook:page_container_content_top" will make the widget visible at the top of the page, on every page.]]></phrase>
     <phrase title="wf_position_x_requires_widget_page" version_id="100" version_string="2.5.0d"><![CDATA[Position {position} cannot be used manually.]]></phrase>
     <phrase title="wf_posted_by_lowercase" version_id="44" version_string="2.0.6"><![CDATA[posted by]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
@@ -918,9 +918,7 @@ Arguments:
     <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
     <phrase title="wf_tab_group" version_id="69" version_string="2.4.1"><![CDATA[Widget Group]]></phrase>
-    <phrase title="wf_tab_group_explain" version_id="98" version_string="2.5.0d"><![CDATA[You can group several widgets together and have them rendered in a tabbed layout if more than one has content. Special format for advanced grouping:<br/>
-- "random": only one widget of the group will be rendered at a time. You can also use "random1" or "random2" if you wish to have more than one random group in one position.<br/>
-- "column": the widgets will be rendered in column layout, divided equally between widgets. Use "column1" or similar to have many columned group in one position.]]></phrase>
+    <phrase title="wf_tab_group_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[You can group several widgets and have them rendered together.]]></phrase>
     <phrase title="wf_template_controller" version_id="99" version_string="2.5.0d"><![CDATA[Controller]]></phrase>
     <phrase title="wf_template_controller_explain" version_id="99" version_string="2.5.0d"><![CDATA[Some template needs its data to render properly. Enter the controller name and action here to obtain the required data.]]></phrase>
     <phrase title="wf_threads" version_id="1" version_string="0.9"><![CDATA[threads]]></phrase>
@@ -935,7 +933,8 @@ Arguments:
     <phrase title="wf_thread_open_only" version_id="87" version_string="2.4.8"><![CDATA[Unlocked threads only.]]></phrase>
     <phrase title="wf_thread_with_poll" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
-    <phrase title="wf_title_explain" version_id="65" version_string="2.3.6"><![CDATA[This title will display in the header of the widget. You can leave it blank to use the name of the renderer. Or you can use a phrase by using {xen:phrase title} format.]]></phrase>
+    <phrase title="wf_title_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[The title will display above the widget contents where applicable.]]></phrase>
+    <phrase title="wf_title_translations" version_id="111" version_string="2.6.0-dev"><![CDATA[Translations]]></phrase>
     <phrase title="wf_unknown_renderer" version_id="96" version_string="2.5.0d"><![CDATA[Unknown Renderer ({class})]]></phrase>
     <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
     <phrase title="wf_use_an_existing_template" version_id="111" version_string="2.6.0-dev"><![CDATA[Use an existing template]]></phrase>
