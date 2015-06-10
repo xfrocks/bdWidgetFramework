@@ -84,6 +84,11 @@ class WidgetFramework_Core
 
         // since 2.6
         $renderers[] = 'WidgetFramework_WidgetRenderer_ProfilePosts';
+
+        // since 2.6.0
+        if (self::xfmgFound()) {
+            $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Comments';
+        }
     }
 
     public function bootstrap()
@@ -894,6 +899,17 @@ class WidgetFramework_Core
         $moderatorModel = XenForo_Model::create('XenForo_Model_Moderator');
         $gmigi = $moderatorModel->getGeneralModeratorInterfaceGroupIds();
         return in_array('resourceModeratorPermissions', $gmigi);
+    }
+
+    public static function xfmgFound()
+    {
+        if (XenForo_Application::$versionId < 1030070) {
+            // the add-on itself requires XenForo 1.3.0+
+            return false;
+        }
+
+        $addOns = XenForo_Application::get('addOns');
+        return isset($addOns['XenGallery']);
     }
 
 }

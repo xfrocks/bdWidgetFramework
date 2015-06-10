@@ -626,6 +626,9 @@
 	</xen:submitunit>
 
 </xen:form>]]></template>
+    <template title="wf_widget_xfmg_comments"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_comments_lowercase}"}</xen:explain>
+</xen:spinboxunit>]]></template>
     <template title="widget_framework.css"><![CDATA[.widget-list-tab-group h3 {
 	padding-left: 20px !important;
 }
@@ -827,6 +830,7 @@ Arguments:
     <phrase title="wf_by" version_id="96" version_string="2.5.0d"><![CDATA[by]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
+    <phrase title="wf_comments_lowercase" version_id="111" version_string="2.6.0-dev"><![CDATA[comments]]></phrase>
     <phrase title="wf_conditional" version_id="96" version_string="2.5.0d"><![CDATA[Conditional]]></phrase>
     <phrase title="wf_conditional_explain" version_id="100" version_string="2.5.0d"><![CDATA[Enter widget conditionals to control when the widget is shown. The syntax is similar to template conditional for &lt;xen:if /&gt; tag. You can also use <a href="{link}" target="_blank" tabindex="-1">Layout Editor</a> to learn which variables are available in which positions. Some commonly used conditionals:<br />
 <br />
@@ -903,6 +907,7 @@ Arguments:
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
     <phrase title="wf_read_more" global_cache="1" version_id="77" version_string="2.4.5b"><![CDATA[Read more]]></phrase>
+    <phrase title="wf_recent_comments" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Recent Comments]]></phrase>
     <phrase title="wf_recent_status" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
     <phrase title="wf_recent_status_friends_only_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show statuses from user's friend list only. It will display from all users if current user is not logged in.]]></phrase>
