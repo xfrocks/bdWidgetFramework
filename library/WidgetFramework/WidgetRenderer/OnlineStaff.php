@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetR
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('staff_online_now');
+            return new XenForo_Phrase('wf_online_staff');
         }
 
         return parent::extraPrepareTitle($widget);

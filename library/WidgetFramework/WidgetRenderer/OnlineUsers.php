@@ -7,7 +7,7 @@ class WidgetFramework_WidgetRenderer_OnlineUsers extends WidgetFramework_WidgetR
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('members_online_now');
+            return new XenForo_Phrase('wf_online_users');
         }
 
         $preparedTitle = parent::extraPrepareTitle($widget);

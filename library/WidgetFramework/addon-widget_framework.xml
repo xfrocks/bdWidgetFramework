@@ -289,7 +289,7 @@
 </xen:if>]]></template>
     <template title="wf_widget_options_birthday"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 0}">
 	<xen:explain>
-		{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}
+		{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}
 		{xen:phrase wf_limit_zero_explain}
 	</xen:explain>
 </xen:spinboxunit>
@@ -412,7 +412,7 @@
 	<xen:option value="popular">{xen:phrase wf_widget_threads_type_popular}</xen:option>
 	<xen:option value="most_replied">{xen:phrase wf_widget_threads_type_most_replied}</xen:option>
 	<xen:option value="most_liked">{xen:phrase wf_widget_threads_type_most_liked}</xen:option>
-	<xen:option value="polls">{xen:phrase polls}</xen:option>
+	<xen:option value="polls">{xen:phrase wf_widget_threads_type_polls}</xen:option>
 </xen:selectunit>
 
 <xen:spinboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{xen:if '!empty({$options.cutoff})', $options.cutoff, 5}">
@@ -458,7 +458,7 @@
 </xen:selectunit>
 </xen:hook>]]></template>
     <template title="wf_widget_options_users"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
-	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}</xen:explain>
 </xen:spinboxunit>
 
 <xen:selectunit label="{xen:phrase wf_order_factor}:" name="{$namePrefix}order" value="{$options.order}">
@@ -478,7 +478,7 @@
 	<xen:option value="avatarOnlyBigger">{xen:phrase wf_widget_users_display_mode_avatar_only_bigger}</xen:option>
 </xen:radiounit>]]></template>
     <template title="wf_widget_options_users_staff"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 0}">
-	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users}"}</xen:explain>
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}</xen:explain>
 </xen:spinboxunit>
 
 <xen:radiounit label="{xen:phrase wf_display_mode}:" name="{$namePrefix}displayMode" value="{xen:if '{$options.displayMode}', $options.displayMode, 'avatarOnlyBigger'}">
@@ -818,6 +818,7 @@ Arguments:
     <phrase title="style_property_wf_widgetTabs_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (outer container)]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
+    <phrase title="wf_birthday" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Birthday]]></phrase>
     <phrase title="wf_birthday_avatar_only" version_id="92" version_string="2.4.9e"><![CDATA[Ignore Users Without Avatar]]></phrase>
     <phrase title="wf_birthday_avatar_only_explain" version_id="92" version_string="2.4.9e"><![CDATA[Enable this option to hide users who haven't uploaded an avatar. ]]></phrase>
     <phrase title="wf_blacklist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Blacklist Groups]]></phrase>
@@ -856,7 +857,8 @@ Arguments:
     <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>
     <phrase title="wf_expression_explain" version_id="96" version_string="2.5.0d"><![CDATA[Expression has been deprecated for security reason. Please switch to use Conditional as soon as possible, Expression will be removed completely in the near future.]]></phrase>
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
-    <phrase title="wf_feed_reader" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
+    <phrase title="wf_feed_reader" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
+    <phrase title="wf_forum_statistics" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Forum Statistics]]></phrase>
     <phrase title="wf_home_navtab" global_cache="1" version_id="78" version_string="2.4.5c"><![CDATA[Home]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_from_uploaded_file" version_id="96" version_string="2.5.0d"><![CDATA[Import from uploaded file]]></phrase>
@@ -878,6 +880,8 @@ Arguments:
     <phrase title="wf_move" version_id="100" version_string="2.5.0d"><![CDATA[{display_order}]]></phrase>
     <phrase title="wf_move_group" version_id="111" version_string="2.6.0-dev"><![CDATA[Move Group ({display_order})]]></phrase>
     <phrase title="wf_non_existent_hook_x" version_id="37" version_string="1.5.4"><![CDATA[The specified hook "{hook}" could not be found in any public templates.]]></phrase>
+    <phrase title="wf_online_staff" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Staff Online Now]]></phrase>
+    <phrase title="wf_online_users" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Members Online Now]]></phrase>
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
     <phrase title="wf_original_contents" version_id="98" version_string="2.5.0d"><![CDATA[Original Contents]]></phrase>
@@ -899,7 +903,7 @@ Arguments:
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
     <phrase title="wf_read_more" global_cache="1" version_id="77" version_string="2.4.5b"><![CDATA[Read more]]></phrase>
-    <phrase title="wf_recent_status" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
+    <phrase title="wf_recent_status" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
     <phrase title="wf_recent_status_friends_only_explain" version_id="17" version_string="1.0.9"><![CDATA[Enable this option to show statuses from user's friend list only. It will display from all users if current user is not logged in.]]></phrase>
     <phrase title="wf_recent_status_show_duplicates" version_id="87" version_string="2.4.8"><![CDATA[Allow Multiple Statuses From Same User]]></phrase>
@@ -916,6 +920,7 @@ Arguments:
     <phrase title="wf_resource_count" version_id="47" version_string="2.1.1"><![CDATA[Resource Count]]></phrase>
     <phrase title="wf_save_widget" version_id="1" version_string="0.9"><![CDATA[Save Widget]]></phrase>
     <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
+    <phrase title="wf_share_this_page" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Share This Page]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
     <phrase title="wf_tab_group" version_id="69" version_string="2.4.1"><![CDATA[Widget Group]]></phrase>
     <phrase title="wf_tab_group_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[You can group several widgets and have them rendered together.]]></phrase>
@@ -931,12 +936,15 @@ Arguments:
     <phrase title="wf_threads_prefixes_explain" version_id="47" version_string="2.1.1"><![CDATA[Select the prefixes you want to filter the threads against.]]></phrase>
     <phrase title="wf_threads_sticky_threads_only" version_id="83" version_string="2.4.6e"><![CDATA[Sticky Threads Only]]></phrase>
     <phrase title="wf_thread_open_only" version_id="87" version_string="2.4.8"><![CDATA[Unlocked threads only.]]></phrase>
-    <phrase title="wf_thread_with_poll" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
+    <phrase title="wf_thread_with_poll" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
     <phrase title="wf_title_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[The title will display above the widget contents where applicable.]]></phrase>
     <phrase title="wf_title_translations" version_id="111" version_string="2.6.0-dev"><![CDATA[Translations]]></phrase>
     <phrase title="wf_unknown_renderer" version_id="96" version_string="2.5.0d"><![CDATA[Unknown Renderer ({class})]]></phrase>
-    <phrase title="wf_users" version_id="1" version_string="0.9"><![CDATA[users]]></phrase>
+    <phrase title="wf_users" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Users]]></phrase>
+    <phrase title="wf_users_find" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Find Member]]></phrase>
+    <phrase title="wf_users_lowercase" version_id="111" version_string="2.6.0-dev"><![CDATA[users]]></phrase>
+    <phrase title="wf_users_staff" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Staff Members]]></phrase>
     <phrase title="wf_use_an_existing_template" version_id="111" version_string="2.6.0-dev"><![CDATA[Use an existing template]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
     <phrase title="wf_viewing_home_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing home page]]></phrase>
@@ -956,26 +964,27 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
     <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
-    <phrase title="wf_widget_profile_posts_type_recent" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
+    <phrase title="wf_widget_profile_posts_type_recent" global_cache="1" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff_explain" version_id="26" version_string="1.3.1"><![CDATA[Threads older than this number of days won't make it to the list that supports cutoff as noted above.]]></phrase>
     <phrase title="wf_widget_threads_type" version_id="1" version_string="0.9"><![CDATA[Widget Type]]></phrase>
-    <phrase title="wf_widget_threads_type_latest_replies" version_id="96" version_string="2.5.0d"><![CDATA[Latest Replies]]></phrase>
-    <phrase title="wf_widget_threads_type_most_liked" version_id="65" version_string="2.3.6"><![CDATA[Most Liked Threads]]></phrase>
-    <phrase title="wf_widget_threads_type_most_replied" version_id="65" version_string="2.3.6"><![CDATA[Most Replied Thread]]></phrase>
-    <phrase title="wf_widget_threads_type_new" version_id="1" version_string="0.9"><![CDATA[New Threads]]></phrase>
-    <phrase title="wf_widget_threads_type_popular" version_id="65" version_string="2.3.6"><![CDATA[Most Viewed Theads]]></phrase>
-    <phrase title="wf_widget_threads_type_recent" version_id="96" version_string="2.5.0d"><![CDATA[Recent Threads]]></phrase>
+    <phrase title="wf_widget_threads_type_latest_replies" global_cache="1" version_id="96" version_string="2.5.0d"><![CDATA[Latest Replies]]></phrase>
+    <phrase title="wf_widget_threads_type_most_liked" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Most Liked Threads]]></phrase>
+    <phrase title="wf_widget_threads_type_most_replied" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Most Replied Thread]]></phrase>
+    <phrase title="wf_widget_threads_type_new" global_cache="1" version_id="1" version_string="0.9"><![CDATA[New Threads]]></phrase>
+    <phrase title="wf_widget_threads_type_polls" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Polls]]></phrase>
+    <phrase title="wf_widget_threads_type_popular" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Most Viewed Theads]]></phrase>
+    <phrase title="wf_widget_threads_type_recent" global_cache="1" version_id="96" version_string="2.5.0d"><![CDATA[Recent Threads]]></phrase>
     <phrase title="wf_widget_threads_type_recent_first_poster" version_id="96" version_string="2.5.0d"><![CDATA[Recent Threads (use first poster avatar)]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type" version_id="47" version_string="2.1.1"><![CDATA[Widget Type]]></phrase>
-    <phrase title="wf_widget_xfrm_resources_type_highest_rating" version_id="65" version_string="2.3.6"><![CDATA[Top Resources]]></phrase>
-    <phrase title="wf_widget_xfrm_resources_type_latest_update" version_id="47" version_string="2.1.1"><![CDATA[Recently Updated]]></phrase>
-    <phrase title="wf_widget_xfrm_resources_type_most_downloaded" version_id="65" version_string="2.3.6"><![CDATA[Popular Resources]]></phrase>
-    <phrase title="wf_widget_xfrm_resources_type_new" version_id="47" version_string="2.1.1"><![CDATA[New Resources]]></phrase>
+    <phrase title="wf_widget_xfrm_resources_type_highest_rating" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Top Resources]]></phrase>
+    <phrase title="wf_widget_xfrm_resources_type_latest_update" global_cache="1" version_id="47" version_string="2.1.1"><![CDATA[Recently Updated]]></phrase>
+    <phrase title="wf_widget_xfrm_resources_type_most_downloaded" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Popular Resources]]></phrase>
+    <phrase title="wf_widget_xfrm_resources_type_new" global_cache="1" version_id="47" version_string="2.1.1"><![CDATA[New Resources]]></phrase>
     <phrase title="wf_xfrm_resources_categories_explain" version_id="69" version_string="2.4.1"><![CDATA[Select the categories you want to search for resources. Leave nothing selected to include all viewable categories.]]></phrase>
     <phrase title="wf_x_posted" version_id="1" version_string="0.9"><![CDATA[{user} posted]]></phrase>
     <phrase title="wf_x_replied" version_id="1" version_string="0.9"><![CDATA[{user} replied]]></phrase>

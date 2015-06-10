@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('users');
+            return new XenForo_Phrase('wf_users');
         }
 
         return parent::extraPrepareTitle($widget);

@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('birthday');
+            return new XenForo_Phrase('wf_birthday');
         }
 
         return parent::extraPrepareTitle($widget);

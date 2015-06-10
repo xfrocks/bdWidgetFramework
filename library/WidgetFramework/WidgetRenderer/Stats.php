@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_Stats extends WidgetFramework_WidgetRendere
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('forum_statistics');
+            return new XenForo_Phrase('wf_forum_statistics');
         }
 
         return parent::extraPrepareTitle($widget);

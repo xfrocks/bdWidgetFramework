@@ -31,7 +31,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 case 'most_liked':
                     return new XenForo_Phrase('wf_widget_threads_type_most_liked');
                 case 'polls':
-                    return new XenForo_Phrase('polls');
+                    return new XenForo_Phrase('wf_widget_threads_type_polls');
                 case 'new':
                 default:
                     return new XenForo_Phrase('wf_widget_threads_type_new');

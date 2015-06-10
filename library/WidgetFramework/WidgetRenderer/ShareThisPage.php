@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_Widge
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('share_this_page');
+            return new XenForo_Phrase('wf_share_this_page');
         }
 
         return parent::extraPrepareTitle($widget);

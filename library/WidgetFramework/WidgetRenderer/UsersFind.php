@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_UsersFind extends WidgetFramework_WidgetRen
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('find_member');
+            return new XenForo_Phrase('wf_users_find');
         }
 
         return parent::extraPrepareTitle($widget);

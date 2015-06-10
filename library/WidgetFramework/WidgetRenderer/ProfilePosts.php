@@ -14,11 +14,7 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            if (XenForo_Application::$versionId > 1040000) {
-                return new XenForo_Phrase('new_profile_posts');
-            } else {
-                return new XenForo_Phrase('wf_widget_profile_posts_type_recent');
-            }
+            return new XenForo_Phrase('wf_widget_profile_posts_type_recent');
         }
 
         return parent::extraPrepareTitle($widget);
