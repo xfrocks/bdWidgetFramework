@@ -567,14 +567,12 @@ class WidgetFramework_Core
                         } else {
                             $widgetHtml = strval($renderer->render($widget, $positionCode, $widgetParams, $template, $html));
 
-                            // extra-preparation (this will be run everytime the widget is ready to display)
+                            // extra-preparation (this will be run every time the widget is ready to display)
                             // this method can change the final html in some way if it needs to do that
                             // the changed html won't be store in the cache (caching is processed inside
                             // WidgetFramework_Renderer::render())
                             $widget['extraData'] = $renderer->extraPrepare($widget, $widgetHtml);
                         }
-
-                        $widget['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget);
                     } elseif (WidgetFramework_Option::get('layoutEditorEnabled')) {
                         $widgetHtml = new XenForo_Phrase('wf_layout_editor_widget_no_renderer');
                     }

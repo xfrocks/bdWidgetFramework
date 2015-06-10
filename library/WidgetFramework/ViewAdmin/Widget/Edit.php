@@ -45,6 +45,13 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
             }
         }
 
+        if (!empty($widget['widget_id'])
+            && $widget['widget_id'] > 0
+            && !empty($widget['options'][WidgetFramework_DataWriter_Widget::WIDGET_OPTION_ADDON_VERSION_ID])
+        ) {
+            $this->_prepareWidgetTitlePhrases($widget);
+        }
+
         if (!empty($this->_params['renderers'])) {
             foreach (array_keys($this->_params['renderers']) as $rendererKey) {
                 if (!empty($this->_params['renderers'][$rendererKey]['is_hidden'])
@@ -86,6 +93,60 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
 
                 $keyValuePairs[$variableName] = $value;
             }
+        }
+    }
+
+    protected function _prepareWidgetTitlePhrases(array $widget)
+    {
+        /** @var WidgetFramework_Model_Widget $widgetModel */
+        $widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');
+        /** @var XenForo_Model_Phrase $phraseModel */
+        $phraseModel = $widgetModel->getModelFromCache('XenForo_Model_Phrase');
+        $widgetTitlePhrase = $widgetModel->getWidgetTitlePhrase($widget['widget_id']);
+
+        $allPhrases = $phraseModel->getEffectivePhraseValuesInAllLanguages(array($widgetTitlePhrase));
+        if (!empty($allPhrases[0][$widgetTitlePhrase])) {
+            $widget['title'] = $allPhrases[0][$widgetTitlePhrase];
+
+            $widgetTitlePhrases = array();
+            $languages = XenForo_Application::get('languages');
+            $defaultLanguageId = XenForo_Application::getOptions()->get('defaultLanguageId');
+            foreach ($languages as $languageId => $language) {
+                if ($languageId == 0
+                    || $languageId == $defaultLanguageId
+                ) {
+                    continue;
+                }
+
+                $widgetTitlePhrases[$languageId] = array(
+                    'language_id' => $languageId,
+                    'language_title' => $language['title'],
+                    'phrase_id' => 0,
+                    'phrase_title' => $widgetTitlePhrase,
+                    'phrase_text' => '',
+                );
+            }
+
+            foreach ($allPhrases as $languageId => $phrases) {
+                if (!isset($widgetTitlePhrases[$languageId])) {
+                    continue;
+                }
+
+                $widgetTitlePhrases[$languageId]['phrase_text'] = $phrases[$widgetTitlePhrase];
+            }
+
+            if (!empty($widgetTitlePhrase)) {
+                $phraseIds = $phraseModel->getPhraseIdInLanguagesByTitle($widgetTitlePhrase);
+                foreach ($phraseIds as $languageId => $phraseId) {
+                    if (!isset($widgetTitlePhrases[$languageId])) {
+                        continue;
+                    }
+
+                    $widgetTitlePhrases[$languageId]['phrase_id'] = $phraseId;
+                }
+            }
+
+            $this->_params['widgetTitlePhrases'] = $widgetTitlePhrases;
         }
     }
 

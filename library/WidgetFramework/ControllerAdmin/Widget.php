@@ -587,6 +587,25 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         return $this->responseView('WidgetFramework_ViewAdmin_Widget_Export', '', $viewParams);
     }
 
+    public function actionTranslateTitle()
+    {
+        $widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
+        $widget = $this->_getWidgetOrError($widgetId);
+
+        $languageId = $this->_input->filterSingle('language_id', XenForo_Input::UINT);
+
+        $dw = XenForo_DataWriter::create('XenForo_DataWriter_Phrase', XenForo_DataWriter::ERROR_SILENT);
+        $dw->set('language_id', $languageId);
+        $dw->set('title', $this->_getWidgetModel()->getWidgetTitlePhrase($widget['widget_id']));
+        $dw->set('phrase_text', '');
+        $dw->save();
+
+        return $this->responseRedirect(
+            XenForo_ControllerResponse_Redirect::RESOURCE_UPDATED,
+            XenForo_Link::buildAdminLink('phrases/edit', null, array('phrase_id' => $dw->get('phrase_id')))
+        );
+    }
+
     protected function _getWidgetOrError($widgetId)
     {
         $info = $this->_getWidgetModel()->getWidgetById($widgetId);

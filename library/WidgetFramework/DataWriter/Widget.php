@@ -5,6 +5,8 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
     const EXTRA_DATA_SKIP_REBUILD = 'skipRebuild';
     const EXTRA_DATA_TEMPLATE_FOR_HOOKS = 'templateForHooks';
 
+    const WIDGET_OPTION_ADDON_VERSION_ID = '_addOnVersionId';
+
     protected $_isDelete = false;
 
     public function isDelete()
@@ -28,6 +30,17 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
         }
 
         return $options;
+    }
+
+    public function getWidgetOption($optionKey, $default = null)
+    {
+        $options = $this->getWidgetOptions();
+
+        if (isset($options[$optionKey])) {
+            return $options[$optionKey];
+        }
+
+        return $default;
     }
 
     public function setWidgetOption($optionKey, $optionValue = null)
@@ -120,6 +133,8 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _preSave()
     {
+        $this->_bumpAddOnVersionId();
+
         $templateForHooks = $this->getExtraData(self::EXTRA_DATA_TEMPLATE_FOR_HOOKS);
         if ($templateForHooks !== null) {
             // this extra data has been set somehow
@@ -135,6 +150,13 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _postSave()
     {
+        $this->_insertOrUpdateMasterPhrase(
+            $this->_getWidgetModel()->getWidgetTitlePhrase($this->get('widget_id')),
+            $this->get('title'),
+            '',
+            array('global_cache' => 1)
+        );
+
         if ($this->_isTemplateWidget($this->get('class'))) {
             $this->_getWidgetRendererTemplateModel()->dwPostSave($this->getMergedData(), $this->getWidgetOptions());
         } elseif ($this->isChanged('class') && $this->_isTemplateWidget($this->getExisting('class'))) {
@@ -153,6 +175,8 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _postDelete()
     {
+        $this->_deleteMasterPhrase($this->_getWidgetModel()->getWidgetTitlePhrase($this->get('widget_id')));
+
         if ($this->_isTemplateWidget($this->get('class'))) {
             $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedData(), $this->getWidgetOptions());
         }
@@ -167,6 +191,25 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
     protected function _getUpdateCondition($tableName)
     {
         return 'widget_id = ' . $this->_db->quote($this->getExisting('widget_id'));
+    }
+
+    protected function _bumpAddOnVersionId()
+    {
+        if (XenForo_Application::$versionId < 1020000) {
+            return;
+        }
+
+        $addOns = XenForo_Application::get('addOns');
+        if (empty($addOns['widget_framework'])) {
+            return;
+        }
+
+        $optionValue = $this->getWidgetOption(self::WIDGET_OPTION_ADDON_VERSION_ID);
+        if (empty($optionValue)
+            || $optionValue != $addOns['widget_framework']
+        ) {
+            $this->setWidgetOption(self::WIDGET_OPTION_ADDON_VERSION_ID, $addOns['widget_framework']);
+        }
     }
 
     protected function _isTemplateWidget($class)

@@ -741,10 +741,33 @@ abstract class WidgetFramework_WidgetRenderer
     public function extraPrepareTitle(array $widget)
     {
         if (!empty($widget['title'])) {
-            if (is_string($widget['title']) AND preg_match('/^{xen:phrase ([^}]+)}$/i', $widget['title'], $matches)) {
+            if (is_string($widget['title'])
+                && preg_match('/^{xen:phrase ([^}]+)}$/i', $widget['title'], $matches)
+            ) {
+                // {xen:phrase title} as widget title, use the specified phrase
+
+                if (XenForo_Application::debugMode()) {
+                    // this kind of usage is deprecated, log server error entry if debug mode is on
+                    XenForo_Error::logError(sprintf(
+                        'Widget title support for {xen:phrase title} has been deprecated. '
+                        . 'Please update widget #%d.', $widget['widget_id']
+                    ));
+                }
+
                 return new XenForo_Phrase($matches[1]);
             } else {
-                return $widget['title'];
+                if (!empty($widget['options'][WidgetFramework_DataWriter_Widget::WIDGET_OPTION_ADDON_VERSION_ID])
+                    && $widget['widget_id'] > 0
+                ) {
+                    // since 2.6.0
+                    // use self-managed phrase for widget title
+                    /** @var WidgetFramework_Model_Widget $widgetModel */
+                    $widgetModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Widget');
+                    return new XenForo_Phrase($widgetModel->getWidgetTitlePhrase($widget['widget_id']));
+                } else {
+                    // legacy support
+                    return $widget['title'];
+                }
             }
         } else {
             return $this->getName();

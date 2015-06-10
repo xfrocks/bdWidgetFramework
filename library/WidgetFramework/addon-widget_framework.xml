@@ -56,12 +56,36 @@
 	<xen:title>{xen:raw $title}</xen:title>
 </xen:if>
 
+<xen:set var="$textboxTitleExplain">
+	<xen:if is="!{$_layoutEditor}">
+		{xen:phrase wf_title_explain}
+		
+		<xen:if is="{$widgetTitlePhrases}">
+			{xen:phrase wf_title_translations}:
+
+			<xen:foreach loop="$widgetTitlePhrases" value="$phrase">
+				{$phrase.language_title} =
+				<xen:if is="{$phrase.phrase_id}">
+					"<a href="{xen:adminlink phrases/edit, '',
+						'phrase_id={$phrase.phrase_id}'}" target="_blank">{$phrase.phrase_text}</a>"
+				<xen:else />
+					<a href="{xen:adminlink widgets/translate-title, $widget,
+						'language_id={$phrase.language_id}'}" target="_blank">N/A</a>
+				</xen:if>
+			</xen:foreach>
+		</xen:if>
+	</xen:if>
+</xen:set>
+
 <xen:form action="{xen:adminlink 'widgets/save'}"
 		  data-redirect="yes"
 		  class="formOverlay AutoValidator WidgetFramework_Widget_EditForm">
 
-	<xen:textboxunit label="{xen:phrase wf_title}:" name="title" value="{$widget.title}" hint="{xen:phrase you_may_use_html}">
-		<xen:explain>{xen:if '{$_layoutEditor}', '', {xen:phrase wf_title_explain}}</xen:explain>
+	<xen:textboxunit label="{xen:phrase wf_title}:"
+		name="title"
+		value="{$widget.title}"
+		hint="{xen:phrase you_may_use_html}">
+		<xen:explain>{xen:raw $textboxTitleExplain}</xen:explain>
 	</xen:textboxunit>
 
 	<xen:selectunit label="{xen:phrase wf_renderer}:" name="class" value="{$widget.class}"

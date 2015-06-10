@@ -4,6 +4,15 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 {
     const SIMPLE_CACHE_KEY = 'widgets';
 
+    public function getWidgetTitlePhrase($widgetId)
+    {
+        if ($widgetId > 0) {
+            return '_widget_title_' . $widgetId;
+        } else {
+            throw new XenForo_Exception('Cannot get widget title phrase for widget without ID.');
+        }
+    }
+
     public function getWidgetsContainsWidgetId(array $widgets, $widgetId, $group = '')
     {
         foreach (array_keys($widgets) as $_widgetId) {
