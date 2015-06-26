@@ -73,8 +73,10 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
     {
         if (!empty($widget['options']['_text'])) {
             return $this->_getWidgetRendererTemplateModel()->getWidgetTemplateTitle($widget['widget_id']);
-        } else {
+        } elseif (isset($widget['options']['template'])) {
             return $widget['options']['template'];
+        } else {
+            return false;
         }
     }
 
@@ -98,10 +100,14 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
 
                 return $renderedView;
             }
-        } elseif (!empty($templateTitle)
-            && $templateTitle == $renderTemplateObject->getTemplateName()
-        ) {
-            return $renderTemplateObject->render();
+        } elseif (!empty($templateTitle)) {
+            if ($templateTitle == $renderTemplateObject->getTemplateName()) {
+                return $renderTemplateObject->render();
+            }
+        } else {
+            if (!empty($widget['options']['html'])) {
+                return $widget['options']['html'];
+            }
         }
 
         return '';
