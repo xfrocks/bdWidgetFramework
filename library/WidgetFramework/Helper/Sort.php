@@ -35,4 +35,8 @@ class WidgetFramework_Helper_Sort
         return $result;
     }
 
+    public static function rendererLabels($a, $b)
+    {
+        return strcmp($a['label'], $b['label']);
+    }
 }

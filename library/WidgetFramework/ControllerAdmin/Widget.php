@@ -656,7 +656,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             );
         }
 
-        usort($options, create_function('$a, $b', 'return $a["label"] > $b["label"];'));
+        usort($options, array('WidgetFramework_Helper_Sort', 'rendererLabels'));
 
         return $options;
     }
