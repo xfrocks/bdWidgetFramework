@@ -1082,9 +1082,7 @@ All customization should go to wf_default_EXTRA.css
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>]]></template>
-    <template title="wf_default_EXTRA.css" version_id="47" version_string="2.1.1"><![CDATA[<xen:comment>Customization should go here</xen:comment>
-
-.Tinhte_XenTag_WidgetRenderer_Cloud h3 { display: none }]]></template>
+    <template title="wf_default_EXTRA.css" version_id="111" version_string="2.6.0-dev"><![CDATA[<xen:comment>Customization should go here</xen:comment>]]></template>
     <template title="wf_home_navtab_links" version_id="78" version_string="2.4.5c"><![CDATA[<ul class="secondaryContent blockLinksList">
 
 	<!-- before child nodes -->
