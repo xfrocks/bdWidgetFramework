@@ -1,5 +1,0 @@
-<?php
-
-abstract class XFCP_WidgetFramework_XenForo_ViewAdmin_StyleProperty_List extends XenForo_ViewAdmin_StyleProperty_List
-{
-}
