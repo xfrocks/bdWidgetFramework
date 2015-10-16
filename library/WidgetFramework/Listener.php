@@ -44,6 +44,9 @@ class WidgetFramework_Listener
         if ($indexNodeId > 0) {
             WidgetFramework_Helper_Index::setup();
         }
+
+        WidgetFramework_ShippableHelper_Updater::onInitDependencies($dependencies,
+            WidgetFramework_Option::UPDATER_URL, 'widget_framework');
     }
 
     public static function navigation_tabs(array &$extraTabs, $selectedTabId)
