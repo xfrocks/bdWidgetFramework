@@ -626,6 +626,9 @@
 	</xen:submitunit>
 
 </xen:form>]]></template>
+    <template title="wf_widget_xfmg_albums"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_albums_lowercase}"}</xen:explain>
+</xen:spinboxunit>]]></template>
     <template title="wf_widget_xfmg_comments"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_comments_lowercase}"}</xen:explain>
 </xen:spinboxunit>]]></template>
@@ -823,6 +826,7 @@ Arguments:
     <phrase title="style_property_wf_widgetTabs_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_widgetTabs_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (outer container)]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
+    <phrase title="wf_albums_lowercase" version_id="112" version_string="2.6.0-dev"><![CDATA[albums]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
     <phrase title="wf_birthday" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Birthday]]></phrase>
     <phrase title="wf_birthday_avatar_only" version_id="92" version_string="2.4.9e"><![CDATA[Ignore Users Without Avatar]]></phrase>
@@ -910,6 +914,7 @@ Arguments:
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
     <phrase title="wf_read_more" global_cache="1" version_id="77" version_string="2.4.5b"><![CDATA[Read more]]></phrase>
+    <phrase title="wf_recent_albums" version_id="112" version_string="2.6.0-dev"><![CDATA[Recent Albums]]></phrase>
     <phrase title="wf_recent_comments" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Recent Comments]]></phrase>
     <phrase title="wf_recent_status" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
@@ -2373,6 +2378,19 @@ All customization should go to wf_default_EXTRA.css
 		<xen:if is="!{$skipWidgetContainer}"></div></xen:if>
 	</xen:if>
 </xen:if>]]></template>
+    <template title="wf_widget_xfmg_albums" version_id="112" version_string="2.6.0-dev"><![CDATA[<div class="avatarList">
+	<ol>
+		<xen:foreach loop="$albums" value="$_album">
+			<li>
+				<xen:avatar user="$_album" size="s" img="true" href="{xen:link xengallery/albums, $_album}" class="NoOverlay Tooltip" title="{$_album.username}" />
+				<a href="{xen:link xengallery/albums, $_album}" class="username NoOverlay">{$_album.album_title}</a>
+				<div class="userTitle"><a href="{xen:link xengallery/albums, $_album}">{xen:phrase xengallery_media_items_count, 'count={xen:number $_album.album_media_count}'}</a></div>
+			</li>
+		</xen:foreach>
+	</ol>
+</div>
+
+<xen:edithint template="xengallery_album_wrapper" />]]></template>
     <template title="wf_widget_xfrm_resources" version_id="73" version_string="2.4.3b"><![CDATA[<xen:if hascontent="true">
 	<xen:require css="wf_default.css" />
 
