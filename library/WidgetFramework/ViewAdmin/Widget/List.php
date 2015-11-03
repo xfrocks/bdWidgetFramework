@@ -35,7 +35,9 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base
             }
 
             if (!empty($widget['renderer'])) {
-                $widget['title'] = strip_tags($widget['renderer']->extraPrepareTitle($widget));
+                /** @var WidgetFramework_WidgetRenderer $renderer */
+                $renderer = $widget['renderer'];
+                $widget['title'] = strip_tags($renderer->extraPrepareTitle($widget));
             }
         }
 

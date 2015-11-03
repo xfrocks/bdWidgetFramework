@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Contributors extends WidgetFramework_W
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('wf_top_contributors');
+            return new XenForo_Phrase('xengallery_top_contributors');
         }
 
         return parent::extraPrepareTitle($widget);
@@ -27,7 +27,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Contributors extends WidgetFramework_W
 
     protected function _getOptionsTemplate()
     {
-        return 'wf_widget_xfmg_contributors';
+        return 'wf_widget_options_xfmg_contributors';
     }
 
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)

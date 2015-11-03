@@ -200,7 +200,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         return parent::_getCacheId($widget, $positionCode, $params, $suffix);
     }
 
-    protected function _getThreads($widget, $positionCode, $params, $renderTemplateObject)
+    protected function _getThreads($widget, $positionCode, $params, XenForo_Template_Abstract $renderTemplateObject)
     {
         $core = WidgetFramework_Core::getInstance();
         $layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
@@ -357,7 +357,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         return $threads;
     }
 
-    protected function _prepareThreads(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject, array &$threads)
+    protected function _prepareThreads(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject,
+        array &$threads)
     {
         $core = WidgetFramework_Core::getInstance();
         $layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');

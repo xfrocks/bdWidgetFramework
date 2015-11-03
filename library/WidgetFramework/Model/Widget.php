@@ -246,10 +246,13 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             throw new XenForo_Exception(new XenForo_Phrase('provided_file_was_not_valid_xml_file'), true);
         }
 
-        if ($document->getName() != 'widget_framework') {
+        if ($document->getName() != 'widget_framework'
+            || empty($document->widget)
+        ) {
             throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_not_an_widgets_xml_file'), true);
         }
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $widgets = XenForo_Helper_DevelopmentXml::fixPhpBug50670($document->widget);
 
         XenForo_Db::beginTransaction();

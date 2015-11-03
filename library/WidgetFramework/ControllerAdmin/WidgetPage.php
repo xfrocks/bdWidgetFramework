@@ -39,7 +39,8 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
             'widgets' => $widgets,
             'nodeParentOptions' => $this->_getNodeModel()->getNodeOptionsArray($this->_getNodeModel()->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true),
             'styles' => $this->_getStyleModel()->getAllStylesAsFlattenedTree(),
-            'natOptions' => (XenForo_Application::isRegistered('nodesAsTabsAPI') ? NodesAsTabs_API::nodeOptionsRecord($nodeId) : false)
+            'natOptions' => (XenForo_Application::isRegistered('nodesAsTabsAPI') ?
+                call_user_func(array('NodesAsTabs_API', 'nodeOptionsRecord'), $nodeId) : false)
         );
 
         return $this->responseView('WidgetFramework_ViewAdmin_WidgetPage_Edit', 'wf_widget_page_edit', $viewParams);
@@ -88,7 +89,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
         $response = $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('nodes') . $this->getLastHash($dw->get('node_id')));
 
         if (XenForo_Application::isRegistered('nodesAsTabsAPI')) {
-            NodesAsTabs_API::actionSave($response, $this);
+            call_user_func(array('NodesAsTabs_API', 'actionSave'), $response, $this);
         }
 
         return $response;
@@ -99,7 +100,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
         $response = parent::actionDelete();
 
         if (XenForo_Application::isRegistered('nodesAsTabsAPI')) {
-            NodesAsTabs_API::actionDelete($response, $this);
+            call_user_func(array('NodesAsTabs_API', 'actionDelete'), $response, $this);
         }
 
         return $response;
@@ -130,7 +131,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
         $response = parent::actionValidateField();
 
         if (XenForo_Application::isRegistered('nodesAsTabsAPI')) {
-            NodesAsTabs_API::actionValidateField($response, $this);
+            call_user_func(array('NodesAsTabs_API', 'actionValidateField'), $response, $this);
         }
 
         return $response;

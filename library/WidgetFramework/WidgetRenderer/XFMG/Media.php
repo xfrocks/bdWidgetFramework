@@ -39,7 +39,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Media extends WidgetFramework_WidgetRe
 
     protected function _getOptionsTemplate()
     {
-        return 'wf_widget_xfmg_media';
+        return 'wf_widget_options_xfmg_media';
     }
 
     protected function _renderOptions(XenForo_Template_Abstract $template)

@@ -13,11 +13,6 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
     public static function preSaveWidget(array $widget, $positionCode, array $params, &$html)
     {
-        // added support for [bd] Avatar As Attachment
-        if (class_exists('bdAvatarAsAttachment_Helper_AvatarUrl')) {
-            bdAvatarAsAttachment_Helper_AvatarUrl::replaceHashes($html);
-        }
-
         return true;
     }
 

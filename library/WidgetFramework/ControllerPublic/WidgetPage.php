@@ -8,7 +8,8 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
         if (XenForo_Application::isRegistered('nodesAsTabsAPI')) {
             $nodeId = (isset($controllerResponse->params['widgetPage']['node_id']) ? $controllerResponse->params['widgetPage']['node_id'] : 0);
 
-            NodesAsTabs_API::postDispatch($this, $nodeId, $controllerResponse, $controllerName, $action);
+            call_user_func(array('NodesAsTabs_API', 'postDispatch'),
+                $this, $nodeId, $controllerResponse, $controllerName, $action);
         }
     }
 

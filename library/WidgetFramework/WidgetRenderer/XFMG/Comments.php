@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Comments extends WidgetFramework_Widge
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('wf_recent_comments');
+            return new XenForo_Phrase('xengallery_recent_comments');
         }
 
         return parent::extraPrepareTitle($widget);
@@ -28,7 +28,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Comments extends WidgetFramework_Widge
 
     protected function _getOptionsTemplate()
     {
-        return 'wf_widget_xfmg_comments';
+        return 'wf_widget_options_xfmg_comments';
     }
 
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)

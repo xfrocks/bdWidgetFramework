@@ -5,7 +5,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Albums extends WidgetFramework_WidgetR
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
-            return new XenForo_Phrase('wf_recent_albums');
+            return new XenForo_Phrase('xengallery_recent_albums');
         }
 
         return parent::extraPrepareTitle($widget);
@@ -27,7 +27,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Albums extends WidgetFramework_WidgetR
 
     protected function _getOptionsTemplate()
     {
-        return 'wf_widget_xfmg_albums';
+        return 'wf_widget_options_xfmg_albums';
     }
 
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)

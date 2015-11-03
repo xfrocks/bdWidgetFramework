@@ -19,6 +19,7 @@ class WidgetFramework_Template_Helper_Core
                         $linkText = new XenForo_Phrase('wf_read_more');
                     }
 
+                    /** @noinspection HtmlUnknownTarget */
                     $string .= sprintf('<div class="readMoreLink"><a href="%s">%s</a></div>', $options['link'], $linkText);
                 }
             }

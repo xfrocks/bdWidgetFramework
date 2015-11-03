@@ -77,9 +77,10 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
                 $entry['title'] = $entryRaw['title'];
                 $entry['content'] = $entryRaw['content'];
 
-                if (class_exists('bdImage_Integration')) {
-                    // out source the image processing + handling to [bd] Image
-                    $entry['bdImage_image'] = bdImage_Integration::getBbCodeImage($entryRaw['content']);
+                if (defined('BDIMAGE_IS_WORKING')) {
+                    // outsource the image processing + handling to [bd] Image
+                    $entry['bdImage_image'] = call_user_func(array('bdImage_Integration', 'getBbCodeImage'),
+                        $entryRaw['content']);
                 } else {
                     // TODO: support other method?
                 }
