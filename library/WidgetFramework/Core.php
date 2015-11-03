@@ -90,6 +90,7 @@ class WidgetFramework_Core
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Albums';
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Comments';
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Contributors';
+            $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Media';
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Statistics';
         }
     }

@@ -635,6 +635,26 @@
     <template title="wf_widget_xfmg_contributors"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}</xen:explain>
 </xen:spinboxunit>]]></template>
+    <template title="wf_widget_xfmg_media"><![CDATA[
+<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_media_lowercase}"}</xen:explain>
+</xen:spinboxunit>
+
+<xen:selectunit label="{xen:phrase wf_widget_xfmg_media_order}:" name="{$namePrefix}order" value="{$options.order}">
+	<xen:option value="new">{xen:phrase xengallery_new_media}</xen:option>
+	<xen:option value="rand">{xen:phrase xengallery_random_media}</xen:option>
+</xen:selectunit>
+
+<xen:selectunit label="{xen:phrase wf_widget_xfmg_media_categories}:" name="{$namePrefix}categoryIds" multiple="true">
+	<xen:options source="$categories" />
+</xen:selectunit>
+
+<xen:checkboxunit label="">
+	<xen:option name="{$namePrefix}albums" value="1" selected="{$options.albums}">
+		{xen:phrase wf_widget_xfmg_media_from_albums}
+	</xen:option>
+</xen:checkboxunit>
+]]></template>
     <template title="widget_framework.css"><![CDATA[.widget-list-tab-group h3 {
 	padding-left: 20px !important;
 }
@@ -887,6 +907,7 @@ Arguments:
     <phrase title="wf_limit" version_id="1" version_string="0.9"><![CDATA[Limit]]></phrase>
     <phrase title="wf_limit_explain" version_id="1" version_string="0.9"><![CDATA[The maximum number of {items} will be shown.]]></phrase>
     <phrase title="wf_limit_zero_explain" version_id="58" version_string="2.3.2b"><![CDATA[Enter 0 (zero) to set no limitation.]]></phrase>
+    <phrase title="wf_media_lowercase" version_id="112" version_string="2.6.0-dev"><![CDATA[media]]></phrase>
     <phrase title="wf_message_count" version_id="1" version_string="0.9"><![CDATA[Message Count]]></phrase>
     <phrase title="wf_move" version_id="100" version_string="2.5.0d"><![CDATA[{display_order}]]></phrase>
     <phrase title="wf_move_group" version_id="111" version_string="2.6.0-dev"><![CDATA[Move Group ({display_order})]]></phrase>
@@ -994,6 +1015,9 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
+    <phrase title="wf_widget_xfmg_media_categories" version_id="112" version_string="2.6.0-dev"><![CDATA[Categories]]></phrase>
+    <phrase title="wf_widget_xfmg_media_from_albums" version_id="112" version_string="2.6.0-dev"><![CDATA[Show media from albums]]></phrase>
+    <phrase title="wf_widget_xfmg_media_order" version_id="112" version_string="2.6.0-dev"><![CDATA[Order]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type" version_id="47" version_string="2.1.1"><![CDATA[Widget Type]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_highest_rating" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Top Resources]]></phrase>
     <phrase title="wf_widget_xfrm_resources_type_latest_update" global_cache="1" version_id="47" version_string="2.1.1"><![CDATA[Recently Updated]]></phrase>
@@ -2391,6 +2415,18 @@ All customization should go to wf_default_EXTRA.css
 </div>
 
 <xen:edithint template="xengallery_album_wrapper" />]]></template>
+    <template title="wf_widget_xfmg_media" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:include template="xengallery_media_block">
+	<xen:set var="$blockId">{$widget.widget_id}</xen:set>
+	<xen:set var="$type">{$order}</xen:set>
+	<xen:set var="$items">{xen:if '{$isSidebarBlock}', 2}</xen:set>
+	<xen:set var="$slideWidth">{xen:property xengallerySlideWidth}</xen:set>
+	<xen:set var="$wide">{xen:property xengalleryCarouselWide}</xen:set>
+	<xen:set var="$medium">{xen:property xengalleryCarouselMedium}</xen:set>
+	<xen:set var="$narrow">{xen:property xengalleryCarouselNarrow}</xen:set>
+	<xen:set var="$captions">{xen:property xengalleryForumListBlockCaptions}</xen:set>
+	<xen:set var="$categories">{xen:helper implode, $widget.options.categoryIds, ','}</xen:set>
+	<xen:set var="$albums">{$widget.options.albums}</xen:set>
+</xen:include>]]></template>
     <template title="wf_widget_xfmg_statistics" version_id="112" version_string="2.6.0-dev"><![CDATA[<div class="section">
 	<dl class="secondaryContent">
 		<h3>{xen:phrase xengallery_gallery_statistics}</h3>
