@@ -2391,6 +2391,75 @@ All customization should go to wf_default_EXTRA.css
 </div>
 
 <xen:edithint template="xengallery_album_wrapper" />]]></template>
+    <template title="wf_widget_xfmg_statistics" version_id="112" version_string="2.6.0-dev"><![CDATA[<div class="section">
+	<dl class="secondaryContent">
+		<h3>{xen:phrase xengallery_gallery_statistics}</h3>
+		<div class="statisticsBlock pairsJustified">
+
+			<xen:if is="{$visitor.permissions.xengallery.viewCategories}">
+				<dl class="ctrlUnit">
+					<dt>{xen:phrase xengallery_categories}:</dt>
+					<dd>{xen:number $xenCache.xengalleryStatisticsCache.category_count}</dd>
+				</dl>
+			</xen:if>
+
+			<xen:if is="{$visitor.permissions.xengallery.viewAlbums}">
+				<dl class="ctrlUnit">
+					<dt>{xen:phrase xengallery_albums}:</dt>
+					<dd>{xen:number $xenCache.xengalleryStatisticsCache.album_count}</dd>
+				</dl>
+			</xen:if>
+
+			<dl class="ctrlUnit">
+				<dt>{xen:phrase xengallery_uploaded_media}:</dt>
+				<dd>{xen:number $xenCache.xengalleryStatisticsCache.upload_count}</dd>
+			</dl>
+
+			<dl class="ctrlUnit">
+				<dt>{xen:phrase xengallery_embedded_media}:</dt>
+				<dd>{xen:number $xenCache.xengalleryStatisticsCache.embed_count}</dd>
+			</dl>
+
+			<dl class="ctrlUnit">
+				<dt>{xen:phrase xengallery_comments}:</dt>
+				<dd>{xen:number $xenCache.xengalleryStatisticsCache.comment_count}</dd>
+			</dl>
+
+			<dl class="ctrlUnit">
+				<dt>{xen:phrase xengallery_disk_usage}:</dt>
+				<dd>{xen:number $xenCache.xengalleryStatisticsCache.disk_usage, size}</dd>
+			</dl>
+		</div>
+	</dl>
+</div>
+
+<xen:if is="{$visitor.permissions.xengallery.view} AND {$visitor.user_id}">
+	<div class="section">
+		<dl class="secondaryContent">
+			<h3>{xen:phrase xengallery_your_statistics}</h3>
+			<div class="statisticsBlock pairsJustified">
+				<xen:if is="{$visitor.permissions.xengallery.viewAlbums}">
+					<dl class="ctrlUnit">
+						<dt>{xen:phrase xengallery_your_albums}:</dt>
+						<dd><a href="{xen:link xengallery/users/albums, $visitor}">{xen:number $visitor.xengallery_album_count}</a></dd>
+					</dl>
+				</xen:if>
+
+				<dl class="ctrlUnit">
+					<dt>{xen:phrase xengallery_your_media}:</dt>
+					<dd><a href="{xen:link xengallery/users, $visitor}">{xen:number $visitor.xengallery_media_count}</a></dd>
+				</dl>
+
+				<dl class="ctrlUnit">
+					<dt>{xen:phrase xengallery_your_usage}:</dt>
+					<dd>{xen:number $visitor.xengallery_media_quota, size}</dd>
+				</dl>
+			</div>
+		</dl>
+	</div>
+</xen:if>
+
+<xen:edithint template="xengallery_media_statistics_block" />]]></template>
     <template title="wf_widget_xfrm_resources" version_id="73" version_string="2.4.3b"><![CDATA[<xen:if hascontent="true">
 	<xen:require css="wf_default.css" />
 
