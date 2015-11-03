@@ -23,14 +23,15 @@ class WidgetFramework_Template_Helper_Conditional
      * empty or there is no post id in the link, true will be return asap.
      * Please note that for the entire request, this method only return true once.
      *
-     * Usage: {xen:helper wf_unreadLinkPost, $unreadLink, $post}
+     * Usage: {xen:helper wf_unreadLinkPost, $unreadLink, $post, $posts}
      * Recommended position: hook:message_below
      *
-     * @param $unreadLink
-     * @param $post
+     * @param string $unreadLink
+     * @param array $post
+     * @param array $posts
      * @return bool
      */
-    public function unreadLinkPost($unreadLink, $post)
+    public function unreadLinkPost($unreadLink, $post, array $posts)
     {
         static $found = false;
         static $postFragment = '#post-';
@@ -40,13 +41,26 @@ class WidgetFramework_Template_Helper_Conditional
             return false;
         }
 
-        if (empty($unreadLink) OR empty($post['post_id'])) {
+        if (!is_array($post)
+            || !isset($post['post_id'])
+            || !is_array($posts)
+        ) {
+            // incorrect usage...
+            if (XenForo_Application::debugMode()) {
+                XenForo_Error::logError('{xen:helper wf_unreadLinkPost} requires (string $unreadLink),'
+                    . ' (array $post), (array $posts)');
+            }
+
             $found = true;
         } else {
             $postPos = strpos($unreadLink, $postFragment);
             if ($postPos === false) {
-                $found = true;
+                // wait for the last post and return true
+                $postIds = array_keys($posts);
+                $lastPostId = array_pop($postIds);
+                $found = $lastPostId == $post['post_id'];
             } else {
+                // return true for the specified unread post
                 $unreadLinkPostId = substr($unreadLink, $postPos + strlen($postFragment));
                 $found = $unreadLinkPostId == $post['post_id'];
             }
@@ -79,7 +93,8 @@ class WidgetFramework_Template_Helper_Conditional
      * @param string $helperCallbackName
      * @return bool
      */
-    protected function _hasHelper($helperCallbackName) {
+    protected function _hasHelper($helperCallbackName)
+    {
         return isset($this->_helperCallbacks[$helperCallbackName]);
     }
 
@@ -88,7 +103,8 @@ class WidgetFramework_Template_Helper_Conditional
      * @param array $args
      * @return mixed
      */
-    protected function _callHelper($helperCallbackName, array $args) {
+    protected function _callHelper($helperCallbackName, array $args)
+    {
         return call_user_func_array($this->_helperCallbacks[$helperCallbackName], $args);
     }
 
