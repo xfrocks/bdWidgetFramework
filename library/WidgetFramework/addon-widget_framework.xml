@@ -629,6 +629,9 @@
     <template title="wf_widget_xfmg_comments"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_comments_lowercase}"}</xen:explain>
 </xen:spinboxunit>]]></template>
+    <template title="wf_widget_xfmg_contributors"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}</xen:explain>
+</xen:spinboxunit>]]></template>
     <template title="widget_framework.css"><![CDATA[.widget-list-tab-group h3 {
 	padding-left: 20px !important;
 }
@@ -945,6 +948,7 @@ Arguments:
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
     <phrase title="wf_title_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[The title will display above the widget contents where applicable.]]></phrase>
     <phrase title="wf_title_translations" version_id="111" version_string="2.6.0-dev"><![CDATA[Translations]]></phrase>
+    <phrase title="wf_top_contributors" version_id="112" version_string="2.6.0-dev"><![CDATA[Top Contributors]]></phrase>
     <phrase title="wf_unknown_renderer" version_id="96" version_string="2.5.0d"><![CDATA[Unknown Renderer ({class})]]></phrase>
     <phrase title="wf_users" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Users]]></phrase>
     <phrase title="wf_users_find" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Find Member]]></phrase>

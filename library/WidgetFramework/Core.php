@@ -88,6 +88,7 @@ class WidgetFramework_Core
         // since 2.6.0
         if (self::xfmgFound()) {
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Comments';
+            $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Contributors';
         }
     }
 
