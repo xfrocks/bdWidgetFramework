@@ -31,7 +31,7 @@ class WidgetFramework_Template_Helper_Conditional
      * @param array $posts
      * @return bool
      */
-    public function unreadLinkPost($unreadLink, $post, array $posts)
+    public function unreadLinkPost($unreadLink, $post, $posts)
     {
         static $found = false;
         static $postFragment = '#post-';
