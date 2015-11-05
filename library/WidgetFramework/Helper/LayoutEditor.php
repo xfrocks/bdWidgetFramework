@@ -56,45 +56,36 @@ class WidgetFramework_Helper_LayoutEditor
         return self::$_widgetChanges;
     }
 
-    public static function splitGroupParts($groupName)
-    {
-        return preg_split('#/#', $groupName, -1, PREG_SPLIT_NO_EMPTY);
-    }
-
     public static function getChangedRenderedId(WidgetFramework_DataWriter_Widget $dw, array $changed = array())
     {
-        if ($dw->isChanged('position') OR $dw->isChanged('display_order') OR $dw->isChanged('options')) {
+        if ($dw->isChanged('position')
+            || $dw->isChanged('display_order')
+            || $dw->isChanged('group_id')
+        ) {
             $changed[] = $dw->get('widget_id');
 
             $existingPosition = $dw->getExisting('position');
-            $existingOptions = $dw->getWidgetOptions(true);
-            $existingGroup = '';
-            if (!empty($existingOptions['tab_group'])) {
-                $existingGroup .= $existingOptions['tab_group'];
-            }
-
+            $existingGroupId = $dw->getExisting('group_id');
             $newPosition = $dw->get('position');
-            $newOptions = $dw->getWidgetOptions();
-            $newGroup = '';
-            if (!empty($newOptions['tab_group'])) {
-                $newGroup .= $newOptions['tab_group'];
-            }
+            $newGroupId = $dw->get('group_id');
 
-            if ($existingPosition !== $newPosition OR $existingGroup !== $newGroup) {
-                if (!empty($existingGroup)) {
-                    $changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($existingGroup);
+            if ($existingPosition !== $newPosition
+                || $existingGroupId !== $newGroupId
+            ) {
+                if (!empty($existingGroupId)) {
+                    $changed[] = $existingGroupId;
                 }
 
-                if (!empty($newGroup)) {
-                    $changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($newGroup);
+                if (!empty($newGroupId)) {
+                    $changed[] = $newGroupId;
                 }
             }
         } elseif ($dw->isDelete()) {
             $changed[] = $dw->get('widget_id');
 
-            $options = $dw->getWidgetOptions();
-            if (!empty($options['tab_group'])) {
-                $changed[] = WidgetFramework_Helper_String::normalizeHtmlElementId($options['tab_group']);
+            $groupId = $dw->get('group_id');
+            if (!empty($groupId)) {
+                $changed[] = $groupId;
             }
         }
 

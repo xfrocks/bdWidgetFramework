@@ -99,7 +99,10 @@ class WidgetFramework_Installer
 
     /* End auto-generated lines of code. Feel free to make changes below */
 
-    public static function installCustomized($existingAddOn, $addOnData)
+    public static function installCustomized(
+        /** @noinspection PhpUnusedParameterInspection */
+        $existingAddOn,
+        $addOnData)
     {
         $db = XenForo_Application::getDb();
 
@@ -183,10 +186,17 @@ class WidgetFramework_Installer
             $db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
         }
 
-        if ($effectiveVersionId > 0 AND $effectiveVersionId <= 102) {
-            // update widget within widget pages to use group/display order instead of layout
-            // row/column
-            self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
+        if ($effectiveVersionId > 0) {
+            if ($effectiveVersionId <= 102) {
+                // update widget within widget pages to use group/display order
+                // instead of layout row/column
+                self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
+            }
+
+            if ($effectiveVersionId <= 112) {
+                // update widget tab_group option to use group_id instead
+                self::_updateWidgetGroupIds();
+            }
         }
     }
 
@@ -196,7 +206,8 @@ class WidgetFramework_Installer
 
         $db->query("DROP TABLE IF EXISTS `xf_widget`");
         $db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
-        $db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE '" . WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . "%'");
+        $db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE ?",
+            WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . '%');
         $db->query("DELETE FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
         $db->query("DELETE FROM `xf_node` WHERE `node_type_id` = 'WF_WidgetPage'");
 
@@ -217,7 +228,7 @@ class WidgetFramework_Installer
         $widgetPages = $widgetPageModel->getWidgetPages();
 
         foreach ($widgetPages as $widgetPage) {
-            $widgets = $widgetModel->getWidgetPageWidgets($widgetPage['node_id'], false);
+            $widgets = $widgetModel->getPageWidgets($widgetPage['node_id'], false);
 
             foreach (array_keys($widgets) as $widgetId) {
                 if ($widgets[$widgetId]['position'] == 'sidebar') {
@@ -247,19 +258,20 @@ class WidgetFramework_Installer
                     $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                     $widgetDw->setImportMode(true);
                     $widgetDw->setExistingData($widgets[$widgetId], true);
-                    $widgetDw->set('position', $widgetsCloned[$widgetId]['position'], '', array(
+                    $widgetDw->bulkSet($widgetsCloned[$widgetId], array(
                         'runVerificationCallback' => false,
                     ));
-                    $widgetDw->set('template_for_hooks', $widgetsCloned[$widgetId]['template_for_hooks']);
-                    $widgetDw->set('display_order', $widgetsCloned[$widgetId]['display_order']);
-                    $widgetDw->set('options', $widgetsCloned[$widgetId]['options']);
-
                     $widgetDw->save();
                 }
             }
         }
 
         $widgetModel->buildCache();
+    }
+
+    protected static function _updateWidgetGroupIds()
+    {
+        // TODO
     }
 
 }

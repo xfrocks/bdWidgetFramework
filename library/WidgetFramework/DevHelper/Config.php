@@ -10,7 +10,6 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base
             'camelCaseWSpace' => 'Widget Page',
             'fields' => array(
                 'node_id' => array('name' => 'node_id', 'type' => 'uint', 'required' => true),
-                'widgets' => array('name' => 'widgets', 'type' => 'serialized'),
                 'options' => array('name' => 'options', 'type' => 'serialized')
             ),
             'phrases' => array(),
@@ -35,6 +34,7 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base
                 'title' => array('name' => 'title', 'type' => 'string'),
                 'class' => array('name' => 'class', 'type' => 'string', 'required' => true),
                 'position' => array('name' => 'position', 'type' => 'string'),
+                'group_id' => array('name' => 'group_id', 'type' => 'uint', 'required' => true, 'default' => 0),
                 'display_order' => array('name' => 'display_order', 'type' => 'int', 'required' => true, 'default' => 0),
                 'active' => array('name' => 'active', 'type' => 'uint', 'required' => true, 'default' => 1),
                 'options' => array('name' => 'options', 'type' => 'serialized'),
@@ -51,7 +51,8 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base
     protected $_dataPatches = array(
         'xf_widget' => array(
             'template_for_hooks' => array('name' => 'template_for_hooks', 'type' => 'serialized'),
-            'widget_page_id' => array('name' => 'widget_page_id', 'type' => 'uint', 'required' => true, 'default' => 0)
+            'widget_page_id' => array('name' => 'widget_page_id', 'type' => 'uint', 'required' => true, 'default' => 0),
+            'group_id' => array('name' => 'group_id', 'type' => 'uint', 'required' => true, 'default' => 0)
         )
     );
     protected $_exportPath = '/Users/sondh/XenForo/WidgetFramework';

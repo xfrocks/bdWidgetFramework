@@ -4,6 +4,21 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 {
     const SIMPLE_CACHE_KEY = 'widgets';
 
+    public function createGroupContaining(array $widget)
+    {
+        $groupDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+        $groupDw->bulkSet(array(
+            'class' => 'WidgetFramework_WidgetGroup',
+            'position' => $widget['position'],
+            'display_order' => $widget['display_order'],
+            'active' => 1,
+        ));
+        $groupDw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+        $groupDw->save();
+
+        return $groupDw->getMergedData();
+    }
+
     public function getWidgetTitlePhrase($widgetId)
     {
         if ($widgetId > 0) {
@@ -13,14 +28,16 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         }
     }
 
-    public function getWidgetsContainsWidgetId(array $widgets, $widgetId, $group = '')
+    public function getWidgetsContainsWidgetId(array $widgets, $widgetId, $groupId = 0)
     {
         foreach (array_keys($widgets) as $_widgetId) {
             if (isset($widgets[$_widgetId]['widgets'])) {
-                $response = $this->getWidgetsContainsWidgetId($widgets[$_widgetId]['widgets'], $widgetId, $group);
+                $response = $this->getWidgetsContainsWidgetId($widgets[$_widgetId]['widgets'], $widgetId, $groupId);
 
                 if (!empty($response)) {
-                    if (!empty($group) AND $widgets[$_widgetId]['name'] == $group) {
+                    if (!empty($groupId)
+                        && $_widgetId == $groupId
+                    ) {
                         return $widgets[$_widgetId]['widgets'];
                     }
 
@@ -69,11 +86,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return floor($maxDisplayOrder / 10) * 10 + 10;
     }
 
-    public function getDisplayOrderFromRelative($widgetId, $targetGroup, $relativeDisplayOrder, $positionWidgetGroups, $positionWidget = null, array &$widgetsNeedUpdate = array())
+    public function getDisplayOrderFromRelative($widgetId, $groupId, $relativeDisplayOrder, $positionWidgetGroups, $positionWidget = null, array &$widgetsNeedUpdate = array())
     {
         if (!empty($positionWidget)) {
             // put into a group
-            $sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id'], $targetGroup);
+            $sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id'], $groupId);
         } else {
             // put into a position
             $sameDisplayOrderLevels = $positionWidgetGroups;
@@ -82,7 +99,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         // sort asc by display order (ignore negative/positive)
         uasort($sameDisplayOrderLevels, array(
             'WidgetFramework_Helper_Sort',
-            'widgetGroupsAsc'
+            'widgetsByDisplayOrderAsc'
         ));
         $isNegative = $relativeDisplayOrder < 0;
         foreach (array_keys($sameDisplayOrderLevels) as $sameDisplayOrderLevelWidgetId) {
@@ -141,7 +158,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         $foundDisplayOrder = PHP_INT_MAX;
         foreach ($reorderedWidgets as $reorderedWidgetId => $reorderedWidget) {
             if ($currentDisplayOrder != $reorderedWidget['display_order']) {
-                $this->updateDisplayOrderForWidget($reorderedWidgetId, $currentDisplayOrder - $reorderedWidget['display_order'], $reorderedWidgets, $widgetsNeedUpdate);
+                $widgetsNeedUpdate[$reorderedWidgetId]['display_order'] = $currentDisplayOrder;
             }
 
             if ($reorderedWidgetId == $widgetId) {
@@ -154,84 +171,58 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $foundDisplayOrder;
     }
 
-    public function updatePositionGroupAndDisplayOrderForWidgets($widgetId, $newPosition, $newGroup, $newDisplayOrder, $oldPositionWidgets, array &$widgetsNeedUpdate)
+    public function updatePositionGroupAndDisplayOrderForWidgets(
+        $widgetId,
+        $newPosition,
+        $newGroupId,
+        $newDisplayOrder,
+        array $widgetsAtOldPosition,
+        array &$widgetsNeedUpdate)
     {
-        $oldGroupWidgets = $this->getWidgetsContainsWidgetId($oldPositionWidgets, $widgetId);
-        $oldGroup = '';
-        if (empty($oldGroupWidgets)) {
-            // group not found
+        $siblingWidgets = $this->getWidgetsContainsWidgetId($widgetsAtOldPosition, $widgetId);
+        if (empty($siblingWidgets)) {
             return false;
         }
-        if (isset($oldGroupWidgets[$widgetId])) {
-            if (!empty($oldGroupWidgets[$widgetId]['options']['tab_group'])) {
-                $oldGroup = $oldGroupWidgets[$widgetId]['options']['tab_group'];
-            }
-
-            unset($oldGroupWidgets[$widgetId]);
+        if (isset($siblingWidgets[$widgetId])) {
+            unset($siblingWidgets[$widgetId]);
         }
 
         $i = -1;
         $currentDisplayOrder = $newDisplayOrder;
-        foreach ($oldGroupWidgets as $oldGroupWidgetId => $oldGroupWidget) {
+        foreach ($siblingWidgets as $siblingWidgetId => $siblingWidget) {
             $i++;
 
-            if ($oldGroupWidget['position'] != $newPosition) {
-                $widgetsNeedUpdate[$oldGroupWidgetId]['position'] = $newPosition;
+            if ($siblingWidget['position'] != $newPosition) {
+                $widgetsNeedUpdate[$siblingWidgetId]['position'] = $newPosition;
             }
 
-            if ($oldGroupWidget['display_order'] <= $currentDisplayOrder) {
+            if ($siblingWidget['display_order'] <= $currentDisplayOrder) {
                 $currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
-
-                // update widget/group display order below our widget
-                $this->updateDisplayOrderForWidget($oldGroupWidgetId, $currentDisplayOrder - $oldGroupWidget['display_order'], $oldGroupWidgets, $widgetsNeedUpdate);
+                $widgetsNeedUpdate[$siblingWidgetId]['display_order'] = $currentDisplayOrder;
             } else {
-                $currentDisplayOrder = $oldGroupWidget['display_order'];
+                $currentDisplayOrder = $siblingWidget['display_order'];
             }
 
-            if ($oldGroupWidget['tab_group'] !== $newGroup) {
-                if (!empty($oldGroupWidget['widgets'])) {
-                    foreach (array_keys($oldGroupWidget['widgets']) as $subWidgetId) {
+            if ($siblingWidget['group_id'] != $newGroupId) {
+                if (!empty($siblingWidget['widgets'])) {
+                    foreach (array_keys($siblingWidget['widgets']) as $subWidgetId) {
                         // update all widgets within the updated group
-                        $subWidgetNewGroup = preg_replace('#^' . preg_quote($oldGroup) . '#', $newGroup, $oldGroupWidget['widgets'][$subWidgetId]['tab_group']);
-                        $this->updatePositionGroupAndDisplayOrderForWidgets($subWidgetId, $newPosition, $subWidgetNewGroup, $currentDisplayOrder, $oldGroupWidget['widgets'], $widgetsNeedUpdate);
+                        $this->updatePositionGroupAndDisplayOrderForWidgets(
+                            $subWidgetId,
+                            $newPosition,
+                            $siblingWidget['widgets'][$subWidgetId]['group_id'],
+                            $siblingWidget['widgets'][$subWidgetId]['display_order'],
+                            $siblingWidget['widgets'],
+                            $widgetsNeedUpdate
+                        );
                     }
-                } else {
-                    $widgetsNeedUpdate[$oldGroupWidgetId]['tab_group'] = $newGroup;
                 }
-            }
 
+                $widgetsNeedUpdate[$siblingWidgetId]['group_id'] = $newGroupId;
+            }
         }
 
         return true;
-    }
-
-    public function updateGroupForWidgets($oldGroup, $newGroup, array $widgets, array &$widgetsNeedUpdate)
-    {
-        $pattern = '#(^|/)' . preg_quote($oldGroup) . '($|/)#';
-        $replacement = '$1' . $newGroup . '$2';
-
-        foreach ($widgets as $widgetElement) {
-            if (isset($widgetElement['widgets'])) {
-                $this->updateGroupForWidgets($oldGroup, $newGroup, $widgetElement['widgets'], $widgetsNeedUpdate);
-            } else {
-                $replaced = preg_replace($pattern, $replacement, $widgetElement['tab_group'], 1, $count);
-                if ($count > 0) {
-                    $widgetsNeedUpdate[$widgetElement['widget_id']]['tab_group'] = $replaced;
-                }
-            }
-        }
-    }
-
-    public function updateDisplayOrderForWidget($widgetId, $displayOrderOffset, $widgets, array &$widgetsNeedUpdate)
-    {
-        $widgetsNeedUpdate[$widgetId]['display_order'] = $widgets[$widgetId]['display_order'] + $displayOrderOffset;
-
-        if (!empty($widgets[$widgetId]['widgets'])) {
-            foreach (array_keys($widgets[$widgetId]['widgets']) as $subWidgetId) {
-                // update all widgets within the updated group
-                $this->updateDisplayOrderForWidget($subWidgetId, $displayOrderOffset, $widgets[$widgetId]['widgets'], $widgetsNeedUpdate);
-            }
-        }
     }
 
     public function importFromFile($fileName, $deleteAll = false)
@@ -275,12 +266,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
             $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
 
-            $dw->set('title', $widget['title']);
-            $dw->set('class', $widget['class']);
-            $dw->set('position', $widget['position']);
-            $dw->set('display_order', $widget['display_order']);
-            $dw->set('active', intval($widget['active']));
-
+            $dw->bulkSet($widget, array('ignoreInvalidFields' => true));
             $dw->set('options', unserialize(XenForo_Helper_DevelopmentXml::processSimpleXmlCdata($widget->options)));
 
             $dw->save();
@@ -302,17 +288,12 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
         /* fallback to database */
         if ($widgets === false) {
-            $widgets = $this->fetchAllKeyed('
-				SELECT *
-				FROM `xf_widget`
-				WHERE `widget_page_id` = 0
-				ORDER BY display_order ASC, widget_id ASC
-			', 'widget_id');
+            $widgets = $this->getwidgets(array(
+                'widget_page_id' => 0,
+            ));
         }
 
         foreach ($widgets as &$widget) {
-            $this->_prepareWidgetMandatory($widget);
-
             if ($prepare) {
                 $this->prepareWidget($widget);
             }
@@ -321,18 +302,13 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $widgets;
     }
 
-    public function getWidgetPageWidgets($widgetPageId, $prepare = true)
+    public function getPageWidgets($widgetPageId, $prepare = true)
     {
-        $widgets = $this->fetchAllKeyed("
-				SELECT *
-				FROM `xf_widget`
-				WHERE `widget_page_id` = ?
-				ORDER BY display_order ASC
-				", 'widget_id', array($widgetPageId));
+        $widgets = $this->getWidgets(array(
+            'widget_page_id' => $widgetPageId,
+        ));
 
         foreach ($widgets as &$widget) {
-            $this->_prepareWidgetMandatory($widget);
-
             if ($prepare) {
                 $this->prepareWidget($widget);
             }
@@ -341,19 +317,48 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $widgets;
     }
 
-    public function getWidgetById($widgetId)
+    public function getWidgetById($widgetId, array $fetchOptions = array())
     {
-        $widget = $this->_getDb()->fetchRow("
-				SELECT *
-				FROM `xf_widget`
-				WHERE widget_id = ?
-				", array($widgetId));
+        $widgets = $this->getWidgets(array(
+            'widget_id' => $widgetId,
+        ), $fetchOptions);
 
-        if (!empty($widget)) {
-            $this->_prepareWidgetMandatory($widget);
+        return reset($widgets);
+    }
+
+    public function getWidgets(array $conditions = array(), array $fetchOptions = array())
+    {
+        $whereClause = $this->prepareWidgetConditions($conditions, $fetchOptions);
+        $joinOptions = $this->prepareWidgetFetchOptions($fetchOptions);
+        $limitOptions = $this->prepareLimitFetchOptions($fetchOptions);
+
+        $widgets = $this->fetchAllKeyed($this->limitQueryResults(
+            '
+                SELECT widget.*
+                ' . $joinOptions['selectFields'] . '
+                FROM xf_widget AS widget
+                ' . $joinOptions['joinTables'] . '
+                WHERE ' . $whereClause . '
+            ', $limitOptions['limit'], $limitOptions['offset']
+        ), 'widget_id');
+
+        foreach ($widgets as &$widgetRef) {
+            if (!is_array($widgetRef['options'])) {
+                $widgetRef['options'] = @unserialize($widgetRef['options']);
+            }
+            if (empty($widgetRef['options'])) {
+                $widgetRef['options'] = array();
+            }
+
+            if (!is_array($widgetRef['template_for_hooks'])) {
+                $widgetRef['template_for_hooks'] = @unserialize($widgetRef['template_for_hooks']);
+            }
+            if (empty($widgetRef['template_for_hooks'])) {
+                $widgetRef['template_for_hooks'] = array();
+            }
         }
 
-        return $widget;
+        return $widgets;
     }
 
     public function buildCache()
@@ -389,21 +394,46 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $widget;
     }
 
-    protected function _prepareWidgetMandatory(array &$widget)
+    public function prepareWidgetConditions(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $conditions, array &$fetchOptions)
     {
-        if (!is_array($widget['options'])) {
-            $widget['options'] = @unserialize($widget['options']);
-        }
-        if (empty($widget['options'])) {
-            $widget['options'] = array();
+        $db = $this->_getDb();
+        $sqlConditions = array();
+
+        if (isset($conditions['widget_id'])) {
+            if (is_array($conditions['widget_id'])
+                && count($conditions['widget_id']) > 0
+            ) {
+                $sqlConditions[] = 'widget.widget_id IN(' . $db->quote($conditions['widget_id']) . ')';
+            } else {
+                $sqlConditions[] = 'widget.widget_id = ' . $db->quote($conditions['widget_id']);
+            }
         }
 
-        if (!is_array($widget['template_for_hooks'])) {
-            $widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
+        if (isset($conditions['widget_page_id'])) {
+            if (is_array($conditions['widget_page_id'])
+                && count($conditions['widget_page_id']) > 0
+            ) {
+                $sqlConditions[] = 'widget.widget_page_id IN(' . $db->quote($conditions['widget_page_id']) . ')';
+            } else {
+                $sqlConditions[] = 'widget.widget_page_id = ' . $db->quote($conditions['widget_page_id']);
+            }
         }
-        if (empty($widget['template_for_hooks'])) {
-            $widget['template_for_hooks'] = array();
-        }
+
+        return $this->getConditionsForClause($sqlConditions);
     }
 
+    public function prepareWidgetFetchOptions(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $fetchOptions)
+    {
+        $selectFields = '';
+        $joinTables = '';
+
+        return array(
+            'selectFields' => $selectFields,
+            'joinTables' => $joinTables
+        );
+    }
 }

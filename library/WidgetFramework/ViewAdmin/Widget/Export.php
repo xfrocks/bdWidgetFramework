@@ -29,6 +29,7 @@ class WidgetFramework_ViewAdmin_Widget_Export extends XenForo_ViewAdmin_Base
             $widgetNode->appendChild($optionsNode);
 
             $widgetNode->setAttribute('position', $widget['position']);
+            $widgetNode->setAttribute('group_id', $widget['group_id']);
             $widgetNode->setAttribute('display_order', $widget['display_order']);
             $widgetNode->setAttribute('active', $widget['active']);
 

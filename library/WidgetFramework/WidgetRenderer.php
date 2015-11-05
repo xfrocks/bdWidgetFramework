@@ -97,7 +97,7 @@ abstract class WidgetFramework_WidgetRenderer
         return true;
     }
 
-    protected function _prepare(array $widget, $positionCode, array $params)
+    protected function _prepare(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
     {
         return true;
     }
@@ -350,7 +350,6 @@ abstract class WidgetFramework_WidgetRenderer
                 $this->_configuration['options']['cache_seconds'] = XenForo_Input::STRING;
             }
 
-            $this->_configuration['options']['tab_group'] = XenForo_Input::STRING;
             $this->_configuration['options']['expression'] = XenForo_Input::STRING;
             $this->_configuration['options']['conditional'] = XenForo_Input::ARRAY_SIMPLE;
             $this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
@@ -457,27 +456,27 @@ abstract class WidgetFramework_WidgetRenderer
         return $options;
     }
 
-    public function prepare(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
+    public function prepare(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template)
     {
         $template->preloadTemplate('wf_widget_wrapper');
 
-        $renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
+        $renderTemplate = $this->_getRenderTemplate($widgetRef, $positionCode, $params);
         if (!empty($renderTemplate)) {
             $template->preloadTemplate($renderTemplate);
         }
 
-        if ($this->useCache($widget)) {
+        if ($this->useCache($widgetRef)) {
             // sondh@2013-04-02
             // please keep this block of code in-sync'd with its original
             // implemented in WidgetFramework_WidgetRenderer::render
-            $cacheId = $this->_getCacheId($widget, $positionCode, $params);
-            $useUserCache = $this->useUserCache($widget);
-            $useLiveCache = $this->useLiveCache($widget);
+            $cacheId = $this->_getCacheId($widgetRef, $positionCode, $params);
+            $useUserCache = $this->useUserCache($widgetRef);
+            $useLiveCache = $this->useLiveCache($widgetRef);
 
             WidgetFramework_Core::preloadCachedWidget($cacheId, $useUserCache, $useLiveCache);
         }
 
-        $this->_prepare($widget, $positionCode, $params);
+        $this->_prepare($widgetRef, $positionCode, $params, $template);
     }
 
     /**
@@ -580,14 +579,14 @@ abstract class WidgetFramework_WidgetRenderer
         }
     }
 
-    public function render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template, &$output)
+    public function render(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$output)
     {
         $html = false;
         $containerData = array();
         $requiredExternals = array();
 
         try {
-            if (!$this->_testConditional($widget, $params)) {
+            if (!$this->_testConditional($widgetRef, $params)) {
                 // expression failed, stop rendering...
                 if (WidgetFramework_Option::get('layoutEditorEnabled')) {
                     $html = new XenForo_Phrase('wf_layout_editor_widget_conditional_failed');
@@ -606,7 +605,7 @@ abstract class WidgetFramework_WidgetRenderer
 
         // add check for mobile (user agent spoofing)
         // since 2.2.2
-        if (!empty($widget['options']['deactivate_for_mobile'])) {
+        if (!empty($widgetRef['options']['deactivate_for_mobile'])) {
             if (XenForo_Visitor::isBrowsingWith('mobile')) {
                 $html = '';
             }
@@ -619,22 +618,22 @@ abstract class WidgetFramework_WidgetRenderer
         $useLiveCache = false;
         $lockId = '';
 
-        if ($html === false AND $this->useCache($widget)) {
+        if ($html === false AND $this->useCache($widgetRef)) {
             // sondh@2013-04-02
             // please keep this block of code in-sync'd with its copycat
             // implemented in WidgetFramework_WidgetRenderer::prepare
-            $cacheId = $this->_getCacheId($widget, $positionCode, $params);
-            $useUserCache = $this->useUserCache($widget);
-            $useLiveCache = $this->useLiveCache($widget);
+            $cacheId = $this->_getCacheId($widgetRef, $positionCode, $params);
+            $useUserCache = $this->useUserCache($widgetRef);
+            $useLiveCache = $this->useLiveCache($widgetRef);
 
             $cached = WidgetFramework_Core::loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
             if (!empty($cached) AND is_array($cached)) {
-                if ($this->isCacheUsable($cached, $widget)) {
+                if ($this->isCacheUsable($cached, $widgetRef)) {
                     // found fresh cached html, use it asap
                     $this->_restoreFromCache($cached, $html, $containerData, $requiredExternals);
                 } else {
                     // cached html has expired: try to acquire lock
-                    $lockId = $this->_acquireLock($widget, $positionCode, $params);
+                    $lockId = $this->_acquireLock($widgetRef, $positionCode, $params);
 
                     if ($lockId === false) {
                         // a lock cannot be acquired, an expired cached html is the second best choice
@@ -643,7 +642,7 @@ abstract class WidgetFramework_WidgetRenderer
                 }
             } else {
                 // no cache found
-                $lockId = $this->_acquireLock($widget, $positionCode, $params);
+                $lockId = $this->_acquireLock($widgetRef, $positionCode, $params);
             }
         }
 
@@ -656,23 +655,23 @@ abstract class WidgetFramework_WidgetRenderer
 
         // conditional executed just fine
         if ($html === false) {
-            $renderTemplate = $this->_getRenderTemplate($widget, $positionCode, $params);
+            $renderTemplate = $this->_getRenderTemplate($widgetRef, $positionCode, $params);
             if (!empty($renderTemplate)) {
-                $renderTemplateObject = $template->create($renderTemplate, array_merge($params, array('widget' => $widget)));
+                $renderTemplateObject = $template->create($renderTemplate, array_merge($params, array('widget' => $widgetRef)));
 
                 // reset required externals
                 $existingRequiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
                 WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals(array());
 
-                $html = $this->_render($widget, $positionCode, $params, $renderTemplateObject);
+                $html = $this->_render($widgetRef, $positionCode, $params, $renderTemplateObject);
 
                 // get container data (using template_post_render listener)
-                $containerData = self::_getContainerData($widget);
+                $containerData = self::_getContainerData($widgetRef);
                 // get widget required externals
                 $requiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
                 WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals($existingRequiredExternals);
             } else {
-                $html = $this->_render($widget, $positionCode, $params, $template);
+                $html = $this->_render($widgetRef, $positionCode, $params, $template);
             }
             $html = trim($html);
 
@@ -685,7 +684,7 @@ abstract class WidgetFramework_WidgetRenderer
                     $extraData[self::EXTRA_REQUIRED_EXTERNALS] = $requiredExternals;
                 }
 
-                WidgetFramework_Core::preSaveWidget($widget, $positionCode, $params, $html);
+                WidgetFramework_Core::preSaveWidget($widgetRef, $positionCode, $params, $html);
 
                 WidgetFramework_Core::saveCachedWidget($cacheId, $html, $extraData, $useUserCache, $useLiveCache);
             }

@@ -22,7 +22,7 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
         $page = max(1, $this->_input->filterSingle('page', XenForo_Input::UINT));
         $this->canonicalizeRequestUrl(XenForo_Link::buildPublicLink('widget-pages', $widgetPage, array('page' => $page)));
 
-        $widgets = $this->_getWidgetModel()->getWidgetPageWidgets($widgetPage['node_id']);
+        $widgets = $this->_getWidgetModel()->getPageWidgets($widgetPage['node_id']);
 
         $nodeBreadCrumbs = $this->_getNodeModel()->getNodeBreadCrumbs($widgetPage, false);
 

@@ -108,10 +108,6 @@
 				<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
 			</xen:textboxunit>
 
-			<xen:textboxunit label="{xen:phrase wf_tab_group}:" name="{$namePrefix}tab_group" value="{$options.tab_group}">
-				<xen:explain>{xen:phrase wf_tab_group_explain}</xen:explain>
-			</xen:textboxunit>
-
 			<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
 				<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
 			</xen:spinboxunit>
@@ -804,6 +800,8 @@ Arguments:
     <phrase title="style_property_group_WidgetFramework_ZZZZ_master_desc" version_id="102" version_string="2.5.0d"><![CDATA[Style properties for other widgets.]]></phrase>
     <phrase title="style_property_wf_contentWidgetContainer_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_contentWidgetContainer_master" version_id="100" version_string="2.5.0d"><![CDATA[Content Widget (container)]]></phrase>
+    <phrase title="style_property_wf_groupBorder_description_master" version_id="112" version_string="2.6.0-dev"><![CDATA[]]></phrase>
+    <phrase title="style_property_wf_groupBorder_master" version_id="112" version_string="2.6.0-dev"><![CDATA[Render border for grouped widgets]]></phrase>
     <phrase title="style_property_wf_homeLinksChildNodes_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to show links to child nodes for Widget Page navigation tab. Please note that no permission check will be perform.]]></phrase>
     <phrase title="style_property_wf_homeLinksChildNodes_master" version_id="78" version_string="2.4.5c"><![CDATA[Show child nodes in navtab]]></phrase>
     <phrase title="style_property_wf_homeLinksForums_description_master" version_id="78" version_string="2.4.5c"><![CDATA[Enable this property to copy links under "Forums" navigation tab to the one for Widget Page.]]></phrase>
@@ -954,8 +952,6 @@ Arguments:
     <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
     <phrase title="wf_share_this_page" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Share This Page]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
-    <phrase title="wf_tab_group" version_id="69" version_string="2.4.1"><![CDATA[Widget Group]]></phrase>
-    <phrase title="wf_tab_group_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[You can group several widgets and have them rendered together.]]></phrase>
     <phrase title="wf_template_controller" version_id="99" version_string="2.5.0d"><![CDATA[Controller]]></phrase>
     <phrase title="wf_template_controller_explain" version_id="99" version_string="2.5.0d"><![CDATA[Some template needs its data to render properly. Enter the controller name and action here to obtain the required data.]]></phrase>
     <phrase title="wf_threads" version_id="1" version_string="0.9"><![CDATA[threads]]></phrase>
@@ -1056,6 +1052,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_contentWidgetContainer" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="200" sub_group=""><![CDATA[{"extra":"float: none;\nfont-size: inherit;","width":"auto"}]]></property>
     <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
     <property property_name="wf_threads_rich" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Threads widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group=""><![CDATA[1]]></property>
+    <property property_name="wf_groupBorder" property_type="scalar" definition="1" group_name="WidgetFramework" title="Render border for grouped widgets" description="" css_components="" scalar_type="boolean" scalar_parameters="" display_order="10" sub_group="groupedWidgets"><![CDATA[1]]></property>
     <group group_name="WidgetFramework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Controls how widgets appear.</description>
@@ -1070,7 +1067,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="102" version_string="2.5.0d"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1097,6 +1094,31 @@ All customization should go to wf_default_EXTRA.css
 	.widget-tabs .widget-panes {
 		{xen:property wf_widgetTabsPanes}
 	}
+
+<xen:if is="{xen:property wf_groupBorder}">
+.widget-columns .widget {
+	margin-left: 5px;
+}
+.widget-columns .column-1 .widget { margin-left: 0; }
+.widget-columns .widget-column {
+	border-left: 1px solid {xen:property primaryLighter};
+	margin-left: -1px !important;
+}
+.widget-columns .widget-column.column-1 { border-left: 0; margin-left: 0 !important; }
+
+.widget-rows .widget {
+	border-top: 1px solid {xen:property primaryLighter};
+	margin-top: 5px;
+	padding-top: 5px;
+}
+.widget-rows .widget.row-1 { border-top: 0; margin-top: 0; padding-top: 0; }
+</xen:if>
+
+.hook-widget > h3 {
+	color: {xen:property primaryMedium};
+	font-size: 1.1em;
+	font-weight: bold;
+}
 
 .widget .avatarHeap {
 	margin-right: -10px;
@@ -1162,7 +1184,7 @@ All customization should go to wf_default_EXTRA.css
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
 </xen:if>]]></template>
-    <template title="wf_layout_editor.css" version_id="111" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area
+    <template title="wf_layout_editor.css" version_id="112" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area
 {
 	background: {xen:property primaryLightest};
 }
@@ -1215,7 +1237,7 @@ All customization should go to wf_default_EXTRA.css
 .WidgetFramework_LayoutEditor_Group
 {
 	border: 1px solid transparent;
-	margin: 0;
+	margin: 5px;
 	overflow-x: scroll;
 	overflow-y: hidden;
 	padding: 0;
@@ -1741,6 +1763,128 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
+    <template title="wf_widget_group_wrapper" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
+
+<xen:if is="{$_WidgetFramework_isHook}">
+	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}
+		AND {xen:property wf_groupBorder}', 'section sectionMain '}widget-container {$groupId} act-as-sidebar sidebar</xen:set>
+	<xen:set var="$classInnerSection">widget hook-widget</xen:set>
+<xen:else />
+	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}
+		AND {xen:property wf_groupBorder}', 'section '}{$groupId}</xen:set>
+	<xen:set var="$classInnerSection">secondaryContent widget sidebar-widget</xen:set>
+</xen:if>
+
+<xen:if is="{xen:count $widgets} === 1">
+
+<xen:foreach loop="$widgets" value="$widget">
+<xen:if is="{$widget._ajaxLoadParams} OR !{$widget._runtime.useWrapper}"> 
+{{xen:raw $widget._runtime.html}}
+<xen:else />
+<xen:include template="wf_widget_wrapper" />
+</xen:if>
+</xen:foreach>
+
+<xen:elseif is="{$group.options.layout} === 'columns'" />
+
+<xen:comment>We are rendering columns</xen:comment>
+
+<div class="{$classSection} widget-columns columns-{xen:count $tabs}" id="widget-columns-{$groupId}">
+	<div style="margin: 0; padding: 0; width: 100%">
+		<xen:foreach loop="$widgets" i="$i" value="$widget">
+			<div style="float: left; margin: 0; padding: 0; width: {xen:calc
+						'100 / {xen:count $widgets}'}%" class="widget-column column-{$i}">
+				<xen:if is="{$widget.class} === 'WidgetFramework_WidgetGroup'">
+					<div class="{$classInnerSection} {$tab.class}">
+						{xen:raw $widget._runtime.html}
+					</div>
+				<xen:elseif is="{$widget._runtime.useWrapper}" />
+					<div class="{$classInnerSection} {$tab.class}" id="widget-{$widget.widget_id}">
+						<h3>
+							<xen:if is="{$widget._runtime.extraData.link}">
+								<a href="{$widget._runtime.extraData.link}">
+									{xen:raw $widget._runtime.title}
+								</a>
+							<xen:else />
+								{xen:raw $widget._runtime.title}
+							</xen:if>
+						</h3>
+
+						{xen:raw $widget._runtime.html}
+					</div>
+				<xen:else />
+					{xen:raw $tab.html}
+				</xen:if>
+			</div>
+		</xen:foreach>
+
+		<div style="clear: both; height: 0px;">&nbsp;</div>
+	</div>
+</div>
+
+<xen:elseif is="{$group.options.layout} === 'tabs'" />
+
+<xen:comment>We are rendering tabs</xen:comment>
+
+<xen:require js="js/WidgetFramework/default.js" />
+<div class="{$classSection} widget-tabs">
+	<ul class="tabs Tabs" data-panes="#widget-tabs-{$groupId} > li">
+		<xen:foreach loop="$widgets" value="$widget">
+		<li>
+			<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
+				<xen:if hascontent="true">
+				<xen:contentcheck>{xen:raw $widget.title}</xen:contentcheck>
+				<xen:else />
+				{xen:phrase wf_widgets}
+				</xen:if>
+			</a>
+		</li>
+		</xen:foreach>
+	</ul>
+	<div class="{$classInnerSection} widget-panes">
+		<ul id="widget-tabs-{$groupId}">
+			<xen:foreach loop="$widgets" i="$i" value="$widget">
+			<li class="widget {$widget.class} tab-{$i}" id="widget-tab-{$tab.widget_id}"{xen:if 
+				'{$widget._runtime.ajaxLoadUrl}',' data-loadUrl="{$widget._runtime.ajaxLoadUrl}"'}>
+				<xen:if is="{$widget._runtime.ajaxLoadUrl}">
+				{xen:phrase loading}...
+				<xen:else />
+				{xen:raw $widget._runtime.html}
+				</xen:if>
+			</li>
+			</xen:foreach>
+		</ul>
+	</div>
+</div>
+
+<xen:else />
+
+<xen:comment>We are rendering row(s)</xen:comment>
+
+<div class="{$classSection} widget-rows rows-{xen:count $tabs}">
+	<xen:foreach loop="$widgets" i="$i" value="$widget">
+	<xen:if is="{$widget.class} === 'WidgetFramework_WidgetGroup'">
+	<div class="{$classInnerSection} row-{$i}">
+		{xen:raw $widget._runtime.html}
+	</div>
+	<xen:elseif is="{$widget._runtime.useWrapper}" />
+	<div class="{$classInnerSection} {$widget.class} row-{$i}" id="widget-{$widget.widget_id}">
+		<h3>
+			<xen:if is="{$widget._runtime.extraData.link}">
+			<a href="{$widget._runtime.extraData.link}">{xen:raw $tab.title}</a>
+			<xen:else />
+			{xen:raw $widget._runtime.title}
+			</xen:if>
+		</h3>
+		{xen:raw $widget._runtime.html}
+	</div>
+	<xen:else />
+	{xen:raw $widget._runtime.html}
+	</xen:if>
+	</xen:foreach>
+</div>
+
+</xen:if>]]></template>
     <template title="wf_widget_online_staff" version_id="65" version_string="2.3.6"><![CDATA[<xen:if hascontent="true">
 <div class="avatarList WidgetFramework_WidgetRenderer_OnlineStaff">
 	<ul>
@@ -1940,7 +2084,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_profile_posts" version_id="102" version_string="2.5.0d"><![CDATA[<xen:if is="{$canUpdateStatus}">
+    <template title="wf_widget_profile_posts" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:if is="{$canUpdateStatus}">
 	<xen:require js="js/xenforo/quick_reply_profile.js" />
 	<xen:require js="js/WidgetFramework/default.js" />
 
@@ -1949,7 +2093,9 @@ All customization should go to wf_default_EXTRA.css
 		  data-hide-submit="true"
 		  data-optInOut="OptIn"
 		  data-target="#widget-{$widget.widget_id} ul.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostList">
-		<textarea name="message" class="textCtrl StatusEditor UserTagger Elastic" placeholder="{xen:phrase update_your_status}..." rows="1" cols="40" data-statusEditorCounter="#statusEditorCounter-{$widget.widget_id}"></textarea>
+		<textarea name="message" class="textCtrl StatusEditor UserTagger Elastic"
+				  placeholder="{xen:phrase update_your_status}..." rows="1" cols="40"
+				  data-statusEditorCounter="#statusEditorCounter-{$widget.widget_id}"></textarea>
 		<div class="submitUnit">
 			<span id="statusEditorCounter-{$widget.widget_id}" title="{xen:phrase characters_remaining}"></span>
 			<input type="submit" class="button primary" value="{xen:phrase post_verb}" />
@@ -1962,11 +2108,16 @@ All customization should go to wf_default_EXTRA.css
 		</div>
 	</form>
 </xen:if>
+
+<xen:if hascontent="true">
 <ul class="WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostList{xen:if $canUpdateStatus, ' nonInitial'}">
+	<xen:contentcheck>
 	<xen:foreach loop="$profilePosts" value="$profilePost">
 		<xen:include template="wf_widget_profile_posts_profile_post" />
 	</xen:foreach>
+	</xen:contentcheck>
 </ul>
+</xen:if>
 
 <xen:edithint template="profile_post_list_item_simple" />
 <xen:edithint template="wf_default.css" />]]></template>
@@ -2278,126 +2429,6 @@ All customization should go to wf_default_EXTRA.css
     <template title="wf_widget_visitor_panel" version_id="62" version_string="2.3.3d"><![CDATA[<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<xen:include template="sidebar_visitor_panel" />
 </div>]]></template>
-    <template title="wf_widget_wrapper" version_id="106" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
-
-<xen:if is="{$_WidgetFramework_isHook}">
-	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}', 'section sectionMain '}widget-container {$groupId} act-as-sidebar sidebar</xen:set>
-	<xen:set var="$classInnerSection">widget hook-widget</xen:set>
-<xen:else />
-	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}', 'section '}{$groupId}</xen:set>
-	<xen:set var="$classInnerSection">secondaryContent widget sidebar-widget</xen:set>
-</xen:if>
-
-<xen:if is="{xen:count $tabs} > 1 AND !{$isRows}">
-	<xen:if is="{$isTabs}">
-
-		<xen:comment>We are rendering tabs</xen:comment>
-
-		<xen:require js="js/WidgetFramework/default.js" />
-		<div class="{$classSection} widget-tabs">
-			<ul class="tabs Tabs" data-panes="#widget-tabs-{$normalizedGroupId} > li">
-				<xen:foreach loop="$tabs" value="$tab">
-					<li>
-						<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
-							<xen:if hascontent="true">
-								<xen:contentcheck>{xen:raw $tab.title}</xen:contentcheck>
-							<xen:else />
-								{xen:phrase wf_widgets}
-							</xen:if>
-						</a>
-					</li>
-				</xen:foreach>
-			</ul>
-			<div class="{$classInnerSection} widget-panes">
-				<ul id="widget-tabs-{$normalizedGroupId}">
-					<xen:foreach loop="$tabs" value="$tab">
-						<li class="widget {$tab.class}" id="widget-tab-{$tab.widget_id}"{xen:if '{$tab.ajaxLoadUrl}',
-							' data-loadUrl="{$tab.ajaxLoadUrl}"'}>
-							<xen:if is="{$tab.ajaxLoadUrl}">
-								{xen:phrase loading}...
-							<xen:else />
-								{xen:raw $tab.html}
-							</xen:if>
-						</li>
-				</li>
-					</xen:foreach>
-				</ul>
-			</div>
-		</div>
-
-	<xen:else />
-
-		<xen:comment>We are rendering columns</xen:comment>
-
-		<div class="{$classSection} widget-columns" id="widget-columns-{$normalizedGroupId}">
-			<div style="margin: 0; padding: 0; width: 100%">
-				<xen:foreach loop="$tabs" value="$tab">
-					<div style="float: left; margin: 0; padding: 0; width: {xen:calc '100 / {xen:count $tabs}'}%">
-						<xen:if is="{$tab._WidgetFramework_isGroup}">
-							<div class="{$classInnerSection} {$tab.class}">
-								{xen:raw $tab.html}
-							</div>
-						<xen:elseif is="{$tab.useWrapper}" />
-							<div class="{$classInnerSection} {$tab.class}" id="widget-{$tab.widget_id}">
-								<h3>
-									<xen:if is="{$tab.extraData.link}">
-										<a href="{$tab.extraData.link}">{xen:raw $tab.title}</a>
-									<xen:else />
-										{xen:raw $tab.title}
-									</xen:if>
-								</h3>
-
-								{xen:raw $tab.html}
-							</div>
-						<xen:else />
-							{xen:raw $tab.html}
-						</xen:if>
-					</div>
-				</xen:foreach>
-
-				<div style="clear: both; height: 0px;">&nbsp;</div>
-			</div>
-		</div>
-
-	</xen:if>
-<xen:elseif is="count({$tabs}) == 1 && isset({$firstTab._ajaxLoadParams})" />
-
-	<xen:comment>We are rendering tab via AJAX</xen:comment>
-
-	<div>{xen:raw $firstTab.html}</div>
-
-<xen:else />
-
-	<xen:comment>We are rendering row(s)</xen:comment>
-
-	<xen:if hascontent="true">
-		<xen:set var="$skipWidgetContainer"><xen:if is="count({$tabs}) == 1 AND !{$firstTab.useWrapper}">1</xen:if></xen:set>
-		<xen:if is="!{$skipWidgetContainer}"><div class="{$classSection}"></xen:if>
-			<xen:contentcheck>
-				<xen:foreach loop="$tabs" value="$tab">
-					<xen:if is="{$tab._WidgetFramework_isGroup}">
-						<div class="{$classInnerSection}">
-							{xen:raw $tab.html}
-						</div>
-					<xen:elseif is="{$tab.useWrapper}" />
-						<div class="{$classInnerSection} {$tab.class}" id="widget-{$tab.widget_id}">
-							<h3>
-								<xen:if is="{$tab.extraData.link}">
-									<a href="{$tab.extraData.link}">{xen:raw $tab.title}</a>
-								<xen:else />
-									{xen:raw $tab.title}
-								</xen:if>
-							</h3>
-							{xen:raw $tab.html}
-						</div>
-					<xen:else />
-						{xen:raw $tab.html}
-					</xen:if>
-				</xen:foreach>
-			</xen:contentcheck>
-		<xen:if is="!{$skipWidgetContainer}"></div></xen:if>
-	</xen:if>
-</xen:if>]]></template>
     <template title="wf_widget_xfmg_albums" version_id="112" version_string="2.6.0-dev"><![CDATA[<div class="avatarList">
 	<ol>
 		<xen:foreach loop="$albums" value="$_album">

@@ -60,12 +60,12 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _rebuildGlobalCache()
     {
-        if (!$this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD)) {
-            if ($this->get('widget_page_id') == 0) {
-                $this->_getWidgetModel()->buildCache();
-            } elseif ($this->isUpdate() AND $this->getExisting('widget_page_id') == 0) {
-                $this->_getWidgetModel()->buildCache();
-            }
+        if ($this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD)) {
+            return;
+        }
+
+        if ($this->get('widget_page_id') == 0) {
+            $this->_getWidgetModel()->buildCache();
         }
     }
 
@@ -102,6 +102,10 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
                     'WidgetFramework_DataWriter_Helper_Widget',
                     'verifyPosition'
                 )
+            ),
+            'group_id' => array(
+                'type' => self::TYPE_UINT,
+                'default' => 0,
             ),
             'display_order' => array(
                 'type' => self::TYPE_INT,
