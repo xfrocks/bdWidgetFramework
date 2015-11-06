@@ -21,7 +21,7 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base
                 if (!empty($widgetRef['renderer'])) {
                     /** @var WidgetFramework_WidgetRenderer $renderer */
                     $renderer = $widgetRef['renderer'];
-                    $widgetRef['title'] = strip_tags($renderer->extraPrepareTitle($widgetRef));
+                    $widgetRef['_runtime']['title'] = strip_tags($renderer->extraPrepareTitle($widgetRef));
                 }
             }
         }

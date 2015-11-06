@@ -10,6 +10,12 @@
   <admin_permissions/>
   <admin_style_properties/>
   <admin_templates>
+    <template title="wf_group_options"><![CDATA[<xen:selectunit label="{xen:phrase wf_group_layout}:" name="{$namePrefix}layout" value="{$options.layout}">
+	<xen:option value="rows">{xen:phrase wf_group_layout_rows}</xen:option>
+	<xen:option value="columns">{xen:phrase wf_group_layout_columns}</xen:option>
+	<xen:option value="tabs">{xen:phrase wf_group_layout_tabs}</xen:option>
+	<xen:option value="random">{xen:phrase wf_group_layout_random}</xen:option>
+</xen:selectunit>]]></template>
     <template title="wf_widget_delete"><![CDATA[<xen:title>{xen:phrase wf_confirm_removal_of_widget}: {$widget.rendererName}</xen:title>
 <xen:h1>{xen:phrase wf_confirm_removal_of_widget}</xen:h1>
 
@@ -42,9 +48,11 @@
     <template title="wf_widget_edit"><![CDATA[<xen:require css="widget_framework.css" />
 <xen:require js="js/WidgetFramework/functions.js" />
 
+<xen:set var="$widgetIsGroup">{xen:if '{$widget.class} === "WidgetFramework_WidgetGroup"', 1}</xen:set>
+
 <xen:set var="$title">{xen:if '{$widget.widget_id}',
-	'{xen:phrase wf_edit_widget}',
-	'{xen:phrase wf_add_widget}'}</xen:set>
+	{xen:if '{$widgetIsGroup}', {xen:phrase wf_edit_group}, {xen:phrase wf_edit_widget}},
+	{xen:phrase wf_add_widget}}</xen:set>
 
 <xen:if is="{$widgetPage}">
 	<xen:title>{$widgetPage.title} - {xen:raw $title}</xen:title>
@@ -88,6 +96,10 @@
 		<xen:explain>{xen:raw $textboxTitleExplain}</xen:explain>
 	</xen:textboxunit>
 
+	<xen:if is="{$widgetIsGroup}">
+	<xen:comment>Do not allow changing renderer type for groups</xen:comment>
+	<input type="hidden" name="class" value="{$widget.class}" />
+	<xen:else />
 	<xen:selectunit label="{xen:phrase wf_renderer}:" name="class" value="{$widget.class}"
 		inputclass="WidgetRendererOptions"
 		data-url="{xen:adminlink widgets/options}"
@@ -96,6 +108,7 @@
 		<xen:options source="$renderers" />
 		<xen:explain>{xen:if '{$_layoutEditor}', '', {xen:phrase wf_renderer_explain}}</xen:explain>
 	</xen:selectunit>
+	</xen:if>
 	
 	<div id="OptionsTarget">
 		<xen:include template="wf_widget_options" />
@@ -108,6 +121,8 @@
 				<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
 			</xen:textboxunit>
 
+			<xen:include template="wf_widget_edit_group" />
+
 			<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
 				<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
 			</xen:spinboxunit>
@@ -115,7 +130,7 @@
 		<xen:else />
 
 			<input type="hidden" name="position" value="{$widget.position}" />
-			<input type="hidden" name="{$namePrefix}tab_group" value="{$options.tab_group}" />
+			<input type="hidden" name="group_id" value="{$widget.group_id}" />
 			<input type="hidden" name="display_order" value="{$widget.display_order}" />
 
 		</xen:if>
@@ -126,6 +141,7 @@
 			</xen:textboxunit>
 		</xen:if>
 
+		<xen:if is="empty({$widget._runtime.configuration}) || !empty({$widget._runtime.configuration.options.conditional})">
 		<xen:textboxunit name="{$namePrefix}conditional[raw]" label="{xen:phrase wf_conditional}" value="{xen:if '{$options.conditional}', $options.conditional.raw}" rows="3" inputclass="Elastic">
 			<xen:explain>
 				{xen:if '{$_layoutEditor}', '', {xen:phrase wf_conditional_explain,
@@ -134,15 +150,18 @@
 				{xen:raw $conditionalParamsExplain}
 			</xen:explain>
 		</xen:textboxunit>
+		</xen:if>
 
-		<xen:if is="!{$_layoutEditor}">
-			<xen:checkboxunit label="">
-				<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
-				<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
-			</xen:checkboxunit>
+		<xen:if is="{$widgetIsGroup}">
+		<input type="hidden" name="active" value="1" />
+		<xen:elseif is="!{$_layoutEditor}"/>
+		<xen:checkboxunit label="">
+			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
+			<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
+		</xen:checkboxunit>
 		<xen:else />
-			<input type="hidden" name="active" value="{xen:if '{$widget.active}', 1, 0}" />
-			<input type="hidden" name="{$namePrefix}deactivate_for_mobile" value="{xen:if '{$options.deactivate_for_mobile}', 1, 0}" />
+		<input type="hidden" name="active" value="{xen:if '{$widget.active}', 1, 0}" />
+		<input type="hidden" name="{$namePrefix}deactivate_for_mobile" value="{xen:if '{$options.deactivate_for_mobile}', 1, 0}" />
 		</xen:if>
 	</fieldset>
 
@@ -160,6 +179,47 @@
 	<input type="hidden" name="position_widget" value="{$positionWidget.widget_id}" />
 	<input type="hidden" name="_layoutEditor" value="{$_layoutEditor}" />
 </xen:form>]]></template>
+    <template title="wf_widget_edit_group"><![CDATA[<xen:if is="!{$widget.group_id}">
+
+<xen:if is="count({$siblingWidgets})">
+<xen:if is="{$groups}">
+	<xen:selectunit label="{xen:phrase wf_join_group}:" name="group_join">
+		<xen:option value="0"></xen:option>
+		<xen:foreach loop="$groups" value="$group">
+			<xen:option value="{$group.widget_id}">
+				{xen:phrase wf_group_x, 'groupId={$group.widget_id}'}
+			</xen:option>
+		</xen:foreach>
+	</xen:selectunit>
+</xen:if>
+<xen:checkboxunit label="">
+	<xen:option label="{xen:phrase wf_create_new_group}" inputclass="Hider">
+		<xen:disabled>
+			<xen:checkbox name="group_merge">
+				<xen:foreach loop="$siblingWidgets" value="$siblingWidget">
+					<xen:option value="{$siblingWidget.widget_id}">
+						{xen:if '{$siblingWidget.class} === "WidgetFramework_WidgetGroup"',
+							'{xen:phrase wf_group_x, 'groupId={$siblingWidget.widget_id}'}',
+							'<a href="{xen:adminlink widgets/edit, $siblingWidget}" target="_blank" tabindex="-1">
+							#{$siblingWidget.widget_id}</a> -
+							{xen:if '{$siblingWidget.title}', '{xen:raw $siblingWidget.title}',
+								'{$siblingWidget.rendererName}'}'
+						}
+					</xen:option>
+				</xen:foreach>
+			</xen:checkbox>
+		</xen:disabled>
+	</xen:option>
+</xen:checkboxunit>
+</xen:if>
+
+<xen:else />
+
+<xen:checkboxunit label="">
+	<xen:option label="{xen:phrase wf_ungroup}" name="group_ungroup" value="1" />
+</xen:checkboxunit>
+
+</xen:if>]]></template>
     <template title="wf_widget_import"><![CDATA[<xen:title>{xen:phrase wf_import_widgets}</xen:title>
 
 <xen:form action="{xen:adminlink 'widgets/import'}" upload="true">
@@ -194,24 +254,14 @@
 	<ul class="FilterList">
 		<xen:foreach loop="$positions" value="$position">
 		<li>
-			<h3 class="textHeading">{$position.position} <span class="count">({xen:count $position.widgets})</span></h3>
+			<h3 class="textHeading">{$position.position}</h3>
 			<ol>
-				<xen:foreach loop="$position.widgets" value="$widget">
-					<xen:if is="{$widget.widgets}">
-						<li class="widget-list-tab-group">
-							<h3 class="textHeading">{xen:phrase wf_tab_group} <span class="count">({xen:count $widget.widgets})</span></h3>
-							<ol>
-								<xen:foreach loop="$widget.widgets" value="$tabWidget">
-									<xen:include template="wf_widget_list_item">
-										<xen:map from="$tabWidget" to="$widget" />
-									</xen:include>
-								</xen:foreach>
-							</ol>
-						</li>
-					<xen:else />
-						<xen:include template="wf_widget_list_item" />
-					</xen:if>
-				</xen:foreach>
+				<xen:callback
+					class="WidgetFramework_ViewAdmin_Helper_WidgetList"
+					method="renderItems"
+					params="{xen:array 'widgets={$position.widgets}'}"/>
+				<xen:edithint template="wf_widget_list_items" />
+				<xen:edithint template="wf_widget_list_item" />
 			</ol>
 		</xen:foreach>
 	</ul>
@@ -221,18 +271,18 @@
     <template title="wf_widget_list_item"><![CDATA[<xen:set var="$canToggle">{xen:helper WidgetFramework_canToggle, $widget}</xen:set>
 <xen:set var="$href">{xen:adminlink 'widgets/edit', $widget}</xen:set>
 <xen:set var="$delete">{xen:adminlink 'widgets/delete', $widget}</xen:set>
-<xen:set var="$label">{xen:if '{$widget.title}', '{xen:raw $widget.title}', '{$widget.rendererName}'}</xen:set>
+<xen:set var="$label">{xen:if '{$widget._runtime.title}', '{xen:raw $widget._runtime.title}', '{$widget.rendererName}'}</xen:set>
 <xen:set var="$labelClass">{xen:if '!{$widget.active}', 'disabled'}</xen:set>
 <xen:set var="$snippet">{xen:if '{$widget.title}', '{$widget.rendererName} ({xen:number $widget.display_order})', '({xen:number $widget.display_order})'}</xen:set>
 
 <xen:if is="{$canToggle}">
 	<xen:listitem
 		id="{$widget.widget_id}"
-		href="{$href}"
-		delete="{$delete}"
-		label="{$label}"
-		labelclass="{$labelClass}"
-		snippet="{$snippet}"
+		href="{xen:raw $href}"
+		delete="{xen:raw $delete}"
+		label="{xen:raw $label}"
+		labelclass="{xen:raw $labelClass}"
+		snippet="{xen:raw $snippet}"
 		toggle="{$widget.active}"
 		toggletitle="{xen:phrase enable_disable_x, 'title={$widget.title}'}">>
 		<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
@@ -246,11 +296,11 @@
 <xen:else />
 	<xen:listitem
 		id="{$widget.widget_id}"
-		href="{$href}"
-		delete="{$delete}"
-		label="{$label}"
-		labelclass="{$labelClass}"
-		snippet="{$snippet}">
+		href="{xen:raw $href}"
+		delete="{xen:raw $delete}"
+		label="{xen:raw $label}"
+		labelclass="{xen:raw $labelClass}"
+		snippet="{xen:raw $snippet}">
 		<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
 			<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
 			<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>
@@ -260,6 +310,32 @@
 		</xen:popup>
 	</xen:listitem>
 </xen:if>]]></template>
+    <template title="wf_widget_list_items"><![CDATA[<xen:foreach loop="$widgets" value="$widget">
+	<xen:if is="{$widget.widgets}">
+		<li class="widget-group level-{$level}">
+			<h3 class="textHeading">
+				<a href="{xen:adminlink widgets/edit, $widget}">
+					<xen:if is="{$widget.title}">
+					{xen:raw $widget.title}
+					<xen:else />
+					{xen:phrase wf_group_x, 'groupId={$widget.widget_id}'}
+					</xen:if>
+				</a>
+
+				<xen:if is="{$widget.options.layout}">layout={$widget.options.layout}</xen:if>
+			</h3>
+			<ol>
+				<xen:callback
+					class="WidgetFramework_ViewAdmin_Helper_WidgetList"
+					method="renderItems"
+					params="{xen:array 'widgets={$widget.widgets}',
+						'level={xen:calc '{$level} + 1'}'}"/>
+			</ol>
+		</li>
+	<xen:else />
+		<xen:include template="wf_widget_list_item" />
+	</xen:if>
+</xen:foreach>]]></template>
     <template title="wf_widget_options"><![CDATA[<input type="hidden" name="options_loaded" value="{$options_loaded}" />
 
 <xen:if hascontent="true">
@@ -650,12 +726,16 @@
 	</xen:submitunit>
 
 </xen:form>]]></template>
-    <template title="widget_framework.css"><![CDATA[.widget-list-tab-group h3 {
-	padding-left: 20px !important;
-}
-.widget-list-tab-group h4 a {
-	padding-left: 40px !important;
-}
+    <template title="widget_framework.css"><![CDATA[.widget-group h3 { padding-left: 10px !important; }
+.widget-group h4 a { padding-left: 20px !important; }
+.widget-group.level-1 h3 { padding-left: 20px !important; }
+.widget-group.level-1 h4 a { padding-left: 30px !important; }
+.widget-group.level-2 h3 { padding-left: 30px !important; }
+.widget-group.level-2 h4 a { padding-left: 40px !important; }
+.widget-group.level-3 h3 { padding-left: 40px !important; }
+.widget-group.level-3 h4 a { padding-left: 50px !important; }
+.widget-group.level-4 h3 { padding-left: 50px !important; }
+.widget-group.level-4 h4 a { padding-left: 60px !important; }
 
 .xenOverlay .WidgetFramework_Widget_EditForm {
 	max-height: 400px;
@@ -864,6 +944,7 @@ Arguments:
 {xen:helper ismemberof, $visitor, 3} (show up for users of user group #3 only, which is the admin group)]]></phrase>
     <phrase title="wf_confirm_deletion_of_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Confirm Deletion of Widget Page]]></phrase>
     <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
+    <phrase title="wf_create_new_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Create New Group]]></phrase>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="wf_current_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum]]></phrase>
     <phrase title="wf_current_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum + its children]]></phrase>
@@ -881,6 +962,7 @@ Arguments:
     <phrase title="wf_display_mode" version_id="24" version_string="1.2.2.2"><![CDATA[Display Mode]]></phrase>
     <phrase title="wf_display_order_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[The position of this widget relative to other widgets in the same position.]]></phrase>
     <phrase title="wf_duplicate" version_id="96" version_string="2.5.0d"><![CDATA[Duplicate]]></phrase>
+    <phrase title="wf_edit_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Edit Group]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
     <phrase title="wf_edit_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Edit Widget Page]]></phrase>
     <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>
@@ -888,6 +970,13 @@ Arguments:
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
     <phrase title="wf_feed_reader" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
     <phrase title="wf_forum_statistics" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Forum Statistics]]></phrase>
+    <phrase title="wf_group_layout" version_id="112" version_string="2.6.0-dev"><![CDATA[Layout]]></phrase>
+    <phrase title="wf_group_layout_columns" version_id="112" version_string="2.6.0-dev"><![CDATA[Columns]]></phrase>
+    <phrase title="wf_group_layout_random" version_id="112" version_string="2.6.0-dev"><![CDATA[Random]]></phrase>
+    <phrase title="wf_group_layout_rows" version_id="112" version_string="2.6.0-dev"><![CDATA[Rows]]></phrase>
+    <phrase title="wf_group_layout_tabs" version_id="112" version_string="2.6.0-dev"><![CDATA[Tabs]]></phrase>
+    <phrase title="wf_group_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Group Widgets]]></phrase>
+    <phrase title="wf_group_x" version_id="112" version_string="2.6.0-dev"><![CDATA[Group {groupId}]]></phrase>
     <phrase title="wf_home_navtab" global_cache="1" version_id="78" version_string="2.4.5c"><![CDATA[Home]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_from_uploaded_file" version_id="96" version_string="2.5.0d"><![CDATA[Import from uploaded file]]></phrase>
@@ -897,6 +986,7 @@ Arguments:
     <phrase title="wf_invalid_widget_renderer_x" version_id="24" version_string="1.2.2.2"><![CDATA[Invalid Widget Renderer specified: {renderer}.]]></phrase>
     <phrase title="wf_is_index" version_id="68" version_string="2.4.0c"><![CDATA[Is Index Page]]></phrase>
     <phrase title="wf_is_index_explain" version_id="78" version_string="2.4.5c"><![CDATA[If selected, this page will take over the index page.]]></phrase>
+    <phrase title="wf_join_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Join Group]]></phrase>
     <phrase title="wf_layout_editor" version_id="96" version_string="2.5.0d"><![CDATA[Layout Editor]]></phrase>
     <phrase title="wf_layout_editor_widget_conditional_failed" version_id="96" version_string="2.5.0d"><![CDATA[Conditional check prevented this widget from being rendered.
 ]]></phrase>
@@ -968,6 +1058,7 @@ Arguments:
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
     <phrase title="wf_title_explain" version_id="111" version_string="2.6.0-dev"><![CDATA[The title will display above the widget contents where applicable.]]></phrase>
     <phrase title="wf_title_translations" version_id="111" version_string="2.6.0-dev"><![CDATA[Translations]]></phrase>
+    <phrase title="wf_ungroup" version_id="112" version_string="2.6.0-dev"><![CDATA[Ungroup]]></phrase>
     <phrase title="wf_unknown_renderer" version_id="96" version_string="2.5.0d"><![CDATA[Unknown Renderer ({class})]]></phrase>
     <phrase title="wf_users" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Users]]></phrase>
     <phrase title="wf_users_find" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Find Member]]></phrase>
@@ -984,11 +1075,13 @@ Arguments:
     <phrase title="wf_widget_birthday_today_is_x_peoples_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {count} people's birthday.]]></phrase>
     <phrase title="wf_widget_callback_callback_explain" version_id="17" version_string="1.0.9"><![CDATA[Enter the callback to render this widget. Callback signature:<br/>
 array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject]]></phrase>
+    <phrase title="wf_widget_class_cannot_changed_from_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Group cannot be saved.]]></phrase>
     <phrase title="wf_widget_empty_hide_visitor_panel" version_id="13" version_string="1.0.5"><![CDATA[hide visitor panel too?]]></phrase>
     <phrase title="wf_widget_empty_layout_editor_explain" version_id="98" version_string="2.5.0d"><![CDATA[Original contents will be removed.]]></phrase>
     <phrase title="wf_widget_feed_reader_display_mode_plus_image" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content + Image (if any)]]></phrase>
     <phrase title="wf_widget_feed_reader_display_mode_title_only" version_id="44" version_string="2.0.6"><![CDATA[Title Only]]></phrase>
     <phrase title="wf_widget_feed_reader_display_mode_with_content" version_id="44" version_string="2.0.6"><![CDATA[Title + Snippet of Content]]></phrase>
+    <phrase title="wf_widget_group_must_be_active" version_id="112" version_string="2.6.0-dev"><![CDATA[Widget Group must always be activated.]]></phrase>
     <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
     <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
@@ -1767,11 +1860,11 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:if is="{$_WidgetFramework_isHook}">
 	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}
-		AND {xen:property wf_groupBorder}', 'section sectionMain '}widget-container {$groupId} act-as-sidebar sidebar</xen:set>
+		AND {xen:property wf_groupBorder}', 'section sectionMain '}widget-container act-as-sidebar sidebar</xen:set>
 	<xen:set var="$classInnerSection">widget hook-widget</xen:set>
 <xen:else />
 	<xen:set var="$classSection">{xen:if '!{$_WidgetFramework_parentGroupName}
-		AND {xen:property wf_groupBorder}', 'section '}{$groupId}</xen:set>
+		AND {xen:property wf_groupBorder}', 'section '}</xen:set>
 	<xen:set var="$classInnerSection">secondaryContent widget sidebar-widget</xen:set>
 </xen:if>
 
@@ -1813,7 +1906,7 @@ All customization should go to wf_default_EXTRA.css
 						{xen:raw $widget._runtime.html}
 					</div>
 				<xen:else />
-					{xen:raw $tab.html}
+					{xen:raw $widget._runtime.html}
 				</xen:if>
 			</div>
 		</xen:foreach>
@@ -1827,11 +1920,11 @@ All customization should go to wf_default_EXTRA.css
 <xen:comment>We are rendering tabs</xen:comment>
 
 <xen:require js="js/WidgetFramework/default.js" />
-<div class="{$classSection} widget-tabs">
-	<ul class="tabs Tabs" data-panes="#widget-tabs-{$groupId} > li">
+<div class="{$classSection} widget-tabs" id="widget-tabs-{$groupId}">
+	<ul class="tabs Tabs" data-panes="#Widget{$groupId}Panes > li">
 		<xen:foreach loop="$widgets" value="$widget">
 		<li>
-			<a href="{$requestPaths.requestUri}#widget-tab-{$tab.widget_id}">
+			<a href="{$requestPaths.requestUri}#widget-tab-{$widget.widget_id}">
 				<xen:if hascontent="true">
 				<xen:contentcheck>{xen:raw $widget.title}</xen:contentcheck>
 				<xen:else />
@@ -1842,9 +1935,9 @@ All customization should go to wf_default_EXTRA.css
 		</xen:foreach>
 	</ul>
 	<div class="{$classInnerSection} widget-panes">
-		<ul id="widget-tabs-{$groupId}">
+		<ul id="Widget{$groupId}Panes">
 			<xen:foreach loop="$widgets" i="$i" value="$widget">
-			<li class="widget {$widget.class} tab-{$i}" id="widget-tab-{$tab.widget_id}"{xen:if 
+			<li class="widget {$widget.class} tab-{$i}" id="widget-tab-{$widget.widget_id}"{xen:if 
 				'{$widget._runtime.ajaxLoadUrl}',' data-loadUrl="{$widget._runtime.ajaxLoadUrl}"'}>
 				<xen:if is="{$widget._runtime.ajaxLoadUrl}">
 				{xen:phrase loading}...
@@ -1861,7 +1954,7 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:comment>We are rendering row(s)</xen:comment>
 
-<div class="{$classSection} widget-rows rows-{xen:count $tabs}">
+<div class="{$classSection} widget-rows rows-{xen:count $tabs}" id="widget-rows-{$groupId}">
 	<xen:foreach loop="$widgets" i="$i" value="$widget">
 	<xen:if is="{$widget.class} === 'WidgetFramework_WidgetGroup'">
 	<div class="{$classInnerSection} row-{$i}">

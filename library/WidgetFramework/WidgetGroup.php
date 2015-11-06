@@ -2,6 +2,17 @@
 
 class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
 {
+    public function getConfiguration()
+    {
+        $configuration = parent::getConfiguration();
+
+        $configuration['options'] = array(
+            'layout' => XenForo_Input::STRING,
+        );
+
+        return $configuration;
+    }
+
     public function prepare(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template)
     {
         if (empty($widgetRef['widgets'])) {
@@ -52,7 +63,7 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
         $subWidgetParams[self::PARAM_PARENT_GROUP_NAME] = $widgetRef['widget_id'];
 
         foreach ($subWidgetIds as $subWidgetId) {
-            $subWidgetRef =& $widget['widgets'][$subWidgetId];
+            $subWidgetRef =& $widgetRef['widgets'][$subWidgetId];
             $subWidgetRef['_runtime']['html'] = '';
             $subWidgetRef['_runtime']['ajaxLoadUrl'] = '';
 
@@ -61,7 +72,7 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
                 && count($subWidgets) > 0
                 && $layout === 'tabs'
                 && !empty($renderer)
-                && $renderer->canAjaxLoad($widget)
+                && $renderer->canAjaxLoad($subWidgetRef)
             ) {
                 $subWidgetRef['_runtime']['ajaxLoadUrl'] = $renderer->getAjaxLoadUrl($subWidgetRef, $positionCode, $params, $template);
                 $subWidgetRef['_runtime']['html'] = $subWidgetRef['_runtime']['ajaxLoadUrl'];
@@ -85,13 +96,13 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
         return array(
             'name' => 'Group',
             'isHidden' => true,
-            'options' => array(),
+            'useWrapper' => false,
         );
     }
 
     protected function _getOptionsTemplate()
     {
-        return false;
+        return 'wf_group_options';
     }
 
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)

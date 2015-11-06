@@ -37,21 +37,25 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
     {
         $options = array();
 
+        $widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
         $position = $this->_input->filterSingle('position', XenForo_Input::STRING);
+        $groupId = $this->_input->filterSingle('group_id', XenForo_Input::STRING);
+        $displayOrder = $this->_input->filterSingle('display_order', XenForo_Input::INT, array('default' => 'na'));
 
         $positionWidgetId = $this->_input->filterSingle('position_widget', XenForo_Input::UINT);
         $positionWidget = null;
         if (!empty($positionWidgetId)) {
             $positionWidget = $this->_getWidgetOrError($positionWidgetId);
+            $widgetPageId = $positionWidget['widget_page_id'];
+            $position = $positionWidget['position'];
+            $groupId = $positionWidget['group_id'];
         }
 
-        $widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
+        $widgetPage = null;
         if (!empty($widgetPageId)) {
-            // prepare options for widget of widget page
             $widgetPage = $this->_getWidgetPageOrError($widgetPageId);
         }
 
-        $displayOrder = $this->_input->filterSingle('display_order', XenForo_Input::INT, array('default' => 'na'));
         if ($displayOrder == 'na'
             && !empty($position)
         ) {
@@ -70,24 +74,21 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         }
 
         $widget = array(
-            'active' => 1,
-            'position' => $position,
-            'display_order' => $displayOrder,
-            'widget_page_id' => $widgetPageId,
-            'options' => $options,
-
             'class' => $this->_input->filterSingle('class', XenForo_Input::STRING),
+            'active' => 1,
+
+            'widget_page_id' => $widgetPageId,
+            'position' => $position,
+            'group_id' => $groupId,
+            'display_order' => $displayOrder,
+
+            'options' => $options,
         );
 
-        $viewParams = array();
-        if (!empty($positionWidget)) {
-            $viewParams['positionWidget'] = $positionWidget;
-        }
-        if (!empty($widgetPage)) {
-            $viewParams['widgetPage'] = $widgetPage;
-
-            $this->_routeMatch->setSections('nodeTree');
-        }
+        $viewParams = array(
+            'positionWidget' => $positionWidget,
+            'widgetPage' => $widgetPage,
+        );
 
         return $this->_getResponseAddOrEdit($widget, $viewParams);
     }
@@ -120,6 +121,46 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             '_layoutEditor' => $this->_input->filterSingle('_layoutEditor', XenForo_Input::UINT),
             'conditionalParams' => $this->_input->filterSingle('conditionalParams', XenForo_Input::STRING),
         ));
+
+        $widgets = array();
+        if (!empty($widget['widget_id'])) {
+            if (!empty($widget['widget_page_id'])) {
+                $widgets = $this->_getWidgetModel()->getPageWidgets($widget['widget_page_id'], false);
+            } else {
+                $widgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
+            }
+        }
+
+        if (!empty($widgets)
+            && count($widget['positionCodes']) == 1
+        ) {
+            $positionCode = reset($widget['positionCodes']);
+
+            $core = WidgetFramework_Core::getInstance();
+            $core->removeAllWidgets();
+            $core->addWidgets($widgets);
+
+            $widgetsAtPosition = $core->getWidgetsAtPosition($positionCode);
+
+            $siblingWidgets = $this->_getWidgetModel()->getWidgetsContainsWidgetId($widgetsAtPosition, $widget['widget_id']);
+            if (isset($siblingWidgets[$widget['widget_id']])) {
+                unset($siblingWidgets[$widget['widget_id']]);
+            }
+            $viewParams['siblingWidgets'] = $siblingWidgets;
+
+            $groups = array();
+            foreach ($widgets as $_widget) {
+                if ($_widget['class'] === 'WidgetFramework_WidgetGroup'
+                    && $positionCode === $_widget['position']
+                ) {
+                    $groups[$_widget['widget_id']] = $_widget;
+                }
+            }
+            if (isset($groups[$widget['widget_id']])) {
+                unset($groups[$widget['widget_id']]);
+            }
+            $viewParams['groups'] = $groups;
+        }
 
         return $this->responseView('WidgetFramework_ViewAdmin_Widget_Edit', 'wf_widget_edit', $viewParams);
     }
@@ -225,6 +266,41 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                 'position' => $positionWidget['position'],
                 'group_id' => $positionWidget['group_id'],
             ));
+        }
+
+        if (empty($widget['group_id'])) {
+            $groupMerge = $this->_input->filterSingle('group_merge', XenForo_Input::UINT, array('array' => true));
+            $groupJoin = $this->_input->filterSingle('group_join', XenForo_Input::UINT);
+            if (!empty($groupMerge)) {
+                $_widgetsToMerge = $this->_getWidgetModel()->getWidgets(array('widget_id' => $groupMerge));
+                if (!empty($_widgetsToMerge)) {
+                    $_group = $this->_getWidgetModel()->createGroupContaining(reset($_widgetsToMerge));
+
+                    foreach ($_widgetsToMerge as $_widgetToMerge) {
+                        $_widgetToMergeDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                        $_widgetToMergeDw->setExistingData($_widgetToMerge, true);
+                        $_widgetToMergeDw->set('group_id', $_group['widget_id']);
+                        $_widgetToMergeDw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+                        $_widgetToMergeDw->save();
+                    }
+
+                    $dw->set('group_id', $_group['widget_id']);
+                }
+            } elseif (!empty($groupJoin)) {
+                $_group = $this->_getWidgetModel()->getWidgetById($groupJoin);
+                if (!empty($_group)) {
+                    $dw->set('group_id', $_group['widget_id']);
+                }
+            }
+        } else {
+            if ($this->_input->filterSingle('group_ungroup', XenForo_Input::BOOLEAN)) {
+                $_group = $this->_getWidgetModel()->getWidgetById($widget['group_id']);
+                if (!empty($_group)) {
+                    $dw->set('group_id', $_group['group_id']);
+                } else {
+                    $dw->set('group_id', 0);
+                }
+            }
         }
 
         $dw->save();

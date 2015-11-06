@@ -145,7 +145,21 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             $this->set('template_for_hooks', $templateForHooks);
         }
 
-        if ($this->get('widget_id') AND !empty($this->_newData['xf_widget'])) {
+        if ($this->isChanged('class')
+            && $this->getExisting('class') === 'WidgetFramework_WidgetGroup'
+        ) {
+            $this->error(new XenForo_Phrase('wf_widget_class_cannot_changed_from_group'), 'class');
+        }
+
+        if ($this->get('class') === 'WidgetFramework_WidgetGroup') {
+            if (!$this->get('active')) {
+                $this->error(new XenForo_Phrase('wf_widget_group_must_be_active'), 'active');
+            }
+        }
+
+        if ($this->get('widget_id')
+            && !empty($this->_newData['xf_widget'])
+        ) {
             WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this, $this->_newData['xf_widget']);
         }
 

@@ -31,6 +31,10 @@ class WidgetFramework_Model_Widget extends XenForo_Model
     public function getWidgetsContainsWidgetId(array $widgets, $widgetId, $groupId = 0)
     {
         foreach (array_keys($widgets) as $_widgetId) {
+            if ($_widgetId === $widgetId) {
+                return $widgets;
+            }
+
             if (isset($widgets[$_widgetId]['widgets'])) {
                 $response = $this->getWidgetsContainsWidgetId($widgets[$_widgetId]['widgets'], $widgetId, $groupId);
 
@@ -43,8 +47,6 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
                     return $response;
                 }
-            } elseif ($_widgetId === $widgetId) {
-                return $widgets;
             }
         }
 
@@ -70,16 +72,18 @@ class WidgetFramework_Model_Widget extends XenForo_Model
     {
         if (!empty($positionWidget)) {
             // put into a group
-            $sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id']);
+            $siblingWidgets = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id']);
         } else {
             // put into a position
-            $sameDisplayOrderLevels = $positionWidgetGroups;
+            $siblingWidgets = $positionWidgetGroups;
         }
 
         $maxDisplayOrder = false;
-        foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevel) {
-            if ($maxDisplayOrder === false OR $maxDisplayOrder < $sameDisplayOrderLevel['display_order']) {
-                $maxDisplayOrder = $sameDisplayOrderLevel['display_order'];
+        foreach ($siblingWidgets as $siblingWidget) {
+            if ($maxDisplayOrder === false
+                || $maxDisplayOrder < $siblingWidget['display_order']
+            ) {
+                $maxDisplayOrder = $siblingWidget['display_order'];
             }
         }
 
@@ -343,6 +347,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         ), 'widget_id');
 
         foreach ($widgets as &$widgetRef) {
+            $widgetRef['positionCodes'] = WidgetFramework_Helper_String::splitPositionCodes($widgetRef['position']);
+
             if (!is_array($widgetRef['options'])) {
                 $widgetRef['options'] = @unserialize($widgetRef['options']);
             }
@@ -419,6 +425,10 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             } else {
                 $sqlConditions[] = 'widget.widget_page_id = ' . $db->quote($conditions['widget_page_id']);
             }
+        }
+
+        if (isset($conditions['active'])) {
+            $sqlConditions[] = 'widget.active = ' . intval($conditions['active']);
         }
 
         return $this->getConditionsForClause($sqlConditions);

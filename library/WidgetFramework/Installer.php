@@ -8,27 +8,27 @@ class WidgetFramework_Installer
     protected static $_tables = array(
         'widget_page' => array(
             'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widgetframework_widget_page` (
-				`node_id` INT(10) UNSIGNED NOT NULL
-				,`widgets` MEDIUMBLOB
-				,`options` MEDIUMBLOB
-				, PRIMARY KEY (`node_id`)
-				
-			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
+                `node_id` INT(10) UNSIGNED NOT NULL
+                ,`options` MEDIUMBLOB
+                , PRIMARY KEY (`node_id`)
+                
+            ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
             'dropQuery' => 'DROP TABLE IF EXISTS `xf_widgetframework_widget_page`',
         ),
         'xf_widget' => array(
             'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widget` (
-				`widget_id` INT(10) UNSIGNED AUTO_INCREMENT
-				,`title` TEXT
-				,`class` TEXT NOT NULL
-				,`position` TEXT
-				,`display_order` INT(11) NOT NULL DEFAULT \'0\'
-				,`active` INT(10) UNSIGNED NOT NULL DEFAULT \'1\'
-				,`options` MEDIUMBLOB
-				,`template_for_hooks` MEDIUMBLOB
-				, PRIMARY KEY (`widget_id`)
-				
-			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
+                `widget_id` INT(10) UNSIGNED AUTO_INCREMENT
+                ,`title` TEXT
+                ,`class` TEXT NOT NULL
+                ,`position` TEXT
+                ,`group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'
+                ,`display_order` INT(11) NOT NULL DEFAULT \'0\'
+                ,`active` INT(10) UNSIGNED NOT NULL DEFAULT \'1\'
+                ,`options` MEDIUMBLOB
+                ,`template_for_hooks` MEDIUMBLOB
+                , PRIMARY KEY (`widget_id`)
+                
+            ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
             'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`',
         ),
     );
@@ -48,6 +48,14 @@ class WidgetFramework_Installer
             'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
             'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
             'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
+        ),
+        array(
+            'table' => 'xf_widget',
+            'field' => 'group_id',
+            'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
+            'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'group_id\'',
+            'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `group_id`',
         ),
     );
 

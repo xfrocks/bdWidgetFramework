@@ -2,12 +2,18 @@
 
 class WidgetFramework_Helper_Sort
 {
-    public static function addWidgetToPositions(array &$positions, array $widgets)
+    public static function addWidgetToPositions(array &$positions, array &$widgets)
     {
         $positionCodes = array();
 
         foreach ($widgets as $widget) {
-            foreach (explode(',', $widget['position']) as $positionCode) {
+            if (isset($widget['positionCodes'])) {
+                $widgetPositionCodes = $widget['positionCodes'];
+            } else {
+                $widgetPositionCodes = WidgetFramework_Helper_String::splitPositionCodes($widget['position']);
+            }
+
+            foreach ($widgetPositionCodes as $positionCode) {
                 $positionCode = trim($positionCode);
                 if (empty($positionCode)) {
                     continue;
