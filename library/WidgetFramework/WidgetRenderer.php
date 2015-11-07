@@ -8,8 +8,8 @@ abstract class WidgetFramework_WidgetRenderer
     const PARAM_POSITION_CODE = '_WidgetFramework_positionCode';
     const PARAM_IS_HOOK = '_WidgetFramework_isHook';
     const PARAM_IS_GROUP = '_WidgetFramework_isGroup';
-    const PARAM_GROUP_NAME = '_WidgetFramework_groupName';
-    const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupName';
+    const PARAM_GROUP_NAME = '_WidgetFramework_groupId';
+    const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupId';
     const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
     const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
     const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';

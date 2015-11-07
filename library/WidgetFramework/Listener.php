@@ -122,8 +122,11 @@ class WidgetFramework_Listener
 
             if (self::$_saveLayoutEditorRendered) {
                 switch ($templateName) {
-                    case 'wf_widget_wrapper':
-                    case 'wf_layout_editor_widget_wrapper':
+                    case 'wf_widget_group_wrapper':
+                    case 'wf_layout_editor_widget_group_wrapper':
+                        $group = $template->getParam('group');
+                        $group = $template->getParam('group');
+                        self::$_layoutEditorRendered[$widget['widget_id']] = $output;
                         $normalizedGroupId = $template->getParam('normalizedGroupId');
                         if (!empty($normalizedGroupId)) {
                             self::$_layoutEditorRendered[$normalizedGroupId] = $output;
@@ -138,6 +141,8 @@ class WidgetFramework_Listener
                             }
                         }
                         break;
+                    case 'wf_widget_wrapper':
+                    case 'wf_layout_editor_widget_wrapper':
                     case 'wf_layout_editor_widget':
                         $widget = $template->getParam('widget');
                         self::$_layoutEditorRendered[$widget['widget_id']] = $output;

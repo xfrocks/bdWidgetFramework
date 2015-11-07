@@ -6,11 +6,15 @@ class WidgetFramework_Core
     const PARAM_POSITION_CODE = '_WidgetFramework_positionCode';
     const PARAM_IS_HOOK = '_WidgetFramework_isHook';
     const PARAM_IS_GROUP = '_WidgetFramework_isGroup';
-    const PARAM_GROUP_NAME = '_WidgetFramework_groupName';
-    const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupName';
+    const PARAM_GROUP_ID = '_WidgetFramework_groupId';
+    const PARAM_PARENT_GROUP_ID = '_WidgetFramework_parentGroupId';
     const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
     const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
     const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
+
+    // these two are deprecated, use the _ID constant please
+    const PARAM_GROUP_NAME = '_WidgetFramework_groupId';
+    const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupId';
 
     const NO_VISITOR_PANEL_MARKUP = '<!-- no visitor panel please -->';
     const NO_VISITOR_PANEL_FLAG = 'WidgetFramework_WidgetRenderer_Empty.noVisitorPanel';
@@ -253,6 +257,14 @@ class WidgetFramework_Core
             }
         }
 
+        if (!empty($params[self::PARAM_IS_HOOK])) {
+            $params['classSection'] = 'section sectionMain widget-container act-as-sidebar sidebar';
+            $params['classInnerSection'] = 'widget hook-widget';
+        } else {
+            $params['classSection'] = 'section';
+            $params['classInnerSection'] = 'secondaryContent widget sidebar-widget';
+        }
+
         return $params;
     }
 
@@ -409,8 +421,17 @@ class WidgetFramework_Core
         foreach ($widgetsRef as &$widgetRef) {
             $widgetRef['_runtime']['html'] = $this->renderWidget($widgetRef, $positionCode, $params, $template, $html);
 
-            if (!empty($widgetRef['_runtime']['useWrapper'])) {
-                $wrapperTemplate = $template->create('wf_widget_wrapper', $params);
+            $wrapperTemplateName = '';
+            if (WidgetFramework_Option::get('layoutEditorEnabled')
+                && $widgetRef['class'] !== 'WidgetFramework_WidgetGroup'
+            ) {
+                $wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
+            } elseif (!empty($widgetRef['_runtime']['useWrapper'])) {
+                $wrapperTemplateName = 'wf_widget_wrapper';
+            }
+
+            if ($wrapperTemplateName !== '') {
+                $wrapperTemplate = $template->create($wrapperTemplateName, $params);
                 $wrapperTemplate->setParam('widget', $widgetRef);
 
                 $widgetHtml = $wrapperTemplate;
