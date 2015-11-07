@@ -6,9 +6,7 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base
     {
         parent::prepareParams();
 
-        if (isset($this->_params['positions'])
-            || empty($this->_params['widgets'])
-        ) {
+        if (isset($this->_params['positions'])) {
             return;
         }
 

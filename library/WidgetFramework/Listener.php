@@ -159,10 +159,12 @@ class WidgetFramework_Listener
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             $renderWidgets = true;
 
-            if ($template->getTemplateName() == 'PAGE_CONTAINER' AND $template->getParam('contentTemplate') == 'wf_widget_page') {
-                if (WidgetFramework_Option::get('layoutEditorEnabled') AND $hookName != 'wf_widget_page_contents') {
-                    $renderWidgets = false;
-                }
+            if ($template->getTemplateName() == 'PAGE_CONTAINER'
+                && $template->getParam('contentTemplate') == 'wf_widget_page'
+                && WidgetFramework_Option::get('layoutEditorEnabled')
+                && $hookName != 'wf_widget_page_contents'
+            ) {
+                $renderWidgets = false;
             }
 
             if ($renderWidgets) {

@@ -331,7 +331,10 @@ class WidgetFramework_Core
             }
             $renderedPositions[$positionCode] = true;
 
-            $saveParams = array('position' => $positionCode);
+            $saveParams = array(
+                'position' => $positionCode,
+                'group_id' => 0,
+            );
             if (!empty($params[self::PARAM_IS_HOOK])) {
                 // hook position, only render for some hooks
                 if ($positionCode === 'hook:wf_widget_page_contents') {

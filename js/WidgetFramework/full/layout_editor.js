@@ -83,26 +83,29 @@
                 return false;
             }
 
-            var parentGroup = $rendered.data('parentGroup');
-            if (parentGroup) {
-                var $parentGroup = $widgets.find('.WidgetFramework_LayoutEditor_Group#layout-editor-' + parentGroup);
+            var parentGroupId = $rendered.data('parentGroupId');
+            if (parentGroupId) {
+                var $parentGroup = $widgets.find('#layout-editor-' + parentGroupId);
                 if ($parentGroup.length == 1) {
                     $widgets = $parentGroup.children('.widgets');
                 }
             }
 
-            var displayOrder = $rendered.data('displayOrder');
+            var thisId = parseInt($rendered.data('widgetId'));
+            var thisDisplayOrder = parseInt($rendered.data('displayOrder'));
             var inserted = false;
             $widgets.children().each(function () {
                 var $widget = $(this);
 
-                var widgetDisplayOrder = $widget.data('displayOrder');
-                if (!widgetDisplayOrder) {
-                    widgetDisplayOrder = 0;
-                }
+                var widgetId = parseInt($widget.data('widgetId'));
+                var widgetDisplayOrder = parseInt($widget.data('displayOrder'));
 
-                if (widgetDisplayOrder > displayOrder) {
-                    // insert rendered element before the widget (use display order)
+                if (widgetDisplayOrder > thisDisplayOrder
+                    || (widgetDisplayOrder == thisDisplayOrder
+                        && widgetId > thisId
+                    )
+                ) {
+                    // insert rendered element before the widget
                     $rendered.xfInsert('insertBefore', $widget, 'show');
                     inserted = true;
                     return false;
@@ -121,10 +124,7 @@
             if (!renderedId) {
                 return false;
             }
-            if (renderedId.indexOf('layout-editor-') !== 0) {
-                renderedId = 'layout-editor-' + renderedId;
-            }
-            var $e = $('#' + renderedId);
+            var $e = $('#layout-editor-' + renderedId);
             if ($e.length == 0) {
                 return false;
             }
@@ -399,15 +399,7 @@
                     return;
                 }
 
-                var widgetId = 0;
-                var moveGroup = '';
-                if ($item.is('.WidgetFramework_LayoutEditor_Group')) {
-                    widgetId = parseInt($item.data('firstId'));
-                    moveGroup = $item.data('group');
-                }
-                else {
-                    widgetId = parseInt($item.data('id'));
-                }
+                var widgetId = parseInt($item.data('widgetId'));
                 if (!widgetId) {
                     return false;
                 }
@@ -419,7 +411,7 @@
                     }
 
                     var $this = $(this);
-                    var displayOrder = $this.data('displayOrder') ? parseInt($this.data('displayOrder')) : 0;
+                    var displayOrder = parseInt($this.data('displayOrder'));
                     if (displayOrder < 0) {
                         negativeDisplayOrderCount++;
                     }
@@ -438,13 +430,19 @@
                     relativeDisplayOrder = Math.max(0, relativeDisplayOrder + 1);
                 });
 
-                XenForo.ajax(this.$parent.data('save'),
+                var saveSuccess = $.context(this, 'saveSuccess');
+                XenForo.ajax(
+                    this.$parent.data('save'),
                     {
                         widget_id: widgetId,
                         relative_display_order: relativeDisplayOrder,
-                        move_group: moveGroup,
                         _layoutEditor: 1
-                    }, $.context(this, 'saveSuccess'));
+                    },
+                    function(ajaxData) {
+                        // $item.empty().xfRemove();
+                        saveSuccess(ajaxData);
+                    }
+                );
             },
 
             saveSuccess: function (ajaxData) {

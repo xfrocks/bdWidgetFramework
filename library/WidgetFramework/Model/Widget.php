@@ -4,7 +4,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 {
     const SIMPLE_CACHE_KEY = 'widgets';
 
-    public function createGroupContaining(array $widget)
+    public function createGroupContaining(array $widget, array $groupOptions = array())
     {
         $groupDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
         $groupDw->bulkSet(array(
@@ -12,6 +12,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             'position' => $widget['position'],
             'display_order' => $widget['display_order'],
             'active' => 1,
+            'options' => $groupOptions,
         ));
         $groupDw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
         $groupDw->save();
@@ -28,7 +29,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         }
     }
 
-    public function getWidgetsContainsWidgetId(array $widgets, $widgetId, $groupId = 0)
+    public function getSiblingWidgets(array $widgets, $widgetId)
     {
         foreach (array_keys($widgets) as $_widgetId) {
             if ($_widgetId === $widgetId) {
@@ -36,15 +37,9 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             }
 
             if (isset($widgets[$_widgetId]['widgets'])) {
-                $response = $this->getWidgetsContainsWidgetId($widgets[$_widgetId]['widgets'], $widgetId, $groupId);
+                $response = $this->getSiblingWidgets($widgets[$_widgetId]['widgets'], $widgetId);
 
                 if (!empty($response)) {
-                    if (!empty($groupId)
-                        && $_widgetId == $groupId
-                    ) {
-                        return $widgets[$_widgetId]['widgets'];
-                    }
-
                     return $response;
                 }
             }
@@ -68,17 +63,17 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $count;
     }
 
-    public function getLastDisplayOrder($widgets, $groupId = 0)
+    public function getLastDisplayOrder($widgetsAtPosition, $groupId = 0)
     {
         if ($groupId > 0) {
             // put into a group
-            $siblingWidgets = $this->getWidgetsContainsWidgetId($widgets, $groupId);
+            $siblingWidgets = $this->getSiblingWidgets($widgetsAtPosition, $groupId);
             if (!empty($siblingWidgets[$groupId]['widgets'])) {
                 $siblingWidgets = $siblingWidgets[$groupId]['widgets'];
             }
         } else {
             // put into a position
-            $siblingWidgets = $widgets;
+            $siblingWidgets = $widgetsAtPosition;
         }
 
         $maxDisplayOrder = false;
@@ -93,43 +88,51 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return floor($maxDisplayOrder / 10) * 10 + 10;
     }
 
-    public function getDisplayOrderFromRelative($widgetId, $groupId, $relativeDisplayOrder, $positionWidgetGroups, $positionWidget = null, array &$widgetsNeedUpdate = array())
+    public function getDisplayOrderFromRelative(
+        $widgetId,
+        $groupId,
+        $relativeDisplayOrder,
+        $widgetsAtPosition,
+        array &$widgetsNeedUpdate = array())
     {
-        if (!empty($positionWidget)) {
+        if ($groupId > 0) {
             // put into a group
-            $sameDisplayOrderLevels = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id'], $groupId);
+            $siblingWidgets = $this->getSiblingWidgets($widgetsAtPosition, $groupId);
+            if (!empty($siblingWidgets[$groupId]['widgets'])) {
+                $siblingWidgets = $siblingWidgets[$groupId]['widgets'];
+            }
         } else {
             // put into a position
-            $sameDisplayOrderLevels = $positionWidgetGroups;
+            $siblingWidgets = $widgetsAtPosition;
         }
 
         // sort asc by display order (ignore negative/positive)
-        uasort($sameDisplayOrderLevels, array(
+        uasort($siblingWidgets, array(
             'WidgetFramework_Helper_Sort',
             'widgetsByDisplayOrderAsc'
         ));
         $isNegative = $relativeDisplayOrder < 0;
-        foreach (array_keys($sameDisplayOrderLevels) as $sameDisplayOrderLevelWidgetId) {
-            if (($sameDisplayOrderLevels[$sameDisplayOrderLevelWidgetId]['display_order'] < 0) == $isNegative) {
+        foreach (array_keys($siblingWidgets) as $siblingWidgetId) {
+            if (($siblingWidgets[$siblingWidgetId]['display_order'] < 0) == $isNegative) {
                 // same negative/positive
             } else {
-                unset($sameDisplayOrderLevels[$sameDisplayOrderLevelWidgetId]);
+                unset($siblingWidgets[$siblingWidgetId]);
             }
         }
 
         $reorderedWidgets = array();
         $thisWidget = false;
         $smallestDisplayOrder = false;
-        if (isset($sameDisplayOrderLevels[$widgetId])) {
-            $smallestDisplayOrder = $sameDisplayOrderLevels[$widgetId]['display_order'];
-            $thisWidget = $sameDisplayOrderLevels[$widgetId];
+        if (isset($siblingWidgets[$widgetId])) {
+            $smallestDisplayOrder = $siblingWidgets[$widgetId]['display_order'];
+            $thisWidget = $siblingWidgets[$widgetId];
 
             // ignore current widget before calculating display order
-            unset($sameDisplayOrderLevels[$widgetId]);
+            unset($siblingWidgets[$widgetId]);
         }
 
         $iStart = -1;
-        foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel) {
+        foreach ($siblingWidgets as $siblingWidgetId => $sameDisplayOrderLevel) {
             if ($sameDisplayOrderLevel['display_order'] < 0) {
                 // calculate correct starting relative order for negative orders
                 $iStart--;
@@ -137,7 +140,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         }
 
         $i = $iStart;
-        foreach ($sameDisplayOrderLevels as $sameDisplayOrderLevelWidgetId => $sameDisplayOrderLevel) {
+        foreach ($siblingWidgets as $siblingWidgetId => $sameDisplayOrderLevel) {
             $i++;
 
             if ($i == $relativeDisplayOrder) {
@@ -145,9 +148,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model
                 $reorderedWidgets[$widgetId] = $thisWidget;
             }
 
-            $reorderedWidgets[$sameDisplayOrderLevelWidgetId] = $sameDisplayOrderLevel;
+            $reorderedWidgets[$siblingWidgetId] = $sameDisplayOrderLevel;
 
-            if ($smallestDisplayOrder === false OR $smallestDisplayOrder > $sameDisplayOrderLevel['display_order']) {
+            if ($smallestDisplayOrder === false
+                || $smallestDisplayOrder > $sameDisplayOrderLevel['display_order']
+            ) {
                 $smallestDisplayOrder = $sameDisplayOrderLevel['display_order'];
             }
         }
@@ -176,60 +181,6 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         }
 
         return $foundDisplayOrder;
-    }
-
-    public function updatePositionGroupAndDisplayOrderForWidgets(
-        $widgetId,
-        $newPosition,
-        $newGroupId,
-        $newDisplayOrder,
-        array $widgetsAtOldPosition,
-        array &$widgetsNeedUpdate)
-    {
-        $siblingWidgets = $this->getWidgetsContainsWidgetId($widgetsAtOldPosition, $widgetId);
-        if (empty($siblingWidgets)) {
-            return false;
-        }
-        if (isset($siblingWidgets[$widgetId])) {
-            unset($siblingWidgets[$widgetId]);
-        }
-
-        $i = -1;
-        $currentDisplayOrder = $newDisplayOrder;
-        foreach ($siblingWidgets as $siblingWidgetId => $siblingWidget) {
-            $i++;
-
-            if ($siblingWidget['position'] != $newPosition) {
-                $widgetsNeedUpdate[$siblingWidgetId]['position'] = $newPosition;
-            }
-
-            if ($siblingWidget['display_order'] <= $currentDisplayOrder) {
-                $currentDisplayOrder = floor($currentDisplayOrder / 10) * 10 + 10;
-                $widgetsNeedUpdate[$siblingWidgetId]['display_order'] = $currentDisplayOrder;
-            } else {
-                $currentDisplayOrder = $siblingWidget['display_order'];
-            }
-
-            if ($siblingWidget['group_id'] != $newGroupId) {
-                if (!empty($siblingWidget['widgets'])) {
-                    foreach (array_keys($siblingWidget['widgets']) as $subWidgetId) {
-                        // update all widgets within the updated group
-                        $this->updatePositionGroupAndDisplayOrderForWidgets(
-                            $subWidgetId,
-                            $newPosition,
-                            $siblingWidget['widgets'][$subWidgetId]['group_id'],
-                            $siblingWidget['widgets'][$subWidgetId]['display_order'],
-                            $siblingWidget['widgets'],
-                            $widgetsNeedUpdate
-                        );
-                    }
-                }
-
-                $widgetsNeedUpdate[$siblingWidgetId]['group_id'] = $newGroupId;
-            }
-        }
-
-        return true;
     }
 
     public function importFromFile($fileName, $deleteAll = false)
