@@ -15,7 +15,9 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
         $result = parent::prepareThreadConditions($conditions, $fetchOptions);
         $sqlConditions = array($result);
 
-        if (!empty($conditions[self::CONDITIONS_POST_DATE]) AND is_array($conditions[self::CONDITIONS_POST_DATE])) {
+        if (!empty($conditions[self::CONDITIONS_POST_DATE])
+            && is_array($conditions[self::CONDITIONS_POST_DATE])
+        ) {
             list($operator, $cutOff) = $conditions[self::CONDITIONS_POST_DATE];
             $this->assertValidCutOffOperator($operator);
             $sqlConditions[] = "thread.post_date $operator " . $this->_getDb()->quote($cutOff);
@@ -23,9 +25,11 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 
         if (isset($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
             if (is_array($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
-                $sqlConditions[] = "thread.discussion_type IN (" . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]) . ")";
+                $sqlConditions[] = "thread.discussion_type IN ("
+                    . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]) . ")";
             } else {
-                $sqlConditions[] = "thread.discussion_type = " . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]);
+                $sqlConditions[] = "thread.discussion_type = "
+                    . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]);
             }
         }
 
@@ -123,7 +127,11 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
         return compact('selectFields', 'joinTables', 'orderClause');
     }
 
-    public function WidgetFramework_prepareThreadForRendererThreads(array $thread, array $forum, array $nodePermissions = null, array $viewingUser = null)
+    public function WidgetFramework_prepareThreadForRendererThreads(
+        array $thread,
+        array $forum,
+        array $nodePermissions = null,
+        array $viewingUser = null)
     {
         $thread = $this->prepareThread($thread, $forum, $nodePermissions, $viewingUser);
 

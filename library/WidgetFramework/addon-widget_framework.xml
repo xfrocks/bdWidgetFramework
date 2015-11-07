@@ -1007,8 +1007,8 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_threads_type_new" global_cache="1" version_id="1" version_string="0.9"><![CDATA[New Threads]]></phrase>
     <phrase title="wf_widget_threads_type_polls" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Polls]]></phrase>
     <phrase title="wf_widget_threads_type_popular" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Most Viewed Theads]]></phrase>
-    <phrase title="wf_widget_threads_type_recent" global_cache="1" version_id="96" version_string="2.5.0d"><![CDATA[Recent Threads]]></phrase>
-    <phrase title="wf_widget_threads_type_recent_first_poster" version_id="96" version_string="2.5.0d"><![CDATA[Recent Threads (use first poster avatar)]]></phrase>
+    <phrase title="wf_widget_threads_type_recent" global_cache="1" version_id="112" version_string="2.6.0-dev"><![CDATA[New Posts]]></phrase>
+    <phrase title="wf_widget_threads_type_recent_first_poster" version_id="112" version_string="2.6.0-dev"><![CDATA[New Posts (use first poster avatar)]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
@@ -2022,116 +2022,120 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="102" version_string="2.5.0d"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
-	<xen:if hascontent="true">
-		<div class="avatarList">
-			<ul>
-				<xen:contentcheck>
-					<xen:if is="{$widget.options.type} == 'recent' OR {$widget.options.type} == 'latest_replies'">
+<xen:if is="{xen:helper WidgetFramework_getOption, applicationVersionId} > 1050000
+	AND {$widget.options.type} == 'recent'">
+<xen:include template="sidebar_new_posts" />
+<xen:else />
+	
+<xen:if hascontent="true">
+<div class="avatarList">
+	<ul>
+		<xen:contentcheck>
+		<xen:if is="{$widget.options.type} == 'recent' OR {$widget.options.type} == 'latest_replies'">
 
-						<xen:foreach loop="$threads" value="$thread">
-							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
-							<xen:include template="wf_widget_threads_thread_sidebar">
-								<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
-								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_replied, 'user={xen:raw $user}'} <xen:datetime time="{$thread.last_post_date}" />
-								</xen:set>
-							</xen:include>
-						</xen:foreach>
+		<xen:foreach loop="$threads" value="$thread">
+		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:include template="wf_widget_threads_thread_sidebar">
+			<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
+			<xen:set var="$_secondRow">
+				{xen:phrase wf_x_replied, 'user={xen:raw $user}'} <xen:datetime time="{$thread.last_post_date}" />
+			</xen:set>
+		</xen:include>
+		</xen:foreach>
 
-					<xen:elseif is="{$widget.options.type} == 'most_replied'" />
+		<xen:elseif is="{$widget.options.type} == 'most_replied'" />
 
-						<xen:foreach loop="$threads" value="$thread">
-							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
-							<xen:include template="wf_widget_threads_thread_sidebar">
-								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user={xen:raw $user}'}, {xen:phrase replies}: {xen:number $thread.reply_count}
-								</xen:set>
-							</xen:include>
-						</xen:foreach>
+		<xen:foreach loop="$threads" value="$thread">
+		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:include template="wf_widget_threads_thread_sidebar">
+			<xen:set var="$_secondRow">
+				{xen:phrase wf_x_posted, 'user={xen:raw $user}'}, {xen:phrase replies}: {xen:number $thread.reply_count}
+			</xen:set>
+		</xen:include>
+		</xen:foreach>
 
-					<xen:elseif is="{$widget.options.type} == 'most_liked'" />
+		<xen:elseif is="{$widget.options.type} == 'most_liked'" />
 
-						<xen:foreach loop="$threads" value="$thread">
-							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
-							<xen:include template="wf_widget_threads_thread_sidebar">
-								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user={xen:raw $user}'},
-									{xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
-								</xen:set>
-							</xen:include>
-						</xen:foreach>
+		<xen:foreach loop="$threads" value="$thread">
+		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:include template="wf_widget_threads_thread_sidebar">
+			<xen:set var="$_secondRow">
+				{xen:phrase wf_x_posted, 'user={xen:raw $user}'},
+				{xen:phrase likes}: <a href="{xen:link 'posts/likes', {xen:array 'post_id={$thread.first_post_id}'}}" class="OverlayTrigger">{xen:number $thread.first_post_likes}</a>
+			</xen:set>
+		</xen:include>
+		</xen:foreach>
 
-					<xen:else />
+		<xen:else />
 
-						<xen:foreach loop="$threads" value="$thread">
-							<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
-							<xen:include template="wf_widget_threads_thread_sidebar">
-								<xen:set var="$_secondRow">
-									{xen:phrase wf_x_posted, 'user={xen:raw $user}'} <xen:datetime time="{$thread.post_date}" />
-								</xen:set>
-							</xen:include>
-						</xen:foreach>
+		<xen:foreach loop="$threads" value="$thread">
+		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:include template="wf_widget_threads_thread_sidebar">
+			<xen:set var="$_secondRow">
+				{xen:phrase wf_x_posted, 'user={xen:raw $user}'} <xen:datetime time="{$thread.post_date}" />
+			</xen:set>
+		</xen:include>
+		</xen:foreach>
 
-					</xen:if>
-				</xen:contentcheck>
-			</ul>
-		</div>
+		</xen:if>
+		</xen:contentcheck>
+	</ul>
+</div>
 
-		<xen:include template="preview_tooltip" />
-	</xen:if>
+<xen:include template="preview_tooltip" />
+</xen:if>
+</xen:if>
 
 <xen:elseif is="{$layout} == 'list'" />
 	
-	<xen:if hascontent="true">
-		<div class="discussionList">
-			<div class="DiscussionList">
+<xen:if hascontent="true">
+<div class="discussionList">
+	<div class="DiscussionList">
 
-				<dl class="sectionHeaders">
-					<dt class="posterAvatar"><a><span>&nbsp;</span></a></dt>
-					<dd class="main">
-						<a class="title"><span>{xen:phrase title}</span></a>
-						<a class="postDate"><span>{xen:phrase start_date}</span></a>
-					</dd>
-					<dd class="stats">
-						<a class="major"><span>{xen:phrase replies}</span></a>
-						<a class="minor"><span>{xen:phrase views}</span></a>
-					</dd>
-					<dd class="lastPost"><a><span>{xen:phrase last_message}</span></a></dd>
-				</dl>
+		<dl class="sectionHeaders">
+			<dt class="posterAvatar"><a><span>&nbsp;</span></a></dt>
+			<dd class="main">
+				<a class="title"><span>{xen:phrase title}</span></a>
+				<a class="postDate"><span>{xen:phrase start_date}</span></a>
+			</dd>
+			<dd class="stats">
+				<a class="major"><span>{xen:phrase replies}</span></a>
+				<a class="minor"><span>{xen:phrase views}</span></a>
+			</dd>
+			<dd class="lastPost"><a><span>{xen:phrase last_message}</span></a></dd>
+		</dl>
 
-				<ol class="discussionListItems">
-					<xen:contentcheck>
-						<xen:foreach loop="$threads" value="$thread">
-							<xen:include template="thread_list_item" />
-						</xen:foreach>
-					</xen:contentcheck>
-				</ol>
+		<ol class="discussionListItems">
+			<xen:contentcheck>
+			<xen:foreach loop="$threads" value="$thread">
+			<xen:include template="thread_list_item" />
+			</xen:foreach>
+			</xen:contentcheck>
+		</ol>
 
-			</div>
-		</div>
+	</div>
+</div>
 
-		<xen:include template="preview_tooltip" />
-	</xen:if>
+<xen:include template="preview_tooltip" />
+</xen:if>
 
 <xen:elseif is="{$layout} == 'full'" />
 
-	<xen:if hascontent="true">
-		<div class="WidgetFramework_WidgetRenderer_Threads_FullThreadList">
-			<xen:contentcheck>
+<xen:if hascontent="true">
+<div class="WidgetFramework_WidgetRenderer_Threads_FullThreadList">
+	<xen:contentcheck>
+	<xen:foreach loop="$threads" value="$thread">
+	<xen:include template="wf_widget_threads_thread_full" />
+	<xen:edithint template="wf_widget_threads_thread_full_info" />
+	</xen:foreach>
+	</xen:contentcheck>
+</div>
 
-				<xen:foreach loop="$threads" value="$thread">
-					<xen:include template="wf_widget_threads_thread_full" />
-					<xen:edithint template="wf_widget_threads_thread_full_info" />
-				</xen:foreach>
-
-			</xen:contentcheck>
-		</div>
-		
-		<xen:edithint template="message" />
-		<xen:edithint template="wf_default.css" />
-	</xen:if>
+<xen:edithint template="message" />
+<xen:edithint template="wf_default.css" />
+</xen:if>
 
 </xen:if>]]></template>
     <template title="wf_widget_threads_thread_full" version_id="96" version_string="2.5.0d"><![CDATA[<xen:require css="wf_default.css" />

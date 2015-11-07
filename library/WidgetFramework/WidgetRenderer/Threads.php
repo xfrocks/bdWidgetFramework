@@ -21,6 +21,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             switch ($widget['options']['type']) {
                 case 'recent':
                 case 'recent_first_poster':
+                    if (XenForo_Application::$versionId > 1050000) {
+                        return new XenForo_Phrase('new_posts');
+                    }
+
                     return new XenForo_Phrase('wf_widget_threads_type_recent');
                 case 'latest_replies':
                     return new XenForo_Phrase('wf_widget_threads_type_latest_replies');
@@ -73,14 +77,17 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
     {
         $params = $template->getParams();
 
-        $forums = $this->_helperPrepareForumsOptionSource(empty($params['options']['forums']) ? array() : $params['options']['forums'], true);
+        $forums = empty($params['options']['forums']) ? array() : $params['options']['forums'];
+        $forums = $this->_helperPrepareForumsOptionSource($forums, true);
 
         /** @var XenForo_Model_ThreadPrefix $threadPrefixModel */
         $threadPrefixModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_ThreadPrefix');
         $prefixes = $threadPrefixModel->getPrefixOptions();
         foreach ($prefixes as $prefixGroupId => &$groupPrefixes) {
             foreach ($groupPrefixes as &$prefix) {
-                if (!empty($params['options']['prefixes']) AND in_array($prefix['value'], $params['options']['prefixes'])) {
+                if (!empty($params['options']['prefixes'])
+                    && in_array($prefix['value'], $params['options']['prefixes'])
+                ) {
                     $prefix['selected'] = true;
                 }
             }
@@ -116,7 +123,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         return 'wf_widget_threads';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject)
     {
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
@@ -163,6 +174,18 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         return $renderTemplateObject->render();
     }
 
+    protected function _getExtraDataLink(array $widget)
+    {
+        if (XenForo_Application::$versionId > 1050000
+            && $widget['options']['type'] === 'recent'
+        ) {
+            return XenForo_Link::buildPublicLink('find-new/posts');
+        }
+
+        return parent::_getExtraDataLink($widget);
+    }
+
+
     public function useUserCache(array $widget)
     {
         if (!empty($widget['options']['as_guest'])) {
@@ -176,7 +199,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
     public function useWrapper(array $widget)
     {
-        if (!empty($widget['options']['layout']) AND $widget['options']['layout'] === 'full') {
+        if (!empty($widget['options']['layout'])
+            && $widget['options']['layout'] === 'full'
+        ) {
             // using full layout, do not use wrapper
             return false;
         }
@@ -190,9 +215,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
                 $suffix[] = 'f' . implode('', $widget['_ajaxLoadParams']['forumIds']);
             }
-        } elseif ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
+        } elseif ($this->_helperDetectSpecialForums(empty($params['options']['forums'])
+            ? array() : $params['options']['forums'])
+        ) {
             if (isset($params['forum'])) {
-                $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
+                $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params,
+                    empty($widget['options']['as_guest']) ? false : true);
                 $suffix[] = 'f' . implode('', $forumIds);
             }
         }
@@ -205,10 +233,22 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $core = WidgetFramework_Core::getInstance();
         $layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
 
+        if ($positionCode === 'forum_list'
+            && XenForo_Application::$versionId > 1050000
+            && isset($params['threads'])
+            && !$layoutNeedPost
+            && $widget['options']['type'] === 'recent'
+            && $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewPosts')
+        ) {
+            return $params['threads'];
+        }
+
         /* @var $threadModel XenForo_Model_Thread */
         $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
-        $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
+        $forumIds = $this->_helperGetForumIdsFromOption(empty($params['options']['forums'])
+            ? array() : $params['options']['forums'], $params,
+            empty($widget['options']['as_guest']) ? false : true);
         if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
             $forumIds = $widget['_ajaxLoadParams']['forumIds'];
         }
@@ -235,7 +275,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         // process sticky
         // since 2.4.7
-        if (isset($widget['options']['sticky']) AND is_numeric($widget['options']['sticky'])) {
+        if (isset($widget['options']['sticky'])
+            && is_numeric($widget['options']['sticky'])
+        ) {
             $conditions['sticky'] = intval($widget['options']['sticky']);
         }
 
@@ -290,19 +332,23 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 )));
                 break;
             case 'popular':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
-                    '>',
-                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                ))), array_merge($fetchOptions, array(
+                $threads = $threadModel->getThreads(array_merge($conditions, array(
+                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
+                        '>',
+                        XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+                    )
+                )), array_merge($fetchOptions, array(
                     'order' => 'view_count',
                     'orderDirection' => 'desc',
                 )));
                 break;
             case 'most_replied':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
-                    '>',
-                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                ))), array_merge($fetchOptions, array(
+                $threads = $threadModel->getThreads(array_merge($conditions, array(
+                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
+                        '>',
+                        XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+                    )
+                )), array_merge($fetchOptions, array(
                     'order' => 'reply_count',
                     'orderDirection' => 'desc',
                 )));
@@ -315,10 +361,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 }
                 break;
             case 'most_liked':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
-                    '>',
-                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                ))), array_merge($fetchOptions, array(
+                $threads = $threadModel->getThreads(array_merge($conditions, array(
+                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
+                        '>',
+                        XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+                    )
+                )), array_merge($fetchOptions, array(
                     'order' => 'first_post_likes',
                     'orderDirection' => 'desc',
                 )));
@@ -331,7 +379,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 }
                 break;
             case 'polls':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll')), array_merge($fetchOptions, array(
+                $threads = $threadModel->getThreads(array_merge($conditions, array(
+                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll'
+                )), array_merge($fetchOptions, array(
                     'order' => 'post_date',
                     'orderDirection' => 'desc',
                 )));
@@ -379,10 +429,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         /** @var XenForo_Model_Post $postModel */
         $postModel = $core->getModelFromCache('XenForo_Model_Post');
 
-        $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination(empty($widget['options']['as_guest']) ? null : 1);
+        $permissionCombinationId = empty($widget['options']['as_guest']) ? null : 1;
+        $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination($permissionCombinationId);
 
         $viewObj = self::getViewObject($params, $renderTemplateObject);
-        if ($layoutNeedPost AND !empty($viewObj)) {
+        if ($layoutNeedPost
+            && !empty($viewObj)
+        ) {
             $bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
             if (XenForo_Application::$versionId < 1020000) {
                 // XenForo 1.1.x
@@ -464,18 +517,26 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 continue;
             }
 
-            if (!$threadModel->canViewThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser)) {
+            if (!$threadModel->canViewThreadAndContainer($threadRef, $threadForumRef, $null,
+                $threadPermissionsRef, $viewingUser)
+            ) {
                 unset($threads[$threadId]);
                 continue;
             }
 
-            if (!empty($bbCodeParser) AND !empty($bbCodeOptions)) {
+            if (!empty($bbCodeParser)
+                && !empty($bbCodeOptions)
+            ) {
                 $threadBbCodeOptions = $bbCodeOptions;
-                $threadBbCodeOptions['states']['viewAttachments'] = $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null, $threadPermissionsRef, $viewingUser);
-                $threadRef['messageHtml'] = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
+                $threadBbCodeOptions['states']['viewAttachments'] =
+                    $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null,
+                        $threadPermissionsRef, $viewingUser);
+                $threadRef['messageHtml'] =
+                    XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
             }
 
-            $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef, $threadPermissionsRef, $viewingUser);
+            $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef,
+                $threadPermissionsRef, $viewingUser);
         }
     }
 
@@ -484,7 +545,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $ajaxLoadParams = parent::_getAjaxLoadParams($widget, $positionCode, $params, $template);
 
         if ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
-            $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params, empty($widget['options']['as_guest']) ? false : true);
+            $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params,
+                empty($widget['options']['as_guest']) ? false : true);
             $ajaxLoadParams['forumIds'] = $forumIds;
         }
 

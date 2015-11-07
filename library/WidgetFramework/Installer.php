@@ -126,6 +126,15 @@ class WidgetFramework_Installer
 				");
             }
 
+            if (XenForo_Application::$versionId > 1050000) {
+                $db->query("
+					INSERT INTO `xf_widget`
+						(title, class, options, position, display_order)
+					VALUES
+						('', 'WidgetFramework_WidgetRenderer_Threads', 'a:2:{s:4:\"type\";s:6:\"recent\";s:5:\"limit\";i:5;}', 'forum_list', 20)
+				");
+            }
+
             if (XenForo_Application::$versionId < 1020000) {
                 $db->query("
 					INSERT INTO `xf_widget`
