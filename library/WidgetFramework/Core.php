@@ -150,8 +150,6 @@ class WidgetFramework_Core
                     }
                 }
             }
-
-            WidgetFramework_Helper_Sort::sortPositionWidgets($positionRef['widgets']);
         }
     }
 

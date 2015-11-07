@@ -32,7 +32,9 @@ class WidgetFramework_Helper_Sort
             }
         }
 
-        foreach ($positions as $positionCode => &$positionRef) {
+        foreach ($positionCodes as $positionCode) {
+            $positionRef =& $positions[$positionCode];
+
             foreach ($positionRef['widgetsByIds'] as $widgetId => &$widgetRef) {
                 if (empty($widgetRef['group_id'])) {
                     $positionRef['widgets'][$widgetId] = &$widgetRef;
@@ -40,6 +42,8 @@ class WidgetFramework_Helper_Sort
                     $positionRef['widgetsByIds'][$widgetRef['group_id']]['widgets'][$widgetId] =& $widgetRef;
                 }
             }
+
+            WidgetFramework_Helper_Sort::sortPositionWidgets($positionRef['widgets']);
         }
 
         return array(
@@ -73,7 +77,7 @@ class WidgetFramework_Helper_Sort
             $result = $doa - $dob;
         }
 
-        if ($result == 0) {
+        if ($result === 0) {
             $result = $a['widget_id'] - $b['widget_id'];
         }
 
@@ -87,7 +91,7 @@ class WidgetFramework_Helper_Sort
 
         $result = $doa - $dob;
 
-        if ($result == 0) {
+        if ($result === 0) {
             $result = $a['widget_id'] - $b['widget_id'];
         }
 
@@ -97,5 +101,19 @@ class WidgetFramework_Helper_Sort
     public static function widgetsByLabel($a, $b)
     {
         return strcmp($a['label'], $b['label']);
+    }
+
+    public static function widgetsByGroupId($a, $b)
+    {
+        $ga = $a['group_id'];
+        $gb = $b['group_id'];
+
+        $result = $ga - $gb;
+
+        if ($result === 0) {
+            $result = $a['widget_id'] - $b['widget_id'];
+        }
+
+        return $result;
     }
 }

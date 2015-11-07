@@ -250,9 +250,6 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_not_an_widgets_xml_file'), true);
         }
 
-        /** @noinspection PhpUndefinedFieldInspection */
-        $widgets = XenForo_Helper_DevelopmentXml::fixPhpBug50670($document->widget);
-
         XenForo_Db::beginTransaction();
 
         if ($deleteAll) {
@@ -262,26 +259,93 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             foreach ($existingWidgets as $existingWidget) {
                 $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                 $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
-
-                $dw->setExistingData($existingWidget);
-
+                $dw->setExistingData($existingWidget, true);
                 $dw->delete();
             }
         }
 
-        foreach ($widgets as $widget) {
-            $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-            $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
-
-            $dw->bulkSet($widget, array('ignoreInvalidFields' => true));
-            $dw->set('options', unserialize(XenForo_Helper_DevelopmentXml::processSimpleXmlCdata($widget->options)));
-
-            $dw->save();
+        $xmlWidgets = array();
+        if (isset($document->widget)) {
+            $xmlWidgets = XenForo_Helper_DevelopmentXml::fixPhpBug50670($document->widget);
         }
 
-        $this->buildCache();
+        $widgets = array();
+        foreach ($xmlWidgets as $xmlWidget) {
+            $widget = array();
+
+            /** @var SimpleXMLElement $xmlWidget */
+            foreach ($xmlWidget->attributes() as $attrKey => $attrValue) {
+                $widget[$attrKey] = strval($attrValue);
+            }
+
+            if (isset($xmlWidget->options)) {
+                $options = XenForo_Helper_DevelopmentXml::processSimpleXmlCdata($xmlWidget->options);
+                $widget['options'] = unserialize($options);
+            }
+
+            if (!isset($widget['widget_id'])) {
+                $widget['widget_id'] = 0;
+            }
+            if (!isset($widget['group_id'])) {
+                $widget['group_id'] = 0;
+            }
+
+            $widgets[] = $widget;
+        }
+
+        $widgetIdsMapping = array();
+        while (!empty($widgets)) {
+            $widgetImported = 0;
+
+            foreach (array_keys($widgets) as $key) {
+                $widget = $widgets[$key];
+                if (isset($widget['group_id'])
+                    && $widget['group_id'] > 0
+                    && !isset($widgetIdsMapping[$widget['group_id']])
+                ) {
+                    continue;
+                }
+
+                $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+
+                foreach (array(
+                             'title',
+                             'class',
+                             'position',
+                             'display_order',
+                             'active',
+                             'options',
+                         ) as $field) {
+                    if (isset($widget[$field])) {
+                        $dw->set($field, $widget[$field]);
+                    }
+                }
+
+                if (isset($widget['group_id'])
+                    && $widget['group_id'] > 0
+                ) {
+                    $dw->set('group_id', $widgetIdsMapping[$widget['group_id']]);
+                }
+
+                $dw->save();
+
+                if (isset($widget['widget_id'])) {
+                    $widgetIdsMapping[$widget['widget_id']] = $dw->get('widget_id');
+                }
+
+                unset($widgets[$key]);
+                $widgetImported++;
+            }
+
+            if ($widgetImported === 0) {
+                throw new XenForo_Exception(new XenForo_Phrase('wf_widget_import_error'), true);
+            }
+        }
 
         XenForo_Db::commit();
+
+        $this->buildCache();
     }
 
     public function getGlobalWidgets($useCached = true, $prepare = true)

@@ -16,6 +16,7 @@ class WidgetFramework_ViewAdmin_Widget_Export extends XenForo_ViewAdmin_Base
 
         foreach ($widgets as $widget) {
             $widgetNode = $document->createElement('widget');
+            $widgetNode->setAttribute('widget_id', $widget['widget_id']);
             $widgetNode->setAttribute('title', $widget['title']);
             $widgetNode->setAttribute('class', $widget['class']);
 
