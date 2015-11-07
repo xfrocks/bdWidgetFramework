@@ -39,17 +39,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
         $widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
         $position = $this->_input->filterSingle('position', XenForo_Input::STRING);
-        $groupId = $this->_input->filterSingle('group_id', XenForo_Input::STRING);
         $displayOrder = $this->_input->filterSingle('display_order', XenForo_Input::INT, array('default' => 'na'));
-
-        $positionWidgetId = $this->_input->filterSingle('position_widget', XenForo_Input::UINT);
-        $positionWidget = null;
-        if (!empty($positionWidgetId)) {
-            $positionWidget = $this->_getWidgetOrError($positionWidgetId);
-            $widgetPageId = $positionWidget['widget_page_id'];
-            $position = $positionWidget['position'];
-            $groupId = $positionWidget['group_id'];
-        }
+        $groupMerge = $this->_input->filterSingle('group_merge', XenForo_Input::UINT, array('array' => true));
+        $groupJoin = $this->_input->filterSingle('group_join', XenForo_Input::UINT);
 
         $widgetPage = null;
         if (!empty($widgetPageId)) {
@@ -59,35 +51,37 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         if ($displayOrder == 'na'
             && !empty($position)
         ) {
-            $core = WidgetFramework_Core::getInstance();
-
-            if (empty($widgetPage)) {
-                $globalWidgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
-                $core->addWidgets($globalWidgets);
+            if ($widgetPage === null) {
+                $widgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
             } else {
-                $widgetPageWidgets = $this->_getWidgetModel()->getPageWidgets($widgetPage['node_id'], false);
-                $core->addWidgets($widgetPageWidgets);
+                $widgets = $this->_getWidgetModel()->getPageWidgets($widgetPage['node_id'], false);
             }
 
+            $core = WidgetFramework_Core::getInstance();
+            $core->addWidgets($widgets);
+
             $positionWidgetGroups = $core->getWidgetsAtPosition($position);
-            $displayOrder = $this->_getWidgetModel()->getLastDisplayOrder($positionWidgetGroups, $positionWidget);
+            $displayOrder = $this->_getWidgetModel()->getLastDisplayOrder($positionWidgetGroups, $groupJoin);
         }
 
         $widget = array(
+            'widget_id' => 0,
             'class' => $this->_input->filterSingle('class', XenForo_Input::STRING),
             'active' => 1,
 
             'widget_page_id' => $widgetPageId,
             'position' => $position,
-            'group_id' => $groupId,
             'display_order' => $displayOrder,
 
             'options' => $options,
+
+            'positionCodes' => WidgetFramework_Helper_String::splitPositionCodes($position),
         );
 
         $viewParams = array(
-            'positionWidget' => $positionWidget,
             'widgetPage' => $widgetPage,
+            'groupMerge' => $groupMerge,
+            'groupJoin' => $groupJoin,
         );
 
         return $this->_getResponseAddOrEdit($widget, $viewParams);
@@ -123,7 +117,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         ));
 
         $widgets = array();
-        if (!empty($widget['widget_id'])) {
+        if ($widget['widget_id'] > 0) {
             if (!empty($widget['widget_page_id'])) {
                 $widgets = $this->_getWidgetModel()->getPageWidgets($widget['widget_page_id'], false);
             } else {
@@ -208,12 +202,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             $widget = array();
         }
 
-        $positionWidgetId = $this->_input->filterSingle('position_widget', XenForo_Input::UINT);
-        $positionWidget = null;
-        if (!empty($positionWidgetId)) {
-            $positionWidget = $this->_getWidgetOrError($positionWidgetId);
-        }
-
         $widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
         if (!empty($widgetPageId)) {
             $widgetPage = $this->_getWidgetPageOrError($widgetPageId);
@@ -226,6 +214,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             'display_order' => XenForo_Input::INT,
             'active' => XenForo_INput::UINT,
         ));
+
+        $changedRenderedId = array();
 
         /** @var WidgetFramework_DataWriter_Widget $dw */
         $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
@@ -249,34 +239,22 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
         XenForo_Db::beginTransaction();
 
-        if (!empty($positionWidget)) {
-            if (empty($positionWidget['group_id'])) {
-                $_group = $this->_getWidgetModel()->createGroupContaining($positionWidget);
-
-                $_positionWidgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-                $_positionWidgetDw->setExistingData($widget, true);
-                $_positionWidgetDw->set('group_id', $_group['widget_id']);
-                $_positionWidgetDw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
-                $_positionWidgetDw->save();
-
-                $positionWidget['group_id'] = $_group['widget_id'];
-            }
-
-            $dw->bulkSet(array(
-                'position' => $positionWidget['position'],
-                'group_id' => $positionWidget['group_id'],
-            ));
-        }
-
         if (empty($widget['group_id'])) {
             $groupMerge = $this->_input->filterSingle('group_merge', XenForo_Input::UINT, array('array' => true));
             $groupJoin = $this->_input->filterSingle('group_join', XenForo_Input::UINT);
             if (!empty($groupMerge)) {
                 $_widgetsToMerge = $this->_getWidgetModel()->getWidgets(array('widget_id' => $groupMerge));
+                foreach (array_keys($_widgetsToMerge) as $_widgetIdToMerge) {
+                    if ($_widgetsToMerge[$_widgetIdToMerge]['position'] !== $dw->get('position')) {
+                        unset($_widgetsToMerge[$_widgetIdToMerge]);
+                    }
+                }
+
                 if (!empty($_widgetsToMerge)) {
                     $_group = $this->_getWidgetModel()->createGroupContaining(reset($_widgetsToMerge));
 
                     foreach ($_widgetsToMerge as $_widgetToMerge) {
+                        /** @var WidgetFramework_DataWriter_Widget $_widgetToMergeDw */
                         $_widgetToMergeDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                         $_widgetToMergeDw->setExistingData($_widgetToMerge, true);
                         $_widgetToMergeDw->set('group_id', $_group['widget_id']);
@@ -288,7 +266,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                 }
             } elseif (!empty($groupJoin)) {
                 $_group = $this->_getWidgetModel()->getWidgetById($groupJoin);
-                if (!empty($_group)) {
+                if (!empty($_group)
+                    && $_group['position'] === $dw->get('position')
+                ) {
                     $dw->set('group_id', $_group['widget_id']);
                 }
             }
@@ -308,30 +288,14 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         XenForo_Db::commit();
 
         if ($this->_input->filterSingle('_layoutEditor', XenForo_Input::UINT)) {
-            $changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($dw);
-
-            if (!empty($positionWidgetDw)) {
-                $changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($dw, $changedRenderedId);
-            }
-
-            $viewParams = array('changedRenderedId' => $changedRenderedId);
+            $viewParams = array('changedRenderedId' => WidgetFramework_Helper_LayoutEditor::getChangedWidgetIds());
 
             return $this->responseView('WidgetFramework_ViewAdmin_Widget_Save', '', $viewParams);
         } elseif (!empty($flagGoBackToEdit)) {
-            return call_user_func_array(array(
-                $this,
-                'responseRedirect'
-            ), array(
+            return $this->responseRedirect(
                 XenForo_ControllerResponse_Redirect::RESOURCE_UPDATED,
-                call_user_func_array(array(
-                    'XenForo_Link',
-                    'buildAdminLink'
-                ), array(
-                    'widgets/edit',
-                    $dw->getMergedData(),
-                    array('position_widget' => !empty($positionWidget) ? $positionWidget['widget_id'] : '')
-                ))
-            ));
+                XenForo_Link::buildAdminLink('widgets/edit', $dw->getMergedData())
+            );
         } else {
             $link = XenForo_Link::buildAdminLink('widgets') . $this->getLastHash($dw->get('widget_id'));
 
@@ -364,12 +328,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $globalWidgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
         $core = WidgetFramework_Core::getInstance();
         $core->addWidgets($globalWidgets);
-
-        $positionWidgetId = $this->_input->filterSingle('position_widget', XenForo_Input::UINT);
-        $positionWidget = null;
-        if (!empty($positionWidgetId)) {
-            $positionWidget = $this->_getWidgetOrError($positionWidgetId);
-        }
 
         $widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
         if (!empty($widgetPageId)) {
@@ -453,14 +411,11 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             }
 
             $needUpdateDw->save();
-
-            $changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($needUpdateDw, $changedRenderedId);
         }
 
         XenForo_Db::commit();
 
-        $changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($dw, $changedRenderedId);
-        $viewParams = array('changedRenderedId' => $changedRenderedId);
+        $viewParams = array('changedRenderedId' => WidgetFramework_Helper_LayoutEditor::getChangedWidgetIds());
 
         return $this->responseView('WidgetFramework_ViewAdmin_Widget_Save', '', $viewParams);
     }
@@ -488,8 +443,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             $link = $this->getDynamicRedirectIfNot($notLink, $link);
 
             if ($this->_input->filterSingle('_layoutEditor', XenForo_Input::UINT)) {
-                $changedRenderedId = WidgetFramework_Helper_LayoutEditor::getChangedRenderedId($dw);
-                $viewParams = array('changedRenderedId' => $changedRenderedId);
+                $viewParams = array('changedRenderedId' =>
+                    WidgetFramework_Helper_LayoutEditor::getChangedWidgetIds());
 
                 return $this->responseView('WidgetFramework_ViewAdmin_Widget_Save', '', $viewParams);
             } else {

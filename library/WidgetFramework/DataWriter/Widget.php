@@ -157,12 +157,6 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             }
         }
 
-        if ($this->get('widget_id')
-            && !empty($this->_newData['xf_widget'])
-        ) {
-            WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this, $this->_newData['xf_widget']);
-        }
-
         parent::_preSave();
     }
 
@@ -181,7 +175,11 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedExistingData(), $this->getWidgetOptions(true));
         }
 
-        parent::_postSave();
+        if ($this->isUpdate()
+            && !empty($this->_newData['xf_widget'])
+        ) {
+            WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this, $this->_newData['xf_widget']);
+        }
     }
 
     protected function _postSaveAfterTransaction()
@@ -199,11 +197,26 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedData(), $this->getWidgetOptions());
         }
 
+        if ($this->get('class') === 'WidgetFramework_WidgetGroup') {
+            // reassign widgets of this group to its parent
+            $widgets = $this->_getWidgetModel()->getWidgets(array('group_id' => $this->get('widget_id')));
+            foreach ($widgets as $widget) {
+                /** @var WidgetFramework_DataWriter_Widget $dw */
+                $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                $dw->setExistingData($widget, true);
+                $dw->set('group_id', $this->get('group_id'));
+                $dw->setExtraData(self::EXTRA_DATA_SKIP_REBUILD, true);
+                $dw->save();
+            }
+        }
+
         $this->_rebuildGlobalCache();
 
         WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
 
         $this->_isDelete = true;
+
+        WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this);
     }
 
     protected function _getUpdateCondition($tableName)

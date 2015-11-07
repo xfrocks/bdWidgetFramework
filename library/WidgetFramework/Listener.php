@@ -125,19 +125,12 @@ class WidgetFramework_Listener
                     case 'wf_widget_group_wrapper':
                     case 'wf_layout_editor_widget_group_wrapper':
                         $group = $template->getParam('group');
-                        $group = $template->getParam('group');
-                        self::$_layoutEditorRendered[$widget['widget_id']] = $output;
-                        $normalizedGroupId = $template->getParam('normalizedGroupId');
-                        if (!empty($normalizedGroupId)) {
-                            self::$_layoutEditorRendered[$normalizedGroupId] = $output;
-                        }
+                        if (!empty($group)) {
+                            self::$_layoutEditorRendered[$group['widget_id']] = $output;
 
-                        $tabs = $template->getParam('tabs');
-                        foreach ($tabs as $tab) {
-                            if (!empty($normalizedGroupId)) {
-                                self::$_layoutEditorRendered[$tab['widget_id']] = array('normalizedGroupId' => $normalizedGroupId);
-                            } else {
-                                self::$_layoutEditorRendered[$tab['widget_id']] = $output;
+                            $widgets = $template->getParam('widgets');
+                            foreach ($widgets as $widget) {
+                                self::$_layoutEditorRendered[$widget['widget_id']] = array('groupId' => $group['widget_id']);
                             }
                         }
                         break;
@@ -330,10 +323,18 @@ class WidgetFramework_Listener
     public static function getLayoutEditorRendered($renderedId)
     {
         if (isset(self::$_layoutEditorRendered[$renderedId])) {
-            return self::$_layoutEditorRendered[$renderedId];
+            $rendered = self::$_layoutEditorRendered[$renderedId];
+
+            if (is_string($rendered)) {
+                return array($renderedId, $rendered);
+            } elseif (is_array($rendered)) {
+                if (isset($rendered['groupId'])) {
+                    return self::getLayoutEditorRendered($rendered['groupId']);
+                }
+            }
         }
 
-        return '';
+        return array(0, '');
     }
 
     protected static function _markTemplateToProcess(XenForo_ControllerResponse_View $view)

@@ -120,33 +120,22 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
 
         if (WidgetFramework_Option::get('layoutEditorEnabled')) {
             $wrapperTemplateName = 'wf_layout_editor_widget_group_wrapper';
-
-            $params['groupSaveParams'] = array(
-                'group_id' => $groupRef['widget_id'],
-            );
-
-            $params['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
-            if (!empty($groupRef['widget_page_id'])
-                && !empty($params['conditionalParams']['widgetPage'])
-            ) {
-                $params['groupSaveParams']['widget_page_id'] = $groupRef['widget_page_id'];
-                unset($params['conditionalParams']['widgetPage']);
-            }
+            $params['_conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
         }
 
         if (!empty($params[self::PARAM_IS_HOOK])) {
-            $params['classSection'] = 'widget-container act-as-sidebar sidebar';
+            $params['_classSection'] = 'widget-container act-as-sidebar sidebar';
         } else {
-            $params['classSection'] = '';
+            $params['_classSection'] = '';
         }
 
         if (XenForo_Template_Helper_Core::styleProperty('wf_groupBorder')
             && empty($groupRef['group_id'])
         ) {
             if (!empty($params[WidgetFramework_Core::PARAM_IS_HOOK])) {
-                $params['classSection'] .= ' section sectionMain';
+                $params['_classSection'] .= ' section sectionMain';
             } else {
-                $params['classSection'] .= ' section';
+                $params['_classSection'] .= ' section';
             }
         }
 

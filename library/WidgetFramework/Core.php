@@ -258,11 +258,11 @@ class WidgetFramework_Core
         }
 
         if (!empty($params[self::PARAM_IS_HOOK])) {
-            $params['classSection'] = 'section sectionMain widget-container act-as-sidebar sidebar';
-            $params['classInnerSection'] = 'widget hook-widget';
+            $params['_classSection'] = 'section sectionMain widget-container act-as-sidebar sidebar';
+            $params['_classInnerSection'] = 'widget hook-widget';
         } else {
-            $params['classSection'] = 'section';
-            $params['classInnerSection'] = 'secondaryContent widget sidebar-widget';
+            $params['_classSection'] = 'section';
+            $params['_classInnerSection'] = 'secondaryContent widget sidebar-widget';
         }
 
         return $params;
@@ -333,11 +333,11 @@ class WidgetFramework_Core
             }
             $renderedPositions[$positionCode] = true;
 
-            $areaSaveParams = array('position' => $positionCode);
+            $saveParams = array('position' => $positionCode);
             if (!empty($params[self::PARAM_IS_HOOK])) {
                 // hook position, only render for some hooks
                 if ($positionCode === 'hook:wf_widget_page_contents') {
-                    $areaSaveParams['widget_page_id'] = $params['widgetPage']['node_id'];
+                    $saveParams['widget_page_id'] = $params['widgetPage']['node_id'];
                     $renderArea = true;
                 } elseif (in_array($positionCode, array(
                     'hook:ad_above_content',
@@ -353,7 +353,7 @@ class WidgetFramework_Core
                 // page position, always render for sidebar
                 $renderArea = true;
                 if ($positionCode == 'wf_widget_page') {
-                    $areaSaveParams['widget_page_id'] = $params['widgetPage']['node_id'];
+                    $saveParams['widget_page_id'] = $params['widgetPage']['node_id'];
                 }
             }
         }
@@ -395,17 +395,17 @@ class WidgetFramework_Core
 
         if ($renderArea) {
             $conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($widgetParams);
-            if (!empty($areaSaveParams['widget_page_id'])
+            if (!empty($saveParams['widget_page_id'])
                 && !empty($conditionalParams['widgetPage'])
             ) {
                 unset($conditionalParams['widgetPage']);
             }
 
             $areaParams = array(
-                'positionCode' => $positionCode,
-                'conditionalParams' => $conditionalParams,
-                'areaSaveParams' => $areaSaveParams,
-                'contents' => $html,
+                '_areaPositionCode' => $positionCode,
+                '_areaConditionalParams' => $conditionalParams,
+                '_areaSaveParams' => $saveParams,
+                '_areaHtml' => $html,
             );
 
             $areaTemplate = ($renderSimpleArea ? 'wf_layout_editor_area_simple' : 'wf_layout_editor_area');
@@ -426,6 +426,7 @@ class WidgetFramework_Core
                 && $widgetRef['class'] !== 'WidgetFramework_WidgetGroup'
             ) {
                 $wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
+                $params['_conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
             } elseif (!empty($widgetRef['_runtime']['useWrapper'])) {
                 $wrapperTemplateName = 'wf_widget_wrapper';
             }

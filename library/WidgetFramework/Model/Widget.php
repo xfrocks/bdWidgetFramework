@@ -68,14 +68,17 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $count;
     }
 
-    public function getLastDisplayOrder($positionWidgetGroups, $positionWidget = null)
+    public function getLastDisplayOrder($widgets, $groupId = 0)
     {
-        if (!empty($positionWidget)) {
+        if ($groupId > 0) {
             // put into a group
-            $siblingWidgets = $this->getWidgetsContainsWidgetId($positionWidgetGroups, $positionWidget['widget_id']);
+            $siblingWidgets = $this->getWidgetsContainsWidgetId($widgets, $groupId);
+            if (!empty($siblingWidgets[$groupId]['widgets'])) {
+                $siblingWidgets = $siblingWidgets[$groupId]['widgets'];
+            }
         } else {
             // put into a position
-            $siblingWidgets = $positionWidgetGroups;
+            $siblingWidgets = $widgets;
         }
 
         $maxDisplayOrder = false;
@@ -424,6 +427,16 @@ class WidgetFramework_Model_Widget extends XenForo_Model
                 $sqlConditions[] = 'widget.widget_page_id IN(' . $db->quote($conditions['widget_page_id']) . ')';
             } else {
                 $sqlConditions[] = 'widget.widget_page_id = ' . $db->quote($conditions['widget_page_id']);
+            }
+        }
+
+        if (isset($conditions['group_id'])) {
+            if (is_array($conditions['group_id'])
+                && count($conditions['group_id']) > 0
+            ) {
+                $sqlConditions[] = 'widget.group_id IN(' . $db->quote($conditions['group_id']) . ')';
+            } else {
+                $sqlConditions[] = 'widget.group_id = ' . $db->quote($conditions['group_id']);
             }
         }
 
