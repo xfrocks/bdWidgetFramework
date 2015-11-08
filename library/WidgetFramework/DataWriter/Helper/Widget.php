@@ -54,16 +54,18 @@ class WidgetFramework_DataWriter_Helper_Widget
             if (in_array($positionCode, array(
                     'wf_widget_page',
                     'hook:wf_widget_page_contents'
-                ), true) AND !$dw->get('widget_page_id')
+                ), true) && !$dw->get('widget_page_id')
             ) {
-                $dw->error(new XenForo_Phrase('wf_position_x_requires_widget_page', array('position' => $positionCode)), $fieldName);
+                $dw->error(new XenForo_Phrase('wf_position_x_requires_widget_page',
+                    array('position' => $positionCode)), $fieldName);
                 return false;
             }
 
             if (in_array($positionCode, array(
                 'wf_widget_ajax',
             ), true)) {
-                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $positionCode)), $fieldName);
+                $dw->error(new XenForo_Phrase('wf_invalid_position_x',
+                    array('position' => $positionCode)), $fieldName);
                 return false;
             }
 
@@ -71,11 +73,12 @@ class WidgetFramework_DataWriter_Helper_Widget
             // added support for hook:hook_name
             if (substr($positionCode, 0, 5) == 'hook:') {
                 // accept all kind of hooks, just need to get parent templates for them
-                $templates = $db->fetchAll("
-					SELECT title
-					FROM `xf_template_compiled`
-					WHERE template_compiled LIKE " . XenForo_Db::quoteLike('callTemplateHook(\'' . substr($positionCode, 5) . '\',', 'lr') . "
-				");
+                $templates = $db->fetchAll('
+                    SELECT title
+                    FROM `xf_template_compiled`
+                    WHERE template_compiled LIKE '
+                    . XenForo_Db::quoteLike('callTemplateHook(\'' . substr($positionCode, 5) . '\',', 'lr') . '
+                ');
 
                 if (count($templates) > 0) {
                     $templateForHooks[$positionCode] = array();
@@ -84,11 +87,13 @@ class WidgetFramework_DataWriter_Helper_Widget
                     }
                     $templateForHooks[$positionCode] = array_unique($templateForHooks[$positionCode]);
                 } else {
-                    $dw->error(new XenForo_Phrase('wf_non_existent_hook_x', array('hook' => substr($positionCode, 5))), $fieldName);
+                    $dw->error(new XenForo_Phrase('wf_non_existent_hook_x',
+                        array('hook' => substr($positionCode, 5))), $fieldName);
                     return false;
                 }
             } elseif (!$templateModel->getTemplateInStyleByTitle($positionCode)) {
-                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $positionCode)), $fieldName);
+                $dw->error(new XenForo_Phrase('wf_invalid_position_x',
+                    array('position' => $positionCode)), $fieldName);
                 return false;
             }
 

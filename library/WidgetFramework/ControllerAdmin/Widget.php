@@ -78,7 +78,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         );
 
         $viewParams = array(
-            'widgetPage' => $widgetPage,
             'groupMerge' => $groupMerge,
             'groupJoin' => $groupJoin,
         );
@@ -115,12 +114,19 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             'conditionalParams' => $this->_input->filterSingle('conditionalParams', XenForo_Input::STRING),
         ));
 
+        if (isset($widget['widget_page_id'])
+            && $widget['widget_page_id'] > 0
+        ) {
+            $widgetPage = $this->_getWidgetPageModel()->getWidgetPageById($widget['widget_page_id']);
+            $viewParams['widgetPage'] = $widgetPage;
+        }
+
         $widgets = array();
         if ($widget['widget_id'] > 0) {
             if (!empty($widget['widget_page_id'])) {
-                $widgets = $this->_getWidgetModel()->getPageWidgets($widget['widget_page_id'], false);
+                $widgets = $this->_getWidgetModel()->getPageWidgets($widget['widget_page_id']);
             } else {
-                $widgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
+                $widgets = $this->_getWidgetModel()->getGlobalWidgets(false);
             }
         }
 
@@ -250,7 +256,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                 }
 
                 if (!empty($_widgetsToMerge)) {
-                    $_group = $this->_getWidgetModel()->createGroupContaining(reset($_widgetsToMerge));
+                    $_group = $this->_getWidgetModel()->createGroupContaining(reset($_widgetsToMerge),
+                        array('layout' => 'columns'));
 
                     foreach ($_widgetsToMerge as $_widgetToMerge) {
                         /** @var WidgetFramework_DataWriter_Widget $_widgetToMergeDw */
@@ -349,7 +356,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             $widgetPageId = $groupMergeWidget['widget_page_id'];
             $position = $groupMergeWidget['position'];
 
-            $_group = $this->_getWidgetModel()->createGroupContaining($groupMergeWidget,array('layout' => 'columns'));
+            $_group = $this->_getWidgetModel()->createGroupContaining($groupMergeWidget, array('layout' => 'columns'));
             $groupId = $_group['widget_id'];
             $widgetsNeedUpdate[$groupMergeWidget['widget_id']]['group_id'] = $groupId;
         }

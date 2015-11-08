@@ -2,6 +2,18 @@
 
 class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
 {
+    public function extraPrepareTitle(array $widget)
+    {
+        if (empty($widget['title'])) {
+            return new XenForo_Phrase('wf_group_x', array(
+                'groupId' => $widget['widget_id'],
+            ));
+        }
+
+        return parent::extraPrepareTitle($widget);
+    }
+
+
     public function getConfiguration()
     {
         $configuration = parent::getConfiguration();

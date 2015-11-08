@@ -9,6 +9,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         $groupDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
         $groupDw->bulkSet(array(
             'class' => 'WidgetFramework_WidgetGroup',
+            'widget_page_id' => $widget['widget_page_id'],
             'position' => $widget['position'],
             'display_order' => $widget['display_order'],
             'active' => 1,
@@ -409,6 +410,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
                     $widget['options'][$optionKey] = '';
                 }
             }
+
+            $widget['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget);
         } else {
             $widget['rendererName'] = new XenForo_Phrase('wf_unknown_renderer', array('class' => $widget['class']));
             $widget['rendererNotFound'] = true;

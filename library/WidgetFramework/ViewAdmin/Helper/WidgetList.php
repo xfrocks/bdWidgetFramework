@@ -10,6 +10,10 @@ class WidgetFramework_ViewAdmin_Helper_WidgetList
             $itemsTemplate->setParam('widgets', $params['widgets']);
         }
 
+        if (isset($params['canToggle'])) {
+            $itemsTemplate->setParam('canToggle', $params['canToggle']);
+        }
+
         if (isset($params['level'])) {
             $itemsTemplate->setParam('level', $params['level']);
         } else {

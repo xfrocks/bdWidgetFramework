@@ -44,7 +44,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Comments extends WidgetFramework_Widge
         }
 
         $renderTemplateObject->setParam('limit', $limit);
-        $renderTemplateObject->setParam('title', $this->extraPrepareTitle($widget));
+        $renderTemplateObject->setParam('title', $widget['_runtime']['title']);
 
         return $renderTemplateObject->render();
     }

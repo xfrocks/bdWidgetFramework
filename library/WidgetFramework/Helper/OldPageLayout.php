@@ -83,7 +83,7 @@ class _Layout_Horizontal extends _Layout_Multiple
     protected function _doLayout_finishedGroup($groupIdsOrdered)
     {
         $firstWidget = reset($this->_widgets);
-        $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget);
+        $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget, array('layout' => 'columns'));
 
         $this->_options['group_id'] = $groupWidget['widget_id'];
     }

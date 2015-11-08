@@ -58,7 +58,7 @@
 	<xen:title>{$widgetPage.title} - {xen:raw $title}</xen:title>
 	<xen:h1>{xen:raw $title}</xen:h1>
 	<xen:navigation>
-		<xen:breadcrumb href="{xen:adminlink 'widget-page/edit', $widgetPage}">{$widgetPage.title}</xen:breadcrumb>
+		<xen:breadcrumb href="{xen:adminlink 'widget-pages/edit', $widgetPage}">{$widgetPage.title}</xen:breadcrumb>
 	</xen:navigation>
 <xen:else />
 	<xen:title>{xen:raw $title}</xen:title>
@@ -66,22 +66,22 @@
 
 <xen:set var="$textboxTitleExplain">
 	<xen:if is="!{$_layoutEditor}">
-		{xen:phrase wf_title_explain}
-		
-		<xen:if is="{$widgetTitlePhrases}">
-			{xen:phrase wf_title_translations}:
+	{xen:phrase wf_title_explain}
 
-			<xen:foreach loop="$widgetTitlePhrases" value="$phrase">
-				{$phrase.language_title} =
-				<xen:if is="{$phrase.phrase_id}">
-					"<a href="{xen:adminlink phrases/edit, '',
-						'phrase_id={$phrase.phrase_id}'}" target="_blank">{$phrase.phrase_text}</a>"
-				<xen:else />
-					<a href="{xen:adminlink widgets/translate-title, $widget,
-						'language_id={$phrase.language_id}'}" target="_blank">N/A</a>
-				</xen:if>
-			</xen:foreach>
-		</xen:if>
+	<xen:if is="{$widgetTitlePhrases}">
+	{xen:phrase wf_title_translations}:
+
+	<xen:foreach loop="$widgetTitlePhrases" value="$phrase">
+	{$phrase.language_title} =
+	<xen:if is="{$phrase.phrase_id}">
+	"<a href="{xen:adminlink phrases/edit, '',
+		'phrase_id={$phrase.phrase_id}'}" target="_blank">{$phrase.phrase_text}</a>"
+	<xen:else />
+	<a href="{xen:adminlink widgets/translate-title, $widget,
+		'language_id={$phrase.language_id}'}" target="_blank">N/A</a>
+	</xen:if>
+	</xen:foreach>
+	</xen:if>
 	</xen:if>
 </xen:set>
 
@@ -115,36 +115,39 @@
 	</div>
 	
 	<fieldset>
+		<xen:if is="!{$_layoutEditor} && !{$widgetPage}">
+
+		<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
+			<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
+		</xen:textboxunit>
+
+		<xen:else />
+		<input type="hidden" name="position" value="{$widget.position}" />
+		</xen:if>
+
 		<xen:if is="!{$_layoutEditor}">
 
-			<xen:textboxunit label="{xen:phrase wf_position}:" name="position" value="{$widget.position}">
-				<xen:explain>{xen:phrase wf_position_explain}</xen:explain>
-			</xen:textboxunit>
-
-			<xen:include template="wf_widget_edit_group" />
-
-			<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
-				<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
-			</xen:spinboxunit>
+		<xen:include template="wf_widget_edit_group" />
+		<xen:spinboxunit label="{xen:phrase display_order}:" name="display_order" value="{$widget.display_order}">
+			<xen:explain>{xen:phrase wf_display_order_explain}</xen:explain>
+		</xen:spinboxunit>
 
 		<xen:else />
 
-			<input type="hidden" name="position" value="{$widget.position}" />
-			<input type="hidden" name="display_order" value="{$widget.display_order}" />
-			
-			<xen:if is="{$groupMerge}">
-			<xen:foreach loop="$groupMerge" key="$key" value="$value">
-			<input type="hidden" name="group_merge[{$key}]" value="{$value}" />
-			</xen:foreach>
-			</xen:if>
-			<input type="hidden" name="group_join" value="{$groupJoin}" />
+		<input type="hidden" name="display_order" value="{$widget.display_order}" />
+		<xen:if is="{$groupMerge}">
+		<xen:foreach loop="$groupMerge" key="$key" value="$value">
+		<input type="hidden" name="group_merge[{$key}]" value="{$value}" />
+		</xen:foreach>
+		</xen:if>
+		<input type="hidden" name="group_join" value="{$groupJoin}" />
 
 		</xen:if>
 
 		<xen:if is="{$options.expression}">
-			<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="3">
-				<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
-			</xen:textboxunit>
+		<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="3">
+			<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
+		</xen:textboxunit>
 		</xen:if>
 
 		<xen:if is="empty({$widget._runtime.configuration}) || !empty({$widget._runtime.configuration.options.conditional})">
@@ -192,7 +195,7 @@
 		<xen:option value="0"></xen:option>
 		<xen:foreach loop="$groups" value="$group">
 			<xen:option value="{$group.widget_id}">
-				{xen:phrase wf_group_x, 'groupId={$group.widget_id}'}
+				{xen:raw $group._runtime.title}
 			</xen:option>
 		</xen:foreach>
 	</xen:selectunit>
@@ -203,13 +206,10 @@
 			<xen:checkbox name="group_merge">
 				<xen:foreach loop="$siblingWidgets" value="$siblingWidget">
 					<xen:option value="{$siblingWidget.widget_id}">
-						{xen:if '{$siblingWidget.class} === "WidgetFramework_WidgetGroup"',
-							'{xen:phrase wf_group_x, 'groupId={$siblingWidget.widget_id}'}',
-							'<a href="{xen:adminlink widgets/edit, $siblingWidget}" target="_blank" tabindex="-1">
-							#{$siblingWidget.widget_id}</a> -
-							{xen:if '{$siblingWidget.title}', '{xen:raw $siblingWidget.title}',
-								'{$siblingWidget.rendererName}'}'
-						}
+						<a href="{xen:adminlink widgets/edit, $siblingWidget}" target="_blank" tabindex="-1">
+							#{$siblingWidget.widget_id}
+						</a> -
+						{xen:raw $siblingWidget._runtime.title}
 					</xen:option>
 				</xen:foreach>
 			</xen:checkbox>
@@ -238,16 +238,16 @@
 	<xen:submitunit save="{xen:phrase wf_import_widgets}" />
 	<input type="hidden" name="_xfConfirm" value="1" />
 </xen:form>]]></template>
-    <template title="wf_widget_list"><![CDATA[<xen:title>{xen:phrase wf_widgets}</xen:title>
-
-<xen:topctrl>
-	<a href="{xen:adminlink 'widgets/export'}" class="button">{xen:phrase export}</a>
-	<a href="{xen:adminlink 'widgets/add'}" class="button" accesskey="a">+ {xen:phrase wf_add_widget}</a>
-</xen:topctrl>
-
-<xen:require css="filter_list.css" />
+    <template title="wf_widget_list"><![CDATA[<xen:require css="filter_list.css" />
 <xen:require js="js/xenforo/filter_list.js" />
 <xen:require css="widget_framework.css" />
+
+<xen:title>{xen:phrase wf_widgets}</xen:title>
+
+<xen:topctrl>
+	<a href="{xen:adminlink 'widgets/export'}" class="button">{xen:phrase wf_export_widgets}</a>
+	<a href="{xen:adminlink 'widgets/add'}" class="button" accesskey="a">+ {xen:phrase wf_add_widget}</a>
+</xen:topctrl>
 
 <xen:form action="{xen:adminlink widgets/toggle}" class="section AutoValidator">
 
@@ -273,12 +273,14 @@
 
 	<p class="sectionFooter">{xen:phrase showing_x_of_y_items, 'count=<span class="FilterListCount">{xen:count $widgets}</span>', 'total={xen:count $widgets}'}</p>
 </xen:form>]]></template>
-    <template title="wf_widget_list_item"><![CDATA[<xen:set var="$canToggle">{xen:helper WidgetFramework_canToggle, $widget}</xen:set>
+    <template title="wf_widget_list_item"><![CDATA[<xen:if is="!isset({$canToggle})">
+	<xen:set var="$canToggle">{xen:helper WidgetFramework_canToggle, $widget}</xen:set>
+</xen:if>
 <xen:set var="$href">{xen:adminlink 'widgets/edit', $widget}</xen:set>
 <xen:set var="$delete">{xen:adminlink 'widgets/delete', $widget}</xen:set>
-<xen:set var="$label">{xen:if '{$widget._runtime.title}', '{xen:raw $widget._runtime.title}', '{$widget.rendererName}'}</xen:set>
+<xen:set var="$label">{xen:raw $widget._runtime.title}</xen:set>
 <xen:set var="$labelClass">{xen:if '!{$widget.active}', 'disabled'}</xen:set>
-<xen:set var="$snippet">{xen:if '{$widget.title}', '{$widget.rendererName} ({xen:number $widget.display_order})', '({xen:number $widget.display_order})'}</xen:set>
+<xen:set var="$snippet">{$widget.rendererName} ({xen:number $widget.display_order})</xen:set>
 
 <xen:if is="{$canToggle}">
 	<xen:listitem
@@ -289,7 +291,7 @@
 		labelclass="{xen:raw $labelClass}"
 		snippet="{xen:raw $snippet}"
 		toggle="{$widget.active}"
-		toggletitle="{xen:phrase enable_disable_x, 'title={$widget.title}'}">>
+		toggletitle="{xen:phrase enable_disable_x, 'title={$widget._runtime.title}'}">>
 		<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
 			<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
 			<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>
@@ -320,11 +322,7 @@
 		<li class="widget-group level-{$level}">
 			<h3 class="textHeading">
 				<a href="{xen:adminlink widgets/edit, $widget}">
-					<xen:if is="{$widget.title}">
-					{xen:raw $widget.title}
-					<xen:else />
-					{xen:phrase wf_group_x, 'groupId={$widget.widget_id}'}
-					</xen:if>
+					{xen:raw $widget._runtime.title}
 				</a>
 
 				<xen:if is="{$widget.options.layout}">layout={$widget.options.layout}</xen:if>
@@ -626,7 +624,9 @@
 	<input type="hidden" name="_xfConfirm" value="1" />
 	
 </xen:form>]]></template>
-    <template title="wf_widget_page_edit"><![CDATA[<xen:require css="widget_framework.css" />
+    <template title="wf_widget_page_edit"><![CDATA[<xen:require css="filter_list.css" />
+<xen:require js="js/xenforo/filter_list.js" />
+<xen:require css="widget_framework.css" />
 
 <xen:title>{xen:if {$widgetPage.node_id}, '{xen:phrase wf_edit_widget_page}: {$widgetPage.title}', '{xen:phrase wf_create_new_widget_page}'}</xen:title>
 
@@ -634,6 +634,15 @@
 	<xen:navigation>
 		<xen:breadcrumb href="{xen:adminlink nodes}#{xen:helper listitemid, $widgetPage.node_id}">{$widgetPage.title}</xen:breadcrumb>
 	</xen:navigation>
+	
+	<xen:topctrl>
+		<a href="{xen:adminlink widgets/add, '',
+			'widget_page_id={$widgetPage.node_id}',
+			'position=hook:wf_widget_page_contents'}" class="button" accesskey="a">+ {xen:phrase wf_add_contents_widget}</a>
+		<a href="{xen:adminlink widgets/add, '',
+			'widget_page_id={$widgetPage.node_id}',
+			'position=wf_widget_page'}" class="button" accesskey="a">+ {xen:phrase wf_add_sidebar_widget}</a>
+	</xen:topctrl>
 </xen:if>
 
 <xen:form action="{xen:adminlink 'widget-pages/save', $widgetPage}"
@@ -714,6 +723,29 @@
 				</xen:checkboxunit>
 
 				<!-- after options -->
+					
+				<ul class="FilterList">
+					<xen:foreach loop="$positions" value="$position">
+					<li>
+						<h3 class="textHeading">
+							<xen:if is="{$position.position} === 'hook:wf_widget_page_contents'">
+							{xen:phrase wf_contents_widgets}
+							<xen:elseif is="{$position.position} === 'wf_widget_page'" />
+							{xen:phrase wf_sidebar_widgets}
+							<xen:else />
+							{$position.position}
+							</xen:if>
+						</h3>
+						<ol>
+							<xen:callback
+								class="WidgetFramework_ViewAdmin_Helper_WidgetList"
+								method="renderItems"
+								params="{xen:array 'widgets={$position.widgets}', 'canToggle=0'}"/>
+						</ol>
+					</xen:foreach>
+				</ul>
+
+				<!-- after widgets -->
 
 				</xen:hook>
 			</li>
@@ -927,6 +959,8 @@ Arguments:
     <phrase title="style_property_wf_widgetTabsTabs_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (container)]]></phrase>
     <phrase title="style_property_wf_widgetTabs_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_widgetTabs_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (outer container)]]></phrase>
+    <phrase title="wf_add_contents_widget" version_id="112" version_string="2.6.0-dev"><![CDATA[Add Contents Widget]]></phrase>
+    <phrase title="wf_add_sidebar_widget" version_id="112" version_string="2.6.0-dev"><![CDATA[Add Sidebar Widget]]></phrase>
     <phrase title="wf_add_widget" version_id="1" version_string="0.9"><![CDATA[Add Widget]]></phrase>
     <phrase title="wf_albums_lowercase" version_id="112" version_string="2.6.0-dev"><![CDATA[albums]]></phrase>
     <phrase title="wf_ascending" version_id="1" version_string="0.9"><![CDATA[Ascending ]]></phrase>
@@ -949,6 +983,7 @@ Arguments:
 {xen:helper ismemberof, $visitor, 3} (show up for users of user group #3 only, which is the admin group)]]></phrase>
     <phrase title="wf_confirm_deletion_of_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Confirm Deletion of Widget Page]]></phrase>
     <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
+    <phrase title="wf_contents_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Contents Widgets]]></phrase>
     <phrase title="wf_create_new_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Create New Group]]></phrase>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="wf_current_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum]]></phrase>
@@ -965,6 +1000,7 @@ Arguments:
     <phrase title="wf_edit_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Edit Group]]></phrase>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
     <phrase title="wf_edit_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Edit Widget Page]]></phrase>
+    <phrase title="wf_export_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Export Widgets]]></phrase>
     <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>
     <phrase title="wf_expression_explain" version_id="96" version_string="2.5.0d"><![CDATA[Expression has been deprecated for security reason. Please switch to use Conditional as soon as possible, Expression will be removed completely in the near future.]]></phrase>
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
@@ -1039,6 +1075,7 @@ Arguments:
     <phrase title="wf_save_widget" version_id="1" version_string="0.9"><![CDATA[Save Widget]]></phrase>
     <phrase title="wf_save_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Save Widget Page]]></phrase>
     <phrase title="wf_share_this_page" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Share This Page]]></phrase>
+    <phrase title="wf_sidebar_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Sidebar Widgets]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
     <phrase title="wf_template_controller" version_id="99" version_string="2.5.0d"><![CDATA[Controller]]></phrase>
     <phrase title="wf_template_controller_explain" version_id="99" version_string="2.5.0d"><![CDATA[Some template needs its data to render properly. Enter the controller name and action here to obtain the required data.]]></phrase>
@@ -1585,11 +1622,7 @@ All customization should go to wf_default_EXTRA.css
 
 	<div class="controls">
 		<a title="{xen:phrase wf_move, 'display_order={$group.display_order}'}" class="dnd-handle">
-			<xen:if hascontent="true">
-				<xen:contentcheck>{xen:raw $group._runtime.title}</xen:contentcheck>
-			<xen:else />
-				{xen:phrase wf_group_x, 'groupId={$group.widget_id}'}
-			</xen:if>
+			{xen:raw $group._runtime.title}
 		</a>
 
 		<div>
@@ -2027,7 +2060,7 @@ All customization should go to wf_default_EXTRA.css
 	<div class="{$_classInnerSection} {$widget.class} row-{$i}" id="widget-{$widget.widget_id}">
 		<h3>
 			<xen:if is="{$widget._runtime.extraData.link}">
-			<a href="{$widget._runtime.extraData.link}">{xen:raw $tab.title}</a>
+			<a href="{$widget._runtime.extraData.link}">{xen:raw $widget._runtime.title}</a>
 			<xen:else />
 			{xen:raw $widget._runtime.title}
 			</xen:if>
