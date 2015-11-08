@@ -14,18 +14,19 @@ class WidgetFramework_ViewPublic_Widget_Render extends XenForo_ViewPublic_Base
         )));
 
         if (!empty($this->_params['_renderedIds'])) {
-            foreach (explode(',', $this->_params['_renderedIds']) as $renderedId) {
-                $rendered = WidgetFramework_Listener::getLayoutEditorRendered($renderedId);
+            $renderedIds = explode(',', $this->_params['_renderedIds']);
 
-                if (is_string($rendered)) {
-                    $output['rendered'][$renderedId] = $rendered;
-                } elseif (is_array($rendered)) {
-                    if (!empty($rendered['normalizedGroupId'])) {
-                        $groupRendered = WidgetFramework_Listener::getLayoutEditorRendered($rendered['normalizedGroupId']);
-                        if (is_string($groupRendered)) {
-                            $output['rendered'][$rendered['normalizedGroupId']] = $groupRendered;
-                        }
-                    }
+            foreach ($renderedIds as $renderedId) {
+                list($_renderedId, $_renderedHtml) = WidgetFramework_Listener::getLayoutEditorRendered($renderedId);
+
+                if ($_renderedId > 0) {
+                    $output['rendered'][$_renderedId] = $_renderedHtml;
+                }
+            }
+
+            foreach ($renderedIds as $renderedId) {
+                if (!isset($output['rendered'][$renderedId])) {
+                    $output['rendered'][$renderedId] = '';
                 }
             }
         }

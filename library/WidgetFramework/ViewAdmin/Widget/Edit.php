@@ -27,7 +27,9 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
             }
         }
 
-        if (!empty($widget['class']) && isset($this->_params['renderers'])) {
+        if (!empty($widget['class'])
+            && isset($this->_params['renderers'])
+        ) {
             $rendererFound = false;
 
             foreach ($this->_params['renderers'] as &$rendererRef) {
@@ -68,15 +70,16 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
 
     public function renderHtml()
     {
-        $widget = &$this->_params['widget'];
+        $widgetRef = &$this->_params['widget'];
 
-        if (!empty($widget['class'])) {
-            $renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
+        if (!empty($widgetRef['class'])) {
+            $renderer = WidgetFramework_Core::getRenderer($widgetRef['class'], false);
         } else {
             $renderer = WidgetFramework_Core::getRenderer('WidgetFramework_WidgetRenderer_None', false);
         }
 
         if ($renderer) {
+            $widgetRef['_runtime']['configuration'] = $renderer->getConfiguration();
             $renderer->renderOptions($this->_renderer, $this->_params);
         }
     }

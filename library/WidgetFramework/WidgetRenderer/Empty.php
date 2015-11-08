@@ -32,9 +32,9 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
         return self::RENDERED;
     }
 
-    public function render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template, &$output)
+    public function render(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$output)
     {
-        $rendered = parent::render($widget, $positionCode, $params, $template, $output);
+        $rendered = parent::render($widgetRef, $positionCode, $params, $template, $output);
 
         if ($rendered === self::RENDERED) {
             // only work if the normal rendering routine runs throughly
@@ -42,7 +42,7 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
             // since 1.2.1
             $rendered = $output = '';
 
-            if (!empty($widget['options']['noVisitorPanel'])) {
+            if (!empty($widgetRef['options']['noVisitorPanel'])) {
                 if (!defined(WidgetFramework_Core::NO_VISITOR_PANEL_FLAG)) {
                     define(WidgetFramework_Core::NO_VISITOR_PANEL_FLAG, true);
                 }

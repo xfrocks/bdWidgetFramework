@@ -60,12 +60,12 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _rebuildGlobalCache()
     {
-        if (!$this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD)) {
-            if ($this->get('widget_page_id') == 0) {
-                $this->_getWidgetModel()->buildCache();
-            } elseif ($this->isUpdate() AND $this->getExisting('widget_page_id') == 0) {
-                $this->_getWidgetModel()->buildCache();
-            }
+        if ($this->getExtraData(self::EXTRA_DATA_SKIP_REBUILD)) {
+            return;
+        }
+
+        if ($this->get('widget_page_id') == 0) {
+            $this->_getWidgetModel()->buildCache();
         }
     }
 
@@ -102,6 +102,10 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
                     'WidgetFramework_DataWriter_Helper_Widget',
                     'verifyPosition'
                 )
+            ),
+            'group_id' => array(
+                'type' => self::TYPE_UINT,
+                'default' => 0,
             ),
             'display_order' => array(
                 'type' => self::TYPE_INT,
@@ -141,8 +145,16 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             $this->set('template_for_hooks', $templateForHooks);
         }
 
-        if ($this->get('widget_id') AND !empty($this->_newData['xf_widget'])) {
-            WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this, $this->_newData['xf_widget']);
+        if ($this->isChanged('class')
+            && $this->getExisting('class') === 'WidgetFramework_WidgetGroup'
+        ) {
+            $this->error(new XenForo_Phrase('wf_widget_class_cannot_changed_from_group'), 'class');
+        }
+
+        if ($this->get('class') === 'WidgetFramework_WidgetGroup') {
+            if (!$this->get('active')) {
+                $this->error(new XenForo_Phrase('wf_widget_group_must_be_active'), 'active');
+            }
         }
 
         parent::_preSave();
@@ -163,7 +175,11 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedExistingData(), $this->getWidgetOptions(true));
         }
 
-        parent::_postSave();
+        if ($this->isUpdate()
+            && !empty($this->_newData['xf_widget'])
+        ) {
+            WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this, $this->_newData['xf_widget']);
+        }
     }
 
     protected function _postSaveAfterTransaction()
@@ -181,11 +197,26 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedData(), $this->getWidgetOptions());
         }
 
+        if ($this->get('class') === 'WidgetFramework_WidgetGroup') {
+            // reassign widgets of this group to its parent
+            $widgets = $this->_getWidgetModel()->getWidgets(array('group_id' => $this->get('widget_id')));
+            foreach ($widgets as $widget) {
+                /** @var WidgetFramework_DataWriter_Widget $dw */
+                $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                $dw->setExistingData($widget, true);
+                $dw->set('group_id', $this->get('group_id'));
+                $dw->setExtraData(self::EXTRA_DATA_SKIP_REBUILD, true);
+                $dw->save();
+            }
+        }
+
         $this->_rebuildGlobalCache();
 
         WidgetFramework_Core::clearCachedWidgetById($this->get('widget_id'));
 
         $this->_isDelete = true;
+
+        WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this);
     }
 
     protected function _getUpdateCondition($tableName)

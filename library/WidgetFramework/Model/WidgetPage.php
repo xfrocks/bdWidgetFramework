@@ -56,7 +56,6 @@ class WidgetFramework_Model_WidgetPage extends XenForo_Model
 				", $limitOptions['limit'], $limitOptions['offset']), 'node_id');
 
         foreach ($all as &$widgetPage) {
-            $widgetPage['widgets'] = @unserialize($widgetPage['widgets']);
             $widgetPage['options'] = @unserialize($widgetPage['options']);
         }
 

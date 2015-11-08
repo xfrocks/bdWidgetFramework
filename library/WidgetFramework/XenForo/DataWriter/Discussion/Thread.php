@@ -28,6 +28,7 @@ if (XenForo_Application::$versionId < 1020000) {
         {
             $this->_WidgetFramework_clearCachedWidgets();
 
+            /** @noinspection PhpMethodParametersCountMismatchInspection */
             parent::_discussionPostDelete($messages);
         }
 

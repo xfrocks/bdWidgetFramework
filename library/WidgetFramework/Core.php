@@ -6,11 +6,15 @@ class WidgetFramework_Core
     const PARAM_POSITION_CODE = '_WidgetFramework_positionCode';
     const PARAM_IS_HOOK = '_WidgetFramework_isHook';
     const PARAM_IS_GROUP = '_WidgetFramework_isGroup';
-    const PARAM_GROUP_NAME = '_WidgetFramework_groupName';
-    const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupName';
+    const PARAM_GROUP_ID = '_WidgetFramework_groupId';
+    const PARAM_PARENT_GROUP_ID = '_WidgetFramework_parentGroupId';
     const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
     const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
     const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
+
+    // these two are deprecated, use the _ID constant please
+    const PARAM_GROUP_NAME = '_WidgetFramework_groupId';
+    const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupId';
 
     const NO_VISITOR_PANEL_MARKUP = '<!-- no visitor panel please -->';
     const NO_VISITOR_PANEL_FLAG = 'WidgetFramework_WidgetRenderer_Empty.noVisitorPanel';
@@ -37,53 +41,37 @@ class WidgetFramework_Core
 
     protected function _registerDefaultRenderers(array &$renderers)
     {
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Empty';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_OnlineStaff';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_OnlineUsers';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Stats';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_ShareThisPage';
-
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Users';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Threads';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Poll';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Html';
-
-        /* added 17-04-2011 */
-        $renderers[] = 'WidgetFramework_WidgetRenderer_VisitorPanel';
-
-        // since 1.0.9
-        $renderers[] = 'WidgetFramework_WidgetRenderer_RecentStatus';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_HtmlWithoutWrapper';
-
-        // since 1.0.10
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Callback';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Birthday';
-
-        // since 1.2
-        $renderers[] = 'WidgetFramework_WidgetRenderer_Template';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_TemplateWithoutWrapper';
-
-        //since 1.5
-        $renderers[] = 'WidgetFramework_WidgetRenderer_UsersFind';
-
-        // since 2.1
-        $renderers[] = 'WidgetFramework_WidgetRenderer_FeedReader';
+        $renderers = array(
+            'WidgetFramework_WidgetGroup',
+            'WidgetFramework_WidgetRenderer_Birthday',
+            'WidgetFramework_WidgetRenderer_Callback',
+            'WidgetFramework_WidgetRenderer_CallbackWithoutWrapper',
+            'WidgetFramework_WidgetRenderer_Empty',
+            'WidgetFramework_WidgetRenderer_FacebookFacepile',
+            'WidgetFramework_WidgetRenderer_FeedReader',
+            'WidgetFramework_WidgetRenderer_Html',
+            'WidgetFramework_WidgetRenderer_HtmlWithoutWrapper',
+            'WidgetFramework_WidgetRenderer_OnlineStaff',
+            'WidgetFramework_WidgetRenderer_OnlineUsers',
+            'WidgetFramework_WidgetRenderer_Poll',
+            'WidgetFramework_WidgetRenderer_ProfilePosts',
+            'WidgetFramework_WidgetRenderer_RecentStatus',
+            'WidgetFramework_WidgetRenderer_ShareThisPage',
+            'WidgetFramework_WidgetRenderer_Stats',
+            'WidgetFramework_WidgetRenderer_Template',
+            'WidgetFramework_WidgetRenderer_TemplateWithoutWrapper',
+            'WidgetFramework_WidgetRenderer_Threads',
+            'WidgetFramework_WidgetRenderer_Users',
+            'WidgetFramework_WidgetRenderer_UsersFind',
+            'WidgetFramework_WidgetRenderer_UsersStaff',
+            'WidgetFramework_WidgetRenderer_VisitorPanel',
+        );
 
         // since 2.2
         if (self::xfrmFound()) {
             // XFRM is installed
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFRM_Resources';
         }
-
-        // since 2.4
-        $renderers[] = 'WidgetFramework_WidgetRenderer_UsersStaff';
-        $renderers[] = 'WidgetFramework_WidgetRenderer_FacebookFacepile';
-
-        // since 2.4.2
-        $renderers[] = 'WidgetFramework_WidgetRenderer_CallbackWithoutWrapper';
-
-        // since 2.6
-        $renderers[] = 'WidgetFramework_WidgetRenderer_ProfilePosts';
 
         // since 2.6.0
         if (self::xfmgFound()) {
@@ -138,38 +126,16 @@ class WidgetFramework_Core
     public function addWidgets(array $widgets)
     {
         $this->_widgetCount += count($widgets);
-        $positionsAdded = array();
 
-        foreach ($widgets as &$widget) {
-            if (empty($widget['active'])) {
-                continue;
-            }
+        $added = WidgetFramework_Helper_Sort::addWidgetToPositions($this->_positions, $widgets);
 
-            $widgetPositions = explode(',', $widget['position']);
-            $widget['tab_group'] = (!empty($widget['options']['tab_group']) ? $widget['options']['tab_group'] : '');
+        foreach ($added['positionCodes'] as $positionCode) {
+            $positionRef =& $this->_positions[$positionCode];
+            $positionRef['prepared'] = false;
 
-            foreach ($widgetPositions as $position) {
-                $position = trim($position);
-                if (empty($position)) {
-                    continue;
-                }
-
-                if (!isset($this->_positions[$position])) {
-                    $this->_positions[$position] = array(
-                        'widgets' => array(),
-                        'prepared' => false,
-                    );
-                }
-                $positionsAdded[] = $position;
-
-                $this->_addWidgets_addWidgetToWidgetsByGroup($widget, $this->_positions[$position]['widgets']);
-
-                // get template for hooks data from the widget
-                // merge it to template for hook property of this object
-                // to use it later (prepare widgets in template creation)
-                // since 2.0
-                if (!empty($widget['template_for_hooks'])) {
-                    foreach ($widget['template_for_hooks'] as $hookPositionCode => $templateForHooks) {
+            foreach ($positionRef['widgetsByIds'] as $widgetId => &$widgetRef) {
+                if (!empty($widgetRef['template_for_hooks'])) {
+                    foreach ($widgetRef['template_for_hooks'] as $hookPositionCode => $templateForHooks) {
                         foreach ($templateForHooks as $templateName) {
                             if (!isset($this->_templateForHooks[$templateName])) {
                                 $this->_templateForHooks[$templateName] = array();
@@ -184,83 +150,6 @@ class WidgetFramework_Core
                     }
                 }
             }
-        }
-
-        foreach ($positionsAdded as $position) {
-            uasort($this->_positions[$position]['widgets'], array(
-                'WidgetFramework_Helper_Sort',
-                'widgetGroups'
-            ));
-        }
-    }
-
-    protected function _addWidgets_addWidgetToWidgetsByGroup(array &$newWidget, array &$widgets, $groupPrefix = '')
-    {
-        $group = '';
-
-        if (!empty($newWidget['tab_group'])) {
-            $group = $newWidget['tab_group'];
-
-            foreach ($widgets as &$widgetRef) {
-                if (empty($widgetRef['name']) OR !isset($widgetRef['widgets'])) {
-                    // not a group
-                    continue;
-                }
-
-                if ($group === $widgetRef['name']) {
-                    $widgetRef['widgets'][$newWidget['widget_id']] = &$newWidget;
-
-                    return true;
-                } elseif (strpos($group, $widgetRef['name']) === 0) {
-                    $added = $this->_addWidgets_addWidgetToWidgetsByGroup($newWidget, $widgetRef['widgets'], $widgetRef['name']);
-
-                    if ($added) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        $preparedWidget = array(
-            'widgets' => array(),
-
-            'widget_id' => $newWidget['widget_id'],
-            'position' => $newWidget['position'],
-            'widget_page_id' => $newWidget['widget_page_id'],
-            'tab_group' => $newWidget['tab_group'],
-            'display_order' => $newWidget['display_order'],
-        );
-
-        $groupWithoutPrefix = substr($group, strlen($groupPrefix));
-        $groupWithoutPrefix = trim($groupWithoutPrefix, '/');
-
-        if (empty($groupWithoutPrefix)) {
-            $preparedWidget['name'] = $newWidget['tab_group'];
-            $preparedWidget['widgets'][$newWidget['widget_id']] = $newWidget;
-        } else {
-            $groupPrefixParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($groupPrefix);
-            $groupWithoutPrefixParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($groupWithoutPrefix);
-            $groupPrefixParts[] = array_shift($groupWithoutPrefixParts);
-            $groupPrefixAppended = implode('/', $groupPrefixParts);
-
-            $preparedWidget['name'] = $groupPrefixAppended;
-            $preparedWidget['tab_group'] = $groupPrefixAppended;
-        }
-
-        $nameParts = WidgetFramework_Helper_LayoutEditor::splitGroupParts($preparedWidget['name']);
-        $nameLastPart = array_pop($nameParts);
-        $preparedWidget['isColumns'] = strpos($nameLastPart, 'column') === 0;
-        $preparedWidget['isRows'] = strpos($nameLastPart, 'row') === 0;
-        $preparedWidget['isRandom'] = strpos($nameLastPart, 'random') === 0;
-        $preparedWidget['isTabs'] = (!$preparedWidget['isColumns'] && !$preparedWidget['isRows']
-            && !$preparedWidget['isRandom']);
-
-        $widgets[$newWidget['widget_id']] = $preparedWidget;
-
-        if (!empty($preparedWidget['widgets'])) {
-            return true;
-        } else {
-            return $this->_addWidgets_addWidgetToWidgetsByGroup($newWidget, $widgets, $groupPrefix);
         }
     }
 
@@ -298,64 +187,56 @@ class WidgetFramework_Core
 
     protected function _prepareWidgetsFor($positionCode, array $params, XenForo_Template_Abstract $template)
     {
-        if (isset($this->_positions[$positionCode]) AND !empty($this->_positions[$positionCode]['prepared'])) {
-            // prepared
-            return true;
+        if (isset($this->_positions[$positionCode])) {
+            if (!empty($this->_positions[$positionCode]['prepared'])) {
+                // prepared
+                return true;
+            }
+        } else {
+            $this->_positions[$positionCode] = array();
         }
 
-        if (substr($positionCode, 0, 5) !== 'hook:' AND !empty($this->_positions['all']['widgets'])) {
+        $positionRef = &$this->_positions[$positionCode];
+        $positionRef['prepared'] = true;
+
+        if (substr($positionCode, 0, 5) !== 'hook:'
+            && !empty($this->_positions['all']['widgets'])
+        ) {
             // only append `all` widgets for template position code
-            $allWidgets = array();
+            $widgetsFromAll = array();
 
-            foreach ($this->_positions['all']['widgets'] as $allWidgetGroup) {
-                foreach ($allWidgetGroup['widgets'] as $allWidget) {
-                    $found = false;
-
-                    if (!empty($this->_positions[$positionCode]['widgets'])) {
-                        $widgetsContainsWidgetId = $this->_getModelWidget()->getWidgetsContainsWidgetId($this->_positions[$positionCode]['widgets'], $allWidget['widget_id']);
-                        $found = !empty($widgetsContainsWidgetId);
-                    }
-
-                    if (!$found) {
-                        // avoid having duplicated widget in the same position
-                        // TODO: alter widget_id?
-                        $allWidget['position'] = $positionCode;
-                        $allWidgets[$allWidget['widget_id']] = $allWidget;
-                    }
-                }
+            foreach ($this->_positions['all']['widgets'] as $_widget) {
+                $this->_prepareWidgetsFor_prepareWidgetsFromAll($widgetsFromAll, $_widget);
             }
 
-            $this->addWidgets($allWidgets);
+            $this->addWidgets($widgetsFromAll);
         }
 
-        if (!isset($this->_positions[$positionCode])) {
-            // still no position data at this point?
-            // stop working
+        if (!empty($positionRef['widgets'])) {
+            $widgetParams = $this->_prepareWidgetParams($params);
 
-            return false;
+            foreach ($positionRef['widgets'] as &$widgetRef) {
+                $renderer = self::getRenderer($widgetRef['class'], false);
+                if ($renderer) {
+                    $renderer->prepare($widgetRef, $positionCode, $widgetParams, $template);
+                }
+            }
         }
-        $position = &$this->_positions[$positionCode];
-
-        $widgetParams = $this->_prepareWidgetParams($params);
-        $this->_prepareWidgetsFor_prepareWidgets($position['widgets'], $positionCode, $widgetParams, $template);
-
-        $position['prepared'] = true;
 
         return true;
     }
 
-    protected function _prepareWidgetsFor_prepareWidgets(array &$widgets, $positionCode, array $widgetParams, XenForo_Template_Abstract $template)
+    protected function _prepareWidgetsFor_prepareWidgetsFromAll(array &$preparedRef, array $_widget)
     {
-        foreach ($widgets as &$widget) {
-            if (isset($widget['widgets'])) {
-                // this is a group
-                $this->_prepareWidgetsFor_prepareWidgets($widget['widgets'], $positionCode, $widgetParams, $template);
-            } else {
-                // this is a widget
-                $renderer = self::getRenderer($widget['class'], false);
-                if ($renderer) {
-                    $renderer->prepare($widget, $positionCode, $widgetParams, $template);
-                }
+        if (isset($preparedRef[$_widget['widget_id']])) {
+            return;
+        }
+
+        $preparedRef[$_widget['widget_id']] = $_widget;
+
+        if (!empty($_widget['widgets'])) {
+            foreach ($_widget['widgets'] as $subWidget) {
+                $this->_prepareWidgetsFor_prepareWidgetsFromAll($preparedRef, $subWidget);
             }
         }
     }
@@ -364,12 +245,22 @@ class WidgetFramework_Core
     {
         if (isset($params[self::PARAM_TEMPLATE_OBJECTS])) {
             // this is params array from page container
-            if (isset($params['contentTemplate']) AND isset($params[self::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']])) {
+            if (isset($params['contentTemplate'])
+                && isset($params[self::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']])
+            ) {
                 // found content template params, merge it
                 /** @var XenForo_Template_Abstract $templateObj */
                 $templateObj = $params[self::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']];
                 $params = array_merge($templateObj->getParams(), $params);
             }
+        }
+
+        if (!empty($params[self::PARAM_IS_HOOK])) {
+            $params['_classSection'] = 'section sectionMain widget-container act-as-sidebar sidebar';
+            $params['_classInnerSection'] = 'widget hook-widget';
+        } else {
+            $params['_classSection'] = 'section';
+            $params['_classInnerSection'] = 'secondaryContent widget sidebar-widget';
         }
 
         return $params;
@@ -383,7 +274,8 @@ class WidgetFramework_Core
 
         $originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
 
-        $html = $this->_renderWidgetsFor($templateName, array_merge($params, array(self::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
+        $html = $this->_renderWidgetsFor($templateName,
+            array_merge($params, array(self::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
 
         if (defined(self::NO_VISITOR_PANEL_FLAG)) {
             // the flag is used to avoid string searching as much as possible
@@ -396,11 +288,15 @@ class WidgetFramework_Core
             }
         }
 
-        if ($html != $originalHtml) {
+        if ($html !== $originalHtml) {
             $containerData['sidebar'] = utf8_trim($html);
 
-            if (!empty($containerData['sidebar']) AND self::debugMode()) {
-                $containerData['sidebar'] .= sprintf('<div>Widget Framework is in debug mode<br/>Renderers: %d<br/>Widgets: %d<br/></div>', count($this->_renderers), $this->_widgetCount);
+            if (!empty($containerData['sidebar'])
+                && self::debugMode()
+            ) {
+                $containerData['sidebar'] .= sprintf('<div>Widget Framework is in debug mode<br/>'
+                    . 'Renderers: %d<br/>Widgets: %d<br/></div>',
+                    count($this->_renderers), $this->_widgetCount);
             }
         }
 
@@ -435,11 +331,14 @@ class WidgetFramework_Core
             }
             $renderedPositions[$positionCode] = true;
 
-            $areaSaveParams = array('position' => $positionCode);
+            $saveParams = array(
+                'position' => $positionCode,
+                'group_id' => 0,
+            );
             if (!empty($params[self::PARAM_IS_HOOK])) {
                 // hook position, only render for some hooks
                 if ($positionCode === 'hook:wf_widget_page_contents') {
-                    $areaSaveParams['widget_page_id'] = $params['widgetPage']['node_id'];
+                    $saveParams['widget_page_id'] = $params['widgetPage']['node_id'];
                     $renderArea = true;
                 } elseif (in_array($positionCode, array(
                     'hook:ad_above_content',
@@ -455,36 +354,33 @@ class WidgetFramework_Core
                 // page position, always render for sidebar
                 $renderArea = true;
                 if ($positionCode == 'wf_widget_page') {
-                    $areaSaveParams['widget_page_id'] = $params['widgetPage']['node_id'];
+                    $saveParams['widget_page_id'] = $params['widgetPage']['node_id'];
                 }
             }
         }
 
-        if (!isset($this->_positions[$positionCode])) {
+        if (empty($this->_positions[$positionCode]['widgets'])) {
             if ($renderArea) {
-                $position = array(
-                    'widgets' => array(),
-                    'prepared' => true,
-                );
+                $this->_positions[$positionCode]['widgets'] = array();
+                $this->_positions[$positionCode]['prepared'] = true;
             } else {
                 // stop rendering if no widget configured for this position
                 return $html;
             }
         } else {
-            $position = &$this->_positions[$positionCode];
-
             if (WidgetFramework_Option::get('layoutEditorEnabled')) {
                 $renderArea = true;
             }
-
             $renderSimpleArea = false;
         }
 
-        if (empty($position['prepared'])) {
+        $positionRef = &$this->_positions[$positionCode];
+        if (empty($positionRef['prepared'])) {
             // stop rendering if not prepared
             return $html;
         }
 
+        $html = trim($html);
         if ($renderArea && !$renderSimpleArea && !empty($html)) {
             $html = WidgetFramework_Helper_String::createArrayOfStrings(array(
                 '<div title="',
@@ -496,19 +392,21 @@ class WidgetFramework_Core
         }
 
         $widgetParams = $this->_prepareWidgetParams($params);
-        $this->_renderWidgetsFor_renderWidgetsContainer($position, $positionCode, $widgetParams, $template, $html);
+        $this->renderWidgets($positionRef['widgets'], $positionCode, $widgetParams, $template, $html);
 
         if ($renderArea) {
             $conditionalParams = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($widgetParams);
-            if (!empty($areaSaveParams['widget_page_id']) AND !empty($conditionalParams['widgetPage'])) {
+            if (!empty($saveParams['widget_page_id'])
+                && !empty($conditionalParams['widgetPage'])
+            ) {
                 unset($conditionalParams['widgetPage']);
             }
 
             $areaParams = array(
-                'positionCode' => $positionCode,
-                'conditionalParams' => $conditionalParams,
-                'areaSaveParams' => $areaSaveParams,
-                'contents' => $html,
+                '_areaPositionCode' => $positionCode,
+                '_areaConditionalParams' => $conditionalParams,
+                '_areaSaveParams' => $saveParams,
+                '_areaHtml' => $html,
             );
 
             $areaTemplate = ($renderSimpleArea ? 'wf_layout_editor_area_simple' : 'wf_layout_editor_area');
@@ -519,162 +417,63 @@ class WidgetFramework_Core
         return $html;
     }
 
-    protected function _renderWidgetsFor_renderWidgetsContainer(array &$widgetsContainer, $positionCode, array $widgetParams, XenForo_Template_Abstract $template, &$html)
+    public function renderWidgets(array &$widgetsRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$html)
     {
-        foreach ($widgetsContainer['widgets'] as &$widgetElement) {
-            $rendered = array();
+        foreach ($widgetsRef as &$widgetRef) {
+            $widgetRef['_runtime']['html'] = $this->renderWidget($widgetRef, $positionCode, $params, $template, $html);
 
-            if (empty($widgetElement['keys'])) {
-                if (!empty($widgetElement['widgets'])) {
-                    // the element is a group
-                    $widgetElement['keys'] = array_keys($widgetElement['widgets']);
-                } elseif (!empty($widgetElement['widget_id'])) {
-                    // the widget element is a widget
-                    $widgetElement['keys'] = array($widgetElement['widget_id']);
-                }
-
-                if (!WidgetFramework_Option::get('layoutEditorEnabled') && $widgetElement['isRandom']) {
-                    $randKey = array_rand($widgetElement['keys']);
-                    $widgetElement['keys'] = array($widgetElement['keys'][$randKey]);
-                }
+            $wrapperTemplateName = '';
+            if (WidgetFramework_Option::get('layoutEditorEnabled')
+                && $widgetRef['class'] !== 'WidgetFramework_WidgetGroup'
+            ) {
+                $wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
+                $params['_conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
+            } elseif (!empty($widgetRef['_runtime']['useWrapper'])) {
+                $wrapperTemplateName = 'wf_widget_wrapper';
             }
 
-            $widgetElementName = $widgetElement['name'];
-            if (empty($widgetElementName)) {
-                $widgetElementName = 'widgets-' . substr(md5(implode(',', $widgetElement['keys'])), 0, 5);
+            if ($wrapperTemplateName !== '') {
+                $wrapperTemplate = $template->create($wrapperTemplateName, $params);
+                $wrapperTemplate->setParam('widget', $widgetRef);
+
+                $widgetHtml = $wrapperTemplate;
+            } else {
+                $widgetHtml = $widgetRef['_runtime']['html'];
             }
 
-            foreach ($widgetElement['keys'] as $key) {
-                if (isset($widgetElement['widgets'][$key])) {
-                    $widget = &$widgetElement['widgets'][$key];
-                } elseif (!empty($widgetElement['widget_id']) AND $widgetElement['widget_id'] == $key) {
-                    $widget = &$widgetElement;
-                }
-                $widgetHtml = '';
-                $widgetAjaxLoadUrl = null;
-                $renderer = null;
-
-                if (!empty($widget['widgets'])) {
-                    // the sub-element is a group
-                    // we do not pass the $html itself but we use $widgetHtml instead
-                    // that means Empty renderer will not work if it is a member a group
-                    $subWidgetsContainer = array('widgets' => array($key => &$widget));
-                    $subWidgetParams = $widgetParams;
-                    $subWidgetParams[self::PARAM_PARENT_GROUP_NAME] = $widgetElementName;
-                    $this->_renderWidgetsFor_renderWidgetsContainer($subWidgetsContainer, $positionCode, $subWidgetParams, $template, $widgetHtml);
-                } elseif (!empty($widget['class'])) {
-                    $renderer = self::getRenderer($widget['class'], false);
-
-                    if (!empty($renderer)) {
-                        if (!WidgetFramework_Option::get('layoutEditorEnabled')
-                            && count($rendered) > 0
-                            && $widgetElement['isTabs']
-                            && $renderer->canAjaxLoad($widget)
-                        ) {
-                            $widgetAjaxLoadUrl = $renderer->getAjaxLoadUrl($widget, $positionCode, $widgetParams, $template);
-                            $widgetHtml = $widgetAjaxLoadUrl;
-                        } else {
-                            $widgetHtml = strval($renderer->render($widget, $positionCode, $widgetParams, $template, $html));
-
-                            // extra-preparation (this will be run every time the widget is ready to display)
-                            // this method can change the final html in some way if it needs to do that
-                            // the changed html won't be store in the cache (caching is processed inside
-                            // WidgetFramework_Renderer::render())
-                            $widget['extraData'] = $renderer->extraPrepare($widget, $widgetHtml);
-                        }
-                    } elseif (WidgetFramework_Option::get('layoutEditorEnabled')) {
-                        $widgetHtml = new XenForo_Phrase('wf_layout_editor_widget_no_renderer');
-                    }
-                }
-
-                if (!empty($widgetHtml) OR WidgetFramework_Option::get('layoutEditorEnabled')) {
-                    $rendered[$key] = array_merge($widget, array(
-                        'html' => $widgetHtml,
-                        'ajaxLoadUrl' => $widgetAjaxLoadUrl,
-                        'positionCode' => $positionCode,
-
-                        self::PARAM_IS_HOOK => !empty($params[self::PARAM_IS_HOOK]),
-                        self::PARAM_IS_GROUP => !empty($widget['widgets']),
-                    ));
-
-                    if (!empty($renderer)) {
-                        $rendered[$key]['useWrapper'] = $renderer->useWrapper($widget);
-                        $rendered[$key]['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget);
-                    }
-                }
-            }
-
-            if (count($rendered) > 0) {
-                $wrapped = $this->_wrapWidgets($rendered, $widgetParams, $template, $widgetElement);
-
-                if (empty($html)) {
-                    $html = $wrapped;
-                } elseif ($widgetElement['display_order'] >= 0) {
-                    $html = WidgetFramework_Helper_String::createArrayOfStrings(array(
-                        $html,
-                        $wrapped
-                    ));
-                } else {
-                    $html = WidgetFramework_Helper_String::createArrayOfStrings(array(
-                        $wrapped,
-                        $html
-                    ));
-                }
+            if (empty($html)) {
+                $html = $widgetHtml;
+            } elseif ($widgetRef['display_order'] >= 0) {
+                $html = WidgetFramework_Helper_String::createArrayOfStrings(array($html, $widgetHtml));
+            } else {
+                $html = WidgetFramework_Helper_String::createArrayOfStrings(array($widgetHtml, $html));
             }
         }
     }
 
-    protected function _wrapWidgets(array $tabs, array $wrapperParams, XenForo_Template_Abstract $template, array $widgetElement)
+    public function renderWidget(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$html)
     {
-        $wrapperParams['tabs'] = $tabs;
-        $wrapperParams[self::PARAM_GROUP_NAME] = '';
-        if (!empty($widgetElement['name'])) {
-            $wrapperParams[self::PARAM_GROUP_NAME] = $widgetElement['name'];
-        }
-        $wrapperParams['groupId'] = $wrapperParams[self::PARAM_GROUP_NAME];
+        $widgetHtml = '';
+        $renderer = self::getRenderer($widgetRef['class'], false);
 
-        $wrapperParams['normalizedGroupId'] = WidgetFramework_Helper_String::normalizeHtmlElementId($wrapperParams[self::PARAM_GROUP_NAME]);
-        if (empty($wrapperParams['normalizedGroupId'])) {
-            $wrapperParams['normalizedGroupId'] = md5(implode(array_keys($tabs)));
-        }
+        if (!empty($renderer)) {
+            $widgetHtml = $renderer->render($widgetRef, $positionCode, $params, $template, $html);
+            $widgetRef['_runtime']['useWrapper'] = $renderer->useWrapper($widgetRef);
+            $widgetRef['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widgetRef);
 
-        $wrapperParams['firstTab'] = reset($tabs);
-        $wrapperParams['isColumns'] = $widgetElement['isColumns'];
-        $wrapperParams['isRows'] = $widgetElement['isRows'];
-        $wrapperParams['isRandom'] = $widgetElement['isRandom'];
-        $wrapperParams['isTabs'] = $widgetElement['isTabs'];
-
-        $wrapperTemplateName = 'wf_widget_wrapper';
-
-        if (WidgetFramework_Option::get('layoutEditorEnabled')) {
-            $wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
-
-            $wrapperParams['groupSaveParams'] = array(
-                'position_widget' => $wrapperParams['firstTab']['widget_id'],
-                'position' => $wrapperParams['firstTab']['position'],
-            );
-            if (!empty($wrapperParams[self::PARAM_GROUP_NAME])) {
-                $wrapperParams['groupSaveParams']['group'] = $wrapperParams[self::PARAM_GROUP_NAME];
-            }
-
-            $wrapperParams['conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($wrapperParams);
-            if (!empty($firstTab['widget_page_id']) AND !empty($wrapperParams['conditionalParams']['widgetPage'])) {
-                $wrapperParams['groupSaveParams']['widget_page_id'] = $firstTab['widget_page_id'];
-                unset($wrapperParams['conditionalParams']['widgetPage']);
-            }
-
-            $wrapperParams['groupParentGroupNameNormalized'] = '';
-            if (!empty($wrapperParams[self::PARAM_PARENT_GROUP_NAME])) {
-                $wrapperParams['groupParentGroupNameNormalized'] = WidgetFramework_Helper_String::normalizeHtmlElementId($wrapperParams[self::PARAM_PARENT_GROUP_NAME]);
-            }
+            // extra-preparation (this will be run every time the widget is ready to display)
+            // this method can change the final html in some way if it needs to do that
+            // the changed html won't be store in the cache (caching is processed inside
+            // WidgetFramework_Renderer::render())
+            $widgetRef['_runtime']['extraData'] = $renderer->extraPrepare($widgetRef, $widgetHtml);
+        } elseif (WidgetFramework_Option::get('layoutEditorEnabled')) {
+            $widgetHtml = new XenForo_Phrase('wf_layout_editor_widget_no_renderer');
         }
 
-        $wrapperTemplateObj = $template->create($wrapperTemplateName, $wrapperParams);
-
-        return $wrapperTemplateObj;
+        return $widgetHtml;
     }
 
-    public function getWidgetGroupsByPosition($positionCode)
+    public function getWidgetsAtPosition($positionCode)
     {
         if (!isset($this->_positions[$positionCode])) {
             return array();

@@ -23,7 +23,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
                 return $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404);
             }
 
-            $widgets = $this->_getWidgetModel()->getWidgetPageWidgets($widgetPage['node_id']);
+            $widgets = $this->_getWidgetModel()->getPageWidgets($widgetPage['node_id']);
         } else {
             // add a new page
             $widgetPage = array(

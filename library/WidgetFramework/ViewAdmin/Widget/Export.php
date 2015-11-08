@@ -16,6 +16,7 @@ class WidgetFramework_ViewAdmin_Widget_Export extends XenForo_ViewAdmin_Base
 
         foreach ($widgets as $widget) {
             $widgetNode = $document->createElement('widget');
+            $widgetNode->setAttribute('widget_id', $widget['widget_id']);
             $widgetNode->setAttribute('title', $widget['title']);
             $widgetNode->setAttribute('class', $widget['class']);
 
@@ -29,6 +30,7 @@ class WidgetFramework_ViewAdmin_Widget_Export extends XenForo_ViewAdmin_Base
             $widgetNode->appendChild($optionsNode);
 
             $widgetNode->setAttribute('position', $widget['position']);
+            $widgetNode->setAttribute('group_id', $widget['group_id']);
             $widgetNode->setAttribute('display_order', $widget['display_order']);
             $widgetNode->setAttribute('active', $widget['active']);
 

@@ -49,12 +49,10 @@ class _Layout_Vertical extends _Layout_Multiple
     protected function _doLayout_finishedGroup($groupIdsOrdered)
     {
         if (count($groupIdsOrdered) > 1) {
-            $tabGroup = 'column-' . substr(md5(implode('-', $this->_widgetIds)), 0, 5);
-            if (empty($this->_options['tab_group'])) {
-                $this->_options['tab_group'] = $tabGroup;
-            } else {
-                $this->_options['tab_group'] .= '/' . $tabGroup;
-            }
+            $firstWidget = reset($this->_widgets);
+            $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget);
+
+            $this->_options['group_id'] = $groupWidget['widget_id'];
         }
     }
 
@@ -84,11 +82,10 @@ class _Layout_Horizontal extends _Layout_Multiple
 {
     protected function _doLayout_finishedGroup($groupIdsOrdered)
     {
-        if (count($groupIdsOrdered) > 1) {
-            if (!empty($this->_options['tab_group'])) {
-                $this->_options['tab_group'] .= '/' . 'row-' . substr(md5(implode('-', $this->_widgetIds)), 0, 5);
-            }
-        }
+        $firstWidget = reset($this->_widgets);
+        $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget);
+
+        $this->_options['group_id'] = $groupWidget['widget_id'];
     }
 
     protected function _getFieldIndex()
@@ -235,6 +232,14 @@ abstract class _Layout_Multiple
         }
     }
 
+    /**
+     * @return WidgetFramework_Model_Widget
+     */
+    protected function _getWidgetModel()
+    {
+        return WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Widget');
+    }
+
     abstract protected function _getFieldIndex();
 
     abstract protected function _getFieldSize();
@@ -255,15 +260,12 @@ class _Layout_Single
         $this->_options = $options;
 
         $widget['position'] = $options['position'];
+        $widget['group_id'] = $options['group_id'];
         $widget['template_for_hooks'] = array(
             $options['position'] => array(
                 'wf_widget_page',
             ),
         );
-
-        if (!empty($options['tab_group'])) {
-            $widget['options']['tab_group'] = $options['tab_group'];
-        }
     }
 
 }

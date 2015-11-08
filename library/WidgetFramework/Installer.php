@@ -8,27 +8,27 @@ class WidgetFramework_Installer
     protected static $_tables = array(
         'widget_page' => array(
             'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widgetframework_widget_page` (
-				`node_id` INT(10) UNSIGNED NOT NULL
-				,`widgets` MEDIUMBLOB
-				,`options` MEDIUMBLOB
-				, PRIMARY KEY (`node_id`)
-				
-			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
+                `node_id` INT(10) UNSIGNED NOT NULL
+                ,`options` MEDIUMBLOB
+                , PRIMARY KEY (`node_id`)
+                
+            ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
             'dropQuery' => 'DROP TABLE IF EXISTS `xf_widgetframework_widget_page`',
         ),
         'xf_widget' => array(
             'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widget` (
-				`widget_id` INT(10) UNSIGNED AUTO_INCREMENT
-				,`title` TEXT
-				,`class` TEXT NOT NULL
-				,`position` TEXT
-				,`display_order` INT(11) NOT NULL DEFAULT \'0\'
-				,`active` INT(10) UNSIGNED NOT NULL DEFAULT \'1\'
-				,`options` MEDIUMBLOB
-				,`template_for_hooks` MEDIUMBLOB
-				, PRIMARY KEY (`widget_id`)
-				
-			) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
+                `widget_id` INT(10) UNSIGNED AUTO_INCREMENT
+                ,`title` TEXT
+                ,`class` TEXT NOT NULL
+                ,`position` TEXT
+                ,`group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'
+                ,`display_order` INT(11) NOT NULL DEFAULT \'0\'
+                ,`active` INT(10) UNSIGNED NOT NULL DEFAULT \'1\'
+                ,`options` MEDIUMBLOB
+                ,`template_for_hooks` MEDIUMBLOB
+                , PRIMARY KEY (`widget_id`)
+                
+            ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
             'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`',
         ),
     );
@@ -48,6 +48,14 @@ class WidgetFramework_Installer
             'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
             'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
             'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
+        ),
+        array(
+            'table' => 'xf_widget',
+            'field' => 'group_id',
+            'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
+            'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'group_id\'',
+            'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `group_id`',
         ),
     );
 
@@ -99,7 +107,10 @@ class WidgetFramework_Installer
 
     /* End auto-generated lines of code. Feel free to make changes below */
 
-    public static function installCustomized($existingAddOn, $addOnData)
+    public static function installCustomized(
+        /** @noinspection PhpUnusedParameterInspection */
+        $existingAddOn,
+        $addOnData)
     {
         $db = XenForo_Application::getDb();
 
@@ -192,10 +203,17 @@ class WidgetFramework_Installer
             $db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `class` TEXT NOT NULL");
         }
 
-        if ($effectiveVersionId > 0 AND $effectiveVersionId <= 102) {
-            // update widget within widget pages to use group/display order instead of layout
-            // row/column
-            self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
+        if ($effectiveVersionId > 0) {
+            if ($effectiveVersionId <= 102) {
+                // update widget within widget pages to use group/display order
+                // instead of layout row/column
+                self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
+            }
+
+            if ($effectiveVersionId <= 112) {
+                // update widget tab_group option to use group_id instead
+                self::_updateWidgetGroupIds();
+            }
         }
     }
 
@@ -205,7 +223,8 @@ class WidgetFramework_Installer
 
         $db->query("DROP TABLE IF EXISTS `xf_widget`");
         $db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
-        $db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE '" . WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . "%'");
+        $db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE ?",
+            WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . '%');
         $db->query("DELETE FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
         $db->query("DELETE FROM `xf_node` WHERE `node_type_id` = 'WF_WidgetPage'");
 
@@ -226,7 +245,7 @@ class WidgetFramework_Installer
         $widgetPages = $widgetPageModel->getWidgetPages();
 
         foreach ($widgetPages as $widgetPage) {
-            $widgets = $widgetModel->getWidgetPageWidgets($widgetPage['node_id'], false);
+            $widgets = $widgetModel->getPageWidgets($widgetPage['node_id'], false);
 
             foreach (array_keys($widgets) as $widgetId) {
                 if ($widgets[$widgetId]['position'] == 'sidebar') {
@@ -256,19 +275,20 @@ class WidgetFramework_Installer
                     $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                     $widgetDw->setImportMode(true);
                     $widgetDw->setExistingData($widgets[$widgetId], true);
-                    $widgetDw->set('position', $widgetsCloned[$widgetId]['position'], '', array(
+                    $widgetDw->bulkSet($widgetsCloned[$widgetId], array(
                         'runVerificationCallback' => false,
                     ));
-                    $widgetDw->set('template_for_hooks', $widgetsCloned[$widgetId]['template_for_hooks']);
-                    $widgetDw->set('display_order', $widgetsCloned[$widgetId]['display_order']);
-                    $widgetDw->set('options', $widgetsCloned[$widgetId]['options']);
-
                     $widgetDw->save();
                 }
             }
         }
 
         $widgetModel->buildCache();
+    }
+
+    protected static function _updateWidgetGroupIds()
+    {
+        // TODO
     }
 
 }

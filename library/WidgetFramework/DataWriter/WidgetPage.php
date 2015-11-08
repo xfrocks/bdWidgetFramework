@@ -16,7 +16,6 @@ class WidgetFramework_DataWriter_WidgetPage extends XenForo_DataWriter_Node
                     ),
                     'required' => true
                 ),
-                'widgets' => array('type' => self::TYPE_SERIALIZED),
                 'options' => array('type' => self::TYPE_SERIALIZED),
             ));
 
@@ -51,7 +50,7 @@ class WidgetFramework_DataWriter_WidgetPage extends XenForo_DataWriter_Node
 
     protected function _deleteWidgets()
     {
-        $widgets = $this->_getWidgetModel();
+        $widgets = $this->_getWidgetModel()->getPageWidgets($this->get('node_id'));
         foreach ($widgets as $widget) {
             /* @var $dw WidgetFramework_DataWriter_Widget */
             $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');

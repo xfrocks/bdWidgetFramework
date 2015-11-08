@@ -2,6 +2,11 @@
 
 class WidgetFramework_Helper_String
 {
+    public static function splitPositionCodes($position)
+    {
+        return preg_split('#[,\s]#i', $position, -1, PREG_SPLIT_NO_EMPTY);
+    }
+
     public static function createArrayOfStrings(array $strings, $glue = '')
     {
         return new _WidgetFramework_ArrayOfString($glue, $strings);

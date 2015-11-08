@@ -26,78 +26,78 @@ class WidgetFramework_DataWriter_Helper_Widget
         }
     }
 
-    public static function verifyPosition(&$positions, XenForo_DataWriter $dw, $fieldName = false)
+    public static function verifyPosition(&$position, XenForo_DataWriter $dw, $fieldName = false)
     {
-        $positions = trim($positions);
+        $position = trim($position);
 
-        if (empty($positions)) {
+        if (empty($position)) {
             $dw->error(new XenForo_Phrase('wf_position_can_not_be_empty'), $fieldName);
         }
 
-        if ('all' == $positions) {
+        if ('all' == $position) {
             return true;
         }
 
         /** @var XenForo_Model_Template $templateModel */
         $templateModel = $dw->getModelFromCache('XenForo_Model_Template');
         $db = XenForo_Application::getDb();
-        $positionsArray = explode(',', $positions);
-        $positionsGood = array();
+        $positionCodes = WidgetFramework_Helper_String::splitPositionCodes($position);
+        $verifiedPositionCodes = array();
         $templateForHooks = array();
 
-        foreach ($positionsArray as $position) {
-            $position = trim($position);
-            if (empty($position)) {
+        foreach ($positionCodes as $positionCode) {
+            $positionCode = trim($positionCode);
+            if (empty($positionCode)) {
                 continue;
             }
 
-            if (in_array($position, array(
+            if (in_array($positionCode, array(
                     'wf_widget_page',
                     'hook:wf_widget_page_contents'
                 ), true) AND !$dw->get('widget_page_id')
             ) {
-                $dw->error(new XenForo_Phrase('wf_position_x_requires_widget_page', array('position' => $position)), $fieldName);
+                $dw->error(new XenForo_Phrase('wf_position_x_requires_widget_page', array('position' => $positionCode)), $fieldName);
                 return false;
             }
 
-            if (in_array($position, array(
+            if (in_array($positionCode, array(
                 'wf_widget_ajax',
             ), true)) {
-                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
+                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $positionCode)), $fieldName);
                 return false;
             }
 
             // sondh@2012-08-25
             // added support for hook:hook_name
-            if (substr($position, 0, 5) == 'hook:') {
+            if (substr($positionCode, 0, 5) == 'hook:') {
                 // accept all kind of hooks, just need to get parent templates for them
                 $templates = $db->fetchAll("
 					SELECT title
 					FROM `xf_template_compiled`
-					WHERE template_compiled LIKE " . XenForo_Db::quoteLike('callTemplateHook(\'' . substr($position, 5) . '\',', 'lr') . "
+					WHERE template_compiled LIKE " . XenForo_Db::quoteLike('callTemplateHook(\'' . substr($positionCode, 5) . '\',', 'lr') . "
 				");
 
                 if (count($templates) > 0) {
-                    $templateForHooks[$position] = array();
+                    $templateForHooks[$positionCode] = array();
                     foreach ($templates as $template) {
-                        $templateForHooks[$position][] = $template['title'];
+                        $templateForHooks[$positionCode][] = $template['title'];
                     }
-                    $templateForHooks[$position] = array_unique($templateForHooks[$position]);
+                    $templateForHooks[$positionCode] = array_unique($templateForHooks[$positionCode]);
                 } else {
-                    $dw->error(new XenForo_Phrase('wf_non_existent_hook_x', array('hook' => substr($position, 5))), $fieldName);
+                    $dw->error(new XenForo_Phrase('wf_non_existent_hook_x', array('hook' => substr($positionCode, 5))), $fieldName);
                     return false;
                 }
-            } elseif (!$templateModel->getTemplateInStyleByTitle($position)) {
-                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $position)), $fieldName);
+            } elseif (!$templateModel->getTemplateInStyleByTitle($positionCode)) {
+                $dw->error(new XenForo_Phrase('wf_invalid_position_x', array('position' => $positionCode)), $fieldName);
                 return false;
             }
 
-            $positionsGood[] = $position;
+            $verifiedPositionCodes[] = $positionCode;
         }
 
         $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_TEMPLATE_FOR_HOOKS, $templateForHooks);
-        asort($positionsGood);
-        $positions = implode(', ', $positionsGood);
+        asort($verifiedPositionCodes);
+        $position = implode(', ', $verifiedPositionCodes);
 
         return true;
     }

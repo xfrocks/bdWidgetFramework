@@ -125,14 +125,16 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
         }
 
         if (!empty($thread)) {
-            if (XenForo_Application::$versionId > 1040000) {
-                // XenForo 1.4.0+ has some major changes regarding polls
+            if (XenForo_Application::$versionId < 1040000) {
+                /** @noinspection PhpParamsInspection */
+                $canVoteOnPoll = $threadModel->canVoteOnPoll($thread, $thread);
+                $poll = $pollModel->preparePoll($thread, $canVoteOnPoll);
+            } else {
                 $poll = $pollModel->getPollByContent('thread', $thread['thread_id']);
                 if (!empty($poll)) {
-                    $poll = $pollModel->preparePoll($poll, $threadModel->canVoteOnPoll($poll, $thread, $thread));
+                    $canVoteOnPoll = $threadModel->canVoteOnPoll($poll, $thread, $thread);
+                    $poll = $pollModel->preparePoll($poll, $canVoteOnPoll);
                 }
-            } else {
-                $poll = $pollModel->preparePoll($thread, $threadModel->canVoteOnPoll($thread, $thread));
             }
         }
 
