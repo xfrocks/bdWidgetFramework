@@ -1,10 +1,11 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2015-10-16T05:52:19+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2015-11-07T14:48:29+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_TempFile
- * @version 1
+ * @version 2
+ * @see DevHelper_Helper_ShippableHelper_TempFile
  */
 class WidgetFramework_ShippableHelper_TempFile
 {
