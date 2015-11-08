@@ -228,8 +228,19 @@
     <template title="wf_widget_import"><![CDATA[<xen:title>{xen:phrase wf_import_widgets}</xen:title>
 
 <xen:form action="{xen:adminlink 'widgets/import'}" upload="true">
+
 	<xen:uploadunit label="{xen:phrase wf_import_from_uploaded_file}:" name="upload_file" />
 	<xen:textboxunit label="{xen:phrase wf_import_from_file_on_server}:" name="server_file" />
+
+	<xen:if is="{$widgetPages}">
+	<xen:selectunit label="{xen:phrase wf_widget_page}:" name="widget_page_id">
+		<xen:explain>{xen:phrase wf_import_into_widget_page_explain}</xen:explain>
+		<xen:option value="0"></xen:option>
+		<xen:foreach loop="$widgetPages" value="$widgetPage">
+		<xen:option value="{$widgetPage.node_id}">{$widgetPage.title}</xen:option>
+		</xen:foreach>
+	</xen:selectunit>
+	</xen:if>
 
 	<xen:checkboxunit label="" explain="{xen:phrase wf_delete_all_before_import_explain}">
 		<xen:option name="delete_all" value="1">{xen:phrase wf_delete_all_before_import}</xen:option>
@@ -636,6 +647,7 @@
 	</xen:navigation>
 	
 	<xen:topctrl>
+		<a href="{xen:adminlink widgets/export, '', 'widget_page_id={$widgetPage.node_id}'}" class="button">{xen:phrase wf_export_widgets}</a>
 		<a href="{xen:adminlink widgets/add, '',
 			'widget_page_id={$widgetPage.node_id}',
 			'position=hook:wf_widget_page_contents'}" class="button" accesskey="a">+ {xen:phrase wf_add_contents_widget}</a>
@@ -1015,6 +1027,7 @@ Arguments:
     <phrase title="wf_home_navtab" global_cache="1" version_id="78" version_string="2.4.5c"><![CDATA[Home]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_from_uploaded_file" version_id="96" version_string="2.5.0d"><![CDATA[Import from uploaded file]]></phrase>
+    <phrase title="wf_import_into_widget_page_explain" version_id="112" version_string="2.6.0-dev"><![CDATA[Choose a widget page to import widgets into. Otherwise widgets will be imported as global ones.]]></phrase>
     <phrase title="wf_import_widgets" version_id="24" version_string="1.2.2.2"><![CDATA[Import Widgets]]></phrase>
     <phrase title="wf_include_thread_is_new" version_id="96" version_string="2.5.0d"><![CDATA[Include $thread.isNew information if thread is unread (this will disable caching)]]></phrase>
     <phrase title="wf_invalid_position_x" version_id="37" version_string="1.5.4"><![CDATA[Invalid position specified: {position}. The position must be one of three types: "all", "template_name" or "hook:hook_name".]]></phrase>
@@ -1055,7 +1068,9 @@ Arguments:
     <phrase title="wf_position_x_requires_widget_page" version_id="100" version_string="2.5.0d"><![CDATA[Position {position} cannot be used manually.]]></phrase>
     <phrase title="wf_posted_by_lowercase" version_id="44" version_string="2.0.6"><![CDATA[posted by]]></phrase>
     <phrase title="wf_profile_posts" version_id="17" version_string="1.0.9"><![CDATA[profile posts]]></phrase>
+    <phrase title="wf_provided_file_is_global_widgets_xml_file" version_id="112" version_string="2.6.0-dev"><![CDATA[The provided file is a global widgets file, please unselect the widget page and try again.]]></phrase>
     <phrase title="wf_provided_file_is_not_an_widgets_xml_file" version_id="24" version_string="1.2.2.2"><![CDATA[The provided file is not an widgets XML file.]]></phrase>
+    <phrase title="wf_provided_file_is_page_widgets_xml_file" version_id="112" version_string="2.6.0-dev"><![CDATA[The provided file is a page widgets file, please select a widget page to import into.]]></phrase>
     <phrase title="wf_read_more" global_cache="1" version_id="77" version_string="2.4.5b"><![CDATA[Read more]]></phrase>
     <phrase title="wf_recent_status" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[User Recent Status]]></phrase>
     <phrase title="wf_recent_status_friends_only" version_id="17" version_string="1.0.9"><![CDATA[From Friends Only]]></phrase>
@@ -1120,6 +1135,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_import_error" version_id="112" version_string="2.6.0-dev"><![CDATA[Unable to import widgets.]]></phrase>
     <phrase title="wf_widget_is_active" version_id="1" version_string="0.9"><![CDATA[Widget is active]]></phrase>
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
+    <phrase title="wf_widget_page" version_id="112" version_string="2.6.0-dev"><![CDATA[Widget Page]]></phrase>
     <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
     <phrase title="wf_widget_profile_posts_type_recent" global_cache="1" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>

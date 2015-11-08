@@ -46,14 +46,17 @@ class WidgetFramework_Model_WidgetPage extends XenForo_Model
 
         $all = $this->fetchAllKeyed($this->limitQueryResults("
 				SELECT widget_page.*,
-				node.*
-				$joinOptions[selectFields]
+				    node.*
+				    $joinOptions[selectFields]
 				FROM `xf_widgetframework_widget_page` AS widget_page
-				INNER JOIN `xf_node` AS node ON (node.node_id = widget_page.node_id)
-				$joinOptions[joinTables]
+				INNER JOIN `xf_node` AS node
+				    ON (node.node_id = widget_page.node_id)
+				    $joinOptions[joinTables]
 				WHERE $whereConditions
 				$orderClause
-				", $limitOptions['limit'], $limitOptions['offset']), 'node_id');
+			", $limitOptions['limit'], $limitOptions['offset']),
+            'node_id'
+        );
 
         foreach ($all as &$widgetPage) {
             $widgetPage['options'] = @unserialize($widgetPage['options']);

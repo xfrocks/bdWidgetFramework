@@ -4,14 +4,20 @@ class WidgetFramework_ViewAdmin_Widget_Export extends XenForo_ViewAdmin_Base
 {
     public function renderXml()
     {
-        $system = &$this->_params['system'];
-        $widgets = &$this->_params['widgets'];
+        $system = $this->_params['system'];
+        $widgetPage = $this->_params['widgetPage'];
+        $widgets = $this->_params['widgets'];
 
         $document = new DOMDocument('1.0', 'utf-8');
         $document->formatOutput = true;
 
         $rootNode = $document->createElement('widget_framework');
         $rootNode->setAttribute('version', $system['version_string']);
+
+        if (!empty($widgetPage)) {
+            $rootNode->setAttribute('is_page_widgets', 1);
+        }
+
         $document->appendChild($rootNode);
 
         foreach ($widgets as $widget) {

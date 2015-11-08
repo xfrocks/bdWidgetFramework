@@ -494,13 +494,38 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                 $fileName = $this->_input->filterSingle('server_file', XenForo_Input::STRING);
             }
 
+            $widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
+            $widgetPage = null;
+            if ($widgetPageId > 0) {
+                $widgetPage = $this->_getWidgetPageOrError($widgetPageId);
+            }
+
             $deleteAll = $this->_input->filterSingle('delete_all', XenForo_Input::UINT);
 
-            $this->_getWidgetModel()->importFromFile($fileName, $deleteAll);
+            try {
+                $this->_getWidgetModel()->importFromFile($fileName, $widgetPage, $deleteAll);
+            } catch (XenForo_Exception $e) {
+                return $this->responseError($e->getMessage());
+            }
 
-            return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('widgets'));
+            if ($widgetPage === null) {
+                $redirectTarget = XenForo_Link::buildAdminLink('widgets');
+            } else {
+                $redirectTarget = XenForo_Link::buildAdminLink('widget-pages/edit', $widgetPage);
+            }
+
+            return $this->responseRedirect(
+                XenForo_ControllerResponse_Redirect::SUCCESS,
+                $redirectTarget
+            );
         } else {
-            return $this->responseView('WidgetFramework_ViewAdmin_Widget_Import', 'wf_widget_import');
+            $widgetPages = $this->_getWidgetPageModel()->getWidgetPages();
+
+            $viewParams = array(
+                'widgetPages' => $widgetPages,
+            );
+
+            return $this->responseView('WidgetFramework_ViewAdmin_Widget_Import', 'wf_widget_import', $viewParams);
         }
     }
 
@@ -510,13 +535,22 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         /** @var XenForo_Model_AddOn $addOnModel */
         $addOnModel = $this->getModelFromCache('XenForo_Model_AddOn');
 
-        $widgets = $widgetModel->getGlobalWidgets(false, false);
+        $widgetPageId = $this->_input->filterSingle('widget_page_id', XenForo_Input::UINT);
+        $widgetPage = null;
+        if ($widgetPageId > 0) {
+            $widgetPage = $this->_getWidgetPageOrError($widgetPageId);
+            $widgets = $widgetModel->getPageWidgets($widgetPage['node_id'], false);
+        } else {
+            $widgets = $widgetModel->getGlobalWidgets(false, false);
+        }
+
         $addOn = $addOnModel->getAddOnById('widget_framework');
 
         $this->_routeMatch->setResponseType('xml');
 
         $viewParams = array(
             'system' => $addOn,
+            'widgetPage' => $widgetPage,
             'widgets' => $widgets,
         );
 

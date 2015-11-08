@@ -184,9 +184,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $foundDisplayOrder;
     }
 
-    public function importFromFile($fileName, $deleteAll = false)
+    public function importFromFile($fileName, $widgetPage = null, $deleteAll = false)
     {
-        if (!file_exists($fileName) || !is_readable($fileName)) {
+        if (!file_exists($fileName)
+            || !is_readable($fileName)
+        ) {
             throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'), true);
         }
 
@@ -202,12 +204,27 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_not_an_widgets_xml_file'), true);
         }
 
+        $xmlIsPageWidgets = (intval($document['is_page_widgets']) > 0);
+        if ($xmlIsPageWidgets) {
+            if ($widgetPage === null) {
+                throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_page_widgets_xml_file'), true);
+            }
+        } else {
+            if ($widgetPage !== null) {
+                throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_global_widgets_xml_file'), true);
+            }
+        }
+
         XenForo_Db::beginTransaction();
 
         if ($deleteAll) {
-            // get global widgets from database and delete them all!
-            // NOTE: ignore widget page widgets
-            $existingWidgets = $this->getGlobalWidgets(false, false);
+            // get existing widgets from database and delete them all
+            if ($widgetPage === null) {
+                $existingWidgets = $this->getGlobalWidgets(false, false);
+            } else {
+                $existingWidgets = $this->getPageWidgets($widgetPage['node_id'], false);
+            }
+
             foreach ($existingWidgets as $existingWidget) {
                 $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                 $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
@@ -260,6 +277,10 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
                 $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                 $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+
+                if ($widgetPage !== null) {
+                    $dw->set('widget_page_id', $widgetPage['node_id']);
+                }
 
                 foreach (array(
                              'title',
