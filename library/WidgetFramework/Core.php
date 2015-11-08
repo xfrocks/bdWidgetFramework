@@ -459,6 +459,7 @@ class WidgetFramework_Core
         if (!empty($renderer)) {
             $widgetHtml = $renderer->render($widgetRef, $positionCode, $params, $template, $html);
             $widgetRef['_runtime']['useWrapper'] = $renderer->useWrapper($widgetRef);
+            $widgetRef['_runtime']['title'] = $renderer->extraPrepareTitle($widgetRef);
 
             // extra-preparation (this will be run every time the widget is ready to display)
             // this method can change the final html in some way if it needs to do that

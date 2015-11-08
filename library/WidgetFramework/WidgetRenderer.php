@@ -665,6 +665,12 @@ abstract class WidgetFramework_WidgetRenderer
 
                 $html = $this->_render($widgetRef, $positionCode, $params, $renderTemplateObject);
 
+                if ($cacheId !== false) {
+                    // force render template (if any) to collect required externals
+                    // only do that if caching is enabled though
+                    $html = strval($html);
+                }
+
                 // get container data (using template_post_render listener)
                 $containerData = self::_getContainerData($widgetRef);
                 // get widget required externals
@@ -839,7 +845,8 @@ abstract class WidgetFramework_WidgetRenderer
             if (empty(self::$_containerData[$widget['widget_id']])) {
                 self::$_containerData[$widget['widget_id']] = $containerData;
             } else {
-                self::$_containerData[$widget['widget_id']] = XenForo_Application::mapMerge(self::$_containerData[$widget['widget_id']], $containerData);
+                self::$_containerData[$widget['widget_id']] = XenForo_Application::mapMerge(
+                    self::$_containerData[$widget['widget_id']], $containerData);
             }
         }
     }
