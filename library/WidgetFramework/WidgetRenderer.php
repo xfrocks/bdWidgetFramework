@@ -618,7 +618,9 @@ abstract class WidgetFramework_WidgetRenderer
         $useLiveCache = false;
         $lockId = '';
 
-        if ($html === false AND $this->useCache($widgetRef)) {
+        if ($html === false
+            && $this->useCache($widgetRef)
+        ) {
             // sondh@2013-04-02
             // please keep this block of code in-sync'd with its copycat
             // implemented in WidgetFramework_WidgetRenderer::prepare
@@ -658,6 +660,7 @@ abstract class WidgetFramework_WidgetRenderer
             $renderTemplate = $this->_getRenderTemplate($widgetRef, $positionCode, $params);
             if (!empty($renderTemplate)) {
                 $renderTemplateObject = $template->create($renderTemplate, array_merge($params, array('widget' => $widgetRef)));
+                $renderTemplateObject->setParam(WidgetFramework_Core::PARAM_CURRENT_WIDGET_ID, $widgetRef['widget_id']);
 
                 // reset required externals
                 $existingRequiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
@@ -839,15 +842,13 @@ abstract class WidgetFramework_WidgetRenderer
         return 'options_';
     }
 
-    public static function setContainerData($widget, array $containerData)
+    public static function setContainerData($widgetId, array $containerData)
     {
-        if (is_array($widget)) {
-            if (empty(self::$_containerData[$widget['widget_id']])) {
-                self::$_containerData[$widget['widget_id']] = $containerData;
-            } else {
-                self::$_containerData[$widget['widget_id']] = XenForo_Application::mapMerge(
-                    self::$_containerData[$widget['widget_id']], $containerData);
-            }
+        if (!isset(self::$_containerData[$widgetId])) {
+            self::$_containerData[$widgetId] = $containerData;
+        } else {
+            self::$_containerData[$widgetId] = XenForo_Application::mapMerge(
+                self::$_containerData[$widgetId], $containerData);
         }
     }
 

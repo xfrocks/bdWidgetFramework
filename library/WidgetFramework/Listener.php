@@ -103,21 +103,20 @@ class WidgetFramework_Listener
     public static function template_post_render($templateName, &$output, array &$containerData, XenForo_Template_Abstract $template)
     {
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
-            if ($templateName != 'wf_widget_wrapper') {
+            if (!preg_match('#^wf_.+_wrapper$#', $templateName)) {
                 $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
 
                 if ($rendered) {
-                    // get a copy of container data for widget rendered
-                    $positionCode = $template->getParam(WidgetFramework_Core::PARAM_POSITION_CODE);
-                    if ($positionCode !== null) {
-                        WidgetFramework_WidgetRenderer::setContainerData($template->getParam('widget'), $containerData);
-                    }
-
                     if (!isset($containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS])) {
                         $containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS] = array();
                     }
                     $containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS][$templateName] = $template;
                 }
+            }
+
+            $currentWidgetId = $template->getParam(WidgetFramework_Core::PARAM_CURRENT_WIDGET_ID);
+            if ($currentWidgetId > 0) {
+                WidgetFramework_WidgetRenderer::setContainerData($currentWidgetId, $containerData);
             }
 
             if (self::$_saveLayoutEditorRendered) {

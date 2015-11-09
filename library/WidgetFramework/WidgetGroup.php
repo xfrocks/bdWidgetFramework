@@ -20,6 +20,7 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
 
         $configuration['options'] = array(
             'layout' => XenForo_Input::STRING,
+            'column_width' => XenForo_Input::UINT,
         );
 
         return $configuration;
@@ -151,13 +152,33 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
             }
         }
 
+        // reset required externals
+        $existingRequiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
+        WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals(array());
+
         $wrapperTemplateObj = $template->create($wrapperTemplateName, $params);
+        $wrapperTemplateObj->setParam(WidgetFramework_Core::PARAM_CURRENT_WIDGET_ID, $groupRef['widget_id']);
         $wrapperTemplateObj->setParam('group', $groupRef);
         $wrapperTemplateObj->setParam('groupId', $groupRef['widget_id']);
         $wrapperTemplateObj->setParam('widgets', $widgetsRef);
         $wrapperTemplateObj->setParam('widgetIds', $widgetsRef);
+        $wrapped = $wrapperTemplateObj->render();
 
-        return $wrapperTemplateObj;
+        $containerData = self::_getContainerData($groupRef);
+        if (!empty($containerData)) {
+            WidgetFramework_Template_Extended::WidgetFramework_mergeExtraContainerData($containerData);
+        }
+
+        $requiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
+        if (!empty($requiredExternals)) {
+            WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals($existingRequiredExternals);
+            foreach ($requiredExternals as $type => $requirements) {
+                foreach ($requirements as $requirement) {
+                    $template->addRequiredExternal($type, $requirement);
+                }
+            }
+        }
+        return $wrapped;
     }
 
     protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.6.1" version_id="2060102" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.6.2" version_id="2060200" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -10,12 +10,26 @@
   <admin_permissions/>
   <admin_style_properties/>
   <admin_templates>
-    <template title="wf_group_options"><![CDATA[<xen:selectunit label="{xen:phrase wf_group_layout}:" name="{$namePrefix}layout" value="{$options.layout}">
-	<xen:option value="rows">{xen:phrase wf_group_layout_rows}</xen:option>
-	<xen:option value="columns">{xen:phrase wf_group_layout_columns}</xen:option>
-	<xen:option value="tabs">{xen:phrase wf_group_layout_tabs}</xen:option>
-	<xen:option value="random">{xen:phrase wf_group_layout_random}</xen:option>
-</xen:selectunit>]]></template>
+    <template title="wf_group_options"><![CDATA[<xen:set var="$columnsOptions">
+	<xen:spinboxunit label="{xen:phrase wf_group_column_width}:" name="{$namePrefix}column_width"
+		explain="{xen:phrase wf_group_column_width_explain}"
+		value="{$options.column_width}" min="0" step="50"/>
+</xen:set>
+
+<xen:radiounit label="{xen:phrase wf_group_layout}:" name="{$namePrefix}layout" value="{xen:if 'isset({$options.layout})', {$options.layout}, 'rows'}">
+	<xen:option value="rows" label="{xen:phrase wf_group_layout_rows}">
+	</xen:option>
+
+	<xen:option value="columns" label="{xen:phrase wf_group_layout_columns}" inputclass="Hider">
+		<xen:disabled>{xen:raw $columnsOptions}</xen:disabled>
+	</xen:option>
+
+	<xen:option value="tabs" label="{xen:phrase wf_group_layout_tabs}">
+	</xen:option>
+
+	<xen:option value="random" label="{xen:phrase wf_group_layout_random}">
+	</xen:option>
+</xen:radiounit>]]></template>
     <template title="wf_widget_delete"><![CDATA[<xen:title>{xen:phrase wf_confirm_removal_of_widget}: {$widget.rendererName}</xen:title>
 <xen:h1>{xen:phrase wf_confirm_removal_of_widget}</xen:h1>
 
@@ -1018,6 +1032,8 @@ Arguments:
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
     <phrase title="wf_feed_reader" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
     <phrase title="wf_forum_statistics" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Forum Statistics]]></phrase>
+    <phrase title="wf_group_column_width" version_id="2060102" version_string="2.6.1"><![CDATA[Column Width]]></phrase>
+    <phrase title="wf_group_column_width_explain" version_id="2060102" version_string="2.6.1"><![CDATA[If provided, the columns won't get smaller than the specified width and will be rendered as rows if user viewport is too small.]]></phrase>
     <phrase title="wf_group_layout" version_id="112" version_string="2.6.0-dev"><![CDATA[Layout]]></phrase>
     <phrase title="wf_group_layout_columns" version_id="112" version_string="2.6.0-dev"><![CDATA[Columns]]></phrase>
     <phrase title="wf_group_layout_random" version_id="112" version_string="2.6.0-dev"><![CDATA[Random]]></phrase>
@@ -1989,7 +2005,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_group_wrapper" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_group_wrapper" version_id="2060102" version_string="2.6.1"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $widgets} === 1">
 
@@ -2005,12 +2021,42 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:comment>We are rendering columns</xen:comment>
 
+<xen:if is="{$group.options.column_width} > 0">
+<xen:set var="$headKeyColumnsResponsive">wfGroup{$group.widget_id}</xen:set>
+<xen:container var="$head.{$headKeyColumnsResponsive}">
+<style>
+@media screen and (max-width: {xen:calc '{$group.options.column_width} * {xen:count $widgets}'}px) {
+	#widget-columns-{$groupId} .widget-columns { display: block; }
+	#widget-columns-{$groupId} .columns-container { display: block; }
+	#widget-columns-{$groupId} .widget-column { display: block; }
+	
+	<xen:if is="{xen:property wf_groupBorder}">
+	#widget-columns-{$groupId} > .columns-container > .widget-column > div { margin-left: 0; }
+	#widget-columns-{$groupId} > .columns-container > .widget-column { border-left: 0; margin-left: 0 !important; }
+	#widget-columns-{$groupId} > .columns-container > .widget-column
+	{
+		border-top: 1px solid {xen:property primaryLighter};
+		margin-top: 5px;
+		padding-top: 5px;
+	}
+	#widget-columns-{$groupId} > .columns-container > .widget-column.column-1
+	{
+		border-top: 0;
+		margin-top: 0;
+		padding-top: 0;
+	}
+	</xen:if>
+}
+</style>
+</xen:container>
+</xen:if>
+
 <div class="{$_classSection} widget-columns columns-{xen:count $widgets}" id="widget-columns-{$groupId}">
 	<div class="columns-container">
 		<xen:foreach loop="$widgets" i="$i" value="$widget">
 		<div class="widget-column column-{$i}">
 			<xen:if is="{$widget._runtime.useWrapper}">
-			<div class="{$_classInnerSection} {$tab.class}" id="widget-{$widget.widget_id}">
+			<div class="{$_classInnerSection} {$widget.class}" id="widget-{$widget.widget_id}">
 				<h3>
 					<xen:if is="{$widget._runtime.extraData.link}">
 					<a href="{$widget._runtime.extraData.link}">

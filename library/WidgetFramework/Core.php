@@ -11,6 +11,7 @@ class WidgetFramework_Core
     const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
     const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
     const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
+    const PARAM_CURRENT_WIDGET_ID = '_WidgetFramework_currentWidgetId';
 
     // these two are deprecated, use the _ID constant please
     const PARAM_GROUP_NAME = '_WidgetFramework_groupId';
