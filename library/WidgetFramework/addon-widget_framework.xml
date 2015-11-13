@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.6.2" version_id="2060200" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.6.2" version_id="2060201" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -1228,7 +1228,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1388,7 +1388,7 @@ All customization should go to wf_default_EXTRA.css
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
 </xen:if>]]></template>
-    <template title="wf_layout_editor.css" version_id="112" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_LayoutEditor_Area
+    <template title="wf_layout_editor.css" version_id="2060200" version_string="2.6.2"><![CDATA[.WidgetFramework_LayoutEditor_Area
 {
 	background: {xen:property primaryLightest};
 }
@@ -1584,7 +1584,7 @@ All customization should go to wf_default_EXTRA.css
 				 '',
 				 '_params={$_areaSaveParams}',
 				 'conditionalParams={xen:helper json, $_areaConditionalParams}'}"></div>]]></template>
-    <template title="wf_layout_editor_widget" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
+    <template title="wf_layout_editor_widget" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
 <xen:require js="js/WidgetFramework/jquery-ui.js" />
 <xen:require css="wf_layout_editor.css" />
 
@@ -1632,7 +1632,7 @@ All customization should go to wf_default_EXTRA.css
 		<div>&nbsp;</div>
 	</a>
 </div>]]></template>
-    <template title="wf_layout_editor_widget_group_wrapper" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_layout_editor_widget_group_wrapper" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="wf_layout_editor.css" />
 
 <xen:if is="!empty({$group.options.layout}) && {$group.options.layout} !== 'rows'">
@@ -1690,7 +1690,7 @@ All customization should go to wf_default_EXTRA.css
 </div>
 
 <xen:edithint template="wf_layout_editor_widget" />]]></template>
-    <template title="wf_layout_editor_widget_wrapper" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_layout_editor_widget_wrapper" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="wf_layout_editor.css" />
 
 <xen:comment>Mimics wf_layout_editor_widget_group_wrapper</xen:comment>
@@ -2005,7 +2005,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_group_wrapper" version_id="2060102" version_string="2.6.1"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_group_wrapper" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $widgets} === 1">
 
@@ -2021,6 +2021,7 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:comment>We are rendering columns</xen:comment>
 
+<xen:if hascontent="true" >
 <xen:if is="{$group.options.column_width} > 0">
 <xen:set var="$headKeyColumnsResponsive">wfGroup{$group.widget_id}</xen:set>
 <xen:container var="$head.{$headKeyColumnsResponsive}">
@@ -2053,6 +2054,7 @@ All customization should go to wf_default_EXTRA.css
 
 <div class="{$_classSection} widget-columns columns-{xen:count $widgets}" id="widget-columns-{$groupId}">
 	<div class="columns-container">
+		<xen:contentcheck>
 		<xen:foreach loop="$widgets" i="$i" value="$widget">
 		<div class="widget-column column-{$i}">
 			<xen:if is="{$widget._runtime.useWrapper}">
@@ -2074,16 +2076,20 @@ All customization should go to wf_default_EXTRA.css
 			</xen:if>
 		</div>
 		</xen:foreach>
+		</xen:contentcheck>
 	</div>
 </div>
+</xen:if>
 
 <xen:elseif is="{$group.options.layout} === 'tabs'" />
 
 <xen:comment>We are rendering tabs</xen:comment>
 
+<xen:if hascontent="true">
 <xen:require js="js/WidgetFramework/default.js" />
 <div class="{$_classSection} widget-tabs" id="widget-tabs-{$groupId}">
 	<ul class="tabs Tabs" data-panes="#Widget{$groupId}Panes > li">
+		<xen:contentcheck>
 		<xen:foreach loop="$widgets" value="$widget">
 		<li>
 			<a href="{$requestPaths.requestUri}#widget-tab-{$widget.widget_id}">
@@ -2095,6 +2101,7 @@ All customization should go to wf_default_EXTRA.css
 			</a>
 		</li>
 		</xen:foreach>
+		</xen:contentcheck>
 	</ul>
 	<div class="{$_classInnerSection} widget-panes">
 		<ul id="Widget{$groupId}Panes">
@@ -2111,12 +2118,16 @@ All customization should go to wf_default_EXTRA.css
 		</ul>
 	</div>
 </div>
+</xen:if>
 
 <xen:else />
 
 <xen:comment>We are rendering row(s)</xen:comment>
 
+<xen:if hascontent="true">
 <div class="{$_classSection} widget-rows rows-{xen:count $widgets}" id="widget-rows-{$groupId}">
+
+	<xen:contentcheck>
 	<xen:foreach loop="$widgets" i="$i" value="$widget">
 	<xen:if is="{$widget._runtime.useWrapper}">
 	<div class="{$_classInnerSection} {$widget.class} row-{$i}" id="widget-{$widget.widget_id}">
@@ -2135,7 +2146,10 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 	</xen:if>
 	</xen:foreach>
+	</xen:contentcheck>
+
 </div>
+</xen:if>
 
 </xen:if>]]></template>
     <template title="wf_widget_online_staff" version_id="65" version_string="2.3.6"><![CDATA[<xen:if hascontent="true">
@@ -2686,7 +2700,7 @@ All customization should go to wf_default_EXTRA.css
     <template title="wf_widget_visitor_panel" version_id="62" version_string="2.3.3d"><![CDATA[<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<xen:include template="sidebar_visitor_panel" />
 </div>]]></template>
-    <template title="wf_widget_wrapper" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_wrapper" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if hascontent="true">
 <div class="{$_classSection} widget-single">

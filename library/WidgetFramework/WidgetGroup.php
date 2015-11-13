@@ -152,6 +152,21 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
             }
         }
 
+        if (!empty($groupRef['options']['layout'])
+            && $groupRef['options']['layout'] === 'tabs'
+        ) {
+            // we have ineffective <xen:if hascontent="true" /> for tabs layout
+            // so it's required to validate widget html in code and unset those that are empty
+            foreach (array_keys($widgetsRef) as $key) {
+                if (isset($widgetsRef[$key]['_runtime']['html'])) {
+                    $widgetsRef[$key]['_runtime']['html'] = strval($widgetsRef[$key]['_runtime']['html']);
+                    if (empty($widgetsRef[$key]['_runtime']['html'])) {
+                        unset($widgetsRef[$key]);
+                    }
+                }
+            }
+        }
+
         // reset required externals
         $existingRequiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
         WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals(array());
