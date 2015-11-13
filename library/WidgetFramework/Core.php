@@ -132,7 +132,6 @@ class WidgetFramework_Core
 
         foreach ($added['positionCodes'] as $positionCode) {
             $positionRef =& $this->_positions[$positionCode];
-            $positionRef['prepared'] = false;
 
             foreach ($positionRef['widgetsByIds'] as $widgetId => &$widgetRef) {
                 if (!empty($widgetRef['template_for_hooks'])) {
@@ -207,7 +206,7 @@ class WidgetFramework_Core
             $widgetsFromAll = array();
 
             foreach ($this->_positions['all']['widgets'] as $_widget) {
-                $this->_prepareWidgetsFor_prepareWidgetsFromAll($widgetsFromAll, $_widget);
+                $this->_prepareWidgetsFor_prepareWidgetsFromAll($widgetsFromAll, $_widget, $positionCode);
             }
 
             $this->addWidgets($widgetsFromAll);
@@ -227,17 +226,19 @@ class WidgetFramework_Core
         return true;
     }
 
-    protected function _prepareWidgetsFor_prepareWidgetsFromAll(array &$preparedRef, array $_widget)
+    protected function _prepareWidgetsFor_prepareWidgetsFromAll(array &$preparedRef, array $_widget, $positionCode)
     {
         if (isset($preparedRef[$_widget['widget_id']])) {
             return;
         }
 
         $preparedRef[$_widget['widget_id']] = $_widget;
+        $preparedRef[$_widget['widget_id']]['position'] = $positionCode;
+        $preparedRef[$_widget['widget_id']]['positionCodes'] = array($positionCode);
 
         if (!empty($_widget['widgets'])) {
             foreach ($_widget['widgets'] as $subWidget) {
-                $this->_prepareWidgetsFor_prepareWidgetsFromAll($preparedRef, $subWidget);
+                $this->_prepareWidgetsFor_prepareWidgetsFromAll($preparedRef, $subWidget, $positionCode);
             }
         }
     }

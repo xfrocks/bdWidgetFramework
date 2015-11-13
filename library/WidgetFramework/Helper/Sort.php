@@ -32,6 +32,8 @@ class WidgetFramework_Helper_Sort
             }
         }
 
+        $positionCodes = array_unique($positionCodes);
+
         foreach ($positionCodes as $positionCode) {
             $positionRef =& $positions[$positionCode];
 
