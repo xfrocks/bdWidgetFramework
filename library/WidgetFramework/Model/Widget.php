@@ -410,6 +410,13 @@ class WidgetFramework_Model_Widget extends XenForo_Model
     public function buildCache()
     {
         $widgets = $this->getGlobalWidgets(false, false);
+
+        foreach (array_keys($widgets) as $widgetId) {
+            if (emptY($widgets[$widgetId]['active'])) {
+                unset($widgets[$widgetId]);
+            }
+        }
+
         XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
     }
 
