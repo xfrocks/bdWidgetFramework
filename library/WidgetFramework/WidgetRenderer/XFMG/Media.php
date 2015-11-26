@@ -92,7 +92,9 @@ class WidgetFramework_WidgetRenderer_XFMG_Media extends WidgetFramework_WidgetRe
 
         $renderTemplateObject->setParam('order', $order);
         $renderTemplateObject->setParam('limit', $limit);
-        $renderTemplateObject->setParam('blockPhrase', $widget['_runtime']['title']);
+        if (!empty($widget['_runtime']['title'])) {
+            $renderTemplateObject->setParam('blockPhrase', $widget['_runtime']['title']);
+        }
         $renderTemplateObject->setParam('isSidebarBlock', strpos($positionCode, 'hook:') !== 0);
 
         return $renderTemplateObject->render();
