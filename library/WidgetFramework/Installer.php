@@ -277,6 +277,7 @@ class WidgetFramework_Installer
                     $widgetDw->setExistingData($widgets[$widgetId], true);
                     $widgetDw->bulkSet($widgetsCloned[$widgetId], array(
                         'runVerificationCallback' => false,
+                        'ignoreInvalidFields' => true,
                     ));
                     $widgetDw->save();
                 }

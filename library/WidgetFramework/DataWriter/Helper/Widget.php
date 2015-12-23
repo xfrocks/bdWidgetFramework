@@ -86,6 +86,8 @@ class WidgetFramework_DataWriter_Helper_Widget
                         $templateForHooks[$positionCode][] = $template['title'];
                     }
                     $templateForHooks[$positionCode] = array_unique($templateForHooks[$positionCode]);
+                } elseif ($positionCode === 'hook:wf_widget_page_contents') {
+                    // ignore
                 } else {
                     $dw->error(new XenForo_Phrase('wf_non_existent_hook_x',
                         array('hook' => substr($positionCode, 5))), $fieldName);

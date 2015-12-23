@@ -50,6 +50,8 @@ class _Layout_Vertical extends _Layout_Multiple
     {
         if (count($groupIdsOrdered) > 1) {
             $firstWidget = reset($this->_widgets);
+            $firstWidget['position'] = $this->_options['position'];
+            $firstWidget['group_id'] = $this->_options['group_id'];
             $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget);
 
             $this->_options['group_id'] = $groupWidget['widget_id'];
@@ -83,6 +85,8 @@ class _Layout_Horizontal extends _Layout_Multiple
     protected function _doLayout_finishedGroup($groupIdsOrdered)
     {
         $firstWidget = reset($this->_widgets);
+        $firstWidget['position'] = $this->_options['position'];
+        $firstWidget['group_id'] = $this->_options['group_id'];
         $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget, array('layout' => 'columns'));
 
         $this->_options['group_id'] = $groupWidget['widget_id'];
