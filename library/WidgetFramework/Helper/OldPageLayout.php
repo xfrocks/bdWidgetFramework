@@ -32,6 +32,7 @@ class WidgetFramework_Helper_OldPageLayout
 
         $options = array(
             'position' => 'hook:wf_widget_page_contents',
+            'group_id' => 0,
 
             'rows' => $rows,
             'cols' => $cols,
