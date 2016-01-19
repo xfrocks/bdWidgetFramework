@@ -253,8 +253,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         /* @var $threadModel XenForo_Model_Thread */
         $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
-        $forumIds = $this->_helperGetForumIdsFromOption(empty($params['options']['forums'])
-            ? array() : $params['options']['forums'], $params,
+        $forumIds = $this->_helperGetForumIdsFromOption(empty($widget['options']['forums'])
+            ? array() : $widget['options']['forums'], $params,
             empty($widget['options']['as_guest']) ? false : true);
         if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
             $forumIds = $widget['_ajaxLoadParams']['forumIds'];
