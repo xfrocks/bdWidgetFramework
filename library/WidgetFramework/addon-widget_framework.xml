@@ -900,6 +900,15 @@ Arguments:
   <email_template_modifications/>
   <optiongroups>
     <group group_id="widget_framework" display_order="9999" debug_only="0"/>
+    <option option_id="wf_cacheStore" edit_format="radio" data_type="string" can_backup="1">
+      <default_value>db</default_value>
+      <edit_format_params>0 = {xen:phrase disabled}
+cache = {xen:phrase wf_cache_store_cache}
+db = {xen:phrase wf_cache_store_db}
+file = {xen:phrase wf_cache_store_file}</edit_format_params>
+      <sub_options></sub_options>
+      <relation group_id="widget_framework" display_order="100"/>
+    </option>
     <option option_id="wf_indexNodeId" edit_format="callback" data_type="unsigned_integer" can_backup="1">
       <default_value>0</default_value>
       <edit_format_params>WidgetFramework_Option::renderWidgetPages</edit_format_params>
@@ -930,6 +939,8 @@ Arguments:
     <phrase title="node_type_WF_WidgetPage" version_id="54" version_string="2.2.3"><![CDATA[Widget Page]]></phrase>
     <phrase title="option_group_widget_framework" version_id="96" version_string="2.5.0d"><![CDATA[[bd] Widget Framework]]></phrase>
     <phrase title="option_group_widget_framework_description" version_id="96" version_string="2.5.0d"><![CDATA[]]></phrase>
+    <phrase title="option_wf_cacheStore" version_id="2060205" version_string="2.6.2"><![CDATA[Cache Store]]></phrase>
+    <phrase title="option_wf_cacheStore_explain" version_id="2060205" version_string="2.6.2"><![CDATA[Choose where to keep cached widget rendered html. It's not recommended to turn off caching on production site.]]></phrase>
     <phrase title="option_wf_indexNodeId" version_id="102" version_string="2.5.0d"><![CDATA[Widget Page As Index]]></phrase>
     <phrase title="option_wf_indexNodeId_explain" version_id="102" version_string="2.5.0d"><![CDATA[You can choose to have a widget page take over the index page. The option "Index Page Route" will be ignored and it is recommended to leave the option "Home Page URL" blank.]]></phrase>
     <phrase title="option_wf_layoutEditor" version_id="96" version_string="2.5.0d"><![CDATA[Use Layout Editor]]></phrase>
@@ -999,6 +1010,9 @@ Arguments:
     <phrase title="wf_by" version_id="96" version_string="2.5.0d"><![CDATA[by]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
     <phrase title="wf_cache_seconds_explain" version_id="69" version_string="2.4.1"><![CDATA[This renderer supports caching for improved performance, you can enter the number of seconds for time to live (TTL) value to suit your need. Leave it blank to let the renderer decide the TTL itself. Enter 0 will effectively disable caching.]]></phrase>
+    <phrase title="wf_cache_store_cache" version_id="2060205" version_string="2.6.2"><![CDATA[Cache Backend]]></phrase>
+    <phrase title="wf_cache_store_db" version_id="2060205" version_string="2.6.2"><![CDATA[Database (table xf_widgetframework_cache)]]></phrase>
+    <phrase title="wf_cache_store_file" version_id="2060205" version_string="2.6.2"><![CDATA[Files (at ./internal_data/WidgetFramework/cache/)]]></phrase>
     <phrase title="wf_categories" version_id="112" version_string="2.6.0-dev"><![CDATA[Categories]]></phrase>
     <phrase title="wf_comments_lowercase" version_id="111" version_string="2.6.0-dev"><![CDATA[comments]]></phrase>
     <phrase title="wf_conditional" version_id="96" version_string="2.5.0d"><![CDATA[Conditional]]></phrase>
@@ -1039,7 +1053,7 @@ Arguments:
     <phrase title="wf_group_layout_random" version_id="112" version_string="2.6.0-dev"><![CDATA[Random]]></phrase>
     <phrase title="wf_group_layout_rows" version_id="112" version_string="2.6.0-dev"><![CDATA[Rows]]></phrase>
     <phrase title="wf_group_layout_tabs" version_id="112" version_string="2.6.0-dev"><![CDATA[Tabs]]></phrase>
-    <phrase title="wf_group_x" version_id="112" version_string="2.6.0-dev"><![CDATA[Group {groupId}]]></phrase>
+    <phrase title="wf_group_x" global_cache="1" version_id="112" version_string="2.6.0-dev"><![CDATA[Group {groupId}]]></phrase>
     <phrase title="wf_home_navtab" global_cache="1" version_id="78" version_string="2.4.5c"><![CDATA[Home]]></phrase>
     <phrase title="wf_import_from_file_on_server" version_id="24" version_string="1.2.2.2"><![CDATA[Import from file on server]]></phrase>
     <phrase title="wf_import_from_uploaded_file" version_id="96" version_string="2.5.0d"><![CDATA[Import from uploaded file]]></phrase>

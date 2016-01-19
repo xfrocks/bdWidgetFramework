@@ -499,92 +499,6 @@ class WidgetFramework_Core
         return '';
     }
 
-    protected function _getPermissionCombinationId($useUserCache)
-    {
-        if ($useUserCache) {
-            return XenForo_Visitor::getInstance()->get('permission_combination_id');
-        } else {
-            return 1;
-        }
-    }
-
-    protected function _preloadCachedWidget($cacheId, $useUserCache, $useLiveCache)
-    {
-        // disable cache in debug environment...
-        if (self::debugMode()) {
-            return false;
-        }
-
-        if ($useLiveCache) {
-            // no preloading for live cache
-            return false;
-        }
-
-        $cacheModel = $this->_getModelCache();
-        $permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
-        $cacheModel->queueCachedWidgets($cacheId, $permissionCombinationId);
-
-        return true;
-    }
-
-    protected function _loadCachedWidget($cacheId, $useUserCache, $useLiveCache)
-    {
-        // disable cache in debug environment...
-        if (self::debugMode() OR WidgetFramework_Option::get('layoutEditorEnabled')) {
-            return false;
-        }
-
-        $cacheModel = $this->_getModelCache();
-
-        $permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
-
-        if ($useLiveCache) {
-            return $cacheModel->getLiveCache($cacheId, $permissionCombinationId);
-        } else {
-            $cachedWidgets = $cacheModel->getCachedWidgets($cacheId, $permissionCombinationId);
-
-            if (isset($cachedWidgets[$cacheId])) {
-                return $cachedWidgets[$cacheId];
-            } else {
-                return false;
-            }
-        }
-    }
-
-    protected function _saveCachedWidget($cacheId, $html, array $extraData, $useUserCache, $useLiveCache)
-    {
-        // disable cache in debug environment...
-        if (self::debugMode()) {
-            return false;
-        }
-
-        $cacheModel = $this->_getModelCache();
-
-        $cacheData = array(
-            WidgetFramework_Model_Cache::KEY_HTML => $html,
-            WidgetFramework_Model_Cache::KEY_TIME => XenForo_Application::$time,
-        );
-        if (!empty($extraData)) {
-            $cacheData[WidgetFramework_Model_Cache::KEY_EXTRA_DATA] = $extraData;
-        }
-
-        $permissionCombinationId = $this->_getPermissionCombinationId($useUserCache);
-
-        if ($useLiveCache) {
-            return $cacheModel->setLiveCache($cacheData, $cacheId, $permissionCombinationId);
-        } else {
-            $cachedWidgets = $cacheModel->getCachedWidgets($cacheId, $permissionCombinationId);
-            $cachedWidgets[$cacheId] = $cacheData;
-
-            return $cacheModel->setCachedWidgets($cachedWidgets, $cacheId, $permissionCombinationId);
-        }
-    }
-
-    protected function _removeCachedWidget($widgetId)
-    {
-        $this->_getModelCache()->invalidateCache($widgetId);
-    }
-
     /**
      * @return WidgetFramework_Model_Cache
      */
@@ -612,44 +526,21 @@ class WidgetFramework_Core
         return false;
     }
 
-    public static function preloadCachedWidget($cacheId, $useUserCache, $useLiveCache)
-    {
-        return self::getInstance()->_preloadCachedWidget($cacheId, $useUserCache, $useLiveCache);
-    }
-
-    public static function loadCachedWidget($cacheId, $useUserCache, $useLiveCache)
-    {
-        return self::getInstance()->_loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
-    }
-
-    public static function preSaveWidget(array $widget, $positionCode, array $params, &$html)
-    {
-        return self::getInstance()->_getModelCache()->preSaveWidget($widget, $positionCode, $params, $html);
-    }
-
-    public static function saveCachedWidget($cacheId, $html, array $extraData, $useUserCache, $useLiveCache)
-    {
-        self::getInstance()->_saveCachedWidget($cacheId, $html, $extraData, $useUserCache, $useLiveCache);
-    }
-
     public static function clearCachedWidgetById($widgetId)
     {
-        $instance = self::getInstance();
-        $instance->bootstrap();
-
-        $instance->_removeCachedWidget($widgetId);
+        return self::getInstance()->_getModelCache()->invalidateCache($widgetId);
     }
 
     public static function clearCachedWidgetByClass($class)
     {
         $instance = self::getInstance();
-        $instance->bootstrap();
 
         $widgets = $instance->_getModelWidget()->getGlobalWidgets(false, false);
+        $cacheModel = $instance->_getModelCache();
 
         foreach ($widgets as $widget) {
             if ($widget['class'] == $class) {
-                $instance->_removeCachedWidget($widget['widget_id']);
+                $cacheModel->invalidateCache($widget['widget_id']);
             }
         }
     }

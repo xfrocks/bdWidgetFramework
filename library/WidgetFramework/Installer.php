@@ -31,31 +31,41 @@ class WidgetFramework_Installer
             ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
             'dropQuery' => 'DROP TABLE IF EXISTS `xf_widget`',
         ),
+        'cache' => array(
+            'createQuery' => 'CREATE TABLE IF NOT EXISTS `xf_widgetframework_cache` (
+                `cache_id` VARCHAR(255) NOT NULL
+                ,`cache_date` INT(10) UNSIGNED NOT NULL
+                ,`data` MEDIUMBLOB
+                , PRIMARY KEY (`cache_id`)
+                
+            ) ENGINE = InnoDB CHARACTER SET utf8 COLLATE utf8_general_ci;',
+            'dropQuery' => 'DROP TABLE IF EXISTS `xf_widgetframework_cache`',
+        ),
     );
     protected static $_patches = array(
         array(
             'table' => 'xf_widget',
+            'tableCheckQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
             'field' => 'template_for_hooks',
-            'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
-            'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'template_for_hooks\'',
-            'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB',
-            'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `template_for_hooks`',
+            'checkQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'template_for_hooks\'',
+            'addQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB',
+            'dropQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `template_for_hooks`',
         ),
         array(
             'table' => 'xf_widget',
+            'tableCheckQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
             'field' => 'widget_page_id',
-            'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
-            'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
-            'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
-            'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
+            'checkQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
+            'addQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'dropQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
         ),
         array(
             'table' => 'xf_widget',
+            'tableCheckQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
             'field' => 'group_id',
-            'showTablesQuery' => 'SHOW TABLES LIKE \'xf_widget\'',
-            'showColumnsQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'group_id\'',
-            'alterTableAddColumnQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
-            'alterTableDropColumnQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `group_id`',
+            'checkQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'group_id\'',
+            'addQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'dropQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `group_id`',
         ),
     );
 
@@ -68,14 +78,14 @@ class WidgetFramework_Installer
         }
 
         foreach (self::$_patches as $patch) {
-            $tableExisted = $db->fetchOne($patch['showTablesQuery']);
+            $tableExisted = $db->fetchOne($patch['tableCheckQuery']);
             if (empty($tableExisted)) {
                 continue;
             }
 
-            $existed = $db->fetchOne($patch['showColumnsQuery']);
+            $existed = $db->fetchOne($patch['checkQuery']);
             if (empty($existed)) {
-                $db->query($patch['alterTableAddColumnQuery']);
+                $db->query($patch['addQuery']);
             }
         }
 
@@ -87,14 +97,14 @@ class WidgetFramework_Installer
         $db = XenForo_Application::get('db');
 
         foreach (self::$_patches as $patch) {
-            $tableExisted = $db->fetchOne($patch['showTablesQuery']);
+            $tableExisted = $db->fetchOne($patch['tableCheckQuery']);
             if (empty($tableExisted)) {
                 continue;
             }
 
-            $existed = $db->fetchOne($patch['showColumnsQuery']);
+            $existed = $db->fetchOne($patch['checkQuery']);
             if (!empty($existed)) {
-                $db->query($patch['alterTableDropColumnQuery']);
+                $db->query($patch['dropQuery']);
             }
         }
 
@@ -223,8 +233,7 @@ class WidgetFramework_Installer
 
         $db->query("DROP TABLE IF EXISTS `xf_widget`");
         $db->query("DROP TABLE IF EXISTS `xf_widget_cached`");
-        $db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE ?",
-            WidgetFramework_Model_Cache::CACHED_WIDGETS_BY_PCID_PREFIX . '%');
+        $db->query("DELETE FROM `xf_data_registry` WHERE data_key LIKE 'wfc_%'");
         $db->query("DELETE FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
         $db->query("DELETE FROM `xf_node` WHERE `node_type_id` = 'WF_WidgetPage'");
 

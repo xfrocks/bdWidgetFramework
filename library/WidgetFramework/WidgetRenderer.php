@@ -26,10 +26,6 @@ abstract class WidgetFramework_WidgetRenderer
      *                      user-basis. Internally, this is implemented by getting the current user
      *                      permission combination id (not the user id as normally expected). This is
      *                      done to make sure the cache is used effectively.
-     *    - useLiveCache: Flag to determine the renderer wants to by pass writing to database when
-     *                      it's being cached. This may be crucial if the renderer does many things
-     *                      on a big board. It's recommended to use a option for this because not
-     *                      all forum owners has a live cache system setup (XCache/memcached).
      *    - cacheSeconds: A numeric value to specify the maximum age of the cache (in seconds).
      *                      If the cache is too old, the widget will be rendered from scratch.
      *    - useWrapper: Flag to determine the widget should be wrapped with a wrapper
@@ -378,7 +374,16 @@ abstract class WidgetFramework_WidgetRenderer
 
     public function useCache(array $widget)
     {
-        if (isset($widget['options']['cache_seconds']) AND $widget['options']['cache_seconds'] === '0') {
+        if (WidgetFramework_Core::debugMode()
+            || WidgetFramework_Option::get('layoutEditorEnabled')
+            || WidgetFramework_Option::get('cacheStore') === '0'
+        ) {
+            return false;
+        }
+
+        if (isset($widget['options']['cache_seconds'])
+            && $widget['options']['cache_seconds'] === '0'
+        ) {
             return false;
         }
 
@@ -390,12 +395,6 @@ abstract class WidgetFramework_WidgetRenderer
     {
         $configuration = $this->getConfiguration();
         return !empty($configuration['useUserCache']);
-    }
-
-    public function useLiveCache(array $widget)
-    {
-        $configuration = $this->getConfiguration();
-        return !empty($configuration['useLiveCache']);
     }
 
     public function canAjaxLoad(array $widget)
@@ -466,14 +465,8 @@ abstract class WidgetFramework_WidgetRenderer
         }
 
         if ($this->useCache($widgetRef)) {
-            // sondh@2013-04-02
-            // please keep this block of code in-sync'd with its original
-            // implemented in WidgetFramework_WidgetRenderer::render
             $cacheId = $this->_getCacheId($widgetRef, $positionCode, $params);
-            $useUserCache = $this->useUserCache($widgetRef);
-            $useLiveCache = $this->useLiveCache($widgetRef);
-
-            WidgetFramework_Core::preloadCachedWidget($cacheId, $useUserCache, $useLiveCache);
+            $this->_getCacheModel()->preloadCache($cacheId);
         }
 
         $this->_prepare($widgetRef, $positionCode, $params, $template);
@@ -526,12 +519,22 @@ abstract class WidgetFramework_WidgetRenderer
         return true;
     }
 
-    protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
-    {
+    protected function _getCacheId(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget,
+        $positionCode,
+        array $params,
+        array $suffix = array()
+    ) {
+        $permissionCombination = 1;
+        if ($this->useUserCache($widget)) {
+            $permissionCombination = XenForo_Visitor::getInstance()->get('permission_combination_id');
+        }
+
         if (empty($suffix)) {
-            return sprintf('%s_%s', $positionCode, $widget['widget_id']);
+            return sprintf('%s_%d', $positionCode, $permissionCombination);
         } else {
-            return sprintf('%s_%s_%s', $positionCode, implode('_', $suffix), $widget['widget_id']);
+            return sprintf('%s_%d_%s', $positionCode, $permissionCombination, implode('_', $suffix));
         }
     }
 
@@ -541,28 +544,42 @@ abstract class WidgetFramework_WidgetRenderer
             return '';
         }
 
-        $lockId = $this->_getCacheId($widget, $positionCode, $param, array('lock'));
+        $cacheModel = $this->_getCacheModel();
+        $lockId = $this->_getCacheId($widget, $positionCode, $param, array('lock', $widget['widget_id']));
 
         $isLocked = false;
-        $cached = WidgetFramework_Core::loadCachedWidget($lockId, false, true);
-        if (!empty($cached) AND is_array($cached)) {
-            if (!empty($cached[WidgetFramework_Model_Cache::KEY_TIME]) AND XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME] < 10) {
-                $isLocked = !empty($cached[WidgetFramework_Model_Cache::KEY_HTML]) AND $cached[WidgetFramework_Model_Cache::KEY_HTML] === '1';
+        $cached = $cacheModel->getCache(0, $lockId, array(
+            WidgetFramework_Model_Cache::OPTION_CACHE_STORE => WidgetFramework_Model_Cache::OPTION_CACHE_STORE_FILE
+        ));
+        if (!empty($cached)
+            && is_array($cached)
+        ) {
+            if (!empty($cached[WidgetFramework_Model_Cache::KEY_TIME])
+                && XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME] < 10
+            ) {
+                $isLocked = !empty($cached[WidgetFramework_Model_Cache::KEY_HTML])
+                    && $cached[WidgetFramework_Model_Cache::KEY_HTML] === '1';
             }
         }
+
         if ($isLocked) {
             // locked by some other requests!
             return false;
         }
 
-        WidgetFramework_Core::saveCachedWidget($lockId, '1', array(), false, true);
+        $cacheModel->setCache(0, $lockId, '1', array(), array(
+            WidgetFramework_Model_Cache::OPTION_CACHE_STORE => WidgetFramework_Model_Cache::OPTION_CACHE_STORE_FILE
+        ));
+
         return $lockId;
     }
 
     protected function _releaseLock($lockId)
     {
         if (!empty($lockId)) {
-            WidgetFramework_Core::saveCachedWidget($lockId, '0', array(), false, true);
+            $this->_getCacheModel()->setCache(0, $lockId, '0', array(), array(
+                WidgetFramework_Model_Cache::OPTION_CACHE_STORE => WidgetFramework_Model_Cache::OPTION_CACHE_STORE_FILE
+            ));
         }
     }
 
@@ -614,22 +631,17 @@ abstract class WidgetFramework_WidgetRenderer
         // check for cache
         // since 1.2.1
         $cacheId = false;
-        $useUserCache = false;
-        $useLiveCache = false;
         $lockId = '';
 
         if ($html === false
             && $this->useCache($widgetRef)
         ) {
-            // sondh@2013-04-02
-            // please keep this block of code in-sync'd with its copycat
-            // implemented in WidgetFramework_WidgetRenderer::prepare
             $cacheId = $this->_getCacheId($widgetRef, $positionCode, $params);
-            $useUserCache = $this->useUserCache($widgetRef);
-            $useLiveCache = $this->useLiveCache($widgetRef);
+            $cached = $this->_getCacheModel()->getCache($widgetRef['widget_id'], $cacheId);
 
-            $cached = WidgetFramework_Core::loadCachedWidget($cacheId, $useUserCache, $useLiveCache);
-            if (!empty($cached) AND is_array($cached)) {
+            if (!empty($cached)
+                && is_array($cached)
+            ) {
                 if ($this->isCacheUsable($cached, $widgetRef)) {
                     // found fresh cached html, use it asap
                     $this->_restoreFromCache($cached, $html, $containerData, $requiredExternals);
@@ -693,9 +705,7 @@ abstract class WidgetFramework_WidgetRenderer
                     $extraData[self::EXTRA_REQUIRED_EXTERNALS] = $requiredExternals;
                 }
 
-                WidgetFramework_Core::preSaveWidget($widgetRef, $positionCode, $params, $html);
-
-                WidgetFramework_Core::saveCachedWidget($cacheId, $html, $extraData, $useUserCache, $useLiveCache);
+                $this->_getCacheModel()->setCache($widgetRef['widget_id'], $cacheId, $html, $extraData);
             }
         }
 
@@ -892,4 +902,11 @@ abstract class WidgetFramework_WidgetRenderer
         return null;
     }
 
+    /**
+     * @return WidgetFramework_Model_Cache
+     */
+    protected function _getCacheModel()
+    {
+        return WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Cache');
+    }
 }
