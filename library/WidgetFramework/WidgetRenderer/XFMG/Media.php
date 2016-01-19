@@ -73,8 +73,16 @@ class WidgetFramework_WidgetRenderer_XFMG_Media extends WidgetFramework_WidgetRe
         return 'wf_widget_xfmg_media';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        if (!WidgetFramework_Core::xfmgFound()) {
+            return '';
+        }
+
         $order = 'new';
         if (!empty($widget['options']['order'])
             && in_array($widget['options']['order'], array(

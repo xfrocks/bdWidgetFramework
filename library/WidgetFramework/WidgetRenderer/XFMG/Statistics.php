@@ -33,8 +33,16 @@ class WidgetFramework_WidgetRenderer_XFMG_Statistics extends WidgetFramework_Wid
         return 'wf_widget_xfmg_statistics';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        if (!WidgetFramework_Core::xfmgFound()) {
+            return '';
+        }
+
         return $renderTemplateObject->render();
     }
 }

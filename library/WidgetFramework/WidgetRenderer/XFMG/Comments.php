@@ -36,8 +36,16 @@ class WidgetFramework_WidgetRenderer_XFMG_Comments extends WidgetFramework_Widge
         return 'xengallery_recent_comments_block';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        if (!WidgetFramework_Core::xfmgFound()) {
+            return '';
+        }
+
         $limit = XenForo_Application::getOptions()->get('xengalleryShowRecentComments', 'limit');
         if (!empty($widget['options']['limit'])) {
             $limit = $widget['options']['limit'];

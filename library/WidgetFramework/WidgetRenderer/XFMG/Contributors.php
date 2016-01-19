@@ -35,8 +35,16 @@ class WidgetFramework_WidgetRenderer_XFMG_Contributors extends WidgetFramework_W
         return 'wf_widget_xfmg_contributors';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        if (!WidgetFramework_Core::xfmgFound()) {
+            return '';
+        }
+
         $limit = XenForo_Application::getOptions()->get('xengalleryShowTopContributors', 'limit');
         if (!empty($widget['options']['limit'])) {
             $limit = $widget['options']['limit'];
