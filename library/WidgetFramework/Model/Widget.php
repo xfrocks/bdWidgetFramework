@@ -412,7 +412,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         $widgets = $this->getGlobalWidgets(false, false);
 
         foreach (array_keys($widgets) as $widgetId) {
-            if (emptY($widgets[$widgetId]['active'])) {
+            if (empty($widgets[$widgetId]['active'])) {
                 unset($widgets[$widgetId]);
             }
         }

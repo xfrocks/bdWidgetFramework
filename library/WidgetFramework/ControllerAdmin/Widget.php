@@ -217,7 +217,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             'title' => XenForo_Input::STRING,
             'position' => XenForo_Input::STRING,
             'display_order' => XenForo_Input::INT,
-            'active' => XenForo_INput::UINT,
+            'active' => XenForo_Input::UINT,
         ));
 
         /** @var WidgetFramework_DataWriter_Widget $dw */
