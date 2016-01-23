@@ -457,7 +457,13 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $dw->set('active', $activeState);
         $dw->save();
 
-        return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('widgets'));
+        $link = XenForo_Link::buildAdminLink('widgets');
+        if ($dw->get('widget_page_id') > 0) {
+            $link = XenForo_Link::buildAdminLink('widget-pages/edit',
+                array('node_id' => $dw->get('widget_page_id')));
+        }
+
+        return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
     }
 
     public function actionEnable()
