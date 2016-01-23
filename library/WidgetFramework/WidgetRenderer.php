@@ -131,7 +131,7 @@ abstract class WidgetFramework_WidgetRenderer
                      ) as $specialId) {
                 $forums[] = array(
                     'value' => $specialId,
-                    'label' => new XenForo_Phrase('wf_' . $specialId),
+                    'label' => new XenForo_Phrase(sprintf('wf_%s', $specialId)),
                     'selected' => in_array($specialId, $selected),
                 );
             }
