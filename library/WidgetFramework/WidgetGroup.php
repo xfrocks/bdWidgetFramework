@@ -38,6 +38,8 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
                 $renderer->prepare($subWidgetRef, $positionCode, $params, $template);
             }
         }
+
+        $template->preloadTemplate('wf_widget_group_wrapper');
     }
 
     public function render(
