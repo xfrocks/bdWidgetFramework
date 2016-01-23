@@ -311,7 +311,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         $filePath = preg_replace('#[^0-9a-zA-Z\/]#', '', $filePath);
         $filePath = trim($filePath, '/');
 
-        return sprintf('%s/WidgetFramework/cache/%s', XenForo_Helper_File::getInternalDataPath(), $filePath);
+        return sprintf('%s/WidgetFramework/cache/%s.bin', XenForo_Helper_File::getInternalDataPath(), $filePath);
     }
 
     public function invalidateCache($widgetId)
