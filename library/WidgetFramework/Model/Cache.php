@@ -104,7 +104,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             self::KEY_TIME => XenForo_Application::$time,
         );
         if (!empty($extraData)) {
-            $cacheData[self::KEY_EXTRA_DATA] = $extraData;
+            $data[self::KEY_EXTRA_DATA] = $extraData;
         }
 
         switch ($cacheStore) {
