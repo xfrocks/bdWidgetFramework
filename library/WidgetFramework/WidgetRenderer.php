@@ -183,6 +183,40 @@ abstract class WidgetFramework_WidgetRenderer
     }
 
     /**
+     * Helper method to be used within _getCacheId.
+     *
+     * @param array $forumsOption the `forums` option
+     * @param array $templateParams depending on the option, this method
+     *                requires information from the template params.
+     * @param bool $asGuest flag to use guest permissions instead of
+     *                current user permissions
+     *
+     * @return string forum id or empty string
+     */
+    protected function _helperGetForumIdForCache(array $forumsOption, array $templateParams = array(), $asGuest = false)
+    {
+        if (!empty($forumsOption)) {
+            $templateNode = null;
+
+            if (!empty($templateParams['forum']['node_id'])) {
+                $templateNode = $templateParams['forum'];
+            } elseif (!empty($templateParams['category']['node_id'])) {
+                $templateNode = $templateParams['category'];
+            } elseif (!empty($templateParams['page']['node_id'])) {
+                $templateNode = $templateParams['page'];
+            } elseif (!empty($templateParams['widgetPage']['node_id'])) {
+                $templateNode = $templateParams['widgetPage'];
+            }
+
+            if (!empty($templateNode)) {
+                return $templateNode['node_id'];
+            }
+        }
+
+        return '';
+    }
+
+    /**
      * Helper method to get an array of forum ids ready to be used.
      * The forum ids are taken after processing the `forums` option.
      * Look into the source code of built-in renderer to understand
@@ -532,9 +566,9 @@ abstract class WidgetFramework_WidgetRenderer
         }
 
         if (empty($suffix)) {
-            return sprintf('%s_%d', $positionCode, $permissionCombination);
+            return sprintf('%s_pc%d', $positionCode, $permissionCombination);
         } else {
-            return sprintf('%s_%d_%s', $positionCode, $permissionCombination, implode('_', $suffix));
+            return sprintf('%s_pc%d_s%s', $positionCode, $permissionCombination, implode('_', $suffix));
         }
     }
 

@@ -213,15 +213,17 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
     {
         if (isset($widget['_ajaxLoadParams'])) {
             if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
-                $suffix[] = 'f' . implode('', $widget['_ajaxLoadParams']['forumIds']);
+                $suffix[] = 'ajax_f' . implode('', $widget['_ajaxLoadParams']['forumIds']);
             }
-        } elseif ($this->_helperDetectSpecialForums(empty($params['options']['forums'])
-            ? array() : $params['options']['forums'])
+        }
+
+        if (!empty($widget['options']['forums'])
+            && $this->_helperDetectSpecialForums($widget['options']['forums'])
         ) {
-            if (isset($params['forum'])) {
-                $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params,
-                    empty($widget['options']['as_guest']) ? false : true);
-                $suffix[] = 'f' . implode('', $forumIds);
+            $forumId = $this->_helperGetForumIdForCache($widget['options']['forums'], $params,
+                !empty($widget['options']['as_guest']));
+            if (!empty($forumId)) {
+                $suffix[] = 'f' . $forumId;
             }
         }
 
