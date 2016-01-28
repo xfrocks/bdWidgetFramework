@@ -141,18 +141,20 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         }
 
         if (is_string($cached)) {
-            $cached = unserialize($cached);
-        } else {
-            $cached = array();
+            $cached = self::_unserialize($cached);
         }
 
-        return $cached;
+        if (is_array($cached)) {
+            return $cached;
+        } else {
+            return array();
+        }
     }
 
     protected function _cache_setCache($widgetId, $cacheId, array $data)
     {
         $cache = $this->_getCache();
-        $dataSerialized = serialize($data);
+        $dataSerialized = self::_serialize($data);
         $cache->save($dataSerialized, $this->_cache_getSafeCacheId($widgetId, $cacheId));
 
         if (XenForo_Application::debugMode()) {
@@ -267,7 +269,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
     {
         $fileData = $this->_file_readDataFromFile($cacheId);
         $fileData[$widgetId] = $data;
-        $fileDataSerialized = serialize($fileData);
+        $fileDataSerialized = self::_serialize($fileData);
 
         $filePath = $this->_file_getDataFilePath($cacheId);
         $dirPath = dirname($filePath);
@@ -292,7 +294,10 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             $filePath = $this->_file_getDataFilePath($cacheId);
             if (file_exists($filePath)) {
                 $fileContents = file_get_contents($filePath);
-                self::$_queriedData[$cacheId] = unserialize($fileContents);
+                $data = self::_unserialize($fileContents);
+                if (is_array($data)) {
+                    self::$_queriedData[$cacheId] = $data;
+                }
             }
 
             if (XenForo_Application::debugMode()) {
@@ -365,6 +370,24 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         }
 
         $cacheId .= $modifiers;
+    }
+
+    protected static function _serialize($data)
+    {
+        if (function_exists('igbinary_serialize')) {
+            return igbinary_serialize($data);
+        } else {
+            return serialize($data);
+        }
+    }
+
+    protected static function _unserialize($serialized)
+    {
+        if (function_exists('igbinary_unserialize')) {
+            return @igbinary_unserialize($serialized);
+        } else {
+            return @unserialize($serialized);
+        }
     }
 
 }
