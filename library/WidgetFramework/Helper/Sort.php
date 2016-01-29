@@ -72,7 +72,9 @@ class WidgetFramework_Helper_Sort
         $doa = $a['display_order'];
         $dob = $b['display_order'];
 
-        if ($doa < 0 AND $doa < 0) {
+        if ($doa < 0
+            && $doa < 0
+        ) {
             // both are negative display order
             $result = $dob - $doa;
         } else {

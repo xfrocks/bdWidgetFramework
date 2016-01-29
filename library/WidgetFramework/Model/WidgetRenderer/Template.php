@@ -15,7 +15,7 @@ class WidgetFramework_Model_WidgetRenderer_Template extends XenForo_Model
         }
     }
 
-    public function dwPostDelete(array $widget, array $widgetOptions)
+    public function dwPostDelete(array $widget)
     {
         if (!empty($widget['widget_id'])) {
             $widgetTemplateTitle = $this->getWidgetTemplateTitle($widget['widget_id']);

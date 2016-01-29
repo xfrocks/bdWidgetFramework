@@ -39,7 +39,8 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
         $viewParams = array(
             'widgetPage' => $widgetPage,
             'widgets' => $widgets,
-            'nodeParentOptions' => $this->_getNodeModel()->getNodeOptionsArray($this->_getNodeModel()->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true),
+            'nodeParentOptions' => $this->_getNodeModel()->getNodeOptionsArray(
+                $this->_getNodeModel()->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true),
             'styles' => $this->_getStyleModel()->getAllStylesAsFlattenedTree(),
             'natOptions' => (XenForo_Application::isRegistered('nodesAsTabsAPI') ?
                 call_user_func(array('NodesAsTabs_API', 'nodeOptionsRecord'), $nodeId) : false)
@@ -88,7 +89,10 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
             WidgetFramework_Option::setIndexNodeId(0);
         }
 
-        $response = $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, XenForo_Link::buildAdminLink('nodes') . $this->getLastHash($dw->get('node_id')));
+        $response = $this->responseRedirect(
+            XenForo_ControllerResponse_Redirect::SUCCESS,
+            XenForo_Link::buildAdminLink('nodes') . $this->getLastHash($dw->get('node_id'))
+        );
 
         if (XenForo_Application::isRegistered('nodesAsTabsAPI')) {
             call_user_func(array('NodesAsTabs_API', 'actionSave'), $response, $this);
@@ -122,7 +126,8 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
         $viewParams = array(
             'widgetPage' => $widgetPage,
             'childNodes' => $childNodes,
-            'nodeParentOptions' => $nodeModel->getNodeOptionsArray($nodeModel->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true)
+            'nodeParentOptions' => $nodeModel->getNodeOptionsArray(
+                $nodeModel->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true)
         );
 
         return $this->responseView('WidgetFramework_ViewAdmin_WidgetPage_Delete', 'wf_widget_page_delete', $viewParams);

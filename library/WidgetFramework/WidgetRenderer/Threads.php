@@ -127,8 +127,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         array $widget,
         $positionCode,
         array $params,
-        XenForo_Template_Abstract $renderTemplateObject)
-    {
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
         }
@@ -330,10 +330,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 )));
                 break;
             case 'latest_replies':
-                $threads = $threadModel->getThreads(array_merge($conditions, array('reply_count' => array(
-                    '>',
-                    0
-                ),)), array_merge($fetchOptions, array(
+                $threads = $threadModel->getThreads(array_merge($conditions, array(
+                    'reply_count' => array(
+                        '>',
+                        0
+                    ),
+                )), array_merge($fetchOptions, array(
                     'order' => 'last_post_date',
                     'orderDirection' => 'desc',
                     'join' => 0,
@@ -429,8 +431,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $positionCode,
         array $params,
         $renderTemplateObject,
-        array &$threads)
-    {
+        array &$threads
+    ) {
         $core = WidgetFramework_Core::getInstance();
         $layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
 
@@ -547,8 +549,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $threadBbCodeOptions['states']['viewAttachments'] =
                     $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null,
                         $threadPermissionsRef, $viewingUser);
-                $threadRef['messageHtml'] =
-                    XenForo_ViewPublic_Helper_Message::getBbCodeWrapper($threadRef, $bbCodeParser, $threadBbCodeOptions);
+                $threadRef['messageHtml']
+                    = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper(
+                    $threadRef, $bbCodeParser, $threadBbCodeOptions);
             }
 
             $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef,
@@ -556,8 +559,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         }
     }
 
-    protected function _getAjaxLoadParams(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
-    {
+    protected function _getAjaxLoadParams(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $template
+    ) {
         $ajaxLoadParams = parent::_getAjaxLoadParams($widget, $positionCode, $params, $template);
 
         if ($this->_helperDetectSpecialForums($widget['options']['forums'])) {

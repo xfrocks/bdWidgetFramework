@@ -20,7 +20,8 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
         $widgetPage = $this->_getWidgetPageOrError($nodeId ? $nodeId : $nodeName);
 
         $page = max(1, $this->_input->filterSingle('page', XenForo_Input::UINT));
-        $this->canonicalizeRequestUrl(XenForo_Link::buildPublicLink('widget-pages', $widgetPage, array('page' => $page)));
+        $this->canonicalizeRequestUrl(
+            XenForo_Link::buildPublicLink('widget-pages', $widgetPage, array('page' => $page)));
 
         $widgetsConditions = array('widget_page_id' => $widgetPage['node_id']);
         if (!WidgetFramework_Option::get('layoutEditorEnabled')) {
@@ -69,10 +70,11 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
         foreach ($activities AS $activity) {
             if (!empty($activity['params']['node_id'])) {
                 $nodeIds[$activity['params']['node_id']] = intval($activity['params']['node_id']);
-            } else
+            } else {
                 if (!empty($activity['params']['node_name'])) {
                     $nodeNames[$activity['params']['node_name']] = $activity['params']['node_name'];
                 }
+            }
         }
 
         if ($nodeNames) {
@@ -95,7 +97,10 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
             $visitor = XenForo_Visitor::getInstance();
             $permissionCombinationId = $visitor['permission_combination_id'];
 
-            $widgetPages = $widgetPageModel->getWidgetPages(array('node_id' => $nodeIds), array('permissionCombinationId' => $permissionCombinationId));
+            $widgetPages = $widgetPageModel->getWidgetPages(
+                array('node_id' => $nodeIds),
+                array('permissionCombinationId' => $permissionCombinationId)
+            );
             foreach ($widgetPages AS $widgetPage) {
                 $visitor->setNodePermissions($widgetPage['node_id'], $widgetPage['node_permission_cache']);
                 if ($widgetPageModel->canViewWidgetPage($widgetPage)) {
@@ -157,8 +162,11 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
             $widgetPage = $this->_getWidgetPageModel()->getWidgetPageByName($nodeIdOrName, $fetchOptions);
         }
 
-        if (!$widgetPage || $widgetPage['node_type_id'] != 'WF_WidgetPage') {
-            throw $this->responseException($this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404));
+        if (!$widgetPage
+            || $widgetPage['node_type_id'] != 'WF_WidgetPage'
+        ) {
+            throw $this->responseException(
+                $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404));
         }
 
         if (isset($widgetPage['node_permission_cache'])) {

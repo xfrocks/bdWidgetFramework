@@ -47,8 +47,8 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
         $positionCode,
         array $params,
         XenForo_Template_Abstract $template,
-        &$output)
-    {
+        &$output
+    ) {
         if (empty($groupRef['widgets'])) {
             return '';
         }
@@ -89,7 +89,8 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
                 && !empty($renderer)
                 && $renderer->canAjaxLoad($widgetRef)
             ) {
-                $widgetRef['_runtime']['ajaxLoadUrl'] = $renderer->getAjaxLoadUrl($widgetRef, $positionCode, $params, $template);
+                $widgetRef['_runtime']['ajaxLoadUrl']
+                    = $renderer->getAjaxLoadUrl($widgetRef, $positionCode, $params, $template);
                 $widgetRef['_runtime']['html'] = $widgetRef['_runtime']['ajaxLoadUrl'];
             } else {
                 $widgetRef['_runtime']['html'] = WidgetFramework_Core::getInstance()->renderWidget($widgetRef,
@@ -129,8 +130,8 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
         array &$groupRef,
         array &$widgetsRef,
         array $params,
-        XenForo_Template_Abstract $template)
-    {
+        XenForo_Template_Abstract $template
+    ) {
         $wrapperTemplateName = 'wf_widget_group_wrapper';
 
         if (WidgetFramework_Option::get('layoutEditorEnabled')) {
@@ -198,8 +199,12 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
         return $wrapped;
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         throw new XenForo_Exception('not implemented');
     }
 }

@@ -162,7 +162,8 @@ abstract class _Layout_Multiple
         foreach ($widgetIds as $widgetId) {
             $widgetRef = &$this->_widgets[$widgetId];
 
-            $this->_splitGroups($groups, $mapping, $widgetRef['options'][$fieldIndex], $widgetRef['options'][$fieldIndex] + $widgetRef['options'][$fieldSize] - 1);
+            $this->_splitGroups($groups, $mapping, $widgetRef['options'][$fieldIndex],
+                $widgetRef['options'][$fieldIndex] + $widgetRef['options'][$fieldSize] - 1);
         }
 
         $groupIdsOrdered = array();
@@ -199,7 +200,8 @@ abstract class _Layout_Multiple
                 $this->_subLayouts[$groupId] = $this->_newSingleLayout($this->_widgets[$firstWidgetId]);
                 $this->_subLayoutIndeces[$groupId] = $indeces;
             } else {
-                $this->_subLayouts[$groupId] = $this->_newSubLayout($this->_widgets, $subLayoutWidgetIds, $this->_depth + 1);
+                $this->_subLayouts[$groupId] = $this->_newSubLayout(
+                    $this->_widgets, $subLayoutWidgetIds, $this->_depth + 1);
                 $this->_subLayoutIndeces[$groupId] = $indeces;
             }
         }

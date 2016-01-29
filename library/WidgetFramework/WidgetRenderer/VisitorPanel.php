@@ -20,8 +20,12 @@ class WidgetFramework_WidgetRenderer_VisitorPanel extends WidgetFramework_Widget
         return 'wf_widget_visitor_panel';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         $renderTemplateObject->setParams($params);
 
         return $renderTemplateObject->render();

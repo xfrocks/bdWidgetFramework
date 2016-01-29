@@ -92,8 +92,12 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
         return 'wf_widget_birthday';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         $core = WidgetFramework_Core::getInstance();
         /** @var XenForo_Model_User $userModel */
         $userModel = $core->getModelFromCache('XenForo_Model_User');

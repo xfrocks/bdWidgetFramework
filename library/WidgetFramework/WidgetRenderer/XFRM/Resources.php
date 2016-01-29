@@ -60,7 +60,9 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
                 'depth' => $categoryRaw['depth'],
             );
 
-            if (!empty($params['options']['categories']) AND in_array($category['value'], $params['options']['categories'])) {
+            if (!empty($params['options']['categories'])
+                && in_array($category['value'], $params['options']['categories'])
+            ) {
                 $category['selected'] = true;
             }
 
@@ -95,8 +97,12 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         return 'wf_widget_xfrm_resources';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
         }
@@ -110,8 +116,13 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         return $renderTemplateObject->render();
     }
 
-    protected function _getResources(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _getResources(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         $core = WidgetFramework_Core::getInstance();
         /** @var XenResource_Model_Category $categoryModel */
         $categoryModel = $core->getModelFromCache('XenResource_Model_Category');

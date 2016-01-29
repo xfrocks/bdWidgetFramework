@@ -8,8 +8,15 @@ class WidgetFramework_Route_PrefixAdmin_Widgets implements XenForo_Route_Interfa
         return $router->getRouteMatch('WidgetFramework_ControllerAdmin_Widget', $action, 'widgetFramework');
     }
 
-    public function buildLink($originalPrefix, $outputPrefix, $action, $extension, $data, array &$extraParams)
-    {
+    public function buildLink(
+        /** @noinspection PhpUnusedParameterInspection */
+        $originalPrefix,
+        $outputPrefix,
+        $action,
+        $extension,
+        $data,
+        array &$extraParams
+    ) {
         return XenForo_Link::buildBasicLinkWithIntegerParam($outputPrefix, $action, $extension, $data, 'widget_id');
     }
 

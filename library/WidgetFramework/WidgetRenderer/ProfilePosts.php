@@ -66,13 +66,17 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
         return 'wf_widget_profile_posts';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
         }
 
-        $profilePosts = $this->_getProfilePosts($widget, $positionCode, $params, $renderTemplateObject);
+        $profilePosts = $this->_getProfilePosts($widget, $positionCode, $params);
         $renderTemplateObject->setParam('profilePosts', $profilePosts);
 
         if (!empty($widget['options']['show_update_form'])) {
@@ -84,9 +88,14 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
         return $renderTemplateObject->render();
     }
 
-    protected function _getProfilePosts(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
-        if ($positionCode == 'forum_list' AND $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewProfilePosts')) {
+    protected function _getProfilePosts(
+        array $widget,
+        $positionCode,
+        array $params
+    ) {
+        if ($positionCode == 'forum_list'
+            && $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewProfilePosts')
+        ) {
             if (!empty($params['profilePosts'])) {
                 return $params['profilePosts'];
             }

@@ -29,8 +29,12 @@ class WidgetFramework_WidgetRenderer_UsersFind extends WidgetFramework_WidgetRen
         return 'wf_widget_users_find';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         return $renderTemplateObject->render();
     }
 

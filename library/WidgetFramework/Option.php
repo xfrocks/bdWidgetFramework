@@ -31,7 +31,9 @@ class WidgetFramework_Option
                     $session = XenForo_Application::getSession();
                     self::$_layoutEditorEnabled = ($session->get('_WidgetFramework_layoutEditor') === true);
 
-                    if (!self::$_layoutEditorEnabled AND !empty($_REQUEST['_layoutEditor'])) {
+                    if (!self::$_layoutEditorEnabled
+                        && !empty($_REQUEST['_layoutEditor'])
+                    ) {
                         $visitor = XenForo_Visitor::getInstance();
                         if ($visitor->hasAdminPermission('style')) {
                             self::$_layoutEditorEnabled = true;

@@ -11,7 +11,9 @@ class WidgetFramework_Template_Helper_Conditional
      */
     public function isHttpPost()
     {
-        if (!empty($_SERVER['REQUEST_METHOD']) AND $_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!empty($_SERVER['REQUEST_METHOD'])
+            && $_SERVER['REQUEST_METHOD'] === 'POST'
+        ) {
             return true;
         }
 
@@ -80,7 +82,9 @@ class WidgetFramework_Template_Helper_Conditional
         $conditionalHelper = new ReflectionClass(get_class($this));
         foreach ($conditionalHelper->getMethods() as $method) {
             $methodModifiers = $method->getModifiers();
-            if ($methodModifiers & ReflectionMethod::IS_PUBLIC AND !($methodModifiers & ReflectionMethod::IS_STATIC)) {
+            if ($methodModifiers & ReflectionMethod::IS_PUBLIC
+                && !($methodModifiers & ReflectionMethod::IS_STATIC)
+            ) {
                 $methodName = $method->getName();
                 $helperCallbackName = strtolower('wf_' . $methodName);
 

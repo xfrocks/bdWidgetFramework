@@ -32,16 +32,20 @@ class WidgetFramework_Template_Extended extends XenForo_Template_Public
             return;
         }
 
-        if (self::$_WidgetFramework_pageContainerTemplate === null OR self::$_WidgetFramework_pageContainerTemplate->getParam('contents') === null) {
-            XenForo_Template_Public::$_extraData = XenForo_Application::mapMerge(XenForo_Template_Public::$_extraData, $extraData);
+        if (self::$_WidgetFramework_pageContainerTemplate === null
+            || self::$_WidgetFramework_pageContainerTemplate->getParam('contents') === null
+        ) {
+            XenForo_Template_Public::$_extraData
+                = XenForo_Application::mapMerge(XenForo_Template_Public::$_extraData, $extraData);
         } else {
             // these extra data came too late
             // page container has already started rendering...
-            self::$_WidgetFramework_lateExtraData = XenForo_Application::mapMerge(self::$_WidgetFramework_lateExtraData, $extraData);
+            self::$_WidgetFramework_lateExtraData
+                = XenForo_Application::mapMerge(self::$_WidgetFramework_lateExtraData, $extraData);
         }
     }
 
-    public static function WidgetFramework_processLateExtraData(&$output, array &$containerData, XenForo_Template_Abstract $template)
+    public static function WidgetFramework_processLateExtraData(&$output, XenForo_Template_Abstract $template)
     {
         if (!($template instanceof XenForo_Template_Public)) {
             return;

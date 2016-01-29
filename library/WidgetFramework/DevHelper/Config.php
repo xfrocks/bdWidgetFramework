@@ -18,8 +18,14 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base
             'primaryKey' => array('node_id'),
             'indeces' => array(),
             'files' => array(
-                'data_writer' => array('className' => 'WidgetFramework_DataWriter_WidgetPage', 'hash' => '8519e858a701bac5ff2aa3ac65c77246'),
-                'model' => array('className' => 'WidgetFramework_Model_WidgetPage', 'hash' => '7a86d6ed21bf412fef03eaa479c2dcc6'),
+                'data_writer' => array(
+                    'className' => 'WidgetFramework_DataWriter_WidgetPage',
+                    'hash' => '8519e858a701bac5ff2aa3ac65c77246'
+                ),
+                'model' => array(
+                    'className' => 'WidgetFramework_Model_WidgetPage',
+                    'hash' => '7a86d6ed21bf412fef03eaa479c2dcc6'
+                ),
                 'route_prefix_admin' => false,
                 'controller_admin' => false,
             ),
@@ -35,7 +41,12 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base
                 'class' => array('name' => 'class', 'type' => 'string', 'required' => true),
                 'position' => array('name' => 'position', 'type' => 'string'),
                 'group_id' => array('name' => 'group_id', 'type' => 'uint', 'required' => true, 'default' => 0),
-                'display_order' => array('name' => 'display_order', 'type' => 'int', 'required' => true, 'default' => 0),
+                'display_order' => array(
+                    'name' => 'display_order',
+                    'type' => 'int',
+                    'required' => true,
+                    'default' => 0
+                ),
                 'active' => array('name' => 'active', 'type' => 'uint', 'required' => true, 'default' => 1),
                 'options' => array('name' => 'options', 'type' => 'serialized'),
                 'template_for_hooks' => array('name' => 'template_for_hooks', 'type' => 'serialized'),
@@ -45,7 +56,12 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base
             'title_field' => 'title',
             'primaryKey' => array('widget_id'),
             'indeces' => array(),
-            'files' => array('data_writer' => false, 'model' => false, 'route_prefix_admin' => false, 'controller_admin' => false),
+            'files' => array(
+                'data_writer' => false,
+                'model' => false,
+                'route_prefix_admin' => false,
+                'controller_admin' => false
+            ),
         ),
         'cache' => array(
             'name' => 'cache',
@@ -62,7 +78,12 @@ class WidgetFramework_DevHelper_Config extends DevHelper_Config_Base
             'title_field' => 'hash',
             'primaryKey' => array('cache_id'),
             'indeces' => array(),
-            'files' => array('data_writer' => false, 'model' => false, 'route_prefix_admin' => false, 'controller_admin' => false),
+            'files' => array(
+                'data_writer' => false,
+                'model' => false,
+                'route_prefix_admin' => false,
+                'controller_admin' => false
+            ),
         ),
     );
     protected $_dataPatches = array(

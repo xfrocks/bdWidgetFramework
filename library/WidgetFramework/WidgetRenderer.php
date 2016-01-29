@@ -59,10 +59,17 @@ abstract class WidgetFramework_WidgetRenderer
      * @param array $params
      * @param XenForo_Template_Abstract $renderTemplateObject
      */
-    abstract protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject);
+    abstract protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    );
 
-    protected function _renderOptions(XenForo_Template_Abstract $template)
-    {
+    protected function _renderOptions(
+        /** @noinspection PhpUnusedParameterInspection */
+        XenForo_Template_Abstract $template
+    ) {
         return true;
     }
 
@@ -93,13 +100,20 @@ abstract class WidgetFramework_WidgetRenderer
         return true;
     }
 
-    protected function _prepare(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
-    {
+    protected function _prepare(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $template
+    ) {
         return true;
     }
 
-    protected function _getExtraDataLink(array $widget)
-    {
+    protected function _getExtraDataLink(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget
+    ) {
         return false;
     }
 
@@ -193,8 +207,12 @@ abstract class WidgetFramework_WidgetRenderer
      *
      * @return string forum id or empty string
      */
-    protected function _helperGetForumIdForCache(array $forumsOption, array $templateParams = array(), $asGuest = false)
-    {
+    protected function _helperGetForumIdForCache(
+        array $forumsOption,
+        array $templateParams = array(),
+        /** @noinspection PhpUnusedParameterInspection */
+        $asGuest = false
+    ) {
         if (!empty($forumsOption)) {
             $templateNode = null;
 
@@ -230,13 +248,16 @@ abstract class WidgetFramework_WidgetRenderer
      *
      * @return array of forum ids
      */
-    protected function _helperGetForumIdsFromOption(array $forumsOption, array $templateParams = array(), $asGuest = false)
-    {
+    protected function _helperGetForumIdsFromOption(
+        array $forumsOption,
+        array $templateParams = array(),
+        $asGuest = false
+    ) {
         if (empty($forumsOption)) {
             $forumIds = array_keys($this->_helperGetViewableNodeList($asGuest));
         } else {
             $forumIds = array_values($forumsOption);
-            $forumIds2 = array();
+            $forumIdsSpecial = array();
             $templateNode = null;
 
             if (!empty($templateParams['forum']['node_id'])) {
@@ -253,40 +274,42 @@ abstract class WidgetFramework_WidgetRenderer
                 switch ($forumIds[$i]) {
                     case self::FORUMS_OPTION_SPECIAL_CURRENT:
                         if (!empty($templateNode)) {
-                            $forumIds2[] = $templateNode['node_id'];
+                            $forumIdsSpecial[] = $templateNode['node_id'];
                         }
                         unset($forumIds[$i]);
                         break;
                     case self::FORUMS_OPTION_SPECIAL_CURRENT_AND_CHILDREN:
                         if (!empty($templateNode)) {
-                            $forumIds2[] = $templateNode['node_id'];
+                            $templateNodeId = $templateNode['node_id'];
+                            $forumIdsSpecial[] = $templateNodeId;
 
                             $viewableNodeList = $this->_helperGetViewableNodeList($asGuest);
-                            $this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateNode['node_id']);
+                            $this->_helperMergeChildForumIds($forumIdsSpecial, $viewableNodeList, $templateNodeId);
                         }
                         unset($forumIds[$i]);
                         break;
                     case self::FORUMS_OPTION_SPECIAL_PARENT:
                         if (!empty($templateNode)) {
-                            $forumIds2[] = $templateNode['parent_node_id'];
+                            $forumIdsSpecial[] = $templateNode['parent_node_id'];
                         }
                         unset($forumIds[$i]);
                         break;
                     case self::FORUMS_OPTION_SPECIAL_PARENT_AND_CHILDREN:
                         if (!empty($templateNode)) {
-                            $forumIds2[] = $templateNode['parent_node_id'];
+                            $templateNodeId = $templateNode['parent_node_id'];
+                            $forumIdsSpecial[] = $templateNodeId;
 
                             $viewableNodeList = $this->_helperGetViewableNodeList($asGuest);
-                            $this->_helperMergeChildForumIds($forumIds2, $viewableNodeList, $templateNode['parent_node_id']);
+                            $this->_helperMergeChildForumIds($forumIdsSpecial, $viewableNodeList, $templateNodeId);
                         }
                         unset($forumIds[$i]);
                         break;
                 }
             }
 
-            if (!empty($forumIds2)) {
+            if (!empty($forumIdsSpecial)) {
                 // only merge 2 arrays if some new ids are found...
-                $forumIds = array_unique(array_merge($forumIds, $forumIds2));
+                $forumIds = array_unique(array_merge($forumIds, $forumIdsSpecial));
             }
         }
 
@@ -400,8 +423,10 @@ abstract class WidgetFramework_WidgetRenderer
         return !empty($configuration['isHidden']);
     }
 
-    public function useWrapper(array $widget)
-    {
+    public function useWrapper(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget
+    ) {
         $configuration = $this->getConfiguration();
         return !empty($configuration['useWrapper']);
     }
@@ -425,14 +450,18 @@ abstract class WidgetFramework_WidgetRenderer
         return !empty($configuration['useCache']);
     }
 
-    public function useUserCache(array $widget)
-    {
+    public function useUserCache(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget
+    ) {
         $configuration = $this->getConfiguration();
         return !empty($configuration['useUserCache']);
     }
 
-    public function canAjaxLoad(array $widget)
-    {
+    public function canAjaxLoad(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget
+    ) {
         $configuration = $this->getConfiguration();
         return !empty($configuration['canAjaxLoad']);
     }
@@ -482,7 +511,9 @@ abstract class WidgetFramework_WidgetRenderer
             }
         }
 
-        if (!empty($options['conditional']) AND !empty($options['expression'])) {
+        if (!empty($options['conditional'])
+            && !empty($options['expression'])
+        ) {
             unset($options['expression']);
         }
 
@@ -543,7 +574,9 @@ abstract class WidgetFramework_WidgetRenderer
         if (!empty($widget['options']['conditional'])) {
             $conditional = $widget['options']['conditional'];
 
-            if (!empty($conditional['raw']) AND !empty($conditional['parsed'])) {
+            if (!empty($conditional['raw'])
+                && !empty($conditional['parsed'])
+            ) {
                 return WidgetFramework_Helper_Conditional::test($conditional['raw'], $conditional['parsed'], $params);
             }
         } elseif (!empty($widget['options']['expression'])) {
@@ -630,8 +663,14 @@ abstract class WidgetFramework_WidgetRenderer
         }
     }
 
-    public function render(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$output)
-    {
+    public function render(
+        array &$widgetRef,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $template,
+        /** @noinspection PhpUnusedParameterInspection */
+        &$output
+    ) {
         $html = false;
         $containerData = array();
         $requiredExternals = array();
@@ -694,7 +733,9 @@ abstract class WidgetFramework_WidgetRenderer
             }
         }
 
-        if ($html === false AND $lockId === false) {
+        if ($html === false
+            && $lockId === false
+        ) {
             // a lock is required but we failed to acquired it
             // also, a cached could not be found
             // stop rendering
@@ -705,7 +746,9 @@ abstract class WidgetFramework_WidgetRenderer
         if ($html === false) {
             $renderTemplate = $this->_getRenderTemplate($widgetRef, $positionCode, $params);
             if (!empty($renderTemplate)) {
-                $renderTemplateObject = $template->create($renderTemplate, array_merge($params, array('widget' => $widgetRef)));
+                $renderTemplateParams = $params;
+                $renderTemplateParams['widget'] =& $widgetRef;
+                $renderTemplateObject = $template->create($renderTemplate, $renderTemplateParams);
                 $renderTemplateObject->setParam(WidgetFramework_Core::PARAM_CURRENT_WIDGET_ID, $widgetRef['widget_id']);
 
                 // reset required externals
@@ -771,15 +814,23 @@ abstract class WidgetFramework_WidgetRenderer
         ));
     }
 
-    protected function _getAjaxLoadParams(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
-    {
+    protected function _getAjaxLoadParams(
+        /** @noinspection PhpUnusedParameterInspection */
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $template
+    ) {
         return array(
             self::PARAM_IS_HOOK => !empty($params[self::PARAM_IS_HOOK]),
         );
     }
 
-    public function extraPrepare(array $widget, &$html)
-    {
+    public function extraPrepare(
+        array $widget,
+        /** @noinspection PhpUnusedParameterInspection */
+        &$html
+    ) {
         $extra = array();
 
         $link = $this->_getExtraDataLink($widget);
@@ -917,9 +968,14 @@ abstract class WidgetFramework_WidgetRenderer
         }
 
         if (empty(self::$_pseudoViewObj)) {
-            if (!empty(WidgetFramework_Listener::$fc) AND !empty(WidgetFramework_Listener::$viewRenderer)) {
+            if (!empty(WidgetFramework_Listener::$fc)
+                && !empty(WidgetFramework_Listener::$viewRenderer)
+            ) {
                 if (WidgetFramework_Listener::$viewRenderer instanceof XenForo_ViewRenderer_HtmlPublic) {
-                    self::$_pseudoViewObj = new XenForo_ViewPublic_Base(WidgetFramework_Listener::$viewRenderer, WidgetFramework_Listener::$fc->getResponse());
+                    self::$_pseudoViewObj = new XenForo_ViewPublic_Base(
+                        WidgetFramework_Listener::$viewRenderer,
+                        WidgetFramework_Listener::$fc->getResponse()
+                    );
                 }
             }
         }
@@ -930,7 +986,8 @@ abstract class WidgetFramework_WidgetRenderer
 
         if (WidgetFramework_Core::debugMode()) {
             // log the exception for admin examination (in our debug mode only)
-            XenForo_Error::logException(new XenForo_Exception(sprintf('Unable to get view object for %s', $templateObj->getTemplateName())), false, '[bd] Widget Framework');
+            XenForo_Error::logException(new XenForo_Exception(sprintf('Unable to get view object for %s',
+                $templateObj->getTemplateName())), false, '[bd] Widget Framework');
         }
 
         return null;

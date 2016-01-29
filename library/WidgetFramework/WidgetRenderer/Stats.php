@@ -26,8 +26,12 @@ class WidgetFramework_WidgetRenderer_Stats extends WidgetFramework_WidgetRendere
         return 'wf_widget_stats';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if ('forum_list' == $positionCode) {
             $renderTemplateObject->setParam('boardTotals', $params['boardTotals']);
         } else {

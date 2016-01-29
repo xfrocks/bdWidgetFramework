@@ -25,8 +25,12 @@ class WidgetFramework_WidgetRenderer_None extends WidgetFramework_WidgetRenderer
         throw new XenForo_Exception('not implemented');
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         throw new XenForo_Exception('not implemented');
     }
 

@@ -120,8 +120,8 @@ class WidgetFramework_Installer
     public static function installCustomized(
         /** @noinspection PhpUnusedParameterInspection */
         $existingAddOn,
-        $addOnData)
-    {
+        $addOnData
+    ) {
         $db = XenForo_Application::getDb();
 
         $effectiveVersionId = 0;
@@ -206,7 +206,9 @@ class WidgetFramework_Installer
             $nodeModel->rebuildNodeTypeCache();
         }
 
-        if ($effectiveVersionId > 0 AND $effectiveVersionId < 74) {
+        if ($effectiveVersionId > 0
+            && $effectiveVersionId < 74
+        ) {
             // change definition for widget.title and widget.class
             // since 2.4.4
             $db->query("ALTER TABLE `xf_widget` MODIFY COLUMN `title` TEXT");

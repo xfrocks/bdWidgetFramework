@@ -3,11 +3,20 @@
 class WidgetFramework_Model_WidgetPage extends XenForo_Model
 {
 
-    public function canViewWidgetPage(array $widgetPage, &$errorPhraseKey = '', array $nodePermissions = null, array $viewingUser = null)
-    {
+    public function canViewWidgetPage(
+        array $widgetPage,
+        &$errorPhraseKey = '',
+        array $nodePermissions = null,
+        array $viewingUser = null
+    ) {
         $this->standardizeViewingUserReferenceForNode($widgetPage['node_id'], $viewingUser, $nodePermissions);
 
-        return XenForo_Permission::hasContentPermission($nodePermissions, 'view');
+        if (!XenForo_Permission::hasContentPermission($nodePermissions, 'view')) {
+            $errorPhraseKey = 'wf_you_may_not_view_this_page_because_it_is_restricted';
+            return false;
+        }
+
+        return true;
     }
 
     public function getList(array $conditions = array(), array $fetchOptions = array())
@@ -78,8 +87,11 @@ class WidgetFramework_Model_WidgetPage extends XenForo_Model
 				");
     }
 
-    public function prepareWidgetPageConditions(array $conditions = array(), array $fetchOptions = array())
-    {
+    public function prepareWidgetPageConditions(
+        array $conditions = array(),
+        /** @noinspection PhpUnusedParameterInspection */
+        array $fetchOptions = array()
+    ) {
         $sqlConditions = array();
         $db = $this->_getDb();
 

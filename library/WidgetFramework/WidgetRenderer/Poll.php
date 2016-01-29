@@ -44,7 +44,8 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
                         if (empty($thread)) {
                             throw new XenForo_Exception(new XenForo_Phrase('requested_thread_not_found'), true);
                         } elseif (empty($thread['discussion_type']) OR 'poll' != $thread['discussion_type']) {
-                            throw new XenForo_Exception(new XenForo_Phrase('wf_requested_thread_does_not_have_poll'), true);
+                            throw new XenForo_Exception(
+                                new XenForo_Phrase('wf_requested_thread_does_not_have_poll'), true);
                         }
                     }
                 }
@@ -59,8 +60,12 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
         return 'wf_widget_poll';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         $core = WidgetFramework_Core::getInstance();
         /** @var XenForo_Model_Thread $threadModel */
         $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
@@ -87,7 +92,9 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
             }
 
             $fetchOptions = array(
-                'order' => ($widget['options']['thread_id'] === 'random' ? WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_ORDER_RANDOM : 'post_date'),
+                'order' => ($widget['options']['thread_id'] === 'random'
+                    ? WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_ORDER_RANDOM
+                    : 'post_date'),
                 'orderDirection' => 'desc',
                 WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
                 WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,

@@ -48,8 +48,12 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
         return 'wf_widget_feed_reader';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (empty($widget['options']['url'])) {
             return '';
         }

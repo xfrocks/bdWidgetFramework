@@ -32,8 +32,12 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
         return 'wf_widget_options_recent_status';
     }
 
-    protected function _getProfilePosts(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _getProfilePosts(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         $core = WidgetFramework_Core::getInstance();
         /** @var XenForo_Model_User $userModel */
         $userModel = $core->getModelFromCache('XenForo_Model_User');
@@ -45,10 +49,12 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
         if (XenForo_Visitor::getUserId() == 0 OR empty($widget['options']['friends_only'])) {
             // get statuses from all users if friends_only option is not used
             // also do it if current user is guest (guest has no friend list, lol)
-            $conditions = array(WidgetFramework_XenForo_Model_User::CONDITIONS_STATUS_DATE => array(
-                '>',
-                0
-            ));
+            $conditions = array(
+                WidgetFramework_XenForo_Model_User::CONDITIONS_STATUS_DATE => array(
+                    '>',
+                    0
+                )
+            );
             $fetchOptions = array(
                 'join' => XenForo_Model_User::FETCH_USER_PROFILE,
                 'order' => WidgetFramework_XenForo_Model_User::ORDER_STATUS_DATE,
@@ -66,7 +72,11 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
                 }
             }
         } else {
-            $users = $userModel->getFollowedUserProfiles(XenForo_Visitor::getUserId(), $widget['options']['limit'], 'user_profile.status_date DESC');
+            $users = $userModel->getFollowedUserProfiles(
+                XenForo_Visitor::getUserId(),
+                $widget['options']['limit'],
+                'user_profile.status_date DESC'
+            );
 
             // remove users if no status is found
             foreach (array_keys($users) as $userId) {
@@ -77,18 +87,27 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
         }
 
         $profilePostIds = array();
-        if (!empty($widget['options']['show_duplicates']) AND !empty($users)) {
+        if (!empty($widget['options']['show_duplicates'])
+            && !empty($users)
+        ) {
             $userIds = array_keys($users);
             /** @var WidgetFramework_XenForo_Model_ProfilePost $profilePostModel */
             $profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
-            $profilePostIds = $profilePostModel->WidgetFramework_getProfilePostIdsOfUserStatuses($userIds, intval($widget['options']['limit']));
+            $profilePostIds = $profilePostModel->WidgetFramework_getProfilePostIdsOfUserStatuses(
+                $userIds, intval($widget['options']['limit']));
         } else {
             foreach ($users as $user) {
                 $profilePostIds[] = $user['status_profile_post_id'];
             }
         }
 
-        $profilePosts = $profilePostModel->getProfilePostsByIds($profilePostIds, array('join' => XenForo_Model_ProfilePost::FETCH_USER_POSTER | XenForo_Model_ProfilePost::FETCH_USER_RECEIVER | XenForo_Model_ProfilePost::FETCH_USER_RECEIVER_PRIVACY));
+        $profilePosts = $profilePostModel->getProfilePostsByIds($profilePostIds,
+            array(
+                'join' => XenForo_Model_ProfilePost::FETCH_USER_POSTER
+                    | XenForo_Model_ProfilePost::FETCH_USER_RECEIVER
+                    | XenForo_Model_ProfilePost::FETCH_USER_RECEIVER_PRIVACY
+            )
+        );
         foreach ($profilePosts AS $id => &$profilePost) {
             $receivingUser = $profilePostModel->getProfileUserFromProfilePost($profilePost);
 

@@ -13,7 +13,8 @@ class WidgetFramework_Template_Helper_Layout
                 if (is_array($maxMediaWidth)) {
                     if ($maxMediaWidth[2]) {
                         // has sidebar
-                        $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)', $maxMediaWidth[0], $maxMediaWidth[1]);
+                        $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)',
+                            $maxMediaWidth[0], $maxMediaWidth[1]);
                     } else {
                         $mediaStatements[] = sprintf('screen and (max-width: %dpx)', $maxMediaWidth[1]);
                     }
@@ -30,7 +31,8 @@ class WidgetFramework_Template_Helper_Layout
                         // has sidebar
                         $mediaStatements[] = sprintf('screen and (min-width: %dpx)', $minMediaWidth[1]);
                     } else {
-                        $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)', $minMediaWidth[0], $minMediaWidth[1]);
+                        $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)',
+                            $minMediaWidth[0], $minMediaWidth[1]);
                     }
                 } else {
                     $mediaStatements[] = sprintf('screen and (min-width: %dpx)', $minMediaWidth);
@@ -43,7 +45,10 @@ class WidgetFramework_Template_Helper_Layout
 
             foreach ($minMediaWidths as $minMediaWidth) {
                 foreach ($maxMediaWidths as $maxMediaWidth) {
-                    if (is_array($minMediaWidth) AND is_array($maxMediaWidth) AND $minMediaWidth[2] != $maxMediaWidth[2]) {
+                    if (is_array($minMediaWidth)
+                        && is_array($maxMediaWidth)
+                        && $minMediaWidth[2] != $maxMediaWidth[2]
+                    ) {
                         // split into two ranges because sidebar appearance does not match
                         $ranges[] = array(
                             $minMediaWidth[0],
@@ -89,7 +94,8 @@ class WidgetFramework_Template_Helper_Layout
 
             foreach ($ranges as $range) {
                 if ($range[0] > 0) {
-                    $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)', $range[0], $range[1]);
+                    $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)',
+                        $range[0], $range[1]);
                 } else {
                     $mediaStatements[] = sprintf('screen and (max-width: %dpx)', $range[1]);
                 }
@@ -179,7 +185,9 @@ class WidgetFramework_Template_Helper_Layout
 
     public static function prepareConditionalParams(array $params, array $exclude = null, $level = 0)
     {
-        if ($exclude === null AND $level == 0) {
+        if ($exclude === null
+            && $level == 0
+        ) {
             $exclude = array(
                 // list of keys from XenForo_Dependencies_Abstract
                 'session',
@@ -245,7 +253,9 @@ class WidgetFramework_Template_Helper_Layout
                     $prepared[$key] = $value;
                 }
             } elseif (is_string($value)) {
-                if (strlen($value) < 255 AND $level == 0) {
+                if (strlen($value) < 255
+                    && $level == 0
+                ) {
                     $prepared[$key] = $value;
                 }
             }

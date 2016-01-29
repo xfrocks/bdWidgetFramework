@@ -23,8 +23,12 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
         return false;
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (WidgetFramework_Option::get('layoutEditorEnabled')) {
             return new XenForo_Phrase('wf_widget_empty_layout_editor_explain');
         }
@@ -32,8 +36,13 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
         return self::RENDERED;
     }
 
-    public function render(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$output)
-    {
+    public function render(
+        array &$widgetRef,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $template,
+        &$output
+    ) {
         $rendered = parent::render($widgetRef, $positionCode, $params, $template, $output);
 
         if ($rendered === self::RENDERED) {

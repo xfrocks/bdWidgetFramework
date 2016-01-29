@@ -131,8 +131,8 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
         array $thread,
         array $forum,
         array $nodePermissions = null,
-        array $viewingUser = null)
-    {
+        array $viewingUser = null
+    ) {
         $thread = $this->prepareThread($thread, $forum, $nodePermissions, $viewingUser);
 
         $thread['canInlineMod'] = false;

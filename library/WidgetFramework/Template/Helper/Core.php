@@ -20,7 +20,8 @@ class WidgetFramework_Template_Helper_Core
                     }
 
                     /** @noinspection HtmlUnknownTarget */
-                    $string .= sprintf('<div class="readMoreLink"><a href="%s">%s</a></div>', $options['link'], $linkText);
+                    $string .= sprintf('<div class="readMoreLink"><a href="%s">%s</a></div>',
+                        $options['link'], $linkText);
                 }
             }
         }

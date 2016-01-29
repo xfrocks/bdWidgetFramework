@@ -71,59 +71,61 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _getFields()
     {
-        return array('xf_widget' => array(
-            'widget_id' => array(
-                'type' => self::TYPE_UINT,
-                'autoIncrement' => true,
-                'verification' => array(
-                    'WidgetFramework_DataWriter_Helper_Widget',
-                    'verifyWidgetId'
-                )
-            ),
-            'title' => array(
-                'type' => self::TYPE_STRING,
-                'default' => ''
-            ),
-            'class' => array(
-                'type' => self::TYPE_STRING,
-                'required' => true,
-                'verification' => array(
-                    'WidgetFramework_DataWriter_Helper_Widget',
-                    'verifyClass'
-                )
-            ),
-            'options' => array(
-                'type' => self::TYPE_SERIALIZED,
-                'default' => 'a:0:{}'
-            ),
-            'position' => array(
-                'type' => self::TYPE_STRING,
-                'verification' => array(
-                    'WidgetFramework_DataWriter_Helper_Widget',
-                    'verifyPosition'
-                )
-            ),
-            'group_id' => array(
-                'type' => self::TYPE_UINT,
-                'default' => 0,
-            ),
-            'display_order' => array(
-                'type' => self::TYPE_INT,
-                'default' => 0
-            ),
-            'active' => array(
-                'type' => self::TYPE_BOOLEAN,
-                'default' => 1
-            ),
-            'template_for_hooks' => array(
-                'type' => self::TYPE_SERIALIZED,
-                'default' => 'a:0:{}'
-            ),
-            'widget_page_id' => array(
-                'type' => self::TYPE_UINT,
-                'default' => 0
-            ),
-        ));
+        return array(
+            'xf_widget' => array(
+                'widget_id' => array(
+                    'type' => self::TYPE_UINT,
+                    'autoIncrement' => true,
+                    'verification' => array(
+                        'WidgetFramework_DataWriter_Helper_Widget',
+                        'verifyWidgetId'
+                    )
+                ),
+                'title' => array(
+                    'type' => self::TYPE_STRING,
+                    'default' => ''
+                ),
+                'class' => array(
+                    'type' => self::TYPE_STRING,
+                    'required' => true,
+                    'verification' => array(
+                        'WidgetFramework_DataWriter_Helper_Widget',
+                        'verifyClass'
+                    )
+                ),
+                'options' => array(
+                    'type' => self::TYPE_SERIALIZED,
+                    'default' => 'a:0:{}'
+                ),
+                'position' => array(
+                    'type' => self::TYPE_STRING,
+                    'verification' => array(
+                        'WidgetFramework_DataWriter_Helper_Widget',
+                        'verifyPosition'
+                    )
+                ),
+                'group_id' => array(
+                    'type' => self::TYPE_UINT,
+                    'default' => 0,
+                ),
+                'display_order' => array(
+                    'type' => self::TYPE_INT,
+                    'default' => 0
+                ),
+                'active' => array(
+                    'type' => self::TYPE_BOOLEAN,
+                    'default' => 1
+                ),
+                'template_for_hooks' => array(
+                    'type' => self::TYPE_SERIALIZED,
+                    'default' => 'a:0:{}'
+                ),
+                'widget_page_id' => array(
+                    'type' => self::TYPE_UINT,
+                    'default' => 0
+                ),
+            )
+        );
     }
 
     protected function _getExistingData($data)
@@ -170,15 +172,21 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
         );
 
         if ($this->_isTemplateWidget($this->get('class'))) {
-            $this->_getWidgetRendererTemplateModel()->dwPostSave($this->getMergedData(), $this->getWidgetOptions());
-        } elseif ($this->isChanged('class') && $this->_isTemplateWidget($this->getExisting('class'))) {
-            $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedExistingData(), $this->getWidgetOptions(true));
+            $this->_getWidgetRendererTemplateModel()->dwPostSave(
+                $this->getMergedData(),
+                $this->getWidgetOptions()
+            );
+        } elseif ($this->isChanged('class')
+            && $this->_isTemplateWidget($this->getExisting('class'))
+        ) {
+            $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedExistingData());
         }
 
         if ($this->isUpdate()
             && !empty($this->_newData['xf_widget'])
         ) {
-            WidgetFramework_Helper_LayoutEditor::keepWidgetChanges($this->get('widget_id'), $this, $this->_newData['xf_widget']);
+            WidgetFramework_Helper_LayoutEditor::keepWidgetChanges(
+                $this->get('widget_id'), $this, $this->_newData['xf_widget']);
         }
     }
 
@@ -194,7 +202,7 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
         $this->_deleteMasterPhrase($this->_getWidgetModel()->getWidgetTitlePhrase($this->get('widget_id')));
 
         if ($this->_isTemplateWidget($this->get('class'))) {
-            $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedData(), $this->getWidgetOptions());
+            $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedData());
         }
 
         if ($this->get('class') === 'WidgetFramework_WidgetGroup') {

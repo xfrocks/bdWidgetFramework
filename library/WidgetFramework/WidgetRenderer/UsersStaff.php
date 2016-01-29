@@ -47,8 +47,12 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
         return 'wf_widget_users';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
         }
@@ -56,7 +60,10 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
         $users = false;
 
         // try to be smart and get the users data if they happen to be available
-        if ($positionCode == 'member_notable' AND $widget['options']['limit'] == 0 AND !empty($params['staff'])) {
+        if ($positionCode == 'member_notable'
+            && $widget['options']['limit'] == 0
+            && !empty($params['staff'])
+        ) {
             $users = $params['staff'];
         }
 

@@ -6,7 +6,9 @@ class WidgetFramework_XenForo_ViewAdmin_StyleProperty_List extends XFCP_WidgetFr
     {
         parent::renderHtml();
 
-        if (!empty($this->_params['group']['group_name']) AND strpos($this->_params['group']['group_name'], 'WidgetFramework') === 0) {
+        if (!empty($this->_params['group']['group_name'])
+            && strpos($this->_params['group']['group_name'], 'WidgetFramework') === 0
+        ) {
             ksort($this->_params['scalars']);
         }
     }

@@ -29,8 +29,12 @@ class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_Widge
         return 'wf_widget_share_page';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (!isset($params['url'])) {
             // try to detect the correct url for different templates
             $autoDetectedUrl = false;

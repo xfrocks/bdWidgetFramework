@@ -275,8 +275,12 @@ class WidgetFramework_Core
         return $params;
     }
 
-    public function renderWidgetsFor($templateName, array $params, XenForo_Template_Abstract $template, array &$containerData)
-    {
+    public function renderWidgetsFor(
+        $templateName,
+        array $params,
+        XenForo_Template_Abstract $template,
+        array &$containerData
+    ) {
         if ($this->_isIgnoredTemplate($templateName, $params)) {
             return false;
         }
@@ -426,8 +430,13 @@ class WidgetFramework_Core
         return $html;
     }
 
-    public function renderWidgets(array &$widgetsRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$html)
-    {
+    public function renderWidgets(
+        array &$widgetsRef,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $template,
+        &$html
+    ) {
         foreach ($widgetsRef as &$widgetRef) {
             $widgetRef['_runtime']['html'] = $this->renderWidget($widgetRef, $positionCode, $params, $template, $html);
 
@@ -460,8 +469,13 @@ class WidgetFramework_Core
         }
     }
 
-    public function renderWidget(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$html)
-    {
+    public function renderWidget(
+        array &$widgetRef,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $template,
+        &$html
+    ) {
         $widgetHtml = '';
         $renderer = self::getRenderer($widgetRef['class'], false);
 
@@ -535,7 +549,7 @@ class WidgetFramework_Core
 
     public static function clearCachedWidgetById($widgetId)
     {
-        return self::getInstance()->_getModelCache()->invalidateCache($widgetId);
+        self::getInstance()->_getModelCache()->invalidateCache($widgetId);
     }
 
     public static function clearCachedWidgetByClass($class)

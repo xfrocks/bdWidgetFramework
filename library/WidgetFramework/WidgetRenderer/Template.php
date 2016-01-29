@@ -6,7 +6,9 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
 
     public function extraPrepareTitle(array $widget)
     {
-        if (empty($widget['title']) AND isset(self::$_extraContainerDatas[$widget['widget_id']])) {
+        if (empty($widget['title'])
+            && isset(self::$_extraContainerDatas[$widget['widget_id']])
+        ) {
             $extraContainerData = self::$_extraContainerDatas[$widget['widget_id']];
 
             if (isset($extraContainerData['title'])) {
@@ -80,14 +82,19 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
         }
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         $templateTitle = $this->_getRenderTemplate($widget, $positionCode, $params);
 
         if (!empty($widget['options']['controller_name'])
             && !empty($widget['options']['controller_action'])
         ) {
-            $controllerResponse = $this->_dispatch($widget, $widget['options']['controller_name'], $widget['options']['controller_action']);
+            $controllerResponse = $this->_dispatch(
+                $widget['options']['controller_name'], $widget['options']['controller_action']);
 
             if (!empty($controllerResponse)) {
                 if ($controllerResponse instanceof XenForo_ControllerResponse_View
@@ -113,7 +120,7 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
         return '';
     }
 
-    protected function _dispatch(array $widget, $controllerName, $controllerAction)
+    protected function _dispatch($controllerName, $controllerAction)
     {
         if (empty(WidgetFramework_Listener::$fc)) {
             return null;
@@ -134,8 +141,12 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
         }
     }
 
-    protected function _findViewForTemplate(array $widget, XenForo_ControllerResponse_View $controllerResponse, $templateName, $changeTemplateName = true)
-    {
+    protected function _findViewForTemplate(
+        array $widget,
+        XenForo_ControllerResponse_View $controllerResponse,
+        $templateName,
+        $changeTemplateName = true
+    ) {
         if ($controllerResponse->templateName == $templateName) {
             return $controllerResponse;
         }

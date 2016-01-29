@@ -26,9 +26,15 @@ class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetR
         return 'wf_widget_online_staff';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
-        if ('forum_list' === $positionCode AND !empty($params['onlineUsers'])) {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        if ('forum_list' === $positionCode
+            && !empty($params['onlineUsers'])
+        ) {
             $renderTemplateObject->setParam('onlineUsers', $params['onlineUsers']);
         } else {
             if (empty($GLOBALS['WidgetFramework_onlineUsers'])) {
@@ -36,10 +42,13 @@ class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetR
                 /** @var XenForo_Model_Session $sessionModel */
                 $sessionModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Session');
 
-                $GLOBALS['WidgetFramework_onlineUsers'] = $sessionModel->getSessionActivityQuickList($visitor->toArray(), array('cutOff' => array(
-                    '>',
-                    $sessionModel->getOnlineStatusTimeout()
-                )), ($visitor['user_id'] ? $visitor->toArray() : null));
+                $GLOBALS['WidgetFramework_onlineUsers'] = $sessionModel->getSessionActivityQuickList($visitor->toArray(),
+                    array(
+                        'cutOff' => array(
+                            '>',
+                            $sessionModel->getOnlineStatusTimeout()
+                        )
+                    ), ($visitor['user_id'] ? $visitor->toArray() : null));
             }
 
             $renderTemplateObject->setParam('onlineUsers', $GLOBALS['WidgetFramework_onlineUsers']);

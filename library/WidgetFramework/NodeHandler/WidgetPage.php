@@ -10,8 +10,13 @@ class WidgetFramework_NodeHandler_WidgetPage extends XenForo_NodeHandler_Abstrac
         return $this->_getWidgetPageModel()->canViewWidgetPage($node, $null, $nodePermissions);
     }
 
-    public function renderNodeForTree(XenForo_View $view, array $node, array $permissions, array $renderedChildren, $level)
-    {
+    public function renderNodeForTree(
+        XenForo_View $view,
+        array $node,
+        array $permissions,
+        array $renderedChildren,
+        $level
+    ) {
         $templateLevel = ($level <= 2 ? $level : 'n');
 
         return $view->createTemplateObject('wf_node_widget_page_level_' . $templateLevel, array(

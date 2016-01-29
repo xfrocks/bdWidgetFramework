@@ -6,20 +6,13 @@ class WidgetFramework_XenForo_BbCode_Formatter_Text extends XFCP_WidgetFramework
     {
         $tags = parent::getTags();
 
+        // do not render preview break
         $tags['prbreak'] = array(
             'hasOption' => false,
-            'callback' => array(
-                $this,
-                'renderPrbreak'
-            ),
+            'replace' => array('', ''),
         );
 
         return $tags;
-    }
-
-    public function renderPrbreak(array $tag, array $rendererStates)
-    {
-        return '';
     }
 
 }

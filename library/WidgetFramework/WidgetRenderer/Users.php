@@ -68,8 +68,12 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
         return 'wf_widget_users';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
         }
@@ -84,11 +88,17 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
 
         // try to be smart and get the users data if they happen to be available
         if ($positionCode == 'member_list') {
-            if ($widget['options']['limit'] == 12 && $widget['options']['order'] == 'message_count' AND !empty($params['activeUsers'])) {
+            if ($widget['options']['limit'] == 12
+                && $widget['options']['order'] == 'message_count'
+                && !empty($params['activeUsers'])
+            ) {
                 $users = $params['activeUsers'];
             }
 
-            if ($widget['options']['limit'] == 8 && $widget['options']['order'] == 'register_date' AND !empty($params['latestUsers'])) {
+            if ($widget['options']['limit'] == 8
+                && $widget['options']['order'] == 'register_date'
+                && !empty($params['latestUsers'])
+            ) {
                 $users = $params['latestUsers'];
             }
         }

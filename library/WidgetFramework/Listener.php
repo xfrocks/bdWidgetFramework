@@ -21,8 +21,11 @@ class WidgetFramework_Listener
     protected static $_saveLayoutEditorRendered = false;
     protected static $_layoutEditorRendered = array();
 
-    public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
-    {
+    public static function init_dependencies(
+        XenForo_Dependencies_Abstract $dependencies,
+        /** @noinspection PhpUnusedParameterInspection */
+        array $data
+    ) {
         self::$dependencies = $dependencies;
 
         XenForo_Template_Helper_Core::$helperCallbacks[strtolower('WidgetFramework_snippet')] = array(
@@ -49,11 +52,16 @@ class WidgetFramework_Listener
             WidgetFramework_Option::UPDATER_URL, 'widget_framework');
     }
 
-    public static function navigation_tabs(array &$extraTabs, $selectedTabId)
-    {
+    public static function navigation_tabs(
+        array &$extraTabs,
+        /** @noinspection PhpUnusedParameterInspection */
+        $selectedTabId
+    ) {
         $indexNodeId = WidgetFramework_Option::get('indexNodeId');
 
-        if ($indexNodeId > 0 AND XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab')) {
+        if ($indexNodeId > 0
+            && XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab')
+        ) {
             $tabId = WidgetFramework_Option::get('indexTabId');
 
             $extraTabs[$tabId] = array(
@@ -86,12 +94,17 @@ class WidgetFramework_Listener
 
                 WidgetFramework_Template_Extended::WidgetFramework_setPageContainer($template);
 
-                if (isset($params['contentTemplate']) AND $params['contentTemplate'] === 'wf_widget_page' AND empty($params['selectedTabId'])) {
+                if (isset($params['contentTemplate'])
+                    && $params['contentTemplate'] === 'wf_widget_page'
+                    && empty($params['selectedTabId'])
+                ) {
                     // make sure a navtab is selected if user is viewing our (as index) widget page
                     if (!XenForo_Template_Helper_Core::styleProperty('wf_homeNavTab')) {
                         // oh, our "Home" navtab has been disable...
                         // try something from $params['tabs'] OR $params['extraTabs']
-                        if (isset($params['tabs']) AND isset($params['extraTabs'])) {
+                        if (isset($params['tabs'])
+                            && isset($params['extraTabs'])
+                        ) {
                             WidgetFramework_Helper_Index::setNavtabSelected($params['tabs'], $params['extraTabs']);
                         }
                     }
@@ -100,11 +113,16 @@ class WidgetFramework_Listener
         }
     }
 
-    public static function template_post_render($templateName, &$output, array &$containerData, XenForo_Template_Abstract $template)
-    {
+    public static function template_post_render(
+        $templateName,
+        &$output,
+        array &$containerData,
+        XenForo_Template_Abstract $template
+    ) {
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             if (!preg_match('#^wf_.+_wrapper$#', $templateName)) {
-                $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor($templateName, $template->getParams(), $template, $containerData);
+                $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor(
+                    $templateName, $template->getParams(), $template, $containerData);
 
                 if ($rendered) {
                     if (!isset($containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS])) {
@@ -143,10 +161,11 @@ class WidgetFramework_Listener
             }
 
             if ($templateName === 'PAGE_CONTAINER') {
-                WidgetFramework_Template_Extended::WidgetFramework_processLateExtraData($output, $containerData, $template);
+                WidgetFramework_Template_Extended::WidgetFramework_processLateExtraData($output, $template);
 
                 if (!empty(self::$_navigationTabsForums)) {
-                    $output = str_replace('<!-- navigation_tabs_forums for wf_home_navtab_links -->', self::$_navigationTabsForums, $output);
+                    $output = str_replace('<!-- navigation_tabs_forums for wf_home_navtab_links -->',
+                        self::$_navigationTabsForums, $output);
                 }
             }
 
@@ -190,13 +209,21 @@ class WidgetFramework_Listener
         }
     }
 
-    public static function template_hook_navigation_tabs_forums($hookName, &$contents, array $hookParams, XenForo_Template_Abstract $template)
-    {
+    public static function template_hook_navigation_tabs_forums(
+        /** @noinspection PhpUnusedParameterInspection */
+        $hookName,
+        &$contents,
+        array $hookParams,
+        XenForo_Template_Abstract $template
+    ) {
         self::$_navigationTabsForums = $contents;
     }
 
-    public static function init_router_public(XenForo_Dependencies_Abstract $dependencies, XenForo_Router $router)
-    {
+    public static function init_router_public(
+        /** @noinspection PhpUnusedParameterInspection */
+        XenForo_Dependencies_Abstract $dependencies,
+        XenForo_Router $router
+    ) {
         if (WidgetFramework_Option::get('indexNodeId') > 0) {
             // one of our widget pages was selected as the index page
             // modify the router rules to serve http://domain.com/xenforo/page-x urls
@@ -212,8 +239,13 @@ class WidgetFramework_Listener
         }
     }
 
-    public static function front_controller_pre_view(XenForo_FrontController $fc, XenForo_ControllerResponse_Abstract &$controllerResponse, XenForo_ViewRenderer_Abstract &$viewRenderer, array &$containerParams)
-    {
+    public static function front_controller_pre_view(
+        XenForo_FrontController $fc,
+        XenForo_ControllerResponse_Abstract &$controllerResponse,
+        XenForo_ViewRenderer_Abstract &$viewRenderer,
+        /** @noinspection PhpUnusedParameterInspection */
+        array &$containerParams
+    ) {
         self::$fc = $fc;
         self::$viewRenderer = $viewRenderer;
 
@@ -293,7 +325,9 @@ class WidgetFramework_Listener
         static $extended1 = false;
         static $extended2 = false;
 
-        if (defined('WIDGET_FRAMEWORK_LOADED') AND !empty($class)) {
+        if (defined('WIDGET_FRAMEWORK_LOADED')
+            && !empty($class)
+        ) {
             // check for empty($class) to avoid a bug with XenForo 1.2.0
             // http://xenforo.com/community/threads/57064/
 
@@ -311,8 +345,11 @@ class WidgetFramework_Listener
         }
     }
 
-    public static function file_health_check(XenForo_ControllerAdmin_Abstract $controller, array &$hashes)
-    {
+    public static function file_health_check(
+        /** @noinspection PhpUnusedParameterInspection */
+        XenForo_ControllerAdmin_Abstract $controller,
+        array &$hashes
+    ) {
         $hashes += WidgetFramework_FileSums::getHashes();
     }
 

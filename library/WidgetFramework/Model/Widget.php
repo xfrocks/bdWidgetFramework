@@ -94,8 +94,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         $groupId,
         $relativeDisplayOrder,
         $widgetsAtPosition,
-        array &$widgetsNeedUpdate = array())
-    {
+        array &$widgetsNeedUpdate = array()
+    ) {
         if ($groupId > 0) {
             // put into a group
             $siblingWidgets = $this->getSiblingWidgets($widgetsAtPosition, $groupId);
@@ -189,7 +189,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         if (!file_exists($fileName)
             || !is_readable($fileName)
         ) {
-            throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'), true);
+            throw new XenForo_Exception(
+                new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'), true);
         }
 
         try {
@@ -392,8 +393,9 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
     public function prepareWidgetConditions(
         /** @noinspection PhpUnusedParameterInspection */
-        array $conditions, array &$fetchOptions)
-    {
+        array $conditions,
+        array &$fetchOptions
+    ) {
         $db = $this->_getDb();
         $sqlConditions = array();
 
@@ -436,8 +438,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
     public function prepareWidgetFetchOptions(
         /** @noinspection PhpUnusedParameterInspection */
-        array $fetchOptions)
-    {
+        array $fetchOptions
+    ) {
         $selectFields = '';
         $joinTables = '';
 

@@ -20,8 +20,12 @@ class WidgetFramework_WidgetRenderer_FacebookFacepile extends WidgetFramework_Wi
         return 'wf_widget_facebook_facepile';
     }
 
-    protected function _render(array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject)
-    {
+    protected function _render(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         $renderTemplateObject->setParams($params);
 
         return $renderTemplateObject->render();

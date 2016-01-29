@@ -15,14 +15,18 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
         $db = $this->_getDb();
         $sqlConditions = array($result);
 
-        if (isset($conditions[self::CONDITIONS_STATUS_DATE]) AND is_array($conditions[self::CONDITIONS_STATUS_DATE])) {
+        if (isset($conditions[self::CONDITIONS_STATUS_DATE])
+            && is_array($conditions[self::CONDITIONS_STATUS_DATE])
+        ) {
             list($operator, $cutOff) = $conditions[self::CONDITIONS_STATUS_DATE];
 
             $this->assertValidCutOffOperator($operator);
             $sqlConditions[] = "user_profile.status_date $operator " . $db->quote($cutOff);
         }
 
-        if (isset($conditions[self::CONDITIONS_DOB]) AND is_array($conditions[self::CONDITIONS_DOB])) {
+        if (isset($conditions[self::CONDITIONS_DOB])
+            && is_array($conditions[self::CONDITIONS_DOB])
+        ) {
             if (!empty($conditions[self::CONDITIONS_DOB]['d'])) {
                 // direct mode like
                 // array('d' => 1, 'm' => 1)

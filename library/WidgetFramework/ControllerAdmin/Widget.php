@@ -260,7 +260,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                         $_widgetToMergeDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                         $_widgetToMergeDw->setExistingData($_widgetToMerge, true);
                         $_widgetToMergeDw->set('group_id', $_group['widget_id']);
-                        $_widgetToMergeDw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+                        $_widgetToMergeDw->setExtraData(
+                            WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
                         $_widgetToMergeDw->save();
                     }
 
@@ -426,8 +427,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             $link = $this->getDynamicRedirectIfNot($notLink, $link);
 
             if ($this->_input->filterSingle('_layoutEditor', XenForo_Input::UINT)) {
-                $viewParams = array('changedRenderedId' =>
-                    WidgetFramework_Helper_LayoutEditor::getChangedWidgetIds());
+                $viewParams = array(
+                    'changedRenderedId' => WidgetFramework_Helper_LayoutEditor::getChangedWidgetIds(),
+                );
 
                 return $this->responseView('WidgetFramework_ViewAdmin_Widget_Save', '', $viewParams);
             } else {
@@ -582,7 +584,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
     {
         $info = $this->_getWidgetModel()->getWidgetById($widgetId);
         if (!$info) {
-            throw $this->responseException($this->responseError(new XenForo_Phrase('wf_requested_widget_not_found'), 404));
+            throw $this->responseException(
+                $this->responseError(new XenForo_Phrase('wf_requested_widget_not_found'), 404));
         }
 
         return $info;
@@ -592,7 +595,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
     {
         $info = $this->_getWidgetPageModel()->getWidgetPageById($nodeId);
         if (!$info) {
-            throw $this->responseException($this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404));
+            throw $this->responseException(
+                $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404));
         }
 
         return $info;
