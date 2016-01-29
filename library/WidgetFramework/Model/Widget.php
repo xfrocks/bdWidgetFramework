@@ -219,11 +219,11 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
         if ($deleteAll) {
             // get existing widgets from database and delete them all
-            if ($widgetPage === null) {
-                $existingWidgets = $this->getGlobalWidgets(false, false);
-            } else {
-                $existingWidgets = $this->getPageWidgets($widgetPage['node_id'], false);
+            $widgetsConditions = array();
+            if (!empty($widgetPage['node_id'])) {
+                $widgetsConditions['widget_page_id'] = $widgetPage['node_id'];
             }
+            $existingWidgets = $this->getWidgets($widgetsConditions);
 
             foreach ($existingWidgets as $existingWidget) {
                 $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
@@ -321,46 +321,6 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         $this->buildCache();
     }
 
-    public function getGlobalWidgets($useCached = true, $prepare = true)
-    {
-        $widgets = false;
-
-        /* try to use cached data */
-        if ($useCached) {
-            $widgets = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY);
-        }
-
-        /* fallback to database */
-        if ($widgets === false) {
-            $widgets = $this->getwidgets(array(
-                'widget_page_id' => 0,
-            ));
-        }
-
-        foreach ($widgets as &$widget) {
-            if ($prepare) {
-                $this->prepareWidget($widget);
-            }
-        }
-
-        return $widgets;
-    }
-
-    public function getPageWidgets($widgetPageId, $prepare = true)
-    {
-        $widgets = $this->getWidgets(array(
-            'widget_page_id' => $widgetPageId,
-        ));
-
-        foreach ($widgets as &$widget) {
-            if ($prepare) {
-                $this->prepareWidget($widget);
-            }
-        }
-
-        return $widgets;
-    }
-
     public function getWidgetById($widgetId, array $fetchOptions = array())
     {
         $widgets = $this->getWidgets(array(
@@ -407,46 +367,27 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $widgets;
     }
 
-    public function buildCache()
+    public function getCachedWidgets()
     {
-        $widgets = $this->getGlobalWidgets(false, false);
+        $widgets = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY);
 
-        foreach (array_keys($widgets) as $widgetId) {
-            if (empty($widgets[$widgetId]['active'])) {
-                unset($widgets[$widgetId]);
-            }
+        if (empty($widgets)) {
+            return $this->buildCache();
         }
 
-        XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
+        return $widgets;
     }
 
-    public function prepareWidget(array &$widget)
+    public function buildCache()
     {
-        if (empty($widget)) {
-            return $widget;
-        }
+        $widgets = $this->getWidgets(array(
+            'widget_page_id' => 0,
+            'active' => 1,
+        ));
 
-        $renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
+        XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
 
-        if ($renderer) {
-            $widget['renderer'] = &$renderer;
-            $widget['rendererName'] = $renderer->getName();
-            $configuration = $renderer->getConfiguration();
-            $options = &$configuration['options'];
-            foreach ($options as $optionKey => $optionType) {
-                if (!isset($widget['options'][$optionKey])) {
-                    $widget['options'][$optionKey] = '';
-                }
-            }
-
-            $widget['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widget);
-        } else {
-            $widget['rendererName'] = new XenForo_Phrase('wf_unknown_renderer', array('class' => $widget['class']));
-            $widget['rendererNotFound'] = true;
-            $widget['active'] = false;
-        }
-
-        return $widget;
+        return $widgets;
     }
 
     public function prepareWidgetConditions(

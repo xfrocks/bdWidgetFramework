@@ -22,7 +22,12 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
         $page = max(1, $this->_input->filterSingle('page', XenForo_Input::UINT));
         $this->canonicalizeRequestUrl(XenForo_Link::buildPublicLink('widget-pages', $widgetPage, array('page' => $page)));
 
-        $widgets = $this->_getWidgetModel()->getPageWidgets($widgetPage['node_id']);
+        $widgetsConditions = array('widget_page_id' => $widgetPage['node_id']);
+        if (!WidgetFramework_Option::get('layoutEditorEnabled')) {
+            $widgetsConditions['active'] = 1;
+        }
+
+        $widgets = $this->_getWidgetModel()->getWidgets($widgetsConditions);
 
         $nodeBreadCrumbs = $this->_getNodeModel()->getNodeBreadCrumbs($widgetPage, false);
 

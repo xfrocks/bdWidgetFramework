@@ -254,7 +254,7 @@ class WidgetFramework_Installer
         $widgetPages = $widgetPageModel->getWidgetPages();
 
         foreach ($widgetPages as $widgetPage) {
-            $widgets = $widgetModel->getPageWidgets($widgetPage['node_id'], false);
+            $widgets = $widgetModel->getWidgets(array('widget_page_id' => $widgetPage['node_id']));
 
             foreach (array_keys($widgets) as $widgetId) {
                 if ($widgets[$widgetId]['position'] == 'sidebar') {

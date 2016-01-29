@@ -26,7 +26,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
     public function actionIndex()
     {
-        $widgets = $this->_getWidgetModel()->getGlobalWidgets(false);
+        $widgets = $this->_getWidgetModel()->getWidgets(array('widget_page_id' => 0));
 
         $viewParams = array('widgets' => $widgets);
 
@@ -51,11 +51,11 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         if ($displayOrder == 'na'
             && !empty($position)
         ) {
-            if ($widgetPage === null) {
-                $widgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
-            } else {
-                $widgets = $this->_getWidgetModel()->getPageWidgets($widgetPage['node_id'], false);
+            $widgetsConditions = array();
+            if (!empty($widgetPage['node_id'])) {
+                $widgetsConditions['widget_page_id'] = $widgetPage['node_id'];
             }
+            $widgets = $this->_getWidgetModel()->getWidgets($widgetsConditions);
 
             $core = WidgetFramework_Core::getInstance();
             $core->addWidgets($widgets);
@@ -89,7 +89,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
     {
         $widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
         $widget = $this->_getWidgetOrError($widgetId);
-        $this->_getWidgetModel()->prepareWidget($widget);
 
         return $this->_getResponseAddOrEdit($widget);
     }
@@ -123,11 +122,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
         $widgets = array();
         if ($widget['widget_id'] > 0) {
-            if (!empty($widget['widget_page_id'])) {
-                $widgets = $this->_getWidgetModel()->getPageWidgets($widget['widget_page_id']);
-            } else {
-                $widgets = $this->_getWidgetModel()->getGlobalWidgets(false);
-            }
+            $widgets = $this->_getWidgetModel()->getWidgets(array(
+                'widget_page_id' => $widget['widget_page_id'],
+            ));
         }
 
         if (!empty($widgets)
@@ -171,7 +168,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $widgetId = $this->_input->filterSingle('widget_id', XenForo_Input::UINT);
         if ($widgetId) {
             $widget = $this->_getWidgetModel()->getWidgetById($widgetId);
-            $this->_getWidgetModel()->prepareWidget($widget);
         } else {
             $widget = array();
         }
@@ -362,11 +358,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         }
 
         if ($widgetPageId > 0) {
-            $widgetPage = $this->_getWidgetPageOrError($widgetPageId);
-            $widgets = $this->_getWidgetModel()->getPageWidgets($widgetPage['node_id'], false);
-        } else {
-            $widgets = $this->_getWidgetModel()->getGlobalWidgets(false, false);
+            $this->_getWidgetPageOrError($widgetPageId);
         }
+        $widgets = $this->_getWidgetModel()->getWidgets(array('widget_page_id' => $widgetPageId));
 
         $core = WidgetFramework_Core::getInstance();
         $core->addWidgets($widgets);
@@ -486,7 +480,11 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
     public function actionToggle()
     {
-        return $this->_getToggleResponse($this->_getWidgetModel()->getGlobalWidgets(false), 'WidgetFramework_DataWriter_Widget', 'widgets');
+        return $this->_getToggleResponse(
+            $this->_getWidgetModel()->getWidgets(array('widget_page_id' => 0)),
+            'WidgetFramework_DataWriter_Widget',
+            'widgets'
+        );
     }
 
     public function actionImport()
@@ -545,10 +543,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $widgetPage = null;
         if ($widgetPageId > 0) {
             $widgetPage = $this->_getWidgetPageOrError($widgetPageId);
-            $widgets = $widgetModel->getPageWidgets($widgetPage['node_id'], false);
-        } else {
-            $widgets = $widgetModel->getGlobalWidgets(false, false);
         }
+        $widgets = $widgetModel->getWidgets(array('widget_page_id' => $widgetPageId));
 
         $addOn = $addOnModel->getAddOnById('widget_framework');
 

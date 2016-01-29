@@ -90,7 +90,14 @@ class WidgetFramework_Core
             return;
         }
 
-        $globalWidgets = $this->_getModelWidget()->getGlobalWidgets(true, false);
+        if (WidgetFramework_Option::get('layoutEditorEnabled')) {
+            $globalWidgets = $this->_getModelWidget()->getWidgets(array(
+                'widget_page_id' => 0
+            ));
+        } else {
+            $globalWidgets = $this->_getModelWidget()->getCachedWidgets();
+        }
+
         $this->addWidgets($globalWidgets);
 
         // sondh@2013-04-02
@@ -535,13 +542,13 @@ class WidgetFramework_Core
     {
         $instance = self::getInstance();
 
-        $widgets = $instance->_getModelWidget()->getGlobalWidgets(false, false);
+        $widgets = $instance->_getModelWidget()->getWidgets(array(
+            'class' => $class,
+        ));
         $cacheModel = $instance->_getModelCache();
 
         foreach ($widgets as $widget) {
-            if ($widget['class'] == $class) {
-                $cacheModel->invalidateCache($widget['widget_id']);
-            }
+            $cacheModel->invalidateCache($widget['widget_id']);
         }
     }
 

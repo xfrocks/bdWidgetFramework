@@ -16,10 +16,10 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base
 
         foreach ($positions as $positionCode => &$positionRef) {
             foreach ($positionRef['widgetsByIds'] as $widgetId => &$widgetRef) {
-                if (!empty($widgetRef['renderer'])) {
-                    /** @var WidgetFramework_WidgetRenderer $renderer */
-                    $renderer = $widgetRef['renderer'];
-                    $widgetRef['_runtime']['title'] = strip_tags($widgetRef['_runtime']['title']);
+                $renderer = WidgetFramework_Core::getRenderer($widgetRef['class'], false);
+                if (!empty($renderer)) {
+                    $widgetRef['_runtime']['title']
+                        = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widgetRef);
                 }
             }
         }

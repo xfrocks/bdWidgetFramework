@@ -632,10 +632,6 @@ abstract class WidgetFramework_WidgetRenderer
 
     public function render(array &$widgetRef, $positionCode, array $params, XenForo_Template_Abstract $template, &$output)
     {
-        if (empty($widgetRef['active'])) {
-            return '';
-        }
-
         $html = false;
         $containerData = array();
         $requiredExternals = array();

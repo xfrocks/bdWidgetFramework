@@ -177,14 +177,11 @@
 
 		<xen:if is="{$widgetIsGroup}">
 		<input type="hidden" name="active" value="1" />
-		<xen:elseif is="!{$_layoutEditor}"/>
+		<xen:else />
 		<xen:checkboxunit label="">
 			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
 			<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
 		</xen:checkboxunit>
-		<xen:else />
-		<input type="hidden" name="active" value="{xen:if '{$widget.active}', 1, 0}" />
-		<input type="hidden" name="{$namePrefix}deactivate_for_mobile" value="{xen:if '{$options.deactivate_for_mobile}', 1, 0}" />
 		</xen:if>
 	</fieldset>
 
@@ -209,7 +206,7 @@
 		<xen:option value="0"></xen:option>
 		<xen:foreach loop="$groups" value="$group">
 			<xen:option value="{$group.widget_id}">
-				{xen:raw $group._runtime.title}
+				{xen:helper striphtml, $group._runtime.title}
 			</xen:option>
 		</xen:foreach>
 	</xen:selectunit>
@@ -223,7 +220,7 @@
 						<a href="{xen:adminlink widgets/edit, $siblingWidget}" target="_blank" tabindex="-1">
 							#{$siblingWidget.widget_id}
 						</a> -
-						{xen:raw $siblingWidget._runtime.title}
+						{xen:helper striphtml, $siblingWidget._runtime.title}
 					</xen:option>
 				</xen:foreach>
 			</xen:checkbox>
@@ -303,7 +300,7 @@
 </xen:if>
 <xen:set var="$href">{xen:adminlink 'widgets/edit', $widget}</xen:set>
 <xen:set var="$delete">{xen:adminlink 'widgets/delete', $widget}</xen:set>
-<xen:set var="$label">{xen:raw $widget._runtime.title}</xen:set>
+<xen:set var="$label">{xen:helper striphtml, $widget._runtime.title}</xen:set>
 <xen:set var="$labelClass">{xen:if '!{$widget.active}', 'disabled'}</xen:set>
 <xen:set var="$snippet">{$widget.rendererName} ({xen:number $widget.display_order})</xen:set>
 
@@ -316,7 +313,7 @@
 		labelclass="{xen:raw $labelClass}"
 		snippet="{xen:raw $snippet}"
 		toggle="{$widget.active}"
-		toggletitle="{xen:phrase enable_disable_x, 'title={$widget._runtime.title}'}">>
+		toggletitle="{xen:phrase enable_disable_x, 'title={xen:helper striphtml, $widget._runtime.title}'}">>
 		<xen:popup title="{xen:phrase controls}" ctrlclass="toolsCtrl">
 			<xen:link href="{xen:adminlink 'widgets/disable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="{$widget.active}">{xen:phrase disable}</xen:link>
 			<xen:link href="{xen:adminlink 'widgets/enable', $widget, '_xfToken={$visitor.csrf_token_page}'}" displayif="!{$widget.active} AND !{$widget.rendererNotFound}">{xen:phrase enable}</xen:link>
@@ -347,7 +344,7 @@
 		<li class="widget-group level-{$level}">
 			<h3 class="textHeading">
 				<a href="{xen:adminlink widgets/edit, $widget}">
-					{xen:raw $widget._runtime.title}
+					{xen:helper striphtml, $widget._runtime.title}
 				</a>
 
 				<xen:if is="{$widget.options.layout}">layout={$widget.options.layout}</xen:if>
@@ -1402,7 +1399,7 @@ All customization should go to wf_default_EXTRA.css
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
 </xen:if>]]></template>
-    <template title="wf_layout_editor.css" version_id="2060200" version_string="2.6.2"><![CDATA[.WidgetFramework_LayoutEditor_Area
+    <template title="wf_layout_editor.css" version_id="2060208" version_string="2.6.2"><![CDATA[.WidgetFramework_LayoutEditor_Area
 {
 	background: {xen:property primaryLightest};
 }
@@ -1500,6 +1497,10 @@ All customization should go to wf_default_EXTRA.css
 	background: {xen:property primaryLightest};
 	display: block;
 }
+	.WidgetFramework_LayoutEditor_Widget.inactive
+	{
+		background: {xen:property mutedTextColor};
+	}
 	.WidgetFramework_LayoutEditor_Widget:hover
 	{
 		background: {xen:property primaryLighterStill};
@@ -1598,11 +1599,13 @@ All customization should go to wf_default_EXTRA.css
 				 '',
 				 '_params={$_areaSaveParams}',
 				 'conditionalParams={xen:helper json, $_areaConditionalParams}'}"></div>]]></template>
-    <template title="wf_layout_editor_widget" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
+    <template title="wf_layout_editor_widget" version_id="2060208" version_string="2.6.2"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.js" />
 <xen:require js="js/WidgetFramework/jquery-ui.js" />
 <xen:require css="wf_layout_editor.css" />
 
-<div class="controls-parent WidgetFramework_LayoutEditor_Widget"
+<div class="controls-parent<xen:comment>
+			</xen:comment> {xen:if '{$widget.active}', active, inactive}<xen:comment>
+			</xen:comment> WidgetFramework_LayoutEditor_Widget"
 	 id="layout-editor-{$widget.widget_id}"
 	 data-widget-id="{$widget.widget_id}"
 	 data-position="{$_WidgetFramework_positionCode}"
@@ -1704,7 +1707,7 @@ All customization should go to wf_default_EXTRA.css
 </div>
 
 <xen:edithint template="wf_layout_editor_widget" />]]></template>
-    <template title="wf_layout_editor_widget_wrapper" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_layout_editor_widget_wrapper" version_id="2060208" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="wf_layout_editor.css" />
 
 <xen:comment>Mimics wf_layout_editor_widget_group_wrapper</xen:comment>
@@ -1715,7 +1718,8 @@ All customization should go to wf_default_EXTRA.css
 <xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - {$borderWidth}'}</xen:set>
 <xen:set var="$widgetsWidth">{xen:calc '({$widgetWidth} + {$borderWidth}) * 2'}</xen:set>
 
-<div class="{$_classSection} controls-parent WidgetFramework_LayoutEditor_Group{$widgetContainerColumnsClass}"
+<div class="{$_classSection} controls-parent<xen:comment>
+			</xen:comment> WidgetFramework_LayoutEditor_Group{$widgetContainerColumnsClass}"
 	 data-save="{xen:adminlink widgets/save-position, '', 'group_merge={$widget.widget_id}'}"
 	 data-widget-id="{$widget.widget_id}"
 	 data-position="{$_WidgetFramework_positionCode}"
