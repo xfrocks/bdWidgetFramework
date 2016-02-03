@@ -158,8 +158,6 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
                 $this->error(new XenForo_Phrase('wf_widget_group_must_be_active'), 'active');
             }
         }
-
-        parent::_preSave();
     }
 
     protected function _postSave()
@@ -182,9 +180,7 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
             $this->_getWidgetRendererTemplateModel()->dwPostDelete($this->getMergedExistingData());
         }
 
-        if ($this->isUpdate()
-            && !empty($this->_newData['xf_widget'])
-        ) {
+        if (!empty($this->_newData['xf_widget'])) {
             WidgetFramework_Helper_LayoutEditor::keepWidgetChanges(
                 $this->get('widget_id'), $this, $this->_newData['xf_widget']);
         }
