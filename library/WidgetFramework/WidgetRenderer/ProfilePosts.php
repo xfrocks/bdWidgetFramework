@@ -91,7 +91,9 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
     protected function _getProfilePosts(
         array $widget,
         $positionCode,
-        array $params
+        array $params,
+        /** @noinspection PhpUnusedParameterInspection */
+        XenForo_Template_Abstract $renderTemplateObject
     ) {
         if ($positionCode == 'forum_list'
             && $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewProfilePosts')
