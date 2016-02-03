@@ -76,7 +76,7 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
             $widget['options']['limit'] = 5;
         }
 
-        $profilePosts = $this->_getProfilePosts($widget, $positionCode, $params);
+        $profilePosts = $this->_getProfilePosts($widget, $positionCode, $params, $renderTemplateObject);
         $renderTemplateObject->setParam('profilePosts', $profilePosts);
 
         if (!empty($widget['options']['show_update_form'])) {
