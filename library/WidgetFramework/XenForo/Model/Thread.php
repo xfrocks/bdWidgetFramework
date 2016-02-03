@@ -4,6 +4,7 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 {
     const CONDITIONS_DISCUSSION_TYPE = 'WidgetFramework_discussion_type';
     const CONDITIONS_POST_DATE = 'WidgetFramework_post_date';
+    const CONDITIONS_THREAD_ID = 'WidgetFramework_thread_id';
 
     const FETCH_OPTIONS_FORUM_FULL_JOIN = 'WidgetFramework_forum_full_join';
     const FETCH_OPTIONS_LAST_POST_JOIN = 'WidgetFramework_last_post_join';
@@ -25,11 +26,21 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
 
         if (isset($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
             if (is_array($conditions[self::CONDITIONS_DISCUSSION_TYPE])) {
-                $sqlConditions[] = "thread.discussion_type IN ("
-                    . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]) . ")";
+                $sqlConditions[] = sprintf('thread.discussion_type IN (%s)',
+                    $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]));
             } else {
-                $sqlConditions[] = "thread.discussion_type = "
+                $sqlConditions[] = 'thread.discussion_type = '
                     . $this->_getDb()->quote($conditions[self::CONDITIONS_DISCUSSION_TYPE]);
+            }
+        }
+
+        if (isset($conditions[self::CONDITIONS_THREAD_ID])) {
+            if (is_array($conditions[self::CONDITIONS_THREAD_ID])) {
+                $sqlConditions[] = sprintf('thread.thread_id IN (%s)',
+                    $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID]));
+            } else {
+                $sqlConditions[] = 'thread.thread_id = '
+                    . $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID]);
             }
         }
 

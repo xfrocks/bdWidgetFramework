@@ -629,4 +629,8 @@ class WidgetFramework_Core
         return isset($addOns['XenGallery']);
     }
 
+    public static function contentTaggingFound()
+    {
+        return XenForo_Application::$versionId > 1050000;
+    }
 }

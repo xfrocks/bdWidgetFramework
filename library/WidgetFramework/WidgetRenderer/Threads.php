@@ -14,6 +14,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
+            if (!empty($widget['options']['tags'])) {
+                $widget['options']['type'] = '_tags';
+            }
+
             if (empty($widget['options']['type'])) {
                 $widget['options']['type'] = 'new';
             }
@@ -36,6 +40,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     return new XenForo_Phrase('wf_widget_threads_type_most_liked');
                 case 'polls':
                     return new XenForo_Phrase('wf_widget_threads_type_polls');
+                case '_tags':
+                    return new XenForo_Phrase('wf_widget_threads_type__tags');
                 case 'new':
                 default:
                     return new XenForo_Phrase('wf_widget_threads_type_new');
@@ -55,9 +61,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 'forums' => XenForo_Input::ARRAY_SIMPLE,
                 'sticky' => XenForo_Input::STRING,
                 'prefixes' => XenForo_Input::ARRAY_SIMPLE,
+                'tags' => XenForo_Input::ARRAY_SIMPLE,
                 'open_only' => XenForo_Input::UINT,
                 'as_guest' => XenForo_Input::UINT,
                 'is_new' => XenForo_Input::UINT,
+                'order_reverted' => XenForo_Input::UINT,
                 'limit' => XenForo_Input::UINT,
                 'layout' => XenForo_Input::STRING,
             ),
@@ -79,6 +87,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         $forums = empty($params['options']['forums']) ? array() : $params['options']['forums'];
         $forums = $this->_helperPrepareForumsOptionSource($forums, true);
+        $template->setParam('forums', $forums);
 
         /** @var XenForo_Model_ThreadPrefix $threadPrefixModel */
         $threadPrefixModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_ThreadPrefix');
@@ -92,9 +101,22 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 }
             }
         }
-
-        $template->setParam('forums', $forums);
         $template->setParam('prefixes', $prefixes);
+
+        $contentTaggingFound = WidgetFramework_Core::contentTaggingFound();
+        if ($contentTaggingFound) {
+            $template->setParam('contentTaggingFound', $contentTaggingFound);
+
+            $tags = array();
+            if (!empty($params['options']['tags'])) {
+                foreach ($params['options']['tags'] as $tag) {
+                    if (!empty($tag['tag_id'])) {
+                        $tags[] = $tag['tag'];
+                    }
+                }
+            }
+            $template->setParam('tags', implode(', ', $tags));
+        }
 
         return parent::_renderOptions($template);
     }
@@ -111,6 +133,18 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             case 'type':
                 if (empty($optionValue)) {
                     $optionValue = 'new';
+                }
+                break;
+            case 'tags':
+                if (WidgetFramework_Core::contentTaggingFound()
+                    && !empty($optionValue[0])
+                ) {
+                    /** @var XenForo_Model_Tag $tagModel */
+                    $tagModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Tag');
+                    $tags = $tagModel->splitTags($optionValue[0]);
+                    $optionValue = $tagModel->getTags($tags);
+                } else {
+                    $optionValue = null;
                 }
                 break;
         }
@@ -314,11 +348,32 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $fetchOptions['readUserId'] = XenForo_Visitor::getUserId();
         }
 
+        // since 2.6.3
+        if (WidgetFramework_Core::contentTaggingFound()
+            && !empty($widget['options']['tags'])
+        ) {
+            $threadIds = array();
+
+            /** @var XenForo_Model_Tag $tagModel */
+            $tagModel = $threadModel->getModelFromCache('XenForo_Model_Tag');
+
+            foreach ($widget['options']['tags'] as $tag) {
+                $contentIds = $tagModel->getContentIdsByTagId($tag['tag_id'], $widget['options']['limit'] * 3);
+                foreach ($contentIds as $contentId) {
+                    if ($contentId[0] === 'thread') {
+                        $threadIds[] = $contentId[1];
+                    }
+                }
+            }
+
+            $conditions[WidgetFramework_XenForo_Model_Thread::CONDITIONS_THREAD_ID] = $threadIds;
+        }
+
         switch ($widget['options']['type']) {
             case 'recent':
                 $threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
                     'order' => 'last_post_date',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                     'join' => 0,
                     WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => $fetchOptions['join'],
                 )));
@@ -326,7 +381,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             case 'recent_first_poster':
                 $threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
                     'order' => 'last_post_date',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                 )));
                 break;
             case 'latest_replies':
@@ -337,7 +392,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     ),
                 )), array_merge($fetchOptions, array(
                     'order' => 'last_post_date',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                     'join' => 0,
                     WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => $fetchOptions['join'],
                 )));
@@ -350,7 +405,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     )
                 )), array_merge($fetchOptions, array(
                     'order' => 'view_count',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                 )));
                 break;
             case 'most_replied':
@@ -361,7 +416,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     )
                 )), array_merge($fetchOptions, array(
                     'order' => 'reply_count',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                 )));
 
                 foreach (array_keys($threads) as $threadId) {
@@ -379,7 +434,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     )
                 )), array_merge($fetchOptions, array(
                     'order' => 'first_post_likes',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                 )));
 
                 foreach (array_keys($threads) as $threadId) {
@@ -394,14 +449,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll'
                 )), array_merge($fetchOptions, array(
                     'order' => 'post_date',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                 )));
                 break;
             case 'new':
             default:
                 $threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
                     'order' => 'post_date',
-                    'orderDirection' => 'desc',
+                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
                 )));
                 break;
         }

@@ -534,6 +534,12 @@
 	</xen:selectunit>
 </xen:if>
 
+<xen:if is="{$contentTaggingFound}">
+	<xen:textboxunit label="{xen:phrase tags}:" name="{$namePrefix}tags[]" value="{$tags}" inputclass="AutoComplete" data-acurl="{xen:link misc/tag-auto-complete}">
+		<xen:explain>{xen:phrase wf_threads_tags_explain}</xen:explain>
+	</xen:textboxunit>
+</xen:if>
+
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}open_only" value="1" selected="{$options.open_only}">{xen:phrase wf_thread_open_only}</xen:option>
 </xen:checkboxunit>
@@ -543,6 +549,7 @@
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}as_guest" value="1" selected="{$options.as_guest}">{xen:phrase wf_use_guest_permissions}</xen:option>
 	<xen:option name="{$namePrefix}is_new" value="1" selected="{$options.is_new}">{xen:phrase wf_include_thread_is_new}</xen:option>
+	<xen:option name="{$namePrefix}order_reverted" value="1" selected="{$options.order_reverted}">{xen:phrase wf_order_reverted}</xen:option>
 </xen:checkboxunit>
 
 <xen:hook name="wf_widget_options_threads_layout" params="{xen:array 'widget={$widget}', 'options={$options}', 'options_loaded={$options_loaded}'}">
@@ -1078,6 +1085,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_online_users" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Members Online Now]]></phrase>
     <phrase title="wf_order_direction" version_id="1" version_string="0.9"><![CDATA[Order Direction]]></phrase>
     <phrase title="wf_order_factor" version_id="1" version_string="0.9"><![CDATA[Order Factor]]></phrase>
+    <phrase title="wf_order_reverted" version_id="2060208" version_string="2.6.2"><![CDATA[Revert threads ordering]]></phrase>
     <phrase title="wf_original_contents" version_id="98" version_string="2.5.0d"><![CDATA[Original Contents]]></phrase>
     <phrase title="wf_or_enter_it_here" version_id="111" version_string="2.6.0-dev"><![CDATA[Or enter it here]]></phrase>
     <phrase title="wf_parent_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum (of the current one)]]></phrase>
@@ -1128,8 +1136,9 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_threads_layout_list" version_id="63" version_string="2.3.4"><![CDATA[List (similar to forum_view)]]></phrase>
     <phrase title="wf_threads_layout_sidebar" version_id="63" version_string="2.3.4"><![CDATA[Sidebar (avatar, title and one extra line)]]></phrase>
     <phrase title="wf_threads_layout_sidebar_snippet" version_id="63" version_string="2.3.4"><![CDATA[Sidebar with snippet from post]]></phrase>
-    <phrase title="wf_threads_prefixes_explain" version_id="47" version_string="2.1.1"><![CDATA[Select the prefixes you want to filter the threads against.]]></phrase>
+    <phrase title="wf_threads_prefixes_explain" version_id="2060208" version_string="2.6.2"><![CDATA[Select the prefixes you want to filter the threads with.]]></phrase>
     <phrase title="wf_threads_sticky_threads_only" version_id="83" version_string="2.4.6e"><![CDATA[Sticky Threads Only]]></phrase>
+    <phrase title="wf_threads_tags_explain" version_id="2060208" version_string="2.6.2"><![CDATA[Enter the tags you want to filter the threads with.]]></phrase>
     <phrase title="wf_thread_open_only" version_id="87" version_string="2.4.8"><![CDATA[Unlocked threads only.]]></phrase>
     <phrase title="wf_thread_with_poll" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>
@@ -1177,6 +1186,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_threads_type_popular" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Most Viewed Theads]]></phrase>
     <phrase title="wf_widget_threads_type_recent" global_cache="1" version_id="112" version_string="2.6.0-dev"><![CDATA[New Posts]]></phrase>
     <phrase title="wf_widget_threads_type_recent_first_poster" version_id="112" version_string="2.6.0-dev"><![CDATA[New Posts (use first poster avatar)]]></phrase>
+    <phrase title="wf_widget_threads_type__tags" global_cache="1" version_id="2060208" version_string="2.6.2"><![CDATA[Tagged Threads]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only" version_id="24" version_string="1.2.2.2"><![CDATA[Avatar Only]]></phrase>
     <phrase title="wf_widget_users_display_mode_avatar_only_bigger" version_id="32" version_string="1.4.2"><![CDATA[Avatar Only (Bigger)]]></phrase>
     <phrase title="wf_widget_users_display_mode_list" version_id="24" version_string="1.2.2.2"><![CDATA[List]]></phrase>
@@ -1875,7 +1885,7 @@ All customization should go to wf_default_EXTRA.css
 	resize: vertical;
 	overflow: hidden;
 }]]></template>
-    <template title="wf_threads.css" version_id="112" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_WidgetRenderer_Threads .unread > a
+    <template title="wf_threads.css" version_id="2060208" version_string="2.6.2"><![CDATA[.WidgetFramework_WidgetRenderer_Threads .unread > a
 {
 	font-weight: bold;
 }
@@ -1925,6 +1935,7 @@ All customization should go to wf_default_EXTRA.css
 	{xen:helper clearfix, '.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message'}
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageInfo
 		{
+			margin: 0;
 			padding: 5px 10px;
 		}
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator
@@ -2574,7 +2585,8 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>
 
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_full" version_id="96" version_string="2.5.0d"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_threads_thread_full" version_id="2060208" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
+<xen:edithint template="wf_threads.css" />
 <xen:require css="bb_code.css" />
 
 <xen:set var="$link">{xen:if '{$thread._link}', {xen:raw $thread._link}, {xen:link threads, $thread}}</xen:set>
