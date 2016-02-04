@@ -604,8 +604,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $threadBbCodeOptions['states']['viewAttachments'] =
                     $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null,
                         $threadPermissionsRef, $viewingUser);
-                $threadRef['messageHtml']
-                    = XenForo_ViewPublic_Helper_Message::getBbCodeWrapper(
+                $threadRef['messageHtml'] = WidgetFramework_ShippableHelper_Html::preSnippet(
                     $threadRef, $bbCodeParser, $threadBbCodeOptions);
             }
 

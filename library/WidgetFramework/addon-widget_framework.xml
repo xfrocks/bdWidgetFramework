@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.6.3" version_id="2060300" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
+<addon addon_id="widget_framework" title="[bd] Widget Framework" version_string="2.6.3" version_id="2060301" url="" install_callback_class="WidgetFramework_Installer" install_callback_method="install" uninstall_callback_class="WidgetFramework_Installer" uninstall_callback_method="uninstall">
   <admin_navigation>
     <navigation navigation_id="widgetFramework" parent_navigation_id="appearance" display_order="9999" link="widgets" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
     <navigation navigation_id="widgetFramework_add" parent_navigation_id="widgetFramework" display_order="10" link="widgets/add" admin_permission_id="style" debug_only="0" hide_no_children="0"/>
@@ -980,6 +980,8 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="style_property_wf_threads_fullForum_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Forum Origin]]></phrase>
     <phrase title="style_property_wf_threads_fullInfoBottom_description_master" version_id="77" version_string="2.4.5b"><![CDATA[By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullInfoBottom_master" version_id="77" version_string="2.4.5b"><![CDATA[Show information at bottom]]></phrase>
+    <phrase title="style_property_wf_threads_fullMaxLength_description_master" version_id="2060300" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullMaxLength_master" version_id="2060300" version_string="2.6.3"><![CDATA[Full Maximum Length]]></phrase>
     <phrase title="style_property_wf_threads_fullReplyCount_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullReplyCount_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Reply Count]]></phrase>
     <phrase title="style_property_wf_threads_fullUser_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -1215,7 +1217,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
   </route_prefixes>
   <style_properties>
     <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Title Maximum Length" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="sidebar"><![CDATA[35]]></property>
-    <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Snippet Maximum Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="sidebar"><![CDATA[0]]></property>
+    <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Snippet Maximum Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="sidebar"><![CDATA[200]]></property>
     <property property_name="wf_threads_showPrefix" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Thread Prefix" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="sidebar"><![CDATA[0]]></property>
     <property property_name="wf_threads_fullViewCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show View Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="full"><![CDATA[1]]></property>
     <property property_name="wf_threads_fullFirstPostLikes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Like Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="full"><![CDATA[1]]></property>
@@ -1236,6 +1238,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
     <property property_name="wf_threads_rich" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Threads widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group=""><![CDATA[1]]></property>
     <property property_name="wf_groupBorder" property_type="scalar" definition="1" group_name="WidgetFramework" title="Render border for grouped widgets" description="" css_components="" scalar_type="boolean" scalar_parameters="" display_order="10" sub_group="groupedWidgets"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Full Maximum Length" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="number" scalar_parameters="" display_order="1000" sub_group="sidebar"><![CDATA[0]]></property>
     <group group_name="WidgetFramework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Controls how widgets appear.</description>
@@ -2586,7 +2589,7 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>
 
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_full" version_id="2060208" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_threads_thread_full" version_id="2060300" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 <xen:edithint template="wf_threads.css" />
 <xen:require css="bb_code.css" />
 
@@ -2610,7 +2613,7 @@ All customization should go to wf_default_EXTRA.css
 		<div class="messageContent">		
 			<article>
 				<blockquote class="messageText ugc baseHtml">
-					{xen:helper WidgetFramework_snippet, $thread.messageHtml, 0, {xen:array 'link={xen:raw $link}'}}
+					{xen:helper WidgetFramework_snippet, $thread.messageHtml, {xen:property wf_threads_fullMaxLength}, {xen:array 'link={xen:raw $link}'}}
 				</blockquote>
 			</article>
 		</div>
