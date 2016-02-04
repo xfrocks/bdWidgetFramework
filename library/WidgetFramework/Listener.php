@@ -300,11 +300,6 @@ class WidgetFramework_Listener
             'XenForo_ControllerPublic_Misc',
             'XenForo_ControllerPublic_Thread',
 
-            'XenForo_DataWriter_Discussion_Thread',
-            'XenForo_DataWriter_DiscussionMessage_Post',
-            'XenForo_DataWriter_DiscussionMessage_ProfilePost',
-            'XenForo_DataWriter_User',
-
             'XenForo_Model_Permission',
             'XenForo_Model_ProfilePost',
             'XenForo_Model_Thread',

@@ -324,6 +324,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         $invalidatedCache = $this->_getInvalidatedCache();
         $invalidatedCache[$widgetId] = XenForo_Application::$time;
 
+        $cutOff = XenForo_Application::$time - WidgetFramework_Option::get('cacheCutoffDays') * 86400;
+        foreach (array_keys($invalidatedCache) as $widgetId) {
+            if ($invalidatedCache[$widgetId] < $cutOff) {
+                unset($invalidatedCache[$widgetId]);
+            }
+        }
+
         $this->_setInvalidatedCache($invalidatedCache);
     }
 

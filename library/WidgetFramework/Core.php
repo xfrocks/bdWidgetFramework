@@ -555,6 +555,10 @@ class WidgetFramework_Core
 
     public static function clearCachedWidgetByClass($class)
     {
+        if (XenForo_Application::debugMode()) {
+            XenForo_Error::logError(sprintf('%s has been deprecated.', __METHOD__));
+        }
+
         $instance = self::getInstance();
 
         $widgets = $instance->_getModelWidget()->getWidgets(array(
