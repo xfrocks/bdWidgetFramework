@@ -57,10 +57,12 @@ class WidgetFramework_Template_Helper_Conditional
         } else {
             $postPos = strpos($unreadLink, $postFragment);
             if ($postPos === false) {
-                // wait for the last post and return true
-                $postIds = array_keys($posts);
-                $lastPostId = array_pop($postIds);
-                $found = $lastPostId == $post['post_id'];
+                // implementation 1: wait for the last post and return true
+//                $postIds = array_keys($posts);
+//                $lastPostId = array_pop($postIds);
+//                $found = $lastPostId == $post['post_id'];
+                // implementation 2: return true asap
+                $found = true;
             } else {
                 // return true for the specified unread post
                 $unreadLinkPostId = substr($unreadLink, $postPos + strlen($postFragment));
