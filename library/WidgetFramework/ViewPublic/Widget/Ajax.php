@@ -11,6 +11,8 @@ class WidgetFramework_ViewPublic_Widget_Ajax extends XenForo_ViewPublic_Base
 
         $widget = $this->_params['widget'];
         $widget['_ajaxLoadParams'] = $this->_params['ajaxLoadParams'];
+        $widget['positionCodes'] = null;
+        $widget['group_id'] = 0;
 
         $position = 'wf_widget_ajax';
         $hookPosition = 'hook:wf_widget_ajax';

@@ -91,6 +91,8 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
             ) {
                 $widgetRef['_runtime']['ajaxLoadUrl']
                     = $renderer->getAjaxLoadUrl($widgetRef, $positionCode, $params, $template);
+                $widgetRef['_runtime']['title']
+                    = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widgetRef);
                 $widgetRef['_runtime']['html'] = $widgetRef['_runtime']['ajaxLoadUrl'];
             } else {
                 $widgetRef['_runtime']['html'] = WidgetFramework_Core::getInstance()->renderWidget($widgetRef,

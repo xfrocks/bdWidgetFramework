@@ -155,7 +155,13 @@ class WidgetFramework_Listener
                     case 'wf_layout_editor_widget_wrapper':
                     case 'wf_layout_editor_widget':
                         $widget = $template->getParam('widget');
-                        self::$_layoutEditorRendered[$widget['widget_id']] = $output;
+                        if (!empty($widget['_runtime']['html'])
+                            && $templateName !== 'wf_layout_editor_widget_wrapper'
+                        ) {
+                            self::$_layoutEditorRendered[$widget['widget_id']] = $widget['_runtime']['html'];
+                        } else {
+                            self::$_layoutEditorRendered[$widget['widget_id']] = $output;
+                        }
                         break;
                 }
             }

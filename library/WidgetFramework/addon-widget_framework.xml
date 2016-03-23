@@ -1157,6 +1157,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_viewing_widget_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing page]]></phrase>
     <phrase title="wf_whitelist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Whitelist Groups]]></phrase>
     <phrase title="wf_whitelist_user_groups_explain" version_id="96" version_string="2.5.0d"><![CDATA[If specified, only user of selected user groups will be show.]]></phrase>
+    <phrase title="wf_widget" version_id="2060305" version_string="2.6.3"><![CDATA[Widget]]></phrase>
     <phrase title="wf_widgets" version_id="1" version_string="0.9"><![CDATA[Widgets]]></phrase>
     <phrase title="wf_widget_birthday_today_is_xs_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {username}'s birthday.]]></phrase>
     <phrase title="wf_widget_birthday_today_is_x_peoples_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {count} people's birthday.]]></phrase>
@@ -2037,7 +2038,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_group_wrapper" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_group_wrapper" version_id="2060305" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $widgets} === 1">
 
@@ -2126,9 +2127,9 @@ All customization should go to wf_default_EXTRA.css
 		<li>
 			<a href="{$requestPaths.requestUri}#widget-tab-{$widget.widget_id}">
 				<xen:if hascontent="true">
-				<xen:contentcheck>{xen:raw $widget.title}</xen:contentcheck>
+				<xen:contentcheck>{xen:raw $widget._runtime.title}</xen:contentcheck>
 				<xen:else />
-				{xen:phrase wf_widgets}
+				{xen:phrase wf_widget}
 				</xen:if>
 			</a>
 		</li>
@@ -2472,7 +2473,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="112" version_string="2.6.0-dev"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="2060305" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 <xen:if is="{xen:helper WidgetFramework_getOption, applicationVersionId} > 1050000
 	AND {$widget.options.type} == 'recent'">
@@ -2565,10 +2566,9 @@ All customization should go to wf_default_EXTRA.css
 			</xen:contentcheck>
 		</ol>
 
+		<xen:include template="preview_tooltip" />
 	</div>
 </div>
-
-<xen:include template="preview_tooltip" />
 </xen:if>
 
 <xen:elseif is="{$layout} == 'full'" />
