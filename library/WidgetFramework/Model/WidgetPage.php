@@ -12,6 +12,7 @@ class WidgetFramework_Model_WidgetPage extends XenForo_Model
         $this->standardizeViewingUserReferenceForNode($widgetPage['node_id'], $viewingUser, $nodePermissions);
 
         if (!XenForo_Permission::hasContentPermission($nodePermissions, 'view')) {
+            // new XenForo_Phrase('wf_you_may_not_view_this_page_because_it_is_restricted')
             $errorPhraseKey = 'wf_you_may_not_view_this_page_because_it_is_restricted';
             return false;
         }
