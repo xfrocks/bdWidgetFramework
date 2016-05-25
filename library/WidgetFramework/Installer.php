@@ -243,7 +243,7 @@ class WidgetFramework_Installer
         XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Cache::INVALIDED_CACHE_ITEM_NAME, false);
         XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Widget::SIMPLE_CACHE_KEY, false);
 
-        WidgetFramework_ShippableHelper_Updater::onUninstall(WidgetFramework_Option::UPDATER_URL, 'widget_framework');
+        WidgetFramework_ShippableHelper_Updater::onUninstall(WidgetFramework_Listener::UPDATER_URL, 'widget_framework');
     }
 
     protected static function _updatePositionGroupAndDisplayOrderForWidgetsOfPages()

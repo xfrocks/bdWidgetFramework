@@ -2,8 +2,6 @@
 
 class WidgetFramework_Option
 {
-    const UPDATER_URL = 'https://xfrocks.com/api/index.php?updater';
-
     /** @var XenForo_Options */
     protected static $_options = null;
 

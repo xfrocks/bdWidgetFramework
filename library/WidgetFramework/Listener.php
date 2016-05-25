@@ -2,6 +2,8 @@
 
 class WidgetFramework_Listener
 {
+    const UPDATER_URL = 'https://xfrocks.com/api/index.php?updater';
+
     /**
      * @var XenForo_Dependencies_Abstract
      */
@@ -49,7 +51,7 @@ class WidgetFramework_Listener
         }
 
         WidgetFramework_ShippableHelper_Updater::onInitDependencies($dependencies,
-            WidgetFramework_Option::UPDATER_URL, 'widget_framework');
+            self::UPDATER_URL, 'widget_framework');
     }
 
     public static function navigation_tabs(
