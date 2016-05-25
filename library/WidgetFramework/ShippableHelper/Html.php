@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2016-02-04T07:10:19+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2016-05-25T08:37:08+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_Html
- * @version 6
+ * @version 7
  * @see DevHelper_Helper_ShippableHelper_Html
  */
 class WidgetFramework_ShippableHelper_Html
@@ -67,7 +67,8 @@ class WidgetFramework_ShippableHelper_Html
         ), $options);
 
         if (!empty($options['previewBreakBbCode'])
-            && preg_match(sprintf('#\[%1$s\](?<preview>.*)\[/%1$s\]#', preg_quote($options['previewBreakBbCode'], '#')),
+            && preg_match(sprintf('#\[%1$s\](?<' . 'preview>.*)\[/%1$s\]#',
+                preg_quote($options['previewBreakBbCode'], '#')),
                 $string, $matches, PREG_OFFSET_CAPTURE)
         ) {
             // preview break bbcode found
@@ -195,10 +196,10 @@ class WidgetFramework_ShippableHelper_Html
                 $name = null;
                 $value = null;
 
-                if (preg_match('#name="(?<name>[^"]+)"#i', $tag, $matches)) {
+                if (preg_match('#(name|property)="(?<name>[^"]+)"#i', $tag, $matches)) {
                     $name = $matches['name'];
-                } elseif (preg_match('#property="(?<name>[^"]+)"#i', $tag, $matches)) {
-                    $name = $matches['name'];
+                } elseif (preg_match('#itemprop="(?<itemprop>[^"]+)"#i', $tag, $matches)) {
+                    $name = $matches['itemprop'];
                 } else {
                     continue;
                 }
