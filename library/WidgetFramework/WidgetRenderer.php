@@ -605,51 +605,6 @@ abstract class WidgetFramework_WidgetRenderer
         }
     }
 
-    protected function _acquireLock(array $widget, $positionCode, array $param)
-    {
-        if (!$this->requireLock($widget)) {
-            return '';
-        }
-
-        $cacheModel = $this->_getCacheModel();
-        $lockId = $this->_getCacheId($widget, $positionCode, $param, array('lock', $widget['widget_id']));
-
-        $isLocked = false;
-        $cached = $cacheModel->getCache(0, $lockId, array(
-            WidgetFramework_Model_Cache::OPTION_CACHE_STORE => WidgetFramework_Model_Cache::OPTION_CACHE_STORE_FILE
-        ));
-        if (!empty($cached)
-            && is_array($cached)
-        ) {
-            if (!empty($cached[WidgetFramework_Model_Cache::KEY_TIME])
-                && XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME] < 10
-            ) {
-                $isLocked = !empty($cached[WidgetFramework_Model_Cache::KEY_HTML])
-                    && $cached[WidgetFramework_Model_Cache::KEY_HTML] === '1';
-            }
-        }
-
-        if ($isLocked) {
-            // locked by some other requests!
-            return false;
-        }
-
-        $cacheModel->setCache(0, $lockId, '1', array(), array(
-            WidgetFramework_Model_Cache::OPTION_CACHE_STORE => WidgetFramework_Model_Cache::OPTION_CACHE_STORE_FILE
-        ));
-
-        return $lockId;
-    }
-
-    protected function _releaseLock($lockId)
-    {
-        if (!empty($lockId)) {
-            $this->_getCacheModel()->setCache(0, $lockId, '0', array(), array(
-                WidgetFramework_Model_Cache::OPTION_CACHE_STORE => WidgetFramework_Model_Cache::OPTION_CACHE_STORE_FILE
-            ));
-        }
-    }
-
     protected function _restoreFromCache($cached, &$html, &$containerData, &$requiredExternals)
     {
         $html = $cached[WidgetFramework_Model_Cache::KEY_HTML];
@@ -704,7 +659,7 @@ abstract class WidgetFramework_WidgetRenderer
         // check for cache
         // since 1.2.1
         $cacheId = false;
-        $lockId = '';
+        $lockId = null;
 
         if ($html === false
             && $this->useCache($widgetRef)
@@ -720,7 +675,7 @@ abstract class WidgetFramework_WidgetRenderer
                     $this->_restoreFromCache($cached, $html, $containerData, $requiredExternals);
                 } else {
                     // cached html has expired: try to acquire lock
-                    $lockId = $this->_acquireLock($widgetRef, $positionCode, $params);
+                    $lockId = $this->_getCacheModel()->acquireLock($widgetRef['widget_id'], $cacheId);
 
                     if ($lockId === false) {
                         // a lock cannot be acquired, an expired cached html is the second best choice
@@ -729,7 +684,7 @@ abstract class WidgetFramework_WidgetRenderer
                 }
             } else {
                 // no cache found
-                $lockId = $this->_acquireLock($widgetRef, $positionCode, $params);
+                $lockId = $this->_getCacheModel()->acquireLock($widgetRef['widget_id'], $cacheId);
             }
         }
 
@@ -782,11 +737,13 @@ abstract class WidgetFramework_WidgetRenderer
                     $extraData[self::EXTRA_REQUIRED_EXTERNALS] = $requiredExternals;
                 }
 
-                $this->_getCacheModel()->setCache($widgetRef['widget_id'], $cacheId, $html, $extraData);
+                $this->_getCacheModel()->setCache($widgetRef['widget_id'], $cacheId, $html, $extraData, array(
+                    WidgetFramework_Model_Cache::OPTION_LOCK_ID => $lockId,
+                ));
             }
         }
 
-        $this->_releaseLock($lockId);
+        $this->_getCacheModel()->releaseLock($lockId);
 
         if (!empty($containerData)) {
             // apply container data

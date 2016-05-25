@@ -6,6 +6,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
     const OPTION_CACHE_STORE_CACHE = 'cache';
     const OPTION_CACHE_STORE_DB = 'db';
     const OPTION_CACHE_STORE_FILE = 'file';
+    const OPTION_LOCK_ID = 'lockId';
 
     const INVALIDED_CACHE_ITEM_NAME = 'invalidated_cache';
     const KEY_TIME = 'time';
@@ -24,11 +25,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
     public function getCache($widgetId, $cacheId, array $options = array())
     {
-        $cacheStore = WidgetFramework_Option::get('cacheStore');
-        if (isset($options[self::OPTION_CACHE_STORE])) {
-            $cacheStore = $options[self::OPTION_CACHE_STORE];
-        }
-
+        $cacheStore = $this->_getCacheStore($options);
         if (empty($cacheStore)) {
             return array();
         }
@@ -88,11 +85,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         array $extraData = array(),
         array $options = array()
     ) {
-        $cacheStore = WidgetFramework_Option::get('cacheStore');
-        if (isset($options[self::OPTION_CACHE_STORE])) {
-            $cacheStore = $options[self::OPTION_CACHE_STORE];
-        }
-
+        $cacheStore = $this->_getCacheStore($options);
         if (empty($cacheStore)) {
             return array();
         }
@@ -115,7 +108,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
                 $cacheSet = $this->_db_setCache($widgetId, $cacheId, $data, $options);
                 break;
             case self::OPTION_CACHE_STORE_FILE:
-                $cacheSet = $this->_file_setCache($widgetId, $cacheId, $data);
+                $cacheSet = $this->_file_setCache($widgetId, $cacheId, $data, $options);
                 break;
             default:
                 throw new XenForo_Exception('Unsupported cache store: ' . $cacheStore);
@@ -126,6 +119,77 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         }
 
         return $cacheSet;
+    }
+
+    public function acquireLock($widgetId, $cacheId, array $options = array())
+    {
+        $cacheStore = $this->_getCacheStore($options);
+        if (empty($cacheStore)) {
+            return false;
+        }
+
+        if ($cacheStore === self::OPTION_CACHE_STORE_FILE) {
+            $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
+            $dirPath = dirname($filePath);
+            if (!XenForo_Helper_File::createDirectory($dirPath)) {
+                return false;
+            }
+
+            $fh = fopen($filePath, 'w');
+            if (flock($fh, LOCK_EX | LOCK_NB)) {
+                return $fh;
+            }
+        } else {
+            $lockId = sprintf('%s_lock', $cacheId);
+            $lockOptions = $options;
+            $lockOptions[self::OPTION_CACHE_STORE] = self::OPTION_CACHE_STORE_FILE;
+
+            $isLocked = false;
+            $cached = $this->getCache(0, $lockId, $lockOptions);
+            if (!empty($cached)
+                && is_array($cached)
+            ) {
+                if (!empty($cached[WidgetFramework_Model_Cache::KEY_TIME])
+                    && XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME] < 10
+                ) {
+                    $isLocked = !empty($cached[WidgetFramework_Model_Cache::KEY_HTML])
+                        && $cached[WidgetFramework_Model_Cache::KEY_HTML] === '1';
+                }
+            }
+
+            if ($isLocked) {
+                // locked by some other requests!
+                return false;
+            }
+
+            $this->setCache(0, $lockId, '1', array(), $lockOptions);
+
+            return $lockId;
+        }
+
+        return false;
+    }
+
+    public function releaseLock($lockId, array $options = array())
+    {
+        if (is_resource($lockId)) {
+            flock($lockId, LOCK_UN);
+            fclose($lockId);
+        } elseif (is_string($lockId)
+            && !empty($lockId)
+        ) {
+            $this->setCache(0, $lockId, '0', array(), $options);
+        }
+    }
+
+    protected function _getCacheStore(array $options = array())
+    {
+        $cacheStore = WidgetFramework_Option::get('cacheStore');
+        if (isset($options[self::OPTION_CACHE_STORE])) {
+            $cacheStore = $options[self::OPTION_CACHE_STORE];
+        }
+
+        return $cacheStore;
     }
 
     protected function _cache_getCache($widgetId, $cacheId)
@@ -256,67 +320,63 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
     protected function _file_getCache($widgetId, $cacheId)
     {
-        $fileData = $this->_file_readDataFromFile($cacheId);
-
-        if (isset($fileData[$widgetId])) {
-            return $fileData[$widgetId];
-        } else {
-            return array();
+        $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
+        if (file_exists($filePath)) {
+            $fileContents = file_get_contents($filePath);
+            $data = self::_unserialize($fileContents);
+            if (is_array($data)) {
+                return $data;
+            }
         }
+
+        return array();
     }
 
-    protected function _file_setCache($widgetId, $cacheId, array $data)
+    protected function _file_setCache($widgetId, $cacheId, array $data, array $options)
     {
-        $fileData = $this->_file_readDataFromFile($cacheId);
-        $fileData[$widgetId] = $data;
-        $fileDataSerialized = self::_serialize($fileData);
+        $dataSerialized = self::_serialize($data);
 
-        $filePath = $this->_file_getDataFilePath($cacheId);
-        $dirPath = dirname($filePath);
-        if (XenForo_Helper_File::createDirectory($dirPath)) {
-            file_put_contents($filePath, $fileDataSerialized);
+        if (isset($options[self::OPTION_LOCK_ID])
+            && is_resource($options[self::OPTION_LOCK_ID])
+        ) {
+            fwrite($options[self::OPTION_LOCK_ID], $dataSerialized);
+        } else {
+            $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
+            $dirPath = dirname($filePath);
+            if (XenForo_Helper_File::createDirectory($dirPath)) {
+                file_put_contents($filePath, $dataSerialized);
+            }
         }
 
         if (XenForo_Application::debugMode()) {
+            if (empty($cacheId)) {
+                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+                exit;
+            }
+
             XenForo_Helper_File::log(__CLASS__, sprintf('_file_setCache: $widgetId=%d, $cacheId=%s, '
-                . 'strlen($fileDataSerialized)=%d',
-                $widgetId, $cacheId, strlen($fileDataSerialized)));
+                . 'strlen($dataSerialized)=%d',
+                $widgetId, $cacheId, strlen($dataSerialized)));
         }
 
         return true;
     }
 
-    protected function _file_readDataFromFile($cacheId)
+    protected function _file_getDataFilePath($widgetId, $cacheId)
     {
-        if (!isset(self::$_queriedData[$cacheId])) {
-            self::$_queriedData[$cacheId] = array();
-
-            $filePath = $this->_file_getDataFilePath($cacheId);
-            if (file_exists($filePath)) {
-                $fileContents = file_get_contents($filePath);
-                $data = self::_unserialize($fileContents);
-                if (is_array($data)) {
-                    self::$_queriedData[$cacheId] = $data;
-                }
-            }
-
-            if (XenForo_Application::debugMode()) {
-                XenForo_Helper_File::log(__CLASS__, sprintf('_file_readDataFromFile: $cacheId=%s, '
-                    . 'count(self::$_queriedData[$cacheId])=%d',
-                    $cacheId, count(self::$_queriedData[$cacheId])));
-            }
+        if (!empty($widgetId)) {
+            $filePath = sprintf('%s/%s', $cacheId, $widgetId);
+        } else {
+            $filePath = $cacheId;
         }
 
-        return self::$_queriedData[$cacheId];
-    }
-
-    protected function _file_getDataFilePath($cacheId)
-    {
-        $filePath = str_replace('_', '/', $cacheId);
+        $filePath = str_replace('_', '/', $filePath);
         $filePath = preg_replace('#[^0-9a-zA-Z\/]#', '', $filePath);
         $filePath = trim($filePath, '/');
 
-        return sprintf('%s/WidgetFramework/cache/%s.bin', XenForo_Helper_File::getInternalDataPath(), $filePath);
+        return sprintf('%s/WidgetFramework/cache/%s.%s',
+            XenForo_Helper_File::getInternalDataPath(), $filePath,
+            function_exists('igbinary_serialize') ? 'ibn' : 'bin');
     }
 
     public function invalidateCache($widgetId)
