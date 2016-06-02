@@ -62,6 +62,7 @@ class WidgetFramework_Core
             'WidgetFramework_WidgetRenderer_Template',
             'WidgetFramework_WidgetRenderer_TemplateWithoutWrapper',
             'WidgetFramework_WidgetRenderer_Threads',
+            'WidgetFramework_WidgetRenderer_UserFollow',
             'WidgetFramework_WidgetRenderer_Users',
             'WidgetFramework_WidgetRenderer_UsersFind',
             'WidgetFramework_WidgetRenderer_UsersStaff',

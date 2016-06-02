@@ -2730,6 +2730,53 @@ All customization should go to wf_default_EXTRA.css
 		<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 	</form>
 </div>]]></template>
+    <template title="wf_widget_user_follow" version_id="2060307" version_string="2.6.3"><![CDATA[<xen:if is="{$following} OR {$followers}">
+	<xen:require css="member_view.css" />
+	
+	<div class="followBlocks">
+		<xen:if is="{$following}">
+			<div class="section">
+				<h3 class="subHeading textWithCount" title="{xen:phrase x_is_following_y_members, 'name={$user.username}', 'count={xen:number $followingCount}'}">
+					<span class="text">{xen:phrase following}</span>
+					<a href="{xen:link 'members/following', $user}" class="count OverlayTrigger">{xen:number $followingCount}</a>
+				</h3>
+				<div class="primaryContent avatarHeap">
+					<ol>
+					<xen:foreach loop="$following" key="$followUserId" value="$followUser">
+						<li>
+							<xen:avatar user="$followUser" size="s" text="{$followUser.username}" class="Tooltip" title="{$followUser.username}" itemprop="contact" />
+						</li>
+					</xen:foreach>
+					</ol>
+				</div>
+				<xen:if is="{$followingCount} > {xen:count $following, false}">
+					<div class="sectionFooter"><a href="{xen:link 'members/following', $user}" class="OverlayTrigger">{xen:phrase show_all}</a></div>
+				</xen:if>
+			</div>
+		</xen:if>
+
+		<xen:if is="{$followers}">
+			<div class="section">
+				<h3 class="subHeading textWithCount" title="{xen:phrase x_is_being_followed_by_y_members, 'name={$user.username}', 'count={xen:number $followersCount}'}">
+					<span class="text">{xen:phrase followers}</span>
+					<a href="{xen:link 'members/followers', $user}" class="count OverlayTrigger">{xen:number $followersCount}</a>
+				</h3>
+				<div class="primaryContent avatarHeap">
+					<ol>
+					<xen:foreach loop="$followers" key="$followUserId" value="$followUser">
+						<li>
+							<xen:avatar user="$followUser" size="s" text="{$followUser.username}" class="Tooltip" title="{$followUser.username}" itemprop="contact" />
+						</li>
+					</xen:foreach>
+					</ol>
+				</div>
+				<xen:if is="{$followersCount} > {xen:count $followers, false}">
+					<div class="sectionFooter"><a href="{xen:link 'members/followers', $user}" class="OverlayTrigger">{xen:phrase show_all}</a></div>
+				</xen:if>
+			</div>
+		</xen:if>
+	</div>
+</xen:if>]]></template>
     <template title="wf_widget_visitor_panel" version_id="62" version_string="2.3.3d"><![CDATA[<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<xen:include template="sidebar_visitor_panel" />
 </div>]]></template>
