@@ -161,6 +161,7 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
 
         if ($changeTemplateName) {
             $controllerResponse->templateName = $templateName;
+            return $controllerResponse;
         }
 
         return null;
