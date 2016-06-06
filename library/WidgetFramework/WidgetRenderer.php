@@ -18,18 +18,18 @@ abstract class WidgetFramework_WidgetRenderer
     /**
      * Required method: define basic configuration of the renderer.
      * Available configuration parameters:
-     *    - name: The display name of the renderer
-     *    - isHidden: Flag to hide the renderer when creating new widget
-     *    - options: An array of renderer's options
-     *    - useCache: Flag to determine the renderer can be cached or not
+     *    - name: The display name of the renderer.
+     *    - isHidden: Flag to hide the renderer when creating new widget. Default `false`.
+     *    - options: An array of renderer's options. Default `array()`.
+     *    - useCache: Flag to determine the renderer can be cached or not. Default `false`.
      *    - useUserCache: Flag to determine the renderer needs to be cached by an
      *                      user-basis. Internally, this is implemented by getting the current user
      *                      permission combination id (not the user id as normally expected). This is
-     *                      done to make sure the cache is used effectively.
+     *                      done to make sure the cache is used effectively. Default `false`.
      *    - cacheSeconds: A numeric value to specify the maximum age of the cache (in seconds).
-     *                      If the cache is too old, the widget will be rendered from scratch.
-     *    - useWrapper: Flag to determine the widget should be wrapped with a wrapper
-     *    - canAjaxLoad: Flag to determine the widget can be loaded via ajax
+     *                      If the cache is too old, the widget will be rendered from scratch. Default `0`.
+     *    - useWrapper: Flag to determine the widget should be wrapped with a wrapper. Default `true`.
+     *    - canAjaxLoad: Flag to determine the widget can be loaded via ajax. Default `false`.
      */
     abstract protected function _getConfiguration();
 
@@ -384,12 +384,12 @@ abstract class WidgetFramework_WidgetRenderer
     {
         if ($this->_configuration === false) {
             $default = array(
-                'name' => 'Name',
+                'name' => get_class($this),
+                'isHidden' => false,
                 'options' => array(),
 
                 'useCache' => false,
                 'useUserCache' => false,
-                'useLiveCache' => false,
                 'cacheSeconds' => 0,
 
                 'useWrapper' => true,
