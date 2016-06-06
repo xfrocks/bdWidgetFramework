@@ -1253,7 +1253,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="2060307" version_string="2.6.3"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1294,11 +1294,14 @@ All customization should go to wf_default_EXTRA.css
 
 .widget-columns
 {
+}
+.columns-table
+{
 	display: table;
 	table-layout: fixed;
 	width: 100% !important;
 }
-.columns-container
+.columns-row
 {
 	display: table-row;
 }
@@ -2038,7 +2041,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_group_wrapper" version_id="2060305" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_group_wrapper" version_id="2060307" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $widgets} === 1">
 
@@ -2086,7 +2089,8 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>
 
 <div class="{$_classSection} widget-columns columns-{xen:count $widgets}" id="widget-columns-{$groupId}">
-	<div class="columns-container">
+	<div class="columns-table">
+		<div class="columns-row">
 		<xen:contentcheck>
 		<xen:foreach loop="$widgets" i="$i" value="$widget">
 		<div class="widget-column column-{$i}">
@@ -2110,6 +2114,7 @@ All customization should go to wf_default_EXTRA.css
 		</div>
 		</xen:foreach>
 		</xen:contentcheck>
+		</div>
 	</div>
 </div>
 </xen:if>
