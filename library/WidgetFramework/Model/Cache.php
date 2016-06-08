@@ -91,6 +91,8 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
         self::_modifyCacheId($cacheId);
 
+        $html = $this->_cleanUpHtml($html);
+
         $data = array(
             self::KEY_HTML => $html,
             self::KEY_TIME => XenForo_Application::$time,
@@ -402,6 +404,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
     {
         XenForo_Application::setSimpleCacheData(
             WidgetFramework_Core::SIMPLE_CACHE_INVALIDATED_WIDGETS, $invalidatedCache);
+    }
+
+    protected function _cleanUpHtml($html)
+    {
+        $html = preg_replace('#(\s)\s+#', '$1', $html);
+
+        return $html;
     }
 
     protected static function _modifyCacheId(&$cacheId)
