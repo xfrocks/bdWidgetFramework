@@ -447,7 +447,19 @@ abstract class WidgetFramework_WidgetRenderer
         }
 
         $configuration = $this->getConfiguration();
-        return !empty($configuration['useCache']);
+        $useCache = !empty($configuration['useCache']);
+
+        if ($useCache
+            && $this->useUserCache($widget)
+            && !XenForo_Application::getConfig()->get(WidgetFramework_Core::CONFIG_CACHE_ALL_PERMISSION_COMBINATIONS)
+        ) {
+            $permissionCombinationId = XenForo_Visitor::getInstance()->get('permission_combination_id');
+            if (!WidgetFramework_Helper_PermissionCombination::isGroupOnly($permissionCombinationId)) {
+                return false;
+            }
+        }
+
+        return $useCache;
     }
 
     public function useUserCache(

@@ -2,6 +2,21 @@
 
 class WidgetFramework_Core
 {
+
+    /**
+     * By default, widget that has `useUserCache` turned on will only be cached
+     * if the visitor permission combination is a group one (e.g. normal users
+     * having no specific user permission). This is done to reduce the number of
+     * caches being kept across the system and decrease unnecessary cache usage.
+     * This behavior will effectively disable caching for user with specific
+     * permission. Generally this is fine because most of these people are
+     * staff and there are not a lot of them. Setting this to `true` in config.php
+     * will disable the feature and cache widgets for everyone.
+     */
+    const CONFIG_CACHE_ALL_PERMISSION_COMBINATIONS = 'wfCacheAllPermissionCombinations';
+
+    const SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS = 'wf_groupOnlyPcIds';
+
     const PARAM_TO_BE_PROCESSED = '_WidgetFramework_toBeProcessed';
     const PARAM_POSITION_CODE = '_WidgetFramework_positionCode';
     const PARAM_IS_HOOK = '_WidgetFramework_isHook';
