@@ -2,6 +2,10 @@
 
 class WidgetFramework_Core
 {
+    /**
+     * Turn on debug mode for this add-on only to... you know, debug stuff.
+     */
+    const CONFIG_DEBUG = 'wfDebug';
 
     /**
      * By default, widget that has `useUserCache` turned on will only be cached
@@ -15,6 +19,9 @@ class WidgetFramework_Core
      */
     const CONFIG_CACHE_ALL_PERMISSION_COMBINATIONS = 'wfCacheAllPermissionCombinations';
 
+    const SIMPLE_CACHE_WIDGETS = 'widgets';
+    const SIMPLE_CACHE_INVALIDATED_WIDGETS = 'invalidated_cache';
+    const SIMPLE_CACHE_CHILD_NODES = 'wf_childNodes';
     const SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS = 'wf_groupOnlyPcIds';
 
     const PARAM_TO_BE_PROCESSED = '_WidgetFramework_toBeProcessed';
@@ -107,11 +114,11 @@ class WidgetFramework_Core
         }
 
         if (WidgetFramework_Option::get('layoutEditorEnabled')) {
-            $globalWidgets = $this->_getModelWidget()->getWidgets(array(
+            $globalWidgets = $this->_getWidgetModel()->getWidgets(array(
                 'widget_page_id' => 0
             ));
         } else {
-            $globalWidgets = $this->_getModelWidget()->getCachedWidgets();
+            $globalWidgets = $this->_getWidgetModel()->getCachedWidgets();
         }
 
         $this->addWidgets($globalWidgets);
@@ -120,8 +127,7 @@ class WidgetFramework_Core
         // detect if we are in debug mode
         // previously, put WF in debug mode when XF is in debug mode
         // it's no longer the case now, we will look for wfDebug flag in config.php
-        $wfDebug = XenForo_Application::getConfig()->get('wfDebug');
-        self::$_debug = !empty($wfDebug);
+        self::$_debug = !!XenForo_Application::getConfig()->get(self::CONFIG_DEBUG);
 
         define('WIDGET_FRAMEWORK_LOADED', 1);
     }
@@ -540,7 +546,7 @@ class WidgetFramework_Core
     /**
      * @return WidgetFramework_Model_Cache
      */
-    protected function _getModelCache()
+    protected function _getCacheModel()
     {
         return $this->getModelFromCache('WidgetFramework_Model_Cache');
     }
@@ -548,7 +554,7 @@ class WidgetFramework_Core
     /**
      * @return WidgetFramework_Model_Widget
      */
-    protected function _getModelWidget()
+    protected function _getWidgetModel()
     {
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
     }
@@ -566,7 +572,7 @@ class WidgetFramework_Core
 
     public static function clearCachedWidgetById($widgetId)
     {
-        self::getInstance()->_getModelCache()->invalidateCache($widgetId);
+        self::getInstance()->_getCacheModel()->invalidateCache($widgetId);
     }
 
     public static function clearCachedWidgetByClass($class)
@@ -577,10 +583,10 @@ class WidgetFramework_Core
 
         $instance = self::getInstance();
 
-        $widgets = $instance->_getModelWidget()->getWidgets(array(
+        $widgets = $instance->_getWidgetModel()->getWidgets(array(
             'class' => $class,
         ));
-        $cacheModel = $instance->_getModelCache();
+        $cacheModel = $instance->_getCacheModel();
 
         foreach ($widgets as $widget) {
             $cacheModel->invalidateCache($widget['widget_id']);

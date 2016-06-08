@@ -239,9 +239,9 @@ class WidgetFramework_Installer
         $db->query("DELETE FROM `xf_node_type` WHERE `node_type_id` = 'WF_WidgetPage'");
         $db->query("DELETE FROM `xf_node` WHERE `node_type_id` = 'WF_WidgetPage'");
 
-        XenForo_Application::setSimpleCacheData(WidgetFramework_Helper_Index::SIMPLE_CACHE_CHILD_NODES, false);
-        XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Cache::INVALIDED_CACHE_ITEM_NAME, false);
-        XenForo_Application::setSimpleCacheData(WidgetFramework_Model_Widget::SIMPLE_CACHE_KEY, false);
+        XenForo_Application::setSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_WIDGETS, false);
+        XenForo_Application::setSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_INVALIDATED_WIDGETS, false);
+        XenForo_Application::setSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_CHILD_NODES, false);
         XenForo_Application::setSimpleCacheData(
             WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS, false);
 

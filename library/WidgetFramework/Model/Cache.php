@@ -8,7 +8,6 @@ class WidgetFramework_Model_Cache extends XenForo_Model
     const OPTION_CACHE_STORE_FILE = 'file';
     const OPTION_LOCK_ID = 'lockId';
 
-    const INVALIDED_CACHE_ITEM_NAME = 'invalidated_cache';
     const KEY_TIME = 'time';
     const KEY_HTML = 'html';
     const KEY_EXTRA_DATA = 'extraData';
@@ -396,12 +395,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
     protected function _getInvalidatedCache()
     {
-        return XenForo_Application::getSimpleCacheData(self::INVALIDED_CACHE_ITEM_NAME);
+        return XenForo_Application::getSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_INVALIDATED_WIDGETS);
     }
 
     protected function _setInvalidatedCache(array $invalidatedCache)
     {
-        XenForo_Application::setSimpleCacheData(self::INVALIDED_CACHE_ITEM_NAME, $invalidatedCache);
+        XenForo_Application::setSimpleCacheData(
+            WidgetFramework_Core::SIMPLE_CACHE_INVALIDATED_WIDGETS, $invalidatedCache);
     }
 
     protected static function _modifyCacheId(&$cacheId)

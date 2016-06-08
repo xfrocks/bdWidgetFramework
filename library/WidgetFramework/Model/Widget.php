@@ -2,8 +2,6 @@
 
 class WidgetFramework_Model_Widget extends XenForo_Model
 {
-    const SIMPLE_CACHE_KEY = 'widgets';
-
     public function createGroupContaining(array $widget, array $groupOptions = array())
     {
         $groupDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
@@ -370,7 +368,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
 
     public function getCachedWidgets()
     {
-        $widgets = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY);
+        $widgets = XenForo_Application::getSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_WIDGETS);
 
         if (empty($widgets)) {
             return $this->buildCache();
@@ -386,7 +384,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             'active' => 1,
         ));
 
-        XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
+        XenForo_Application::setSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_WIDGETS, $widgets);
 
         return $widgets;
     }

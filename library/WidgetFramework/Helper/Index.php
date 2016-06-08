@@ -2,8 +2,6 @@
 
 class WidgetFramework_Helper_Index
 {
-    const SIMPLE_CACHE_CHILD_NODES = 'wf_childNodes';
-
     protected static $_setup11x = false;
     protected static $_setup11x_forumsWasHit = false;
 
@@ -92,7 +90,8 @@ class WidgetFramework_Helper_Index
             if (!empty($widgetPage)) {
                 $childNodes = $nodeModel->getChildNodes($widgetPage, true);
 
-                XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_CHILD_NODES, $childNodes);
+                XenForo_Application::setSimpleCacheData(
+                    WidgetFramework_Core::SIMPLE_CACHE_CHILD_NODES, $childNodes);
             }
         }
 
@@ -101,7 +100,7 @@ class WidgetFramework_Helper_Index
 
     public static function getChildNodes()
     {
-        $childNodes = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_CHILD_NODES);
+        $childNodes = XenForo_Application::getSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_CHILD_NODES);
 
         if ($childNodes === false) {
             return self::rebuildChildNodesCache();
