@@ -266,8 +266,8 @@ class WidgetFramework_Core
         }
 
         if (!empty($params[self::PARAM_IS_HOOK])) {
-            $params['_classSection'] = 'section widget-container act-as-sidebar sidebar';
-            $params['_classInnerSection'] = 'secondaryContent widget hook-widget';
+            $params['_classSection'] = 'section sectionMain widget-container act-as-sidebar sidebar';
+            $params['_classInnerSection'] = 'widget hook-widget';
         } else {
             $params['_classSection'] = 'section';
             $params['_classInnerSection'] = 'secondaryContent widget sidebar-widget';
