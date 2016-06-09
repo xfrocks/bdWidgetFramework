@@ -598,6 +598,11 @@
 <xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 6}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}</xen:explain>
 </xen:spinboxunit>]]></template>
+    <template title="wf_widget_options_user_info"><![CDATA[<xen:checkboxunit label="">
+	<xen:option name="{$namePrefix}avatar" selected="{$options.avatar}">
+		{xen:phrase avatar}
+	</xen:option>
+</xen:checkboxunit>]]></template>
     <template title="wf_widget_options_xfmg_albums"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_albums_lowercase}"}</xen:explain>
 </xen:spinboxunit>]]></template>
@@ -2788,6 +2793,52 @@ All customization should go to wf_default_EXTRA.css
 </xen:if>
 
 <xen:edithint template="wf_others.css" />
+<xen:edithint template="member_view" />]]></template>
+    <template title="wf_widget_user_info" version_id="2060309" version_string="2.6.3"><![CDATA[<xen:if is="{$widget.options.avatar}">
+	<div class="avatarScaler">
+		<xen:if is="{$visitor.user_id} == {$user.user_id}">
+		<a class="Av{$user.user_id}l OverlayTrigger" href="{xen:link account/avatar}">
+			<img src="{xen:helper avatar, $user, l, '', true}" alt="{$user.username}" style="{xen:helper avatarCropCss, $user}" itemprop="photo" />
+		</a>
+		<xen:else />
+		<span class="Av{$user.user_id}l">
+			<img src="{xen:helper avatar, $user, l, '', true}" alt="{$user.username}" style="{xen:helper avatarCropCss, $user}" itemprop="photo" />
+		</span>
+		</xen:if>
+	</div>
+</xen:if>
+
+<div class="secondaryContent pairsJustified">
+
+	<xen:hook name="member_view_info_block">
+
+	<xen:if is="{$canViewOnlineStatus}">
+		<dl><dt>{xen:phrase last_activity}:</dt>
+			<dd><xen:datetime time="$user.effective_last_activity" /></dd></dl>
+	</xen:if>
+
+	<dl><dt>{xen:phrase joined}:</dt>
+		<dd>{xen:date $user.register_date}</dd></dl>
+
+	<dl><dt>{xen:phrase messages}:</dt>
+		<dd>{xen:number $user.message_count}</dd></dl>
+
+	<dl><dt>{xen:phrase likes_received}:</dt>
+		<dd>{xen:number $user.like_count}</dd></dl>
+
+	<xen:if is="{$xenOptions.enableTrophies}">
+		<dl><dt>{xen:phrase trophy_points}:</dt>
+			<dd><a href="{xen:link 'members/trophies', $user}" class="OverlayTrigger">{xen:number $user.trophy_points}</a></dd></dl>
+	</xen:if>
+
+	<xen:if is="{$canViewWarnings}">
+		<dl><dt>{xen:phrase warning_points}:</dt><dd>{xen:number $user.warning_points}</dd></dl>
+	</xen:if>
+
+	</xen:hook>
+
+</div>
+
 <xen:edithint template="member_view" />]]></template>
     <template title="wf_widget_visitor_panel" version_id="62" version_string="2.3.3d"><![CDATA[<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<xen:include template="sidebar_visitor_panel" />

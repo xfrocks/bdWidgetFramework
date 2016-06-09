@@ -84,6 +84,7 @@ class WidgetFramework_Core
             'WidgetFramework_WidgetRenderer_Template',
             'WidgetFramework_WidgetRenderer_TemplateWithoutWrapper',
             'WidgetFramework_WidgetRenderer_Threads',
+            'WidgetFramework_WidgetRenderer_UserInfo',
             'WidgetFramework_WidgetRenderer_UserFollow',
             'WidgetFramework_WidgetRenderer_Users',
             'WidgetFramework_WidgetRenderer_UsersFind',
@@ -91,13 +92,11 @@ class WidgetFramework_Core
             'WidgetFramework_WidgetRenderer_VisitorPanel',
         );
 
-        // since 2.2
         if (self::xfrmFound()) {
             // XFRM is installed
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFRM_Resources';
         }
 
-        // since 2.6.0
         if (self::xfmgFound()) {
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Albums';
             $renderers[] = 'WidgetFramework_WidgetRenderer_XFMG_Comments';
