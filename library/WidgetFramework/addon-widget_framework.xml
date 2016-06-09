@@ -590,6 +590,14 @@
 	<xen:option value="avatarOnly">{xen:phrase wf_widget_users_display_mode_avatar_only}</xen:option>
 	<xen:option value="avatarOnlyBigger">{xen:phrase wf_widget_users_display_mode_avatar_only_bigger}</xen:option>
 </xen:radiounit>]]></template>
+    <template title="wf_widget_options_user_follow"><![CDATA[<xen:radiounit label="" name="{$namePrefix}type" value="{$options.type}">
+	<xen:option value="following">{xen:phrase following}</xen:option>
+	<xen:option value="followers">{xen:phrase followers}</xen:option>
+</xen:radiounit>
+
+<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 6}">
+	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}</xen:explain>
+</xen:spinboxunit>]]></template>
     <template title="wf_widget_options_xfmg_albums"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_albums_lowercase}"}</xen:explain>
 </xen:spinboxunit>]]></template>
@@ -1797,7 +1805,7 @@ All customization should go to wf_default_EXTRA.css
 		</ol>
 	</xen:if>
 </li>]]></template>
-    <template title="wf_others.css" version_id="112" version_string="2.6.0-dev"><![CDATA[.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl
+    <template title="wf_others.css" version_id="2060309" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl
 {
     float: none;
 }
@@ -1833,6 +1841,19 @@ All customization should go to wf_default_EXTRA.css
 .WidgetFramework_WidgetRenderer_XFRM_Resources .Hint
 {
 	float: right;
+}
+
+{xen:helper clearfix, '.WidgetFramework_WidgetRenderer_UserFollow h3'}
+.widget.WidgetFramework_WidgetRenderer_UserFollow h3 > a.count
+{
+	background-color: {xen:property primaryLightest};
+	border: 1px solid {xen:property primaryLighter};
+	border-radius: 5px;
+	color: {xen:property primaryDarker};
+	float: right;
+	font-size: 0.8em;
+	margin: -3px 0;
+	padding: 2px 6px;
 }]]></template>
     <template title="wf_profile_posts.css" version_id="102" version_string="2.5.0d"><![CDATA[.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem
 {
@@ -2041,7 +2062,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_group_wrapper" version_id="2060307" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_group_wrapper" version_id="2060309" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $widgets} === 1">
 
@@ -2132,7 +2153,7 @@ All customization should go to wf_default_EXTRA.css
 		<li>
 			<a href="{$requestPaths.requestUri}#widget-tab-{$widget.widget_id}">
 				<xen:if hascontent="true">
-				<xen:contentcheck>{xen:raw $widget._runtime.title}</xen:contentcheck>
+				<xen:contentcheck>{xen:helper snippet, $widget._runtime.title, 0, {xen:array 'stripHtml=1'}}</xen:contentcheck>
 				<xen:else />
 				{xen:phrase wf_widget}
 				</xen:if>
@@ -2735,53 +2756,39 @@ All customization should go to wf_default_EXTRA.css
 		<input type="hidden" name="_xfToken" value="{$visitor.csrf_token_page}" />
 	</form>
 </div>]]></template>
-    <template title="wf_widget_user_follow" version_id="2060307" version_string="2.6.3"><![CDATA[<xen:if is="{$following} OR {$followers}">
-	<xen:require css="member_view.css" />
-	
-	<div class="followBlocks">
-		<xen:if is="{$following}">
-			<div class="section">
-				<h3 class="subHeading textWithCount" title="{xen:phrase x_is_following_y_members, 'name={$user.username}', 'count={xen:number $followingCount}'}">
-					<span class="text">{xen:phrase following}</span>
-					<a href="{xen:link 'members/following', $user}" class="count OverlayTrigger">{xen:number $followingCount}</a>
-				</h3>
-				<div class="primaryContent avatarHeap">
-					<ol>
-					<xen:foreach loop="$following" key="$followUserId" value="$followUser">
-						<li>
-							<xen:avatar user="$followUser" size="s" text="{$followUser.username}" class="Tooltip" title="{$followUser.username}" itemprop="contact" />
-						</li>
-					</xen:foreach>
-					</ol>
-				</div>
-				<xen:if is="{$followingCount} > {xen:count $following, false}">
-					<div class="sectionFooter"><a href="{xen:link 'members/following', $user}" class="OverlayTrigger">{xen:phrase show_all}</a></div>
-				</xen:if>
-			</div>
-		</xen:if>
+    <template title="wf_widget_user_follow" version_id="2060309" version_string="2.6.3"><![CDATA[<xen:if is="{$following}">
+<xen:require css="wf_default.css" />
+<div class="avatarHeap">
+	<ol>
+		<xen:foreach loop="$following" key="$followUserId" value="$followUser">
+		<li>
+			<xen:avatar user="$followUser" size="s" text="{$followUser.username}" class="Tooltip" title="{$followUser.username}" itemprop="contact" />
+		</li>
+		</xen:foreach>
+	</ol>
+</div>
+<xen:if is="{$widget.group_id} > 0 && {$followingCount} > {xen:count $following, false}">
+<p><a href="{xen:link 'members/following', $user}" class="OverlayTrigger">{xen:phrase show_all}</a></p>
+</xen:if>
 
-		<xen:if is="{$followers}">
-			<div class="section">
-				<h3 class="subHeading textWithCount" title="{xen:phrase x_is_being_followed_by_y_members, 'name={$user.username}', 'count={xen:number $followersCount}'}">
-					<span class="text">{xen:phrase followers}</span>
-					<a href="{xen:link 'members/followers', $user}" class="count OverlayTrigger">{xen:number $followersCount}</a>
-				</h3>
-				<div class="primaryContent avatarHeap">
-					<ol>
-					<xen:foreach loop="$followers" key="$followUserId" value="$followUser">
-						<li>
-							<xen:avatar user="$followUser" size="s" text="{$followUser.username}" class="Tooltip" title="{$followUser.username}" itemprop="contact" />
-						</li>
-					</xen:foreach>
-					</ol>
-				</div>
-				<xen:if is="{$followersCount} > {xen:count $followers, false}">
-					<div class="sectionFooter"><a href="{xen:link 'members/followers', $user}" class="OverlayTrigger">{xen:phrase show_all}</a></div>
-				</xen:if>
-			</div>
-		</xen:if>
-	</div>
-</xen:if>]]></template>
+<xen:elseif is="{$followers}" />
+<xen:require css="wf_default.css" />
+<div class="avatarHeap">
+	<ol>
+		<xen:foreach loop="$followers" key="$followUserId" value="$followUser">
+		<li>
+			<xen:avatar user="$followUser" size="s" text="{$followUser.username}" class="Tooltip" title="{$followUser.username}" itemprop="contact" />
+		</li>
+		</xen:foreach>
+	</ol>
+</div>
+<xen:if is="{$widget.group_id} > 0 && {$followersCount} > {xen:count $followers, false}">
+<p><a href="{xen:link 'members/followers', $user}" class="OverlayTrigger">{xen:phrase show_all}</a></p>
+</xen:if>
+</xen:if>
+
+<xen:edithint template="wf_others.css" />
+<xen:edithint template="member_view" />]]></template>
     <template title="wf_widget_visitor_panel" version_id="62" version_string="2.3.3d"><![CDATA[<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<xen:include template="sidebar_visitor_panel" />
 </div>]]></template>
