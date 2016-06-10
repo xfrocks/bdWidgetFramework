@@ -22,8 +22,8 @@ class WidgetFramework_WidgetRenderer_UserFollow extends WidgetFramework_WidgetRe
             }
 
             if (isset(self::$_counts[$widget['widget_id']][$countKey])
-                && !empty(self::$_links[$widget['widget_id']]
-                && empty($widget['group_id']))
+                && !empty(self::$_links[$widget['widget_id']])
+                && empty($widget['group_id'])
             ) {
                 return WidgetFramework_Helper_String::createArrayOfStrings(array(
                     $phrase,
