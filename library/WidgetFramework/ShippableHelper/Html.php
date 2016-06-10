@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2016-05-25T08:37:08+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2016-06-10T01:13:27+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_Html
- * @version 7
+ * @version 8
  * @see DevHelper_Helper_ShippableHelper_Html
  */
 class WidgetFramework_ShippableHelper_Html
@@ -87,6 +87,7 @@ class WidgetFramework_ShippableHelper_Html
 
         // TODO: find better way to avoid having to call this
         $snippet = htmlspecialchars_decode($snippet);
+        $snippet = preg_replace('#\.\.\.\z#', $options['ellipsis'], $snippet);
 
         if ($maxLength == 0 || $maxLength > utf8_strlen($string)) {
             return $snippet;

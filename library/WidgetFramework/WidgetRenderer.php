@@ -16,9 +16,9 @@ abstract class WidgetFramework_WidgetRenderer
     // please use constants from WidgetFramework_Core from now on
 
     /**
-     * Required method: define basic configuration of the renderer.
-     * Available configuration parameters:
-     *    - name: The display name of the renderer.
+     * Returns renderer configuration array.
+     * Available config keys:
+     *    - name: Display name to be used in renderer selection list.
      *    - isHidden: Flag to hide the renderer when creating new widget. Default `false`.
      *    - options: An array of renderer's options. Default `array()`.
      *    - useCache: Flag to determine the renderer can be cached or not. Default `false`.
@@ -30,29 +30,31 @@ abstract class WidgetFramework_WidgetRenderer
      *                      If the cache is too old, the widget will be rendered from scratch. Default `0`.
      *    - useWrapper: Flag to determine the widget should be wrapped with a wrapper. Default `true`.
      *    - canAjaxLoad: Flag to determine the widget can be loaded via ajax. Default `false`.
+     *
+     * @return array
      */
     abstract protected function _getConfiguration();
 
     /**
-     * Required method: get the template title of the options template (to be used in
-     * AdminCP).
-     * If this is not used, simply returns false.
+     * Returns title of the options admin-template.
+     * Or returns false if it's not available.
+     *
+     * @return string|false
      */
     abstract protected function _getOptionsTemplate();
 
     /**
-     * Required method: get the template title of the render template (to be used in
-     * front-end).
+     * Returns title of the render public-template.
      *
      * @param array $widget
      * @param string $positionCode
      * @param array $params
+     * @return string
      */
     abstract protected function _getRenderTemplate(array $widget, $positionCode, array $params);
 
     /**
-     * Required method: prepare data or whatever to get the render template ready to
-     * be rendered.
+     * Prepares data for the render template.
      *
      * @param array $widget
      * @param string $positionCode
@@ -480,9 +482,6 @@ abstract class WidgetFramework_WidgetRenderer
 
     public function requireLock(array $widget)
     {
-        // sondh@2013-04-09
-        // if a renderer needs caching -> require lock all the time
-        // TODO: separate configuration option?
         return $this->useCache($widget);
     }
 
