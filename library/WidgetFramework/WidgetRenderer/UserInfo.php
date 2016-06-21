@@ -32,7 +32,11 @@ class WidgetFramework_WidgetRenderer_UserInfo extends WidgetFramework_WidgetRend
         /** @var XenForo_Model_User $userModel */
         $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
 
-        $user = XenForo_Visitor::getInstance()->toArray();
+        if (isset($params['user'])) {
+            $user = $params['user'];
+        } else {
+            $user = XenForo_Visitor::getInstance()->toArray();
+        }
 
         $renderTemplateObject->setParam('user', $user);
         $renderTemplateObject->setParam('canViewOnlineStatus', $userModel->canViewUserOnlineStatus($user));
