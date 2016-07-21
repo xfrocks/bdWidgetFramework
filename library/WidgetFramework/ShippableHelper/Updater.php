@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2016-05-20T09:18:00+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2016-07-11T20:07:02+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_Updater
- * @version 6
+ * @version 7
  * @see DevHelper_Helper_ShippableHelper_Updater
  */
 class WidgetFramework_ShippableHelper_Updater
@@ -46,7 +46,7 @@ class WidgetFramework_ShippableHelper_Updater
             $apiUrl = self::API_URL;
         }
 
-        if (!Zend_Uri::check($apiUrl)) {
+        if (!parse_url($apiUrl, PHP_URL_HOST)) {
             throw new XenForo_Exception(sprintf('$apiUrl is invalid: %s', $apiUrl));
         }
 
