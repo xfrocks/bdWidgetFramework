@@ -83,6 +83,9 @@ class WidgetFramework_WidgetRenderer_XFMG_Media extends WidgetFramework_WidgetRe
             return '';
         }
 
+        /** @var XenGallery_Model_Media $mediaModel */
+        $mediaModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenGallery_Model_Media');
+
         $order = 'new';
         if (!empty($widget['options']['order'])
             && in_array($widget['options']['order'], array(
@@ -98,6 +101,7 @@ class WidgetFramework_WidgetRenderer_XFMG_Media extends WidgetFramework_WidgetRe
             $limit = $widget['options']['limit'];
         }
 
+        $renderTemplateObject->setParam('canViewMedia', $mediaModel->canViewMedia());
         $renderTemplateObject->setParam('order', $order);
         $renderTemplateObject->setParam('limit', $limit);
         if (!empty($widget['_runtime']['title'])) {
