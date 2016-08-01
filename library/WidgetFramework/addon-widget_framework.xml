@@ -2510,7 +2510,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="2060305" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="2060312" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 <xen:if is="{xen:helper WidgetFramework_getOption, applicationVersionId} > 1050000
 	AND {$widget.options.type} == 'recent'">
@@ -2571,8 +2571,6 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </div>
-
-<xen:include template="preview_tooltip" />
 </xen:if>
 </xen:if>
 
