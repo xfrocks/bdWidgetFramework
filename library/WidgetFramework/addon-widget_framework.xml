@@ -1244,9 +1244,9 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_homeLinksChildNodes" property_type="scalar" definition="1" group_name="WidgetFramework" title="Show child nodes in navtab" description="Enable this property to show links to child nodes for Widget Page navigation tab. Please note that no permission check will be perform." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1100" sub_group="AAAA_toTheTop"><![CDATA[1]]></property>
     <property property_name="wf_sidebarWidget" property_type="css" definition="1" group_name="WidgetFramework" title="Sidebar Widget" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="100" sub_group=""><![CDATA[[]]]></property>
     <property property_name="wf_hookWidget" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="210" sub_group=""><![CDATA[[]]]></property>
-    <property property_name="wf_widgetTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (outer container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1000" sub_group=""><![CDATA[{"border-color":"black","border-style":"none","border-width":"0","margin-all":"0","padding-all":"0"}]]></property>
+    <property property_name="wf_widgetTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (outer container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1000" sub_group=""><![CDATA[{"border-color":"black","border-style":"none","border-width":"0"}]]></property>
     <property property_name="wf_widgetTabsPanes" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (panes container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1020" sub_group=""><![CDATA[{"border-bottom-color":"@primaryLighter","border-bottom-left-radius":"10px","border-bottom-right-radius":"10px","border-bottom-style":"solid","border-bottom-width":"1px","border-left-color":"@primaryLighter","border-left-style":"solid","border-left-width":"1px","border-right-color":"@primaryLighter","border-right-style":"solid","border-right-width":"1px","padding-all":"10px"}]]></property>
-    <property property_name="wf_widgetTabsTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1010" sub_group=""><![CDATA[[]]]></property>
+    <property property_name="wf_widgetTabsTabs" property_type="css" definition="1" group_name="WidgetFramework" title="Tabs (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="1010" sub_group=""><![CDATA[{"extra":"white-space: nowrap;"}]]></property>
     <property property_name="wf_contentWidgetContainer" property_type="css" definition="1" group_name="WidgetFramework" title="Content Widget (container)" description="" css_components="background,border,layout,extra" scalar_type="" scalar_parameters="" display_order="200" sub_group=""><![CDATA[{"extra":"float: none;\nfont-size: inherit;","width":"auto"}]]></property>
     <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
     <property property_name="wf_threads_rich" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Threads widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group=""><![CDATA[1]]></property>
@@ -1266,7 +1266,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="2060307" version_string="2.6.3"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="2060312" version_string="2.6.3"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
@@ -1298,6 +1298,12 @@ All customization should go to wf_default_EXTRA.css
 	.widget-tabs .tabs
 	{
 		{xen:property wf_widgetTabsTabs}
+	}
+
+	.widget-tabs .tabs > li
+	{
+		display: inline;
+		float: none;
 	}
 
 	.widget-tabs .widget-panes
