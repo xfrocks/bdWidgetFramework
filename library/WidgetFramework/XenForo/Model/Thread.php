@@ -152,6 +152,12 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
         if (!empty($thread['fetched_last_post_user'])) {
             $thread['user_id'] = $thread['last_post_user_id'];
             $thread['username'] = $thread['last_post_username'];
+
+            $thread['lastPostInfo'] = array_merge($thread['lastPostInfo'], array(
+                'user_id' => $thread['last_post_user_id'],
+                'gravatar' => $thread['gravatar'],
+                'avatar_date' => $thread['avatar_date'],
+            ));
         }
 
         if (!empty($thread['fetched_last_post'])) {
