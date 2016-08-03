@@ -1924,23 +1924,23 @@ All customization should go to wf_default_EXTRA.css
 	resize: vertical;
 	overflow: hidden;
 }]]></template>
-    <template title="wf_threads.css" version_id="2060304" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads .unread > a
+    <template title="wf_threads.css" version_id="2060312" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
 {
 	font-weight: bold;
 }
-.WidgetFramework_WidgetRenderer_Threads .avatarList .username
+.WidgetFramework_WidgetRenderer_Threads_Sidebar.avatarList .username
 {
 	display: inline;
 	font-size: inherit;
 	margin: 0;
 }
 
-.WidgetFramework_WidgetRenderer_Threads .discussionList
+.WidgetFramework_WidgetRenderer_Threads_List.discussionList
 {
 	overflow: hidden;
 	width: 100%;
 }
-.WidgetFramework_WidgetRenderer_Threads .DiscussionList
+.WidgetFramework_WidgetRenderer_Threads_List .DiscussionList
 {
 	min-width: 450px;
 	width: 100%;
@@ -2518,7 +2518,7 @@ All customization should go to wf_default_EXTRA.css
 <xen:else />
 	
 <xen:if hascontent="true">
-<div class="avatarList">
+<div class="WidgetFramework_WidgetRenderer_Threads_Sidebar avatarList">
 	<ul>
 		<xen:contentcheck>
 		<xen:if is="{$widget.options.type} == 'recent' OR {$widget.options.type} == 'latest_replies'">
@@ -2577,7 +2577,7 @@ All customization should go to wf_default_EXTRA.css
 <xen:elseif is="{$layout} == 'list'" />
 	
 <xen:if hascontent="true">
-<div class="discussionList">
+<div class="WidgetFramework_WidgetRenderer_Threads_List discussionList">
 	<div class="DiscussionList">
 
 		<dl class="sectionHeaders">
@@ -2618,11 +2618,12 @@ All customization should go to wf_default_EXTRA.css
 	</xen:contentcheck>
 </div>
 
-<xen:edithint template="message" />
-<xen:edithint template="wf_default.css" />
 </xen:if>
 
-</xen:if>]]></template>
+</xen:if>
+
+<xen:edithint template="message" />
+<xen:edithint template="wf_threads.css" />]]></template>
     <template title="wf_widget_threads_thread_full" version_id="2060300" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 <xen:edithint template="wf_threads.css" />
 <xen:require css="bb_code.css" />
@@ -2707,7 +2708,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</div>
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_sidebar" version_id="96" version_string="2.5.0d"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
+    <template title="wf_widget_threads_thread_sidebar" version_id="2060312" version_string="2.6.3"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
 	<xen:avatar user="$thread" size="s" img="true" />
 
 	<xen:if is="{xen:property wf_threads_showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
