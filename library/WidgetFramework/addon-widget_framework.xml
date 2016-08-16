@@ -1816,7 +1816,7 @@ All customization should go to wf_default_EXTRA.css
 		</ol>
 	</xen:if>
 </li>]]></template>
-    <template title="wf_others.css" version_id="2060309" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl
+    <template title="wf_others.css" version_id="2060313" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl
 {
     float: none;
 }
@@ -1848,6 +1848,15 @@ All customization should go to wf_default_EXTRA.css
 			float: left;
 			margin-right: 3px;
 		}
+
+.widget-tabs .WidgetFramework_WidgetRenderer_XFMG_Media .sectionMain
+{
+	background: none;
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+	.widget-tabs .WidgetFramework_WidgetRenderer_XFMG_Media .sectionMain .titleStrip { display: none; }
 
 .WidgetFramework_WidgetRenderer_XFRM_Resources .Hint
 {
