@@ -33,7 +33,7 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
         }
 
         foreach ($widgetRef['widgets'] as &$subWidgetRef) {
-            $renderer = WidgetFramework_Core::getRenderer($subWidgetRef['class'], false);
+            $renderer = WidgetFramework_Core::getRenderer($subWidgetRef['class']);
             if ($renderer) {
                 $renderer->prepare($subWidgetRef, $positionCode, $params, $template);
             }
@@ -82,7 +82,7 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
             $widgetRef['_runtime']['html'] = '';
             $widgetRef['_runtime']['ajaxLoadUrl'] = '';
 
-            $renderer = WidgetFramework_Core::getRenderer($widgetRef['class'], false);
+            $renderer = WidgetFramework_Core::getRenderer($widgetRef['class']);
             if (!WidgetFramework_Option::get('layoutEditorEnabled')
                 && count($widgets) > 0
                 && $layout === 'tabs'

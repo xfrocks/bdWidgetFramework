@@ -43,12 +43,7 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
             }
         }
 
-        if (!empty($widgetRef['class'])) {
-            $renderer = WidgetFramework_Core::getRenderer($widgetRef['class'], false);
-        }
-        if (empty($renderer)) {
-            $renderer = WidgetFramework_Core::getRenderer('WidgetFramework_WidgetRenderer_None', false);
-        }
+        $renderer = WidgetFramework_WidgetRenderer::create($widgetRef['class']);
         $widgetRef['_runtime']['configuration'] = $renderer->getConfiguration();
         $renderer->renderOptions($this->_renderer, $this->_params);
 
@@ -92,21 +87,17 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
 
         if (!empty($this->_params['siblingWidgets'])) {
             foreach ($this->_params['siblingWidgets'] as &$siblingWidgetRef) {
-                $siblingWidgetRenderer = WidgetFramework_Core::getRenderer($siblingWidgetRef['class'], false);
-                if (!empty($siblingWidgetRenderer)) {
-                    $siblingWidgetRef['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed(
-                        $siblingWidgetRenderer, $siblingWidgetRef);
-                }
+                $siblingWidgetRenderer = WidgetFramework_WidgetRenderer::create($siblingWidgetRef['class']);
+                $siblingWidgetRef['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed(
+                    $siblingWidgetRenderer, $siblingWidgetRef);
             }
         }
 
         if (!empty($this->_params['groups'])) {
             foreach ($this->_params['groups'] as &$groupRef) {
-                $groupRenderer = WidgetFramework_Core::getRenderer($groupRef['class'], false);
-                if (!empty($groupRenderer)) {
-                    $groupRef['_runtime']['title']
-                        = WidgetFramework_Helper_String::createWidgetTitleDelayed($groupRenderer, $groupRef);
-                }
+                $groupRenderer = WidgetFramework_WidgetRenderer::create($groupRef['class']);
+                $groupRef['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed(
+                    $groupRenderer, $groupRef);
             }
         }
     }

@@ -884,17 +884,18 @@ abstract class WidgetFramework_WidgetRenderer
      */
     protected static $_pseudoViewObj = null;
 
+    /**
+     * @param string $class
+     * @return WidgetFramework_WidgetRenderer|WidgetFramework_WidgetRenderer_None
+     */
     public static function create($class)
     {
         static $instances = array();
 
         if (!isset($instances[$class])) {
-            $createClass = XenForo_Application::resolveDynamicClass($class, 'widget_renderer');
-            if (!$createClass) {
-                throw new XenForo_Exception("Invalid renderer '$class' specified");
-            }
-
-            $instances[$class] = new $createClass;
+            $fakeBase = 'WidgetFramework_WidgetRenderer_None';
+            $createClass = XenForo_Application::resolveDynamicClass($class, 'widget_renderer', $fakeBase);
+            $instances[$class] = $createClass ? new $createClass : new $fakeBase;
         }
 
         return $instances[$class];

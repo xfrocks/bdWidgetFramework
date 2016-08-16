@@ -178,7 +178,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         }
 
         $class = $this->_input->filterSingle('class', XenForo_Input::STRING);
-        $renderer = WidgetFramework_Core::getRenderer($class, false);
+        $renderer = WidgetFramework_WidgetRenderer::create($class);
         if (!empty($renderer)) {
             $widget['options'] = $renderer->parseOptionsInput($this->_input, $widget);
         }
@@ -226,7 +226,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         }
         $dw->bulkSet($dwInput);
 
-        $renderer = WidgetFramework_Core::getRenderer($dwInput['class']);
+        $renderer = WidgetFramework_WidgetRenderer::create($dwInput['class']);
         if ($this->_input->filterSingle('options_loaded', XenForo_Input::STRING) == get_class($renderer)) {
             // process options now
             $widgetOptions = $renderer->parseOptionsInput($this->_input, $widget);
@@ -623,7 +623,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $renderers = WidgetFramework_Core::getRenderers();
         $options = array();
         foreach ($renderers as $renderer) {
-            $rendererObj = WidgetFramework_Core::getRenderer($renderer);
+            $rendererObj = WidgetFramework_WidgetRenderer::create($renderer);
 
             $options[] = array(
                 'value' => $renderer,

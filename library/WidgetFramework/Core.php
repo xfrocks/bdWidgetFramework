@@ -44,7 +44,6 @@ class WidgetFramework_Core
 
     protected static $_instance;
     protected static $_debug;
-    protected static $_rendererInstances = array();
 
     protected $_renderers = array();
     protected $_widgetCount = 0;
@@ -244,7 +243,7 @@ class WidgetFramework_Core
             $widgetParams = $this->_prepareWidgetParams($params);
 
             foreach ($positionRef['widgets'] as &$widgetRef) {
-                $renderer = self::getRenderer($widgetRef['class'], false);
+                $renderer = self::getRenderer($widgetRef['class']);
                 if ($renderer) {
                     $renderer->prepare($widgetRef, $positionCode, $widgetParams, $template);
                 }
@@ -498,7 +497,7 @@ class WidgetFramework_Core
         &$html
     ) {
         $widgetHtml = '';
-        $renderer = self::getRenderer($widgetRef['class'], false);
+        $renderer = self::getRenderer($widgetRef['class']);
 
         if (!empty($renderer)) {
             $widgetRef['_runtime']['useWrapper'] = $renderer->useWrapper($widgetRef);
@@ -606,24 +605,15 @@ class WidgetFramework_Core
 
     /**
      * @param string $class
-     * @param bool $throw
-     * @throws Exception
      * @return WidgetFramework_WidgetRenderer
      */
     public static function getRenderer($class, $throw = true)
     {
-        try {
-            if (!isset(self::$_rendererInstances[$class])) {
-                self::$_rendererInstances[$class] = WidgetFramework_WidgetRenderer::create($class);
-            }
-            return self::$_rendererInstances[$class];
-        } catch (Exception $e) {
-            if ($throw) {
-                throw $e;
-            }
+        if (!in_array($class, self::getRenderers(), true)) {
+            return null;
         }
 
-        return null;
+        return WidgetFramework_WidgetRenderer::create($class);
     }
 
     public static function getRenderers()

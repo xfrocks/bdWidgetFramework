@@ -12,7 +12,10 @@ class WidgetFramework_WidgetRenderer_None extends WidgetFramework_WidgetRenderer
 
     protected function _getConfiguration()
     {
-        return array('useWrapper' => false);
+        return array(
+            'name' => 'Unknown Renderer',
+            'isHidden' => true,
+        );
     }
 
     protected function _getOptionsTemplate()
