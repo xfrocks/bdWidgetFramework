@@ -2848,9 +2848,9 @@ All customization should go to wf_default_EXTRA.css
     <template title="wf_widget_visitor_panel" version_id="62" version_string="2.3.3d"><![CDATA[<div class="widget {$widget.class}" id="widget-{$widget.widget_id}">
 	<xen:include template="sidebar_visitor_panel" />
 </div>]]></template>
-    <template title="wf_widget_wrapper" version_id="2060307" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
-
+    <template title="wf_widget_wrapper" version_id="2060313" version_string="2.6.3"><![CDATA[<xen:if is="{$widget._runtime.useWrapper}">
 <xen:if hascontent="true">
+<xen:require css="wf_default.css" />
 <div class="{$_classSection} widget-single">
 	<div class="{$_classInnerSection} {$widget.class}" id="widget-{$widget.widget_id}">
 		<h3>
@@ -2864,6 +2864,8 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 </div>
 </xen:if>
+
+<xen:else />{xen:raw $widget._runtime.html}</xen:if>
 
 <xen:edithint template="wf_widget_group_wrapper" />
 <xen:edithint template="wf_layout_editor" />

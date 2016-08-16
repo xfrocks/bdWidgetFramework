@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2016-08-08T20:21:28+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2016-08-16T04:04:38+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_TempFile
- * @version 6
+ * @version 7
  * @see DevHelper_Helper_ShippableHelper_TempFile
  */
 class WidgetFramework_ShippableHelper_TempFile
@@ -100,6 +100,10 @@ class WidgetFramework_ShippableHelper_TempFile
 
         if (XenForo_Application::debugMode()) {
             $fileSize = filesize($tempFile);
+            if ($downloaded && $fileSize === 0) {
+                clearstatcache();
+                $fileSize = filesize($tempFile);
+            }
 
             XenForo_Helper_File::log(__CLASS__, call_user_func_array('sprintf', array(
                 'download %s -> %s, %s, %d bytes%s',

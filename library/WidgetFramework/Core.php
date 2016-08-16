@@ -460,24 +460,17 @@ class WidgetFramework_Core
         foreach ($widgetsRef as &$widgetRef) {
             $widgetRef['_runtime']['html'] = $this->renderWidget($widgetRef, $positionCode, $params, $template, $html);
 
-            $wrapperTemplateName = '';
+            $wrapperTemplateName = 'wf_widget_wrapper';
             if (WidgetFramework_Option::get('layoutEditorEnabled')
                 && $widgetRef['class'] !== 'WidgetFramework_WidgetGroup'
             ) {
                 $wrapperTemplateName = 'wf_layout_editor_widget_wrapper';
                 $params['_conditionalParams'] = WidgetFramework_Template_Helper_Layout::prepareConditionalParams($params);
-            } elseif (!empty($widgetRef['_runtime']['useWrapper'])) {
-                $wrapperTemplateName = 'wf_widget_wrapper';
             }
 
-            if ($wrapperTemplateName !== '') {
-                $wrapperTemplate = $template->create($wrapperTemplateName, $params);
-                $wrapperTemplate->setParam('widget', $widgetRef);
-
-                $widgetHtml = $wrapperTemplate;
-            } else {
-                $widgetHtml = $widgetRef['_runtime']['html'];
-            }
+            $wrapperTemplate = $template->create($wrapperTemplateName, $params);
+            $wrapperTemplate->setParam('widget', $widgetRef);
+            $widgetHtml = $wrapperTemplate;
 
             if (empty($html)) {
                 $html = $widgetHtml;
