@@ -66,12 +66,19 @@ class WidgetFramework_Listener
         ) {
             $tabId = WidgetFramework_Option::get('indexTabId');
 
+            $linksTemplate = 'wf_home_navtab_links';
+            if (!XenForo_Template_Helper_Core::styleProperty('wf_homeLinksChildNodes')
+                && !XenForo_Template_Helper_Core::styleProperty('wf_homeLinksForums')
+            ) {
+                $linksTemplate = '';
+            }
+
             $extraTabs[$tabId] = array(
                 'title' => new XenForo_Phrase('wf_home_navtab'),
                 'href' => XenForo_Link::buildPublicLink('full:widget-page-index'),
                 'position' => 'home',
 
-                'linksTemplate' => 'wf_home_navtab_links',
+                'linksTemplate' => $linksTemplate,
                 'indexNodeId' => $indexNodeId,
                 'childNodes' => WidgetFramework_Helper_Index::getChildNodes(),
             );
