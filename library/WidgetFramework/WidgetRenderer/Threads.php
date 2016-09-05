@@ -220,7 +220,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $renderTemplateObject->setParam('threads', $threads);
 
         $listCompactMore = XenForo_Template_Helper_Core::styleProperty('wf_threads_listCompactMore');
-        if ($layout === 'list_compact' && $listCompactMore > 0) {
+        if ($layout === 'list_compact'
+            && $listCompactMore > 0
+            && $this->_supportIgnoredThreadIds()
+        ) {
             foreach ($threads as $thread) {
                 $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS][] = $thread['thread_id'];
             }
@@ -674,5 +677,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         return $ajaxLoadParams;
     }
 
-
+    protected function _supportIgnoredThreadIds()
+    {
+        return get_class($this) === 'WidgetFramework_WidgetRenderer_Threads';
+    }
 }
