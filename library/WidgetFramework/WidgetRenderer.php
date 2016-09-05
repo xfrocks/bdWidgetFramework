@@ -448,6 +448,10 @@ abstract class WidgetFramework_WidgetRenderer
             return false;
         }
 
+        if (isset($widget['_ajaxLoadParams'])) {
+            return false;
+        }
+
         $configuration = $this->getConfiguration();
         $useCache = !empty($configuration['useCache']);
 

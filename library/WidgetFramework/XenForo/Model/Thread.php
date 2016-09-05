@@ -5,6 +5,7 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
     const CONDITIONS_DISCUSSION_TYPE = 'WidgetFramework_discussion_type';
     const CONDITIONS_POST_DATE = 'WidgetFramework_post_date';
     const CONDITIONS_THREAD_ID = 'WidgetFramework_thread_id';
+    const CONDITIONS_THREAD_ID_NOT = 'WidgetFramework_thread_id_not';
 
     const FETCH_OPTIONS_FORUM_FULL_JOIN = 'WidgetFramework_forum_full_join';
     const FETCH_OPTIONS_LAST_POST_JOIN = 'WidgetFramework_last_post_join';
@@ -41,6 +42,16 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
             } else {
                 $sqlConditions[] = 'thread.thread_id = '
                     . $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID]);
+            }
+        }
+
+        if (isset($conditions[self::CONDITIONS_THREAD_ID_NOT])) {
+            if (is_array($conditions[self::CONDITIONS_THREAD_ID_NOT])) {
+                $sqlConditions[] = sprintf('thread.thread_id NOT IN (%s)',
+                    $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID_NOT]));
+            } else {
+                $sqlConditions[] = 'thread.thread_id <> '
+                    . $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID_NOT]);
             }
         }
 

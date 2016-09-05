@@ -2,6 +2,10 @@
 
 class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRenderer
 {
+    const TEMPLATE_PARAM_IGNORED_THREAD_IDS = '_WidgetFramework_WidgetFramework_Threads_ignoredThreadIds';
+    const AJAX_PARAM_IGNORED_THREAD_IDS = '_ignoredThreadIds';
+    const AJAX_PARAM_CURRENT_PAGE = '_currentPage';
+
     public function useCache(array $widget)
     {
         if (!empty($widget['options']['is_new'])) {
@@ -173,6 +177,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $widget['options']['type'] = 'new';
         }
 
+        $ignoredThreadIds = array();
+        if (isset($widget['_ajaxLoadParams'][self::AJAX_PARAM_IGNORED_THREAD_IDS])) {
+            $ignoredThreadIds = array_map('intval', preg_split('#[^0-9]#',
+                $widget['_ajaxLoadParams'][self::AJAX_PARAM_IGNORED_THREAD_IDS], -1, PREG_SPLIT_NO_EMPTY));
+        }
+        $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS] = $ignoredThreadIds;
+
         $layoutNeedPost = false;
         if (empty($widget['options']['layout'])) {
             if (!empty($params[WidgetFramework_Core::PARAM_IS_HOOK])) {
@@ -189,6 +200,9 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 case 'list':
                     $layout = 'list';
                     break;
+                case 'list_compact':
+                    $layout = 'list_compact';
+                    break;
                 case 'full':
                     $layout = 'full';
                     $layoutNeedPost = true;
@@ -204,6 +218,23 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         $threads = $this->_getThreads($widget, $positionCode, $params, $renderTemplateObject);
         $renderTemplateObject->setParam('threads', $threads);
+
+        $listCompactMore = XenForo_Template_Helper_Core::styleProperty('wf_threads_listCompactMore');
+        if ($layout === 'list_compact' && $listCompactMore > 0) {
+            foreach ($threads as $thread) {
+                $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS][] = $thread['thread_id'];
+            }
+
+            $currentPage = 0;
+            if (isset($widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE])) {
+                $currentPage = $widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE];
+            }
+
+            if ($currentPage < $listCompactMore) {
+                $loadMoreUrl = $this->getAjaxLoadUrl($widget, $positionCode, $params, $renderTemplateObject);
+                $renderTemplateObject->setParam('loadMoreUrl', $loadMoreUrl);
+            }
+        }
 
         return $renderTemplateObject->render();
     }
@@ -245,12 +276,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
     protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
     {
-        if (isset($widget['_ajaxLoadParams'])) {
-            if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
-                $suffix[] = 'ajax_f' . implode('', $widget['_ajaxLoadParams']['forumIds']);
-            }
-        }
-
         if (!empty($widget['options']['forums'])
             && $this->_helperDetectSpecialForums($widget['options']['forums'])
         ) {
@@ -289,11 +314,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         /* @var $threadModel XenForo_Model_Thread */
         $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
-        $forumIds = $this->_helperGetForumIdsFromOption(empty($widget['options']['forums'])
-            ? array() : $widget['options']['forums'], $params,
-            empty($widget['options']['as_guest']) ? false : true);
         if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
             $forumIds = $widget['_ajaxLoadParams']['forumIds'];
+        } else {
+            $forumIds = $this->_helperGetForumIdsFromOption(empty($widget['options']['forums'])
+                ? array() : $widget['options']['forums'], $params,
+                empty($widget['options']['as_guest']) ? false : true);
         }
         if (empty($forumIds)) {
             // no forum ids?! Save the effort and return asap
@@ -308,6 +334,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             'deleted' => false,
             'moderated' => false,
         );
+
+        if (!empty($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])) {
+            $conditions[WidgetFramework_XenForo_Model_Thread::CONDITIONS_THREAD_ID_NOT]
+                = $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS];
+        }
 
         // note: `limit` is set to 3 times of configured limit to account for the threads
         // that get hidden because of deep permissions like viewOthers or viewContent
@@ -621,10 +652,23 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
     ) {
         $ajaxLoadParams = parent::_getAjaxLoadParams($widget, $positionCode, $params, $template);
 
-        if ($this->_helperDetectSpecialForums($widget['options']['forums'])) {
+        if (isset($widget['options']['forums']) && $this->_helperDetectSpecialForums($widget['options']['forums'])) {
             $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params,
                 empty($widget['options']['as_guest']) ? false : true);
             $ajaxLoadParams['forumIds'] = $forumIds;
+        }
+
+        if (isset($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])
+            && is_array($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])
+        ) {
+            $ajaxLoadParams[self::AJAX_PARAM_IGNORED_THREAD_IDS] = implode(',',
+                array_unique(array_map('intval', $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])));
+        }
+
+        if (isset($widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE])) {
+            $ajaxLoadParams[self::AJAX_PARAM_CURRENT_PAGE] = $widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE] + 1;
+        } else {
+            $ajaxLoadParams[self::AJAX_PARAM_CURRENT_PAGE] = 1;
         }
 
         return $ajaxLoadParams;
