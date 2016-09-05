@@ -222,6 +222,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $listCompactMore = XenForo_Template_Helper_Core::styleProperty('wf_threads_listCompactMore');
         if ($layout === 'list_compact'
             && $listCompactMore > 0
+            && count($threads) >= $widget['options']['limit']
             && $this->_supportIgnoredThreadIds()
         ) {
             foreach ($threads as $thread) {
