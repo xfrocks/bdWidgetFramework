@@ -553,15 +553,154 @@
 </xen:checkboxunit>
 
 <xen:hook name="wf_widget_options_threads_layout" params="{xen:array 'widget={$widget}', 'options={$options}', 'options_loaded={$options_loaded}'}">
-<xen:selectunit label="{xen:phrase layout}:" name="{$namePrefix}layout" value="{$options.layout}">
+<xen:radiounit label="{xen:phrase layout}:" name="{$namePrefix}layout" value="{$options.layout}">
 	<xen:option value="">{xen:phrase default}</xen:option>
-	<xen:option value="sidebar">{xen:phrase wf_threads_layout_sidebar}</xen:option>
-	<xen:option value="sidebar_snippet">{xen:phrase wf_threads_layout_sidebar_snippet}</xen:option>
-	<xen:option value="list">{xen:phrase wf_threads_layout_list}</xen:option>
-	<xen:option value="list_compact">{xen:phrase wf_threads_layout_list_compact}</xen:option>
-	<xen:option value="full">{xen:phrase wf_threads_layout_full}</xen:option>
-</xen:selectunit>
+	<xen:option value="sidebar" label="{xen:phrase wf_threads_layout_sidebar}" inputclass="Hider">
+		<xen:disabled>
+			<xen:include template="wf_widget_options_threads_textboxunit">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_titleMaxLength_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">titleMaxLength</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">rich</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_showPrefix_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">showPrefix</xen:set>
+			</xen:include>
+			<!-- wf_threads_layout_sidebar -->
+		</xen:disabled>
+	</xen:option>
+	<xen:option value="sidebar_snippet" label="{xen:phrase wf_threads_layout_sidebar_snippet}" inputclass="Hider">
+		<xen:disabled>
+			<xen:include template="wf_widget_options_threads_textboxunit">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_titleMaxLength_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">titleMaxLength</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_textboxunit">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_snippetMaxLength_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">snippetMaxLength</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_showPrefix_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">showPrefix</xen:set>
+			</xen:include>
+			<!-- wf_threads_layout_sidebar_snippet -->
+		</xen:disabled>
+	</xen:option>
+	<xen:option value="list" label="{xen:phrase wf_threads_layout_list}" inputclass="Hider">
+		<xen:disabled>
+			<!-- wf_threads_layout_list -->
+		</xen:disabled>
+	</xen:option>
+	<xen:option value="list_compact" label="{xen:phrase wf_threads_layout_list_compact}" inputclass="Hider">
+		<xen:disabled>
+			<xen:include template="wf_widget_options_threads_textboxunit">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactTitleMaxLength_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactTitleMaxLength</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_textboxunit">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactMore_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactMore</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">rich</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactShowPrefix_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactShowPrefix</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactAvatar_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactAvatar</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactUser_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactUser</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactForum_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactForum</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactDate_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactDate</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactViewCount_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactViewCount</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactFirstPostLikes_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactFirstPostLikes</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactReplyCount_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactReplyCount</xen:set>
+			</xen:include>
+			<!-- wf_threads_layout_list_compact -->
+		</xen:disabled>
+	</xen:option>
+	<xen:option value="full" label="{xen:phrase wf_threads_layout_full}" inputclass="Hider">
+		<xen:disabled>
+			<xen:include template="wf_widget_options_threads_textboxunit">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullMaxLength_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullMaxLength</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">rich</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullInfoBottom_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullInfoBottom</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullUser_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullUser</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullForum_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullForum</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullDate_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullDate</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullViewCount_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullViewCount</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullFirstPostLikes_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullFirstPostLikes</xen:set>
+			</xen:include>
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullReplyCount_master}</xen:set>
+				<xen:set var="$layoutOptionsKey">fullReplyCount</xen:set>
+			</xen:include>
+			<!-- wf_threads_layout_full -->
+		</xen:disabled>
+	</xen:option>
+</xen:radiounit>
 </xen:hook>]]></template>
+    <template title="wf_widget_options_threads_radio_default_yes_no"><![CDATA[<xen:radiounit label="{xen:raw $label}:"
+	name="{$namePrefix}layout_options[{$layoutOptionsKey}]"
+	value="{xen:if 'isset({$options.layout_options.{$layoutOptionsKey}})',
+		{$options.layout_options.{$layoutOptionsKey}}, ''}">
+	<xen:option value="">
+		{xen:phrase default}
+		({$defaultStyle.title}: {xen:if {$defaultStyleProperties.{$layoutOptionsKey}}, {xen:phrase yes}, {xen:phrase no}})
+	</xen:option>
+	<xen:option value="1">{xen:phrase yes}</xen:option>
+	<xen:option value="0">{xen:phrase no}</xen:option>
+</xen:radiounit>]]></template>
+    <template title="wf_widget_options_threads_textboxunit"><![CDATA[<xen:textboxunit label="{xen:raw $label}:"
+	name="{$namePrefix}layout_options[{$layoutOptionsKey}]"
+	value="{$options.layout_options.{$layoutOptionsKey}}"
+	placeholder="{$defaultStyle.title}: '{$defaultStyleProperties.{$layoutOptionsKey}}'" />]]></template>
     <template title="wf_widget_options_users"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}</xen:explain>
 </xen:spinboxunit>
@@ -994,7 +1133,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="style_property_wf_threads_fullInfoBottom_description_master" version_id="77" version_string="2.4.5b"><![CDATA[By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullInfoBottom_master" version_id="77" version_string="2.4.5b"><![CDATA[Show information at bottom]]></phrase>
     <phrase title="style_property_wf_threads_fullMaxLength_description_master" version_id="2060300" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
-    <phrase title="style_property_wf_threads_fullMaxLength_master" version_id="2060314" version_string="2.6.3"><![CDATA[First Post Body Maximum Length]]></phrase>
+    <phrase title="style_property_wf_threads_fullMaxLength_master" version_id="2060315" version_string="2.6.3"><![CDATA[Post Max Length]]></phrase>
     <phrase title="style_property_wf_threads_fullReplyCount_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullReplyCount_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Reply Count]]></phrase>
     <phrase title="style_property_wf_threads_fullUser_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -1016,7 +1155,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="style_property_wf_threads_listCompactShowPrefix_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with list compact layout.]]></phrase>
     <phrase title="style_property_wf_threads_listCompactShowPrefix_master" version_id="2060314" version_string="2.6.3"><![CDATA[Show Thread Prefix]]></phrase>
     <phrase title="style_property_wf_threads_listCompactTitleMaxLength_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with list compact layout.]]></phrase>
-    <phrase title="style_property_wf_threads_listCompactTitleMaxLength_master" version_id="2060314" version_string="2.6.3"><![CDATA[Title Maximum Length]]></phrase>
+    <phrase title="style_property_wf_threads_listCompactTitleMaxLength_master" version_id="2060315" version_string="2.6.3"><![CDATA[Title Max Length]]></phrase>
     <phrase title="style_property_wf_threads_listCompactUser_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with list compact layout.]]></phrase>
     <phrase title="style_property_wf_threads_listCompactUser_master" version_id="2060314" version_string="2.6.3"><![CDATA[Show Poster]]></phrase>
     <phrase title="style_property_wf_threads_listCompactViewCount_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with list compact layout.]]></phrase>
@@ -1026,9 +1165,9 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="style_property_wf_threads_showPrefix_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar layout.]]></phrase>
     <phrase title="style_property_wf_threads_showPrefix_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Thread Prefix]]></phrase>
     <phrase title="style_property_wf_threads_snippetMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar + snippet layout.]]></phrase>
-    <phrase title="style_property_wf_threads_snippetMaxLength_master" version_id="69" version_string="2.4.1"><![CDATA[Snippet Maximum Length]]></phrase>
+    <phrase title="style_property_wf_threads_snippetMaxLength_master" version_id="2060315" version_string="2.6.3"><![CDATA[Snippet Max Length]]></phrase>
     <phrase title="style_property_wf_threads_titleMaxLength_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with sidebar layout.]]></phrase>
-    <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="33" version_string="1.5"><![CDATA[Title Maximum Length]]></phrase>
+    <phrase title="style_property_wf_threads_titleMaxLength_master" version_id="2060315" version_string="2.6.3"><![CDATA[Title Max Length]]></phrase>
     <phrase title="style_property_wf_widgetTabsPanes_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
     <phrase title="style_property_wf_widgetTabsPanes_master" version_id="100" version_string="2.5.0d"><![CDATA[Tabs (panes container)]]></phrase>
     <phrase title="style_property_wf_widgetTabsTabs_description_master" version_id="100" version_string="2.5.0d"><![CDATA[]]></phrase>
@@ -1251,8 +1390,8 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </route_type>
   </route_prefixes>
   <style_properties>
-    <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Title Maximum Length" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="sidebar"><![CDATA[35]]></property>
-    <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Snippet Maximum Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="sidebar"><![CDATA[200]]></property>
+    <property property_name="wf_threads_titleMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Title Max Length" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="sidebar"><![CDATA[35]]></property>
+    <property property_name="wf_threads_snippetMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Snippet Max Length" description="This property will be applied to all Threads widgets with sidebar + snippet layout." css_components="" scalar_type="number" scalar_parameters="" display_order="500" sub_group="sidebar"><![CDATA[200]]></property>
     <property property_name="wf_threads_showPrefix" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Thread Prefix" description="This property will be applied to all Threads widgets with sidebar layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="sidebar"><![CDATA[0]]></property>
     <property property_name="wf_threads_fullViewCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show View Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="full"><![CDATA[1]]></property>
     <property property_name="wf_threads_fullFirstPostLikes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Like Count" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="full"><![CDATA[1]]></property>
@@ -1273,16 +1412,16 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_onlineUsers_rich" property_type="scalar" definition="1" group_name="WidgetFramework_ZZZZ" title="Users Online Now: Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Users Online Now widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="onlineUsers"><![CDATA[1]]></property>
     <property property_name="wf_threads_rich" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Rich Username" description="By default, username will be rendered in plaintext. Enable this option to use rich formatting username. This property will be applied to all Threads widgets." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group=""><![CDATA[1]]></property>
     <property property_name="wf_groupBorder" property_type="scalar" definition="1" group_name="WidgetFramework" title="Render border for grouped widgets" description="" css_components="" scalar_type="boolean" scalar_parameters="" display_order="10" sub_group="groupedWidgets"><![CDATA[1]]></property>
-    <property property_name="wf_threads_fullMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="First Post Body Maximum Length" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="full"><![CDATA[0]]></property>
-    <property property_name="wf_threads_listCompactTitleMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Title Maximum Length" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="listCompact"><![CDATA[0]]></property>
+    <property property_name="wf_threads_fullMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Post Max Length" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="full"><![CDATA[0]]></property>
+    <property property_name="wf_threads_listCompactTitleMaxLength" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Title Max Length" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="number" scalar_parameters="" display_order="100" sub_group="listCompact"><![CDATA[0]]></property>
     <property property_name="wf_threads_listCompactShowPrefix" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Thread Prefix" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="100" sub_group="listCompact"><![CDATA[1]]></property>
     <property property_name="wf_threads_listCompactAvatar" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Avatar" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1010" sub_group="listCompact"><![CDATA[1]]></property>
     <property property_name="wf_threads_listCompactUser" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Poster" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1010" sub_group="listCompact"><![CDATA[1]]></property>
     <property property_name="wf_threads_listCompactForum" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Forum Origin" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1020" sub_group="listCompact"><![CDATA[0]]></property>
     <property property_name="wf_threads_listCompactDate" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Posted Date" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1030" sub_group="listCompact"><![CDATA[1]]></property>
     <property property_name="wf_threads_listCompactViewCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show View Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="listCompact"><![CDATA[1]]></property>
-    <property property_name="wf_threads_listCompactFirstPostLikes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Like Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="listCompact"><![CDATA[1]]></property>
-    <property property_name="wf_threads_listCompactReplyCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Reply Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1130" sub_group="listCompact"><![CDATA[1]]></property>
+    <property property_name="wf_threads_listCompactFirstPostLikes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Like Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="listCompact"><![CDATA[0]]></property>
+    <property property_name="wf_threads_listCompactReplyCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Reply Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1130" sub_group="listCompact"><![CDATA[0]]></property>
     <property property_name="wf_threads_listCompactMore" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Load More" description="Enter the number of pages which is available to load more via AJAX via a link at the bottom of the thread list. This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="number" scalar_parameters="" display_order="2010" sub_group="listCompact"><![CDATA[3]]></property>
     <group group_name="WidgetFramework" display_order="9999">
       <title>[bd] Widget Framework</title>
@@ -2035,12 +2174,14 @@ All customization should go to wf_default_EXTRA.css
 	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info
 	{
 		padding: 5px 10px;
-
-		<xen:if is="{xen:property wf_threads_fullInfoBottom}">
-			border-top: 1px dashed {xen:property primaryLighterStill};
-		<xen:else />
+	}
+		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info.info-top
+		{
 			border-bottom: 1px dashed {xen:property primaryLighterStill};
-		</xen:if>
+		}
+		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info.info-bottom
+		{
+			border-top: 1px dashed {xen:property primaryLighterStill};
 	}
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .counters
 		{
@@ -2589,12 +2730,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="2060314" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
-
-<xen:if is="{xen:helper WidgetFramework_getOption, applicationVersionId} > 1050000
-	AND {$widget.options.type} == 'recent'">
-<xen:include template="sidebar_new_posts" />
-<xen:else />
+    <template title="wf_widget_threads" version_id="2060315" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 	
 <xen:if hascontent="true">
 <div class="WidgetFramework_WidgetRenderer_Threads_Sidebar avatarList">
@@ -2603,7 +2739,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:if is="{$widget.options.type} == 'recent' OR {$widget.options.type} == 'latest_replies'">
 
 		<xen:foreach loop="$threads" value="$thread">
-		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:set var="$user"><xen:username user="$thread" rich="{$layoutOptions.rich}" /></xen:set>
 		<xen:include template="wf_widget_threads_thread_sidebar">
 			<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
 			<xen:set var="$_secondRow">
@@ -2615,7 +2751,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:elseif is="{$widget.options.type} == 'most_replied'" />
 
 		<xen:foreach loop="$threads" value="$thread">
-		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:set var="$user"><xen:username user="$thread" rich="{$layoutOptions.rich}" /></xen:set>
 		<xen:include template="wf_widget_threads_thread_sidebar">
 			<xen:set var="$_secondRow">
 				{xen:phrase wf_x_posted, 'user={xen:raw $user}'}, {xen:phrase replies}: {xen:number $thread.reply_count}
@@ -2626,7 +2762,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:elseif is="{$widget.options.type} == 'most_liked'" />
 
 		<xen:foreach loop="$threads" value="$thread">
-		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:set var="$user"><xen:username user="$thread" rich="{$layoutOptions.rich}" /></xen:set>
 		<xen:include template="wf_widget_threads_thread_sidebar">
 			<xen:set var="$_secondRow">
 				{xen:phrase wf_x_posted, 'user={xen:raw $user}'},
@@ -2638,7 +2774,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:else />
 
 		<xen:foreach loop="$threads" value="$thread">
-		<xen:set var="$user"><xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></xen:set>
+		<xen:set var="$user"><xen:username user="$thread" rich="{$layoutOptions.rich}" /></xen:set>
 		<xen:include template="wf_widget_threads_thread_sidebar">
 			<xen:set var="$_secondRow">
 				{xen:phrase wf_x_posted, 'user={xen:raw $user}'} <xen:datetime time="{$thread.post_date}" />
@@ -2650,7 +2786,6 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </div>
-</xen:if>
 </xen:if>
 
 <xen:elseif is="{$layout} == 'list'" />
@@ -2727,7 +2862,7 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:edithint template="message" />
 <xen:edithint template="wf_threads.css" />]]></template>
-    <template title="wf_widget_threads_thread_full" version_id="2060300" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_threads_thread_full" version_id="2060315" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 <xen:edithint template="wf_threads.css" />
 <xen:require css="bb_code.css" />
 
@@ -2740,8 +2875,8 @@ All customization should go to wf_default_EXTRA.css
 		<a href="{xen:raw $link}">{$thread.title}</a>
 	</div>
 
-	<xen:if is="!{xen:property wf_threads_fullInfoBottom}">
-		<xen:if hascontent="true"><div class="info"><xen:contentcheck>{xen:raw $info}</xen:contentcheck></div></xen:if>
+	<xen:if is="!{$layoutOptions.fullInfoBottom}">
+		<xen:if hascontent="true"><div class="info info-top"><xen:contentcheck>{xen:raw $info}</xen:contentcheck></div></xen:if>
 	</xen:if>
 
 	<div class="messageInfo">
@@ -2751,7 +2886,7 @@ All customization should go to wf_default_EXTRA.css
 		<div class="messageContent">		
 			<article>
 				<blockquote class="messageText ugc baseHtml">
-					{xen:helper WidgetFramework_snippet, $thread.messageHtml, {xen:property wf_threads_fullMaxLength}, {xen:array 'link={xen:raw $link}'}}
+					{xen:helper WidgetFramework_snippet, $thread.messageHtml, {$layoutOptions.fullMaxLength}, {xen:array 'link={xen:raw $link}'}}
 				</blockquote>
 			</article>
 		</div>
@@ -2759,27 +2894,27 @@ All customization should go to wf_default_EXTRA.css
 
 	</div>
 
-	<xen:if is="{xen:property wf_threads_fullInfoBottom}">
-		<xen:if hascontent="true"><div class="info"><xen:contentcheck>{xen:raw $info}</xen:contentcheck></div></xen:if>
+	<xen:if is="{$layoutOptions.fullInfoBottom}">
+		<xen:if hascontent="true"><div class="info info-bottom"><xen:contentcheck>{xen:raw $info}</xen:contentcheck></div></xen:if>
 	</xen:if>
 
 </div>]]></template>
-    <template title="wf_widget_threads_thread_full_info" version_id="102" version_string="2.5.0d"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_threads_thread_full_info" version_id="2060315" version_string="2.6.3"><![CDATA[<xen:if hascontent="true">
 	<div class="counters">
 		<xen:contentcheck>
 			<xen:hook name="wf_widget_threads_thread_full_info_counters" params="{xen:array 'thread={$thread}'}">
 
-			<xen:if is="{xen:property wf_threads_fullViewCount}">
+			<xen:if is="{$layoutOptions.fullViewCount}">
 				<span class="viewCount">{xen:phrase views}: {xen:number $thread.view_count}</span>
-				<xen:if is="{xen:property wf_threads_fullFirstPostLikes} OR {xen:property wf_threads_fullReplyCount}"><span class="divider">/</span></xen:if>
+				<xen:if is="{$layoutOptions.fullFirstPostLikes} OR {$layoutOptions.fullReplyCount}"><span class="divider">/</span></xen:if>
 			</xen:if>
 
-			<xen:if is="{xen:property wf_threads_fullFirstPostLikes}">
+			<xen:if is="{$layoutOptions.fullFirstPostLikes}">
 				<span class="firstPostLikes">{xen:phrase likes}: {xen:number $thread.first_post_likes}</span>
-				<xen:if is="{xen:property wf_threads_fullReplyCount}"><span class="divider">/</span></xen:if>
+				<xen:if is="{$layoutOptions.fullReplyCount}"><span class="divider">/</span></xen:if>
 			</xen:if>
 
-			<xen:if is="{xen:property wf_threads_fullReplyCount}">
+			<xen:if is="{$layoutOptions.fullReplyCount}">
 				<span class="replyCount">{xen:phrase replies}: {xen:number $thread.reply_count}</span>
 			</xen:if>
 
@@ -2793,17 +2928,17 @@ All customization should go to wf_default_EXTRA.css
 		<xen:contentcheck>
 			<xen:hook name="wf_widget_threads_thread_full_info_main" params="{xen:array 'thread={$thread}'}">
 
-			<xen:if is="{xen:property wf_threads_fullUser}">
-				<span class="user">{xen:phrase wf_by} <xen:username user="$thread" rich="{xen:property wf_threads_rich}" /></span><xen:comment>
-				</xen:comment><xen:if is="{xen:property wf_threads_fullForum} OR {xen:property wf_threads_fullDate}"><span class="divider">,</span></xen:if>
+			<xen:if is="{$layoutOptions.fullUser}">
+				<span class="user">{xen:phrase wf_by} <xen:username user="$thread" rich="{$layoutOptions.rich}" /></span><xen:comment>
+				</xen:comment><xen:if is="{$layoutOptions.fullForum} OR {$layoutOptions.fullDate}"><span class="divider">,</span></xen:if>
 			</xen:if>
 
-			<xen:if is="{xen:property wf_threads_fullForum}">
+			<xen:if is="{$layoutOptions.fullForum}">
 				<span class="user">{xen:phrase in_forum} <a href="{xen:link forums, $thread.forum}">{$thread.forum.title}</a></span><xen:comment>
-				</xen:comment><xen:if is="{xen:property wf_threads_fullDate}"><span class="divider">,</span></xen:if>
+				</xen:comment><xen:if is="{$layoutOptions.fullDate}"><span class="divider">,</span></xen:if>
 			</xen:if>
 
-			<xen:if is="{xen:property wf_threads_fullDate}">
+			<xen:if is="{$layoutOptions.fullDate}">
 				<a href="{xen:raw $link}"><xen:datetime time="$thread.post_date" /></a>
 			</xen:if>
 
@@ -2812,54 +2947,54 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 </xen:if>]]></template>
     <template title="wf_widget_threads_thread_list_compact" version_id="2060315" version_string="2.6.3"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
-	<xen:if is="{xen:property wf_threads_listCompactAvatar}">
+	<xen:if is="{$layoutOptions.listCompactAvatar}">
 	<div class="avatar responsive--aware responsive--from-narrow">
 		<i></i><xen:avatar user="$thread" size="s" img="true" />
 	</div>
 	</xen:if>
 
 	<div class="title">
-		<i></i><xen:if is="{xen:property wf_threads_listCompactShowPrefix}">{xen:helper threadprefix,
+		<i></i><xen:if is="{$layoutOptions.listCompactShowPrefix}">{xen:helper threadprefix,
 		$thread}</xen:if><a href="{xen:link "threads{xen:if '{$thread.isNew} AND {$thread.haveReadData}', '/unread'}", $thread}"
 			title="{xen:if '{$thread.isNew} AND {$thread.haveReadData}', {xen:phrase go_to_first_unread_message}}"
 			class="{xen:if $thread.hasPreview, PreviewTooltip}"
 			data-previewUrl="{xen:if $thread.hasPreview, {xen:link threads/preview, $thread}}">{xen:helper
-			snippet, $thread.title, {xen:property wf_threads_listCompactTitleMaxLength}}</a>
+			snippet, $thread.title, {$layoutOptions.listCompactTitleMaxLength}}</a>
 	</div>
 	
-	<xen:if is="{xen:property wf_threads_listCompactUser}">
+	<xen:if is="{$layoutOptions.listCompactUser}">
 	<div class="user responsive--aware responsive--from-medium">
-		<i></i><xen:username user="$thread" />
+		<i></i><xen:username user="$thread" rich="{$layoutOptions.rich}" />
 	</div>
 	</xen:if>
 	
-	<xen:if is="{xen:property wf_threads_listCompactForum}">
+	<xen:if is="{$layoutOptions.listCompactForum}">
 	<div class="forum responsive--aware responsive--from-medium">
 		<i></i><a href="{xen:link forums, $thread.forum}">{$thread.forum.title}</a>
 	</div>
 	</xen:if>
 
-	<xen:if is="{xen:property wf_threads_listCompactDate}">
+	<xen:if is="{$layoutOptions.listCompactDate}">
 	<div class="date responsive--aware responsive--from-medium">
 		<i></i><span><xen:datetime time="$thread.post_date" /></span>
 	</div>
 	</xen:if>
 	
-	<xen:if is="{xen:property wf_threads_listCompactViewCount}">
+	<xen:if is="{$layoutOptions.listCompactViewCount}">
 	<div class="count viewCount responsive--aware responsive--from-wide">
 		<i></i><span title="{xen:phrase views}: <xen:comment>
 		</xen:comment>{xen:number $thread.view_count}" class="Tooltip">{xen:number $thread.view_count}</span>
 	</div>
 	</xen:if>
 
-	<xen:if is="{xen:property wf_threads_listCompactFirstPostLikes}">
+	<xen:if is="{$layoutOptions.listCompactFirstPostLikes}">
 	<div class="count firstPostLikes responsive--aware responsive--from-wide">
 		<i></i><span title="{xen:phrase likes}: <xen:comment>
 		</xen:comment>{xen:number $thread.first_post_likes}" class="Tooltip">{xen:number $thread.first_post_likes}</span>
 	</div>
 	</xen:if>
 
-	<xen:if is="{xen:property wf_threads_listCompactReplyCount}">
+	<xen:if is="{$layoutOptions.listCompactReplyCount}">
 	<div class="count replyCount responsive--aware responsive--from-wide">
 		<i></i><span title="{xen:phrase replies}: <xen:comment>
 		</xen:comment>{xen:number $thread.reply_count}" class="Tooltip">{xen:number $thread.reply_count}</span>
@@ -2869,19 +3004,19 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:edithint template="wf_widget_threads" />
 <xen:edithint template="wf_threads.css" />]]></template>
-    <template title="wf_widget_threads_thread_sidebar" version_id="2060312" version_string="2.6.3"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
+    <template title="wf_widget_threads_thread_sidebar" version_id="2060315" version_string="2.6.3"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
 	<xen:avatar user="$thread" size="s" img="true" />
 
-	<xen:if is="{xen:property wf_threads_showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
+	<xen:if is="{$layoutOptions.showPrefix}">{xen:helper threadprefix, $thread}</xen:if>
 
-	<a {xen:if '{$thread.title} != {xen:helper snippet, $thread.title, {xen:property wf_threads_titleMaxLength}}', 'title="{$thread.title}" class="Tooltip"'}
+	<a {xen:if '{$thread.title} != {xen:helper snippet, $thread.title, {$layoutOptions.titleMaxLength}}', 'title="{$thread.title}" class="Tooltip"'}
 		href="{xen:if '{$_threadLink}', {xen:raw $_threadLink}, {xen:link threads, $thread}}">
-		{xen:helper snippet, $thread.title, {xen:property wf_threads_titleMaxLength}}
+		{xen:helper snippet, $thread.title, {$layoutOptions.titleMaxLength}}
 	</a>
 
 	<div class="userTitle">{xen:raw $_secondRow}</div>
 	
-	<xen:if is="{$thread.messageHtml}"><div>{xen:helper WidgetFramework_snippet, $thread.messageHtml, {xen:property wf_threads_snippetMaxLength}}</div></xen:if>
+	<xen:if is="{$thread.messageHtml}"><div>{xen:helper WidgetFramework_snippet, $thread.messageHtml, {$layoutOptions.snippetMaxLength}}</div></xen:if>
 </li>
 ]]></template>
     <template title="wf_widget_users" version_id="73" version_string="2.4.3b"><![CDATA[<xen:if is="{$widget.options.displayMode} == 'avatarOnly'">

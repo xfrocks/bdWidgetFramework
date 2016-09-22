@@ -72,6 +72,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 'order_reverted' => XenForo_Input::UINT,
                 'limit' => XenForo_Input::UINT,
                 'layout' => XenForo_Input::STRING,
+                'layout_options' => XenForo_Input::ARRAY_SIMPLE,
             ),
             'useCache' => true,
             'useUserCache' => true,
@@ -121,6 +122,30 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             }
             $template->setParam('tags', implode(', ', $tags));
         }
+
+        /** @var XenForo_Model_Style $styleModel */
+        $styleModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Style');
+        /** @var XenForo_Model_StyleProperty $stylePropertyModel */
+        $stylePropertyModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_StyleProperty');
+        $defaultStyleId = XenForo_Application::getOptions()->get('defaultStyleId');
+        $template->setParam('defaultStyle', $styleModel->getStyleById($defaultStyleId));
+        $styleProperties = $stylePropertyModel->getEffectiveStylePropertiesInStyle($defaultStyleId);
+        $propertyNamePrefix = 'wf_threads_';
+        $defaultStyleProperties = array();
+        foreach ($styleProperties as $styleProperty) {
+            if ($styleProperty['group_name'] !== 'WidgetFramework_Threads') {
+                continue;
+            }
+
+            $propertyName = $styleProperty['property_name'];
+            if (strpos($propertyName, $propertyNamePrefix) !== 0) {
+                continue;
+            }
+            $propertyName = substr($propertyName, strlen($propertyNamePrefix));
+
+            $defaultStyleProperties[$propertyName] = $styleProperty['property_value'];
+        }
+        $template->setParam('defaultStyleProperties', $defaultStyleProperties);
 
         return parent::_renderOptions($template);
     }
@@ -184,7 +209,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         }
         $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS] = $ignoredThreadIds;
 
-        $layoutNeedPost = false;
         if (empty($widget['options']['layout'])) {
             if (!empty($params[WidgetFramework_Core::PARAM_IS_HOOK])) {
                 $layout = 'list';
@@ -194,18 +218,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         } else {
             switch ($widget['options']['layout']) {
                 case 'sidebar_snippet':
-                    $layout = 'sidebar';
-                    $layoutNeedPost = true;
-                    break;
                 case 'list':
-                    $layout = 'list';
-                    break;
                 case 'list_compact':
-                    $layout = 'list_compact';
-                    break;
                 case 'full':
-                    $layout = 'full';
-                    $layoutNeedPost = true;
+                    $layout = $widget['options']['layout'];
                     break;
                 case 'sidebar':
                 default:
@@ -214,14 +230,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             }
         }
         $renderTemplateObject->setParam('layout', $layout);
-        $renderTemplateObject->setParam('layoutNeedPost', $layoutNeedPost);
+        $layoutOptions = $this->_getLayoutOptions($widget, $positionCode, $params, $layout);
+        $renderTemplateObject->setParam('layoutOptions', $layoutOptions);
 
         $threads = $this->_getThreads($widget, $positionCode, $params, $renderTemplateObject);
         $renderTemplateObject->setParam('threads', $threads);
 
-        $listCompactMore = XenForo_Template_Helper_Core::styleProperty('wf_threads_listCompactMore');
         if ($layout === 'list_compact'
-            && $listCompactMore > 0
+            && $layoutOptions['listCompactMore'] > 0
             && count($threads) >= $widget['options']['limit']
             && $this->_supportIgnoredThreadIds()
         ) {
@@ -234,7 +250,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $currentPage = $widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE];
             }
 
-            if ($currentPage < $listCompactMore) {
+            if ($currentPage < $layoutOptions['listCompactMore']) {
                 $loadMoreUrl = $this->getAjaxLoadUrl($widget, $positionCode, $params, $renderTemplateObject);
                 $renderTemplateObject->setParam('loadMoreUrl', $loadMoreUrl);
             }
@@ -297,18 +313,92 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
      * @param array $widget
      * @param string $positionCode
      * @param array $params
+     * @param string $layout
+     * @return array
+     */
+    protected function _getLayoutOptions($widget, $positionCode, $params, $layout)
+    {
+        $layoutOptions = array(
+            'getPosts' => false,
+        );
+
+        $stylePropertyIds = array();
+        switch ($layout) {
+            case 'sidebar':
+                $stylePropertyIds[] = 'rich';
+                $stylePropertyIds[] = 'titleMaxLength';
+                $stylePropertyIds[] = 'showPrefix';
+                break;
+            case 'sidebar_snippet':
+                $stylePropertyIds[] = 'titleMaxLength';
+                $stylePropertyIds[] = 'snippetMaxLength';
+                $stylePropertyIds[] = 'showPrefix';
+                $layoutOptions['getPosts'] = true;
+                break;
+            case 'list':
+                // TODO
+                break;
+            case 'list_compact':
+                $stylePropertyIds[] = 'rich';
+                $stylePropertyIds[] = 'listCompactTitleMaxLength';
+                $stylePropertyIds[] = 'listCompactShowPrefix';
+                $stylePropertyIds[] = 'listCompactAvatar';
+                $stylePropertyIds[] = 'listCompactUser';
+                $stylePropertyIds[] = 'listCompactForum';
+                $stylePropertyIds[] = 'listCompactDate';
+                $stylePropertyIds[] = 'listCompactViewCount';
+                $stylePropertyIds[] = 'listCompactFirstPostLikes';
+                $stylePropertyIds[] = 'listCompactReplyCount';
+                $stylePropertyIds[] = 'listCompactMore';
+                break;
+            case 'full':
+                $stylePropertyIds[] = 'rich';
+                $stylePropertyIds[] = 'fullMaxLength';
+                $stylePropertyIds[] = 'fullInfoBottom';
+                $stylePropertyIds[] = 'fullUser';
+                $stylePropertyIds[] = 'fullForum';
+                $stylePropertyIds[] = 'fullDate';
+                $stylePropertyIds[] = 'fullViewCount';
+                $stylePropertyIds[] = 'fullFirstPostLikes';
+                $stylePropertyIds[] = 'fullReplyCount';
+                $layoutOptions['getPosts'] = true;
+                break;
+        }
+
+        $rawLayoutOptions = array();
+        if (isset($widget['options']['layout_options'])) {
+            $rawLayoutOptions = $widget['options']['layout_options'];
+        }
+        foreach ($stylePropertyIds as $stylePropertyId) {
+            $layoutOptions[$stylePropertyId] = XenForo_Template_Helper_Core::styleProperty('wf_threads_' . $stylePropertyId);
+            if (isset($rawLayoutOptions[$stylePropertyId])
+                && is_string($rawLayoutOptions[$stylePropertyId])
+                && $rawLayoutOptions[$stylePropertyId] !== ''
+            ) {
+                $layoutOptions[$stylePropertyId] = $rawLayoutOptions[$stylePropertyId];
+            }
+        }
+
+        return $layoutOptions;
+    }
+
+    /**
+     * @param array $widget
+     * @param string $positionCode
+     * @param array $params
      * @param XenForo_Template_Abstract $renderTemplateObject
      * @return array $threads
      */
     protected function _getThreads($widget, $positionCode, $params, $renderTemplateObject)
     {
         $core = WidgetFramework_Core::getInstance();
-        $layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
+        $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
+        $getPosts = !empty($layoutOptions['getPosts']);
 
         if ($positionCode === 'forum_list'
             && XenForo_Application::$versionId > 1050000
             && isset($params['threads'])
-            && !$layoutNeedPost
+            && !$getPosts
             && $widget['options']['type'] === 'recent'
             && $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewPosts')
         ) {
@@ -373,7 +463,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         // get first post if layout needs it
         // since 2.4
-        if ($layoutNeedPost) {
+        if ($getPosts) {
             $fetchOptions['join'] |= XenForo_Model_Thread::FETCH_FIRSTPOST;
         }
 
@@ -524,7 +614,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         array &$threads
     ) {
         $core = WidgetFramework_Core::getInstance();
-        $layoutNeedPost = $renderTemplateObject->getParam('layoutNeedPost');
+        $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
+        $getPosts = !empty($layoutOptions['getPosts']);
 
         /** @var WidgetFramework_XenForo_Model_Thread $threadModel */
         $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
@@ -541,9 +632,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination($permissionCombinationId);
 
         $viewObj = self::getViewObject($params, $renderTemplateObject);
-        if ($layoutNeedPost
-            && !empty($viewObj)
-        ) {
+        if ($getPosts && !empty($viewObj)) {
             $bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
             if (XenForo_Application::$versionId < 1020000) {
                 // XenForo 1.1.x
