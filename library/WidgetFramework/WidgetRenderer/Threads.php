@@ -183,6 +183,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
+        if (!empty($widget['options']['layout'])
+            && $widget['options']['layout'] === 'custom'
+            && !empty($widget['options']['layout_options']['customTemplateTitle'])
+        ) {
+            return $widget['options']['layout_options']['customTemplateTitle'];
+        }
+
         return 'wf_widget_threads';
     }
 
@@ -216,18 +223,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $layout = 'sidebar';
             }
         } else {
-            switch ($widget['options']['layout']) {
-                case 'sidebar_snippet':
-                case 'list':
-                case 'list_compact':
-                case 'full':
-                    $layout = $widget['options']['layout'];
-                    break;
-                case 'sidebar':
-                default:
-                    $layout = 'sidebar';
-                    break;
-            }
+            $layout = $widget['options']['layout'];
         }
         $renderTemplateObject->setParam('layout', $layout);
         $layoutOptions = $this->_getLayoutOptions($widget, $positionCode, $params, $layout);
@@ -322,6 +318,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             'getPosts' => false,
         );
 
+        $rawLayoutOptions = array();
+        if (isset($widget['options']['layout_options'])) {
+            $rawLayoutOptions = $widget['options']['layout_options'];
+        }
+
         $stylePropertyIds = array();
         switch ($layout) {
             case 'sidebar':
@@ -363,12 +364,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $stylePropertyIds[] = 'fullReplyCount';
                 $layoutOptions['getPosts'] = true;
                 break;
+            case 'custom':
+                $layoutOptions += $rawLayoutOptions;
+                $layoutOptions['getPosts'] = !empty($rawLayoutOptions['getPosts']);
+                break;
         }
 
-        $rawLayoutOptions = array();
-        if (isset($widget['options']['layout_options'])) {
-            $rawLayoutOptions = $widget['options']['layout_options'];
-        }
         foreach ($stylePropertyIds as $stylePropertyId) {
             $layoutOptions[$stylePropertyId] = XenForo_Template_Helper_Core::styleProperty('wf_threads_' . $stylePropertyId);
             if (isset($rawLayoutOptions[$stylePropertyId])

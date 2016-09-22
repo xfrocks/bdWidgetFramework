@@ -684,6 +684,20 @@
 			<!-- wf_threads_layout_full -->
 		</xen:disabled>
 	</xen:option>
+	<xen:option value="custom" label="{xen:phrase wf_threads_layout_custom}" inputclass="Hider">
+		<xen:disabled>
+			<xen:textboxunit label="{xen:phrase template_title}:"
+				name="{$namePrefix}layout_options[customTemplateTitle]"
+				value="{$options.layout_options.customTemplateTitle}" />
+			<xen:checkboxunit label="">
+				<xen:option name="{$namePrefix}layout_options[getPosts]"
+					value="1" selected="{$options.layout_options.getPosts}">
+					{xen:phrase wf_threads_layout_custom_get_posts}
+				</xen:option>
+			</xen:checkboxunit>
+			<!-- wf_threads_layout_custom -->
+		</xen:disabled>
+	</xen:option>
 </xen:radiounit>
 </xen:hook>]]></template>
     <template title="wf_widget_options_threads_radio_default_yes_no"><![CDATA[<xen:radiounit label="{xen:raw $label}:"
@@ -1306,6 +1320,8 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_threads" version_id="1" version_string="0.9"><![CDATA[threads]]></phrase>
     <phrase title="wf_threads_forums" version_id="7" version_string="0.9.5"><![CDATA[Forums]]></phrase>
     <phrase title="wf_threads_forums_explain" version_id="69" version_string="2.4.1"><![CDATA[Select the forums you want to search for threads. Leave nothing selected to include all viewable forums.]]></phrase>
+    <phrase title="wf_threads_layout_custom" version_id="2060315" version_string="2.6.3"><![CDATA[Custom]]></phrase>
+    <phrase title="wf_threads_layout_custom_get_posts" version_id="2060315" version_string="2.6.3"><![CDATA[Get first post data]]></phrase>
     <phrase title="wf_threads_layout_full" version_id="65" version_string="2.3.6"><![CDATA[Full]]></phrase>
     <phrase title="wf_threads_layout_list" version_id="63" version_string="2.3.4"><![CDATA[List (similar to forum_view)]]></phrase>
     <phrase title="wf_threads_layout_list_compact" version_id="2060314" version_string="2.6.3"><![CDATA[Compact List]]></phrase>
@@ -2182,7 +2198,7 @@ All customization should go to wf_default_EXTRA.css
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info.info-bottom
 		{
 			border-top: 1px dashed {xen:property primaryLighterStill};
-	}
+		}
 		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .counters
 		{
 			float: right;
