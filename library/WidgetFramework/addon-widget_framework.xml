@@ -1965,7 +1965,7 @@ All customization should go to wf_default_EXTRA.css
 	resize: vertical;
 	overflow: hidden;
 }]]></template>
-    <template title="wf_threads.css" version_id="2060314" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
+    <template title="wf_threads.css" version_id="2060315" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
 {
 	font-weight: bold;
 }
@@ -2011,6 +2011,19 @@ All customization should go to wf_default_EXTRA.css
 		margin-bottom: -.5em;
 		text-align: center;
 	}
+
+<xen:if is="{xen:property enableResponsive}">
+.Responsive .WidgetFramework_WidgetRenderer_Threads_ListCompact .responsive--aware { display: none; }
+@media screen and (min-width: {xen:property maxResponsiveNarrowWidth}) {
+	.Responsive .WidgetFramework_WidgetRenderer_Threads_ListCompact .responsive--from-narrow { display: table-cell; }
+}
+@media screen and (min-width: {xen:property maxResponsiveMediumWidth}) {
+	.Responsive .WidgetFramework_WidgetRenderer_Threads_ListCompact .responsive--from-medium { display: table-cell; }
+}
+@media screen and (min-width: {xen:property maxResponsiveWideWidth}) {
+	.Responsive .WidgetFramework_WidgetRenderer_Threads_ListCompact .responsive--from-wide { display: table-cell; }
+}
+</xen:if>
 
 .WidgetFramework_WidgetRenderer_Threads_FullThreadList
 {
@@ -2798,9 +2811,9 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</div>
 </xen:if>]]></template>
-    <template title="wf_widget_threads_thread_list_compact" version_id="2060314" version_string="2.6.3"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
+    <template title="wf_widget_threads_thread_list_compact" version_id="2060315" version_string="2.6.3"><![CDATA[<li class="thread-{$thread.thread_id} thread-node-{$thread.node_id}{xen:if '{$thread.isNew}', ' unread'}">
 	<xen:if is="{xen:property wf_threads_listCompactAvatar}">
-	<div class="avatar">
+	<div class="avatar responsive--aware responsive--from-narrow">
 		<i></i><xen:avatar user="$thread" size="s" img="true" />
 	</div>
 	</xen:if>
@@ -2815,39 +2828,39 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 	
 	<xen:if is="{xen:property wf_threads_listCompactUser}">
-	<div class="user">
+	<div class="user responsive--aware responsive--from-medium">
 		<i></i><xen:username user="$thread" />
 	</div>
 	</xen:if>
 	
 	<xen:if is="{xen:property wf_threads_listCompactForum}">
-	<div class="forum">
+	<div class="forum responsive--aware responsive--from-medium">
 		<i></i><a href="{xen:link forums, $thread.forum}">{$thread.forum.title}</a>
 	</div>
 	</xen:if>
 
 	<xen:if is="{xen:property wf_threads_listCompactDate}">
-	<div class="date">
+	<div class="date responsive--aware responsive--from-medium">
 		<i></i><span><xen:datetime time="$thread.post_date" /></span>
 	</div>
 	</xen:if>
 	
 	<xen:if is="{xen:property wf_threads_listCompactViewCount}">
-	<div class="count viewCount">
+	<div class="count viewCount responsive--aware responsive--from-wide">
 		<i></i><span title="{xen:phrase views}: <xen:comment>
 		</xen:comment>{xen:number $thread.view_count}" class="Tooltip">{xen:number $thread.view_count}</span>
 	</div>
 	</xen:if>
 
 	<xen:if is="{xen:property wf_threads_listCompactFirstPostLikes}">
-	<div class="count firstPostLikes">
+	<div class="count firstPostLikes responsive--aware responsive--from-wide">
 		<i></i><span title="{xen:phrase likes}: <xen:comment>
 		</xen:comment>{xen:number $thread.first_post_likes}" class="Tooltip">{xen:number $thread.first_post_likes}</span>
 	</div>
 	</xen:if>
 
 	<xen:if is="{xen:property wf_threads_listCompactReplyCount}">
-	<div class="count replyCount">
+	<div class="count replyCount responsive--aware responsive--from-wide">
 		<i></i><span title="{xen:phrase replies}: <xen:comment>
 		</xen:comment>{xen:number $thread.reply_count}" class="Tooltip">{xen:number $thread.reply_count}</span>
 	</div>
