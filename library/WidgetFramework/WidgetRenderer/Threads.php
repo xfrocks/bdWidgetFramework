@@ -392,22 +392,15 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
      */
     protected function _getThreads($widget, $positionCode, $params, $renderTemplateObject)
     {
-        $core = WidgetFramework_Core::getInstance();
-        $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
-        $getPosts = !empty($layoutOptions['getPosts']);
-
         if ($positionCode === 'forum_list'
             && XenForo_Application::$versionId > 1050000
             && isset($params['threads'])
-            && !$getPosts
+            && empty($layoutOptions['getPosts'])
             && $widget['options']['type'] === 'recent'
             && $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewPosts')
         ) {
             return $params['threads'];
         }
-
-        /* @var $threadModel XenForo_Model_Thread */
-        $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
         if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
             $forumIds = $widget['_ajaxLoadParams']['forumIds'];
@@ -435,13 +428,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 = $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS];
         }
 
-        // note: `limit` is set to 3 times of configured limit to account for the threads
-        // that get hidden because of deep permissions like viewOthers or viewContent
-        $fetchOptions = array(
-            'limit' => $widget['options']['limit'] * 3,
-            'join' => XenForo_Model_Thread::FETCH_USER | XenForo_Model_Thread::FETCH_FORUM,
-        );
-
         // process sticky
         // since 2.4.7
         if (isset($widget['options']['sticky'])
@@ -462,18 +448,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $conditions['discussion_open'] = true;
         }
 
-        // get first post if layout needs it
-        // since 2.4
-        if ($getPosts) {
-            $fetchOptions['join'] |= XenForo_Model_Thread::FETCH_FIRSTPOST;
-        }
-
-        // include is_new if option is turned on
-        // since 2.5.1
-        if (!empty($widget['options']['is_new'])) {
-            $fetchOptions['readUserId'] = XenForo_Visitor::getUserId();
-        }
-
         // since 2.6.3
         if (WidgetFramework_Core::contentTaggingFound()
             && !empty($widget['options']['tags'])
@@ -481,7 +455,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $threadIds = array();
 
             /** @var XenForo_Model_Tag $tagModel */
-            $tagModel = $threadModel->getModelFromCache('XenForo_Model_Tag');
+            $tagModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Tag');
 
             foreach ($widget['options']['tags'] as $tag) {
                 $contentIds = $tagModel->getContentIdsByTagId($tag['tag_id'], $widget['options']['limit'] * 3);
@@ -492,7 +466,49 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 }
             }
 
+            WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
             $conditions[WidgetFramework_XenForo_Model_Thread::CONDITIONS_THREAD_ID] = $threadIds;
+        }
+
+        return $this->_getThreadsWithConditions($conditions, $widget, $positionCode, $params, $renderTemplateObject);
+    }
+
+    /**
+     * @param array $conditions
+     * @param array $widget
+     * @param string $positionCode
+     * @param array $params
+     * @param XenForo_Template_Abstract $renderTemplateObject
+     * @return array $threads
+     */
+    protected function _getThreadsWithConditions(
+        array $conditions,
+        $widget,
+        $positionCode,
+        $params,
+        $renderTemplateObject
+    ) {
+        /* @var $threadModel XenForo_Model_Thread */
+        $threadModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
+
+        // note: `limit` is set to 3 times of configured limit to account for the threads
+        // that get hidden because of deep permissions like viewOthers or viewContent
+        $fetchOptions = array(
+            'limit' => $widget['options']['limit'] * 3,
+            'join' => XenForo_Model_Thread::FETCH_USER | XenForo_Model_Thread::FETCH_FORUM,
+        );
+
+        // get first post if layout needs it
+        // since 2.4
+        $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
+        if (!empty($layoutOptions['getPosts'])) {
+            $fetchOptions['join'] |= XenForo_Model_Thread::FETCH_FIRSTPOST;
+        }
+
+        // include is_new if option is turned on
+        // since 2.5.1
+        if (!empty($widget['options']['is_new'])) {
+            $fetchOptions['readUserId'] = XenForo_Visitor::getUserId();
         }
 
         switch ($widget['options']['type']) {
