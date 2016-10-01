@@ -287,6 +287,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             return false;
         }
 
+        if (!empty($widget['options']['layout'])
+            && $widget['options']['layout'] === 'custom'
+        ) {
+            return !empty($widget['options']['layout_options']['use_wrapper']);
+        }
+
         return parent::useWrapper($widget);
     }
 

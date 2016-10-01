@@ -695,6 +695,15 @@
 					{xen:phrase wf_threads_layout_custom_get_posts}
 				</xen:option>
 			</xen:checkboxunit>
+
+			<xen:radiounit label="{xen:phrase wf_use_wrapper}:"
+				name="{$namePrefix}layout_options[use_wrapper]"
+				value="{xen:if 'isset({$options.layout_options.use_wrapper})',
+					{$options.layout_options.use_wrapper}, 1}">
+				<xen:option value="1">{xen:phrase yes}</xen:option>
+				<xen:option value="0">{xen:phrase no}</xen:option>
+			</xen:radiounit>
+
 			<!-- wf_threads_layout_custom -->
 		</xen:disabled>
 	</xen:option>
@@ -1343,6 +1352,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_users_staff" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Staff Members]]></phrase>
     <phrase title="wf_use_an_existing_template" version_id="111" version_string="2.6.0-dev"><![CDATA[Use an existing template]]></phrase>
     <phrase title="wf_use_guest_permissions" version_id="27" version_string="1.3.2"><![CDATA[Use guest permissions (instead of current user permissions)]]></phrase>
+    <phrase title="wf_use_wrapper" version_id="2060315" version_string="2.6.3"><![CDATA[Use wrapper]]></phrase>
     <phrase title="wf_viewing_home_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing home page]]></phrase>
     <phrase title="wf_viewing_widget_page" version_id="79" version_string="2.4.6"><![CDATA[Viewing page]]></phrase>
     <phrase title="wf_whitelist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Whitelist Groups]]></phrase>
