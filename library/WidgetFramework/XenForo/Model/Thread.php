@@ -111,6 +111,8 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
         if (!empty($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN])
             && empty($fetchOptions['join'])
         ) {
+            $selectFields .= ', 1 AS wf_requested_last_post';
+
             // IMPORTANT: update $proxyFetchOptions['join'] calculation if more fetch flags are supported
 
             if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_USER) {
@@ -125,14 +127,6 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
                 $joinTables .= '
 						LEFT JOIN xf_user AS user ON
 						(user.user_id = thread.last_post_user_id)';
-            }
-
-            if ($fetchOptions[self::FETCH_OPTIONS_LAST_POST_JOIN] & self::FETCH_FIRSTPOST) {
-                $selectFields .= ',
-					1 AS fetched_last_post, post.message, post.attach_count';
-                $joinTables .= '
-					LEFT JOIN xf_post AS post ON
-						(post.post_id = thread.last_post_id)';
             }
 
             // IMPORTANT: update $proxyFetchOptions['join'] calculation if more fetch flags are supported
@@ -169,12 +163,6 @@ class WidgetFramework_XenForo_Model_Thread extends XFCP_WidgetFramework_XenForo_
                 'gravatar' => $thread['gravatar'],
                 'avatar_date' => $thread['avatar_date'],
             ));
-        }
-
-        if (!empty($thread['fetched_last_post'])) {
-            $thread['post_id'] = $thread['last_post_id'];
-        } else {
-            $thread['post_id'] = $thread['first_post_id'];
         }
 
         $thread['forum'] = $forum;

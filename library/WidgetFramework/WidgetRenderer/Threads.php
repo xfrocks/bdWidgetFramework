@@ -504,13 +504,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             'join' => XenForo_Model_Thread::FETCH_USER | XenForo_Model_Thread::FETCH_FORUM,
         );
 
-        // get first post if layout needs it
-        // since 2.4
-        $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
-        if (!empty($layoutOptions['getPosts'])) {
-            $fetchOptions['join'] |= XenForo_Model_Thread::FETCH_FIRSTPOST;
-        }
-
         // include is_new if option is turned on
         // since 2.5.1
         if (!empty($widget['options']['is_new'])) {
@@ -653,9 +646,37 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         $permissionCombinationId = empty($widget['options']['as_guest']) ? null : 1;
         $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination($permissionCombinationId);
+        $viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
+        $viewingUserId = $viewingUser === null ? XenForo_Visitor::getUserId() : $viewingUser['user_id'];
 
         $viewObj = self::getViewObject($params, $renderTemplateObject);
         if ($getPosts && !empty($viewObj)) {
+            $postIds = array();
+            foreach ($threads as &$threadRef) {
+                if (!empty($threadRef['wf_requested_last_post'])) {
+                    $postIds[] = $threadRef['last_post_id'];
+                } else {
+                    $postIds[] = $threadRef['first_post_id'];
+                }
+            }
+            $posts = $postModel->getPostsByIds($postIds, array(
+                'likeUserId' => $viewingUserId,
+            ));
+
+            $posts = $postModel->getAndMergeAttachmentsIntoPosts($posts);
+            foreach ($posts as &$postRef) {
+                // mimics XenForo_Model_Thread::FETCH_FIRSTPOST behavior
+                // for full post data, keep it within $threadRef.post
+                $threadRef =& $threads[$postRef['thread_id']];
+                $threadRef['post_id'] = $postRef['post_id'];
+                $threadRef['attach_count'] = $postRef['attach_count'];
+                $threadRef['message'] = $postRef['message'];
+                if (isset($postRef['attachments'])) {
+                    $threadRef['attachments'] = $postRef['attachments'];
+                }
+                $threadRef['post'] = $postRef;
+            }
+
             $bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
             if (XenForo_Application::$versionId < 1020000) {
                 // XenForo 1.1.x
@@ -669,53 +690,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 'contentType' => 'post',
                 'contentIdKey' => 'post_id'
             );
-
-            $postsWithAttachment = array();
-            foreach (array_keys($threads) as $threadId) {
-                $threadRef = &$threads[$threadId];
-
-                if (empty($threadRef['attach_count'])) {
-                    continue;
-                }
-
-                if (!empty($threadRef['fetched_last_post'])) {
-                    $postsWithAttachment[$threadRef['last_post_id']] = array(
-                        'post_id' => $threadRef['last_post_id'],
-                        'thread_id' => $threadId,
-                        'attach_count' => $threadRef['attach_count'],
-                    );
-                } else {
-                    $postsWithAttachment[$threadRef['first_post_id']] = array(
-                        'post_id' => $threadRef['first_post_id'],
-                        'thread_id' => $threadId,
-                        'attach_count' => $threadRef['attach_count'],
-                    );
-                }
-            }
-            if (!empty($postsWithAttachment)) {
-                $postsWithAttachment = $postModel->getAndMergeAttachmentsIntoPosts($postsWithAttachment);
-                foreach ($postsWithAttachment as $postWithAttachment) {
-                    if (empty($postWithAttachment['attachments'])) {
-                        continue;
-                    }
-
-                    if (empty($threads[$postWithAttachment['thread_id']])) {
-                        continue;
-                    }
-                    $threadRef = &$threads[$postWithAttachment['thread_id']];
-
-                    $threadRef['attachments'] = $postWithAttachment['attachments'];
-                }
-            }
         }
 
         $threadForumIds = array();
         foreach ($threads as $thread) {
             $threadForumIds[] = $thread['node_id'];
         }
-        $threadForums = $forumModel->getForumsByIds($threadForumIds);
-
-        $viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
+        $forums = $forumModel->getForumsByIds($threadForumIds);
 
         foreach (array_keys($threads) as $threadId) {
             $threadRef = &$threads[$threadId];
@@ -724,39 +705,40 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 unset($threads[$threadId]);
                 continue;
             }
-            $threadPermissionsRef = &$nodePermissions[$threadRef['node_id']];
+            $permissionsRef = &$nodePermissions[$threadRef['node_id']];
 
-            if (empty($threadForums[$threadRef['node_id']])) {
+            if (empty($forums[$threadRef['node_id']])) {
                 unset($threads[$threadId]);
                 continue;
             }
-            $threadForumRef = &$threadForums[$threadRef['node_id']];
+            $forumRef = &$forums[$threadRef['node_id']];
+            $threadRef['forum'] = $forumRef;
 
             if ($threadModel->isRedirect($threadRef)) {
                 unset($threads[$threadId]);
                 continue;
             }
 
-            if (!$threadModel->canViewThreadAndContainer($threadRef, $threadForumRef, $null,
-                $threadPermissionsRef, $viewingUser)
-            ) {
+            if (!$threadModel->canViewThreadAndContainer($threadRef, $forumRef, $null, $permissionsRef, $viewingUser)) {
                 unset($threads[$threadId]);
                 continue;
             }
 
             if (!empty($bbCodeParser)
                 && !empty($bbCodeOptions)
+                && isset($threadRef['post'])
             ) {
                 $threadBbCodeOptions = $bbCodeOptions;
                 $threadBbCodeOptions['states']['viewAttachments'] =
-                    $threadModel->canViewAttachmentsInThread($threadRef, $threadForumRef, $null,
-                        $threadPermissionsRef, $viewingUser);
+                    $threadModel->canViewAttachmentsInThread($threadRef, $forumRef, $null,
+                        $permissionsRef, $viewingUser);
                 $threadRef['messageHtml'] = WidgetFramework_ShippableHelper_Html::preSnippet(
                     $threadRef, $bbCodeParser, $threadBbCodeOptions);
+                $threadRef['post'] = $postModel->preparePost($threadRef['post'], $threadRef, $forumRef);
             }
 
-            $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $threadForumRef,
-                $threadPermissionsRef, $viewingUser);
+            $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $forumRef,
+                $permissionsRef, $viewingUser);
         }
     }
 
