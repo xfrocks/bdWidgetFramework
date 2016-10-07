@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2016-06-10T01:13:27+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2016-10-08T10:29:36+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_Html
- * @version 8
+ * @version 10
  * @see DevHelper_Helper_ShippableHelper_Html
  */
 class WidgetFramework_ShippableHelper_Html
@@ -62,8 +62,16 @@ class WidgetFramework_ShippableHelper_Html
     public static function snippet($string, $maxLength = 0, array $options = array())
     {
         $options = array_merge(array(
-            'previewBreakBbCode' => 'prbreak',
             'ellipsis' => '…',
+            'fromStart' => true,
+            'previewBreakBbCode' => 'prbreak',
+            'processImage' => true,
+            'processLink' => true,
+            'processFrame' => true,
+            'processScript' => true,
+            'stripImage' => false,
+            'stripSpacing' => true,
+            'stripLastParagraph' => true,
         ), $options);
 
         if (!empty($options['previewBreakBbCode'])
@@ -83,16 +91,57 @@ class WidgetFramework_ShippableHelper_Html
             }
         }
 
-        $snippet = XenForo_Template_Helper_Core::callHelper('snippet', array($string, $maxLength, $options));
+        // pre-processing
+        $string = preg_replace('#<br\s?\/?>#', "\n", $string);
+        $string = str_replace('&#8203;', '', $string);
 
-        // TODO: find better way to avoid having to call this
-        $snippet = htmlspecialchars_decode($snippet);
-        $snippet = preg_replace('#\.\.\.\z#', $options['ellipsis'], $snippet);
-
-        if ($maxLength == 0 || $maxLength > utf8_strlen($string)) {
-            return $snippet;
+        $replacements = array();
+        $replacementTags = array();
+        if (!!$options['processImage'] && !$options['stripImage']) {
+            $replacementTags[] = 'img';
+        }
+        if (!!$options['processLink']) {
+            $replacementTags[] = 'a';
+        }
+        if (!!$options['processFrame']) {
+            $replacementTags[] = 'iframe';
+        }
+        if (!!$options['processScript']) {
+            $replacementTags[] = 'script';
+        }
+        if (count($replacementTags) > 0) {
+            $replacementOffset = 0;
+            $replacementRegEx = sprintf('#<(%s)[^>]*>.*?</\\1>#i', implode('|', $replacementTags));
+            while (true) {
+                if (!preg_match($replacementRegEx, $string,
+                    $replacementMatches, PREG_OFFSET_CAPTURE, $replacementOffset)
+                ) {
+                    break;
+                }
+                $replacement = array(
+                    'original' => $replacementMatches[0][0],
+                    'replacement' => sprintf('<br data-replacement-id="%d" />', count($replacements)),
+                );
+                $replacements[] = $replacement;
+                $string = str_replace($replacement['original'], $replacement['replacement'], $string);
+                $replacementOffset = $replacementMatches[0][1] + 1;
+            }
         }
 
+        if (!!$options['stripImage']) {
+            $string = preg_replace('#<img[^>]+/>#', '', $string);
+        }
+        if (!!$options['stripSpacing']) {
+            $string = preg_replace('#(\n\s*)+#', "\n", $string);
+        }
+
+        $snippet = XenForo_Template_Helper_Core::callHelper('snippet', array($string, $maxLength, $options));
+
+        // TODO: find better way to avoid having to call this to reset snippet
+        $snippet = htmlspecialchars_decode($snippet);
+        $snippet = preg_replace('#\.\.\.\z#', '', $snippet);
+
+        // looks for html tags
         $offset = 0;
         $stack = array();
         while (true) {
@@ -101,7 +150,7 @@ class WidgetFramework_ShippableHelper_Html
                 $endPos = utf8_strpos($snippet, '>', $startPos);
                 if ($endPos === false) {
                     // we found a partial open tag, best to delete the whole thing
-                    $snippet = utf8_substr($snippet, 0, $startPos) . $options['ellipsis'];
+                    $snippet = utf8_substr($snippet, 0, $startPos);
                     break;
                 }
 
@@ -149,8 +198,38 @@ class WidgetFramework_ShippableHelper_Html
             }
         }
 
+        // close any remaining tags
         while (!empty($stack)) {
             $snippet .= sprintf('</%s>', array_pop($stack));
+        }
+
+        // strip all empty body tags
+        $snippetBinaryLength = 0;
+        while (strlen($snippet) !== $snippetBinaryLength) {
+            $snippetBinaryLength = strlen($snippet);
+            $snippet = preg_replace('#<(\w+)(\s[^>]+)?>\s*<\/\\1>#', '', $snippet);
+        }
+
+        if (!!$options['stripLastParagraph']) {
+            $paragraphs = preg_split('#(\n|<div[^>]+>|</div>|<\/?p>)#',
+                trim($snippet), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+            if (count($paragraphs) > 4) {
+                $snippet = implode('', array_slice($paragraphs, 0, count($paragraphs) - 2));
+            }
+        }
+
+        if (count($replacements) > 0) {
+            foreach ($replacements as $replacement) {
+                $snippet = str_replace($replacement['replacement'], $replacement['original'], $snippet);
+            }
+        }
+
+        // post-processing
+        $snippet = preg_replace('#(\.|\s)+\z#', '', $snippet);
+        $snippet = nl2br($snippet);
+
+        if (!preg_match('#</(div|iframe|img|p|script)>\z#', $snippet)) {
+            $snippet .= $options['ellipsis'];
         }
 
         $snippet = utf8_trim($snippet);
