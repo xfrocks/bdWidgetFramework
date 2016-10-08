@@ -176,6 +176,16 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     $optionValue = null;
                 }
                 break;
+            case 'layout_options':
+                if (is_array($optionValue)
+                    && count($optionValue) === 1
+                ) {
+                    $firstSubOptionValue = reset($optionValue);
+                    if (is_array($firstSubOptionValue)) {
+                        $optionValue = $firstSubOptionValue;
+                    }
+                }
+                break;
         }
 
         return parent::_validateOptionValue($optionKey, $optionValue);

@@ -559,14 +559,17 @@
 		<xen:disabled>
 			<xen:include template="wf_widget_options_threads_textboxunit">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_titleMaxLength_master}</xen:set>
+				<xen:set var="$layout">sidebar</xen:set>
 				<xen:set var="$layoutOptionsKey">titleMaxLength</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
+				<xen:set var="$layout">sidebar</xen:set>
 				<xen:set var="$layoutOptionsKey">rich</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_showPrefix_master}</xen:set>
+				<xen:set var="$layout">sidebar</xen:set>
 				<xen:set var="$layoutOptionsKey">showPrefix</xen:set>
 			</xen:include>
 			<!-- wf_threads_layout_sidebar -->
@@ -576,14 +579,17 @@
 		<xen:disabled>
 			<xen:include template="wf_widget_options_threads_textboxunit">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_titleMaxLength_master}</xen:set>
+				<xen:set var="$layout">sidebar_snippet</xen:set>
 				<xen:set var="$layoutOptionsKey">titleMaxLength</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_textboxunit">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_snippetMaxLength_master}</xen:set>
+				<xen:set var="$layout">sidebar_snippet</xen:set>
 				<xen:set var="$layoutOptionsKey">snippetMaxLength</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_showPrefix_master}</xen:set>
+				<xen:set var="$layout">sidebar_snippet</xen:set>
 				<xen:set var="$layoutOptionsKey">showPrefix</xen:set>
 			</xen:include>
 			<!-- wf_threads_layout_sidebar_snippet -->
@@ -598,46 +604,57 @@
 		<xen:disabled>
 			<xen:include template="wf_widget_options_threads_textboxunit">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactTitleMaxLength_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactTitleMaxLength</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_textboxunit">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactMore_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactMore</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">rich</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactShowPrefix_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactShowPrefix</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactAvatar_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactAvatar</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactUser_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactUser</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactForum_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactForum</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactDate_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactDate</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactViewCount_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactViewCount</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactFirstPostLikes_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactFirstPostLikes</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactReplyCount_master}</xen:set>
+				<xen:set var="$layout">list_compact</xen:set>
 				<xen:set var="$layoutOptionsKey">listCompactReplyCount</xen:set>
 			</xen:include>
 			<!-- wf_threads_layout_list_compact -->
@@ -647,38 +664,47 @@
 		<xen:disabled>
 			<xen:include template="wf_widget_options_threads_textboxunit">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullMaxLength_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullMaxLength</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">rich</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullInfoBottom_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullInfoBottom</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullUser_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullUser</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullForum_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullForum</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullDate_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullDate</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullViewCount_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullViewCount</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullFirstPostLikes_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullFirstPostLikes</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullReplyCount_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullReplyCount</xen:set>
 			</xen:include>
 			<!-- wf_threads_layout_full -->
@@ -687,17 +713,17 @@
 	<xen:option value="custom" label="{xen:phrase wf_threads_layout_custom}" inputclass="Hider">
 		<xen:disabled>
 			<xen:textboxunit label="{xen:phrase template_title}:"
-				name="{$namePrefix}layout_options[customTemplateTitle]"
+				name="{$namePrefix}layout_options[custom][customTemplateTitle]"
 				value="{$options.layout_options.customTemplateTitle}" />
 			<xen:checkboxunit label="">
-				<xen:option name="{$namePrefix}layout_options[getPosts]"
+				<xen:option name="{$namePrefix}layout_options[custom][getPosts]"
 					value="1" selected="{$options.layout_options.getPosts}">
 					{xen:phrase wf_threads_layout_custom_get_posts}
 				</xen:option>
 			</xen:checkboxunit>
 
 			<xen:radiounit label="{xen:phrase wf_use_wrapper}:"
-				name="{$namePrefix}layout_options[use_wrapper]"
+				name="{$namePrefix}layout_options[custom][use_wrapper]"
 				value="{xen:if 'isset({$options.layout_options.use_wrapper})',
 					{$options.layout_options.use_wrapper}, 1}">
 				<xen:option value="1">{xen:phrase yes}</xen:option>
@@ -710,7 +736,7 @@
 </xen:radiounit>
 </xen:hook>]]></template>
     <template title="wf_widget_options_threads_radio_default_yes_no"><![CDATA[<xen:radiounit label="{xen:raw $label}:"
-	name="{$namePrefix}layout_options[{$layoutOptionsKey}]"
+	name="{$namePrefix}layout_options[{$layout}][{$layoutOptionsKey}]"
 	value="{xen:if 'isset({$options.layout_options.{$layoutOptionsKey}})',
 		{$options.layout_options.{$layoutOptionsKey}}, ''}">
 	<xen:option value="">
@@ -721,7 +747,7 @@
 	<xen:option value="0">{xen:phrase no}</xen:option>
 </xen:radiounit>]]></template>
     <template title="wf_widget_options_threads_textboxunit"><![CDATA[<xen:textboxunit label="{xen:raw $label}:"
-	name="{$namePrefix}layout_options[{$layoutOptionsKey}]"
+	name="{$namePrefix}layout_options[{$layout}][{$layoutOptionsKey}]"
 	value="{$options.layout_options.{$layoutOptionsKey}}"
 	placeholder="{$defaultStyle.title}: '{$defaultStyleProperties.{$layoutOptionsKey}}'" />]]></template>
     <template title="wf_widget_options_users"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 5}">
