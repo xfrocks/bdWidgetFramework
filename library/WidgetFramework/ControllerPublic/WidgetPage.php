@@ -30,7 +30,7 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 
         $widgets = $this->_getWidgetModel()->getWidgets($widgetsConditions);
 
-        $nodeBreadCrumbs = $this->_getNodeModel()->getNodeBreadCrumbs($widgetPage, false);
+        $nodeBreadCrumbs = $this->_getNodeModel()->getNodeBreadCrumbs($widgetPage, $page > 1);
 
         $viewParams = array(
             'widgetPage' => $widgetPage,

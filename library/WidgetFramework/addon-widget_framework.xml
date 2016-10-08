@@ -2529,9 +2529,10 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_widget_page" version_id="98" version_string="2.5.0d"><![CDATA[<xen:require css="wf_widget_page.css" />
+    <template title="wf_widget_page" version_id="2060316" version_string="2.6.3"><![CDATA[<xen:require css="wf_widget_page.css" />
 
-<xen:title>{$widgetPage.title}</xen:title>
+<xen:title>{$widgetPage.title}{xen:helper pagenumber, $page}</xen:title>
+<xen:h1>{xen:if '{$page} > 1', '{xen:phrase page} {xen:number $page}', $widgetPage.title}</xen:h1>
 
 <xen:navigation>
 	<xen:breadcrumb source="$nodeBreadCrumbs" />
