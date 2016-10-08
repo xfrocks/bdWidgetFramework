@@ -430,6 +430,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         );
 
         if (!empty($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])) {
+            WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
             $conditions[WidgetFramework_XenForo_Model_Thread::CONDITIONS_THREAD_ID_NOT]
                 = $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS];
         }
