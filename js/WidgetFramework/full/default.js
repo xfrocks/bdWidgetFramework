@@ -3,7 +3,7 @@
         var $firstPane = $container.find('.widget-panes > ul > li:first-child');
         var height = $firstPane.height();
 
-        $container.find('.widget-panes > ul > li').css('min-height', height + 'px');
+        $container.find('.widget-tab > .loading-indicator').css('min-height', height + 'px');
     };
 
     // *********************************************************************

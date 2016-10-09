@@ -2347,7 +2347,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_group_wrapper" version_id="2060314" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_group_wrapper" version_id="2060316" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $widgets} === 1">
 
@@ -2450,10 +2450,10 @@ All customization should go to wf_default_EXTRA.css
 	<div class="{$_classInnerSection} widget-panes">
 		<ul id="Widget{$groupId}Panes">
 			<xen:foreach loop="$widgets" i="$i" value="$widget">
-			<li class="widget {$widget.class} tab-{$i}" id="widget-tab-{$widget.widget_id}"{xen:if 
+			<li class="widget {$widget.class} widget-tab tab-{$i}" id="widget-tab-{$widget.widget_id}"{xen:if 
 				'{$widget._runtime.ajaxLoadUrl}',' data-loadUrl="{$widget._runtime.ajaxLoadUrl}"'}>
 				<xen:if is="{$widget._runtime.ajaxLoadUrl}">
-				{xen:phrase loading}...
+				<div class="loading-indicator">{xen:phrase loading}...</div>
 				<xen:else />
 				{xen:raw $widget._runtime.html}
 				</xen:if>
