@@ -1660,7 +1660,7 @@ All customization should go to wf_default_EXTRA.css
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
 </xen:if>]]></template>
-    <template title="wf_layout_editor.css" version_id="2060208" version_string="2.6.2"><![CDATA[.WidgetFramework_LayoutEditor_Area
+    <template title="wf_layout_editor.css" version_id="2060316" version_string="2.6.3"><![CDATA[.WidgetFramework_LayoutEditor_Area
 {
 	background: {xen:property primaryLightest};
 }
@@ -1746,7 +1746,7 @@ All customization should go to wf_default_EXTRA.css
 {xen:helper clearfix, '.WidgetFramework_LayoutEditor_Group.columns > div'}
 
 <xen:set var="$borderWidth">2</xen:set>
-<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - {$borderWidth}'}</xen:set>
+<xen:set var="$widgetWidth">{xen:calc 'intval({xen:property sidebar.width}) - 50 - {$borderWidth}'}</xen:set>
 .WidgetFramework_LayoutEditor_Group.columns > .widgets > div
 {
 	border: 1px solid transparent;
@@ -1910,7 +1910,7 @@ All customization should go to wf_default_EXTRA.css
 		<div>&nbsp;</div>
 	</a>
 </div>]]></template>
-    <template title="wf_layout_editor_widget_group_wrapper" version_id="2060200" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_layout_editor_widget_group_wrapper" version_id="2060316" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="wf_layout_editor.css" />
 
 <xen:if is="!empty({$group.options.layout}) && {$group.options.layout} !== 'rows'">
@@ -1918,7 +1918,7 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:comment>These variables should match those in wf_layout_editor.css</xen:comment>
 <xen:set var="$borderWidth">2</xen:set>
-<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - {$borderWidth}'}</xen:set>
+<xen:set var="$widgetWidth">{xen:calc 'intval({xen:property sidebar.width}) - 50 - {$borderWidth}'}</xen:set>
 <xen:set var="$widgetsWidth">{xen:calc '({$widgetWidth} + {$borderWidth}) * ({xen:count $widgets} + 1)'}</xen:set>
 </xen:if>
 
@@ -1968,7 +1968,7 @@ All customization should go to wf_default_EXTRA.css
 </div>
 
 <xen:edithint template="wf_layout_editor_widget" />]]></template>
-    <template title="wf_layout_editor_widget_wrapper" version_id="2060208" version_string="2.6.2"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_layout_editor_widget_wrapper" version_id="2060316" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 <xen:require css="wf_layout_editor.css" />
 
 <xen:comment>Mimics wf_layout_editor_widget_group_wrapper</xen:comment>
@@ -1976,7 +1976,7 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:comment>These variables should match those in wf_layout_editor.css</xen:comment>
 <xen:set var="$borderWidth">2</xen:set>
-<xen:set var="$widgetWidth">{xen:calc '{xen:property sidebar.width} - 50 - {$borderWidth}'}</xen:set>
+<xen:set var="$widgetWidth">{xen:calc 'intval({xen:property sidebar.width}) - 50 - {$borderWidth}'}</xen:set>
 <xen:set var="$widgetsWidth">{xen:calc '({$widgetWidth} + {$borderWidth}) * 2'}</xen:set>
 
 <div class="{$_classSection} controls-parent<xen:comment>
@@ -2041,7 +2041,7 @@ All customization should go to wf_default_EXTRA.css
 		</ol>
 	</xen:if>
 </li>]]></template>
-    <template title="wf_others.css" version_id="2060313" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl
+    <template title="wf_others.css" version_id="2060316" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_ShareThisPage .sharePage .shareControl
 {
     float: none;
 }
@@ -2051,7 +2051,7 @@ All customization should go to wf_default_EXTRA.css
 }
 	.WidgetFramework_WidgetRenderer_FeedReader_Entries .limitedHeight
 	{
-		max-height: {xen:calc 'floor({xen:property sidebar.font-size} * 1.27 * 4) - 1'}px; <xen:comment>1.27 is the default line-height for body</xen:comment>
+		max-height: {xen:calc 'floor(intval({xen:property sidebar.font-size}) * 1.27 * 4) - 1'}px; <xen:comment>1.27 is the default line-height for body</xen:comment>
 	}
 
 	.WidgetFramework_WidgetRenderer_FeedReader_Entries .WidgetFramework_WidgetRenderer_FeedReader_Entry
@@ -2158,7 +2158,7 @@ All customization should go to wf_default_EXTRA.css
 	resize: vertical;
 	overflow: hidden;
 }]]></template>
-    <template title="wf_threads.css" version_id="2060315" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
+    <template title="wf_threads.css" version_id="2060316" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
 {
 	font-weight: bold;
 }
@@ -2255,7 +2255,7 @@ All customization should go to wf_default_EXTRA.css
 		{
 			{xen:property messageNewIndicator}
 
-			margin-right: -{xen:calc '{xen:property content.padding-right} + 5'}px;
+			margin-right: -{xen:calc 'intval({xen:property content.padding-right}) + 5'}px;
 		}
 			.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator span
 			{
