@@ -745,7 +745,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                         $permissionsRef, $viewingUser);
                 $threadRef['messageHtml'] = WidgetFramework_ShippableHelper_Html::preSnippet(
                     $threadRef, $bbCodeParser, $threadBbCodeOptions);
-                $threadRef['post'] = $postModel->preparePost($threadRef['post'], $threadRef, $forumRef);
+                $threadRef['post'] = $postModel->preparePost($threadRef['post'],
+                    $threadRef, $forumRef, $permissionsRef, $viewingUser);
             }
 
             $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $forumRef,
