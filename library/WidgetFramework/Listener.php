@@ -93,9 +93,6 @@ class WidgetFramework_Listener
             WidgetFramework_Core::getInstance()->prepareWidgetsForHooksIn($templateName, $params, $template);
 
             if ($templateName === 'PAGE_CONTAINER') {
-                $template->preloadTemplate('wf_hook_footer');
-                $template->preloadTemplate('wf_hook_moderator_bar');
-
                 if (WidgetFramework_Option::get('indexNodeId')) {
                     // preload our links template for performance
                     $template->preloadTemplate('wf_home_navtab_links');
@@ -204,19 +201,10 @@ class WidgetFramework_Listener
                 WidgetFramework_Core::getInstance()->renderWidgetsForHook($hookName, $hookParams, $template, $contents);
             }
 
-            if ($hookName == 'moderator_bar') {
-                $ourParams = $template->getParams();
-                $ourParams['hasAdminPermStyle'] = XenForo_Visitor::getInstance()->hasAdminPermission('style');
-
-                $ourTemplate = $template->create('wf_hook_moderator_bar', $ourParams);
-                $contents .= $ourTemplate->render();
-            } elseif ($hookName === 'footer') {
-                $ourTemplate = $template->create('wf_hook_footer', $template->getParams());
-                $contents .= $ourTemplate->render();
-            } elseif (in_array($hookName, array(
+            if (in_array($hookName, array(
                 'page_container_breadcrumb_top',
                 'page_container_content_title_bar'
-            ))) {
+            ), true)) {
                 if (!!$template->getParam('widgetPageOptionsBreakContainer')) {
                     $contents = '';
                 }

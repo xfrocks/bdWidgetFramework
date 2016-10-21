@@ -122,6 +122,10 @@ class WidgetFramework_Installer
         $existingAddOn,
         $addOnData
     ) {
+        if (XenForo_Application::$versionId < 1020000) {
+            throw new Exception('XenForo 1.2+ is required for this add-on.');
+        }
+
         $db = XenForo_Application::getDb();
 
         $effectiveVersionId = 0;
@@ -156,29 +160,16 @@ class WidgetFramework_Installer
 				");
             }
 
-            if (XenForo_Application::$versionId < 1020000) {
-                $db->query("
-					INSERT INTO `xf_widget`
-						(title, class, options, position, display_order)
-					VALUES
-						('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_list', 10),
-						('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_list', 20),
-						('Highest-Posting Members', 'WidgetFramework_WidgetRenderer_Users', 0x613A373A7B733A353A226C696D6974223B693A31323B733A353A226F72646572223B733A31333A226D6573736167655F636F756E74223B733A393A22646972656374696F6E223B733A343A2244455343223B733A31313A22646973706C61794D6F6465223B733A31363A226176617461724F6E6C79426967676572223B733A393A227461625F67726F7570223B733A303A22223B733A31303A2265787072657373696F6E223B733A303A22223B733A31363A2265787072657373696F6E5F6465627567223B693A303B7D, 'member_list', 30),
-						('Newest Members', 'WidgetFramework_WidgetRenderer_Users', 0x613A373A7B733A353A226C696D6974223B693A383B733A353A226F72646572223B733A31333A2272656769737465725F64617465223B733A393A22646972656374696F6E223B733A343A2244455343223B733A31313A22646973706C61794D6F6465223B733A31363A226176617461724F6E6C79426967676572223B733A393A227461625F67726F7570223B733A303A22223B733A31303A2265787072657373696F6E223B733A303A22223B733A31363A2265787072657373696F6E5F6465627567223B693A303B7D, 'member_list', 40),
-						('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_list', 50)
-				");
-            } else {
-                $db->query("
-					INSERT INTO `xf_widget`
-						(title, class, options, position, display_order)
-					VALUES
-						('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_notable', 10),
-						('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_notable', 20),
-						('', 'WidgetFramework_WidgetRenderer_Birthday', 0x613A303A7B7D, 'member_notable', 30),
-						('', 'WidgetFramework_WidgetRenderer_UsersStaff', 0x613A303A7B7D, 'member_notable', 40),
-						('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_notable', 50)
-				");
-            }
+            $db->query("
+                INSERT INTO `xf_widget`
+                    (title, class, options, position, display_order)
+                VALUES
+                    ('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_notable', 10),
+                    ('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_notable', 20),
+                    ('', 'WidgetFramework_WidgetRenderer_Birthday', 0x613A303A7B7D, 'member_notable', 30),
+                    ('', 'WidgetFramework_WidgetRenderer_UsersStaff', 0x613A303A7B7D, 'member_notable', 40),
+                    ('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_notable', 50)
+            ");
 
             /** @var WidgetFramework_Model_Widget $widgetModel */
             $widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');

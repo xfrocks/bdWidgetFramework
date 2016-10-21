@@ -25,12 +25,10 @@ class WidgetFramework_Route_Prefix_WidgetPages implements XenForo_Route_Interfac
         if (!empty($data['node_id'])
             && $data['node_id'] == WidgetFramework_Option::get('indexNodeId')
         ) {
-            if (XenForo_Application::$versionId > 1020000
-                && !empty($action)
+            if (!empty($action)
                 && preg_match('#^page-(\d+)$#i', $action)
             ) {
                 // support http://domain.com/xenforo/page-2/ uris
-                // XenForo 1.2.0 and up only
                 return WidgetFramework_Helper_Index::buildBasicLink($action, '', $extension);
             } elseif (empty($action)) {
                 return new XenForo_Link(XenForo_Link::buildPublicLink('widget-page-index', null, $extraParams));

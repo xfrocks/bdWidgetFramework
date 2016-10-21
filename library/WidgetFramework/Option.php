@@ -41,6 +41,8 @@ class WidgetFramework_Option
 
                 // use the cached value
                 return self::$_layoutEditorEnabled;
+            case 'visitorHasAdminPermissionStyle':
+                return XenForo_Visitor::getInstance()->hasAdminPermission('style');
         }
 
         return self::$_options->get('wf_' . $key);

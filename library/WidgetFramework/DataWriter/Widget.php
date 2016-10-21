@@ -230,10 +230,6 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
     protected function _bumpAddOnVersionId()
     {
-        if (XenForo_Application::$versionId < 1020000) {
-            return;
-        }
-
         $addOns = XenForo_Application::get('addOns');
         if (empty($addOns['widget_framework'])) {
             return;

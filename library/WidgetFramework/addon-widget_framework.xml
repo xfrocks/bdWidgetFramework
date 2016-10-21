@@ -1655,7 +1655,8 @@ All customization should go to wf_default_EXTRA.css
 		</a>
 	</div>
 </xen:if>]]></template>
-    <template title="wf_hook_moderator_bar" version_id="96" version_string="2.5.0d"><![CDATA[<xen:if is="{$hasAdminPermStyle} AND {xen:helper WidgetFramework_getOption, layoutEditor}">
+    <template title="wf_hook_moderator_bar" version_id="2060316" version_string="2.6.3"><![CDATA[<xen:if is="{xen:helper WidgetFramework_getOption, visitorHasAdminPermissionStyle}
+	&& {xen:helper WidgetFramework_getOption, layoutEditor}">
 	<a href="{xen:link misc/wf-layout-editor}" class="adminLink{xen:if '{xen:helper WidgetFramework_getOption, layoutEditorEnabled}', ' permissionTest'}">
 		<span class="itemLabel">{xen:phrase wf_layout_editor}</span>
 	</a>
@@ -3354,7 +3355,20 @@ All customization should go to wf_default_EXTRA.css
 	</div>
 </xen:if>]]></template>
   </templates>
-  <public_template_modifications/>
+  <public_template_modifications>
+    <modification template="footer" modification_key="wf_hook_footer" description="Alter footer." execution_order="10" enabled="1" action="preg_replace">
+      <find><![CDATA[#\A.+\z#s]]></find>
+      <replace><![CDATA[$0
+
+<xen:include template="wf_hook_footer" />]]></replace>
+    </modification>
+    <modification template="moderator_bar" modification_key="wf_hook_moderator_bar" description="Alter moderator bar." execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:hook name="moderator_bar" />]]></find>
+      <replace><![CDATA[<xen:include template="wf_hook_moderator_bar" />
+
+$0]]></replace>
+    </modification>
+  </public_template_modifications>
   <bb_code_media_sites/>
   <bb_codes/>
 </addon>

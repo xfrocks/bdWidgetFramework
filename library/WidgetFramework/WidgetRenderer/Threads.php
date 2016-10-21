@@ -689,13 +689,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             }
 
             $bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
-            if (XenForo_Application::$versionId < 1020000) {
-                // XenForo 1.1.x
-                $bbCodeParser = new XenForo_BbCode_Parser($bbCodeFormatter);
-            } else {
-                // XenForo 1.2.x
                 $bbCodeParser = XenForo_BbCode_Parser::create($bbCodeFormatter);
-            }
             $bbCodeOptions = array(
                 'states' => array(),
                 'contentType' => 'post',
