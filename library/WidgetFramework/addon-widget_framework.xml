@@ -348,6 +348,7 @@
 				</a>
 
 				<xen:if is="{$widget.options.layout}">layout={$widget.options.layout}</xen:if>
+				({xen:number $widget.display_order})
 			</h3>
 			<ol>
 				<xen:callback

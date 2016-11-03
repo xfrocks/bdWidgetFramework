@@ -12,7 +12,7 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base
 
         $positions = array();
 
-        WidgetFramework_Helper_Sort::addWidgetToPositions($positions, $this->_params['widgets']);
+        WidgetFramework_Helper_Sort::addWidgetToPositions($positions, $this->_params['widgets'], true);
 
         foreach ($positions as $positionCode => &$positionRef) {
             foreach ($positionRef['widgetsByIds'] as $widgetId => &$widgetRef) {

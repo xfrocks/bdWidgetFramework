@@ -105,11 +105,7 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             $siblingWidgets = $widgetsAtPosition;
         }
 
-        // sort asc by display order (ignore negative/positive)
-        uasort($siblingWidgets, array(
-            'WidgetFramework_Helper_Sort',
-            'widgetsByDisplayOrderAsc'
-        ));
+        uasort($siblingWidgets, array('WidgetFramework_Helper_Sort', 'widgetsByDisplayOrderNaive'));
         $isNegative = $relativeDisplayOrder < 0;
         foreach (array_keys($siblingWidgets) as $siblingWidgetId) {
             if (($siblingWidgets[$siblingWidgetId]['display_order'] < 0) == $isNegative) {

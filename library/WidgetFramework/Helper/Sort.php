@@ -2,7 +2,7 @@
 
 class WidgetFramework_Helper_Sort
 {
-    public static function addWidgetToPositions(array &$positions, array &$widgets)
+    public static function addWidgetToPositions(array &$positions, array &$widgets, $sortNaive = false)
     {
         $positionCodes = array();
 
@@ -45,7 +45,7 @@ class WidgetFramework_Helper_Sort
                 }
             }
 
-            WidgetFramework_Helper_Sort::sortPositionWidgets($positionRef['widgets']);
+            self::sortPositionWidgets($positionRef['widgets'], $sortNaive);
         }
 
         return array(
@@ -53,30 +53,37 @@ class WidgetFramework_Helper_Sort
         );
     }
 
-    public static function sortPositionWidgets(array &$widgets)
+    public static function sortPositionWidgets(array &$widgets, $sortNaive)
     {
         uasort($widgets, array(
-            'WidgetFramework_Helper_Sort',
-            'widgetsByDisplayOrderDesc'
+            __CLASS__,
+            $sortNaive ? 'widgetsByDisplayOrderNaive'
+                : 'widgetsByDisplayOrderNegativeAware'
         ));
 
         foreach ($widgets as &$widgetRef) {
             if (isset($widgetRef['widgets'])) {
-                self::sortPositionWidgets($widgetRef['widgets']);
+                self::sortPositionWidgets($widgetRef['widgets'], $sortNaive);
             }
         }
     }
 
-    public static function widgetsByDisplayOrderDesc($a, $b)
+    public static function widgetsByDisplayOrderNegativeAware($a, $b)
     {
         $doa = $a['display_order'];
         $dob = $b['display_order'];
 
-        if ($doa < 0
-            && $doa < 0
-        ) {
-            // both are negative display order
+        if ($doa < 0 && $dob < 0) {
+            // both negative display order
             $result = $dob - $doa;
+        } elseif ($doa < 0) {
+            // practically this branch is not needed because it implies that: ($doa < 0) and ($dob > 0),
+            // in that case ($result = $doa - $dob) will always be a negative value
+            // we keep it here because the below branch ($dob < 0) is actually required
+            // and it may be non-trivial to understand in the future without this branch
+            $result = -1;
+        } elseif ($dob < 0) {
+            $result = 1;
         } else {
             $result = $doa - $dob;
         }
@@ -88,7 +95,7 @@ class WidgetFramework_Helper_Sort
         return $result;
     }
 
-    public static function widgetsByDisplayOrderAsc($a, $b)
+    public static function widgetsByDisplayOrderNaive($a, $b)
     {
         $doa = $a['display_order'];
         $dob = $b['display_order'];
