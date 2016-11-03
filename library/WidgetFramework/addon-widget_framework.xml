@@ -1021,49 +1021,7 @@
 .xenOverlay .WidgetFramework_Widget_EditForm {
 	max-height: 400px;
 	overflow: auto;
-}
-
-.WidgetFramework_WidgetPage_LayoutEditor {
-	position: relative;
-}
-.WidgetFramework_WidgetPage_LayoutEditor > li {
-	background: {xen:property primaryLightest};
-	border: 1px solid {xen:property primaryLightish};
-	position: absolute;
-}
-.WidgetFramework_WidgetPage_LayoutEditor.gridsterized > li {
-	cursor: pointer;
-}
-
-.WidgetFramework_WidgetPage_LayoutEditor .WidgetFramework_WidgetPage_WidgetBlock {
-	margin: 5px;
-}
-.WidgetFramework_WidgetPage_WidgetBlock_Title {
-	display: block;
-	font-size: 1.1em;
-	font-weight: bold;
-	margin-bottom: 5px;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-.textCtrl.number.WidgetFramework_Layout_Input, 
-.xenForm .ctrlUnit dd .textCtrl.number.WidgetFramework_Layout_Input {
-	width: 20px;
-}
-.WidgetFramework_WidgetPage_WidgetBlock_Controls {
-	margin-top: 5px;
-}
-
-.WidgetFramework_WidgetPage_LayoutEditorSidebar > li {
-	background: {xen:property primaryLightest};
-	border: 1px solid {xen:property primaryLightish};
-	margin-bottom: 10px;
-}
-.WidgetFramework_WidgetPage_LayoutEditor.gridsterized > li.sidebar {
-	cursor: inherit;
-}
-]]></template>
+}]]></template>
   </admin_templates>
   <admin_template_modifications/>
   <code_events>
@@ -1425,7 +1383,7 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_threads_type_most_replied" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Most Replied Thread]]></phrase>
     <phrase title="wf_widget_threads_type_new" global_cache="1" version_id="1" version_string="0.9"><![CDATA[New Threads]]></phrase>
     <phrase title="wf_widget_threads_type_polls" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Polls]]></phrase>
-    <phrase title="wf_widget_threads_type_popular" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Most Viewed Theads]]></phrase>
+    <phrase title="wf_widget_threads_type_popular" global_cache="1" version_id="2060317" version_string="2.6.3"><![CDATA[Most Viewed Threads]]></phrase>
     <phrase title="wf_widget_threads_type_recent" global_cache="1" version_id="112" version_string="2.6.0-dev"><![CDATA[New Posts]]></phrase>
     <phrase title="wf_widget_threads_type_recent_first_poster" version_id="112" version_string="2.6.0-dev"><![CDATA[New Posts (use first poster avatar)]]></phrase>
     <phrase title="wf_widget_threads_type__tags" global_cache="1" version_id="2060208" version_string="2.6.2"><![CDATA[Tagged Threads]]></phrase>

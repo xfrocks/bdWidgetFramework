@@ -45,7 +45,7 @@ class WidgetFramework_ViewAdmin_Widget_Export extends XenForo_ViewAdmin_Base
 
         $this->setDownloadFileName('widget_framework-widgets-'
             . XenForo_Template_Helper_Core::date(XenForo_Application::$time, 'YmdHi') . '.xml');
-        return $document->saveXml();
+        return $document->saveXML();
     }
 
 }

@@ -598,6 +598,7 @@ class WidgetFramework_Core
 
     /**
      * @param string $class
+     * @param bool $throw
      * @return WidgetFramework_WidgetRenderer
      */
     public static function getRenderer($class, $throw = true)
@@ -623,8 +624,8 @@ class WidgetFramework_Core
     {
         /** @var XenForo_Model_Moderator $moderatorModel */
         $moderatorModel = XenForo_Model::create('XenForo_Model_Moderator');
-        $gmigi = $moderatorModel->getGeneralModeratorInterfaceGroupIds();
-        return in_array('resourceModeratorPermissions', $gmigi);
+        $ids = $moderatorModel->getGeneralModeratorInterfaceGroupIds();
+        return in_array('resourceModeratorPermissions', $ids);
     }
 
     public static function xfmgFound()

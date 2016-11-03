@@ -27,7 +27,7 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
             'options' => array(
                 'template' => XenForo_Input::STRING,
                 'controller_name' => XenForo_Input::STRING,
-                'controller_action' => XeNForo_Input::STRING,
+                'controller_action' => XenForo_Input::STRING,
             ),
         );
     }

@@ -46,7 +46,7 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
         $rendered = parent::render($widgetRef, $positionCode, $params, $template, $output);
 
         if ($rendered === self::RENDERED) {
-            // only work if the normal rendering routine runs throughly
+            // only work if the normal rendering routine runs thoroughly
             // this is done to make sure conditional is tested properly
             // since 1.2.1
             $rendered = $output = '';
