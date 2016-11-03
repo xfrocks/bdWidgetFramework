@@ -721,7 +721,8 @@ abstract class WidgetFramework_WidgetRenderer
                 $renderTemplateObject = $template->create($renderTemplate, $renderTemplateParams);
                 $renderTemplateObject->setParam(WidgetFramework_Core::PARAM_CURRENT_WIDGET_ID, $widgetRef['widget_id']);
 
-                // reset required externals
+                $existingExtraContainerData = WidgetFramework_Template_Extended::WidgetFramework_getExtraContainerData();
+                WidgetFramework_Template_Extended::WidgetFramework_setExtraContainerData(array());
                 $existingRequiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
                 WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals(array());
 
@@ -734,7 +735,8 @@ abstract class WidgetFramework_WidgetRenderer
                 }
 
                 // get container data (using template_post_render listener)
-                $containerData = self::_getContainerData($widgetRef);
+                $containerData = WidgetFramework_Template_Extended::WidgetFramework_getExtraContainerData();
+                WidgetFramework_Template_Extended::WidgetFramework_setExtraContainerData($existingExtraContainerData);
                 // get widget required externals
                 $requiredExternals = WidgetFramework_Template_Extended::WidgetFramework_getRequiredExternals();
                 WidgetFramework_Template_Extended::WidgetFramework_setRequiredExternals($existingRequiredExternals);
@@ -881,8 +883,6 @@ abstract class WidgetFramework_WidgetRenderer
     const EXTRA_CONTAINER_DATA = 'containerData';
     const EXTRA_REQUIRED_EXTERNALS = 'requiredExternals';
 
-    protected static $_containerData = array();
-
     /**
      * @var XenForo_View
      */
@@ -908,25 +908,6 @@ abstract class WidgetFramework_WidgetRenderer
     public static function getNamePrefix()
     {
         return 'options_';
-    }
-
-    public static function setContainerData($widgetId, array $containerData)
-    {
-        if (!isset(self::$_containerData[$widgetId])) {
-            self::$_containerData[$widgetId] = $containerData;
-        } else {
-            self::$_containerData[$widgetId] = XenForo_Application::mapMerge(
-                self::$_containerData[$widgetId], $containerData);
-        }
-    }
-
-    protected static function _getContainerData(array $widget)
-    {
-        if (isset(self::$_containerData[$widget['widget_id']])) {
-            return self::$_containerData[$widget['widget_id']];
-        } else {
-            return array();
-        }
     }
 
     public static function getViewObject(array $params, XenForo_Template_Abstract $templateObj)

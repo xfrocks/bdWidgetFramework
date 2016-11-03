@@ -26,6 +26,16 @@ class WidgetFramework_Template_Extended extends XenForo_Template_Public
         XenForo_Template_Public::$_required = $required;
     }
 
+    public static function WidgetFramework_getExtraContainerData()
+    {
+        return XenForo_Template_Public::$_extraData;
+    }
+
+    public static function WidgetFramework_setExtraContainerData(array $extraData)
+    {
+        XenForo_Template_Public::$_extraData = $extraData;
+    }
+
     public static function WidgetFramework_mergeExtraContainerData(array $extraData)
     {
         if (empty($extraData)) {

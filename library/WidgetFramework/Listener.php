@@ -138,11 +138,6 @@ class WidgetFramework_Listener
                 }
             }
 
-            $currentWidgetId = $template->getParam(WidgetFramework_Core::PARAM_CURRENT_WIDGET_ID);
-            if ($currentWidgetId > 0) {
-                WidgetFramework_WidgetRenderer::setContainerData($currentWidgetId, $containerData);
-            }
-
             if (self::$_saveLayoutEditorRendered) {
                 switch ($templateName) {
                     case 'wf_widget_group_wrapper':
