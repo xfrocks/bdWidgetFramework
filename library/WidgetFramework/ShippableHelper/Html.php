@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2016-10-08T10:29:36+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2016-10-08T15:33:27+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_Html
- * @version 10
+ * @version 11
  * @see DevHelper_Helper_ShippableHelper_Html
  */
 class WidgetFramework_ShippableHelper_Html
@@ -62,6 +62,7 @@ class WidgetFramework_ShippableHelper_Html
     public static function snippet($string, $maxLength = 0, array $options = array())
     {
         $options = array_merge(array(
+            'blockTag' => array('div', 'ul', 'li'),
             'ellipsis' => '…',
             'fromStart' => true,
             'previewBreakBbCode' => 'prbreak',
@@ -69,11 +70,37 @@ class WidgetFramework_ShippableHelper_Html
             'processLink' => true,
             'processFrame' => true,
             'processScript' => true,
+            'replacements' => array(),
             'stripImage' => false,
+            'stripLink' => false,
+            'stripFrame' => false,
+            'stripScript' => false,
             'stripSpacing' => true,
-            'stripLastParagraph' => true,
         ), $options);
+        $options['maxLength'] = $maxLength;
 
+        self::snippetPreProcess($string, $options);
+
+        $snippet = self::snippetCallHelper($string, $options);
+
+        self::snippetFixBrokenHtml($snippet, $options);
+
+        self::snippetPostProcess($snippet, $options);
+
+        if ($snippet === '') {
+            $plainTextString = utf8_trim(strip_tags($string));
+            if ($plainTextString !== '') {
+                $snippet = self::snippetCallHelper($plainTextString, $options);
+            } else {
+                $snippet = $options['ellipsis'];
+            }
+        }
+
+        return $snippet;
+    }
+
+    public static function snippetPreProcess(&$string, array &$options)
+    {
         if (!empty($options['previewBreakBbCode'])
             && preg_match(sprintf('#\[%1$s\](?<' . 'preview>.*)\[/%1$s\]#',
                 preg_quote($options['previewBreakBbCode'], '#')),
@@ -83,35 +110,34 @@ class WidgetFramework_ShippableHelper_Html
             if (!empty($matches['preview'][0])) {
                 // preview text specified, use it directly
                 $string = $matches['preview'][0];
-                $maxLength = 0;
+                $options['maxLength'] = 0;
             } else {
                 // use content before the found bbcode to continue
                 $string = substr($string, 0, $matches[0][1]);
-                $maxLength = 0;
+                $options['maxLength'] = 0;
             }
         }
 
-        // pre-processing
         $string = preg_replace('#<br\s?\/?>#', "\n", $string);
         $string = str_replace('&#8203;', '', $string);
 
-        $replacements = array();
+        $replacementsRef =& $options['replacements'];
         $replacementTags = array();
         if (!!$options['processImage'] && !$options['stripImage']) {
             $replacementTags[] = 'img';
         }
-        if (!!$options['processLink']) {
+        if (!!$options['processLink'] && !$options['stripLink']) {
             $replacementTags[] = 'a';
         }
-        if (!!$options['processFrame']) {
+        if (!!$options['processFrame'] && !$options['stripFrame']) {
             $replacementTags[] = 'iframe';
         }
-        if (!!$options['processScript']) {
+        if (!!$options['processScript'] && !$options['stripScript']) {
             $replacementTags[] = 'script';
         }
         if (count($replacementTags) > 0) {
             $replacementOffset = 0;
-            $replacementRegEx = sprintf('#<(%s)[^>]*>.*?</\\1>#i', implode('|', $replacementTags));
+            $replacementRegEx = sprintf('#<(%s)(\s[^>]*)?>.*?</\\1>#i', implode('|', $replacementTags));
             while (true) {
                 if (!preg_match($replacementRegEx, $string,
                     $replacementMatches, PREG_OFFSET_CAPTURE, $replacementOffset)
@@ -120,9 +146,9 @@ class WidgetFramework_ShippableHelper_Html
                 }
                 $replacement = array(
                     'original' => $replacementMatches[0][0],
-                    'replacement' => sprintf('<br data-replacement-id="%d" />', count($replacements)),
+                    'replacement' => sprintf('<br data-replacement-id="%d" />', count($replacementsRef)),
                 );
-                $replacements[] = $replacement;
+                $replacementsRef[] = $replacement;
                 $string = str_replace($replacement['original'], $replacement['replacement'], $string);
                 $replacementOffset = $replacementMatches[0][1] + 1;
             }
@@ -131,17 +157,33 @@ class WidgetFramework_ShippableHelper_Html
         if (!!$options['stripImage']) {
             $string = preg_replace('#<img[^>]+/>#', '', $string);
         }
+        if (!!$options['stripLink']) {
+            $string = preg_replace('#<a[^>]+>(.+?)</a>#', '$1', $string);
+        }
+        if (!!$options['stripFrame']) {
+            $string = preg_replace('#<iframe[^>]+></iframe>#', '', $string);
+        }
+        if (!!$options['stripScript']) {
+            $string = preg_replace('#<script[^>]+>.*?</script>#', '', $string);
+        }
         if (!!$options['stripSpacing']) {
             $string = preg_replace('#(\n\s*)+#', "\n", $string);
         }
+    }
 
-        $snippet = XenForo_Template_Helper_Core::callHelper('snippet', array($string, $maxLength, $options));
+    public static function snippetCallHelper($string, array &$options)
+    {
+        $snippet = XenForo_Template_Helper_Core::callHelper('snippet', array($string, $options['maxLength'], $options));
 
         // TODO: find better way to avoid having to call this to reset snippet
         $snippet = htmlspecialchars_decode($snippet);
         $snippet = preg_replace('#\.\.\.\z#', '', $snippet);
 
-        // looks for html tags
+        return $snippet;
+    }
+
+    public static function snippetFixBrokenHtml(&$snippet, array &$options)
+    {
         $offset = 0;
         $stack = array();
         while (true) {
@@ -165,16 +207,18 @@ class WidgetFramework_ShippableHelper_Html
 
                     if ($isClosing) {
                         $lastInStack = null;
+                        $lastInStackTag = null;
                         if (count($stack) > 0) {
                             $lastInStack = array_pop($stack);
+                            $lastInStackTag = $lastInStack['tag'];
                         }
 
-                        if ($lastInStack !== $tag) {
+                        if ($lastInStackTag !== $tag) {
                             // found tag does not match the one in stack
                             $replacement = '';
 
                             // first we have to close the one in stack
-                            if ($lastInStack !== null) {
+                            if ($lastInStackTag !== null) {
                                 $replacement .= sprintf('</%s>', $tag);
                             }
 
@@ -190,7 +234,7 @@ class WidgetFramework_ShippableHelper_Html
                         // do nothing
                     } else {
                         // is opening tag
-                        $stack[] = $tag;
+                        $stack[] = array('tag' => $tag, 'offset' => $startPos);
                     }
                 }
             } else {
@@ -198,11 +242,41 @@ class WidgetFramework_ShippableHelper_Html
             }
         }
 
-        // close any remaining tags
-        while (!empty($stack)) {
-            $snippet .= sprintf('</%s>', array_pop($stack));
+        // strip block level stack if left opened
+        foreach ($options['blockTag'] as $blockTag) {
+            if (count($stack) === 0) {
+                break;
+            }
+            $stack = array_values($stack);
+
+            $foundStackItemId = null;
+            $foundOffset = null;
+            foreach ($stack as $stackItemId => $stackItem) {
+                if ($stackItem['tag'] !== $blockTag) {
+                    continue;
+                }
+
+                $foundStackItemId = $stackItemId;
+                $foundOffset = $stackItem['offset'];
+                break;
+            }
+            if ($foundStackItemId === null) {
+                continue;
+            }
+
+            $stack = array_slice($stack, 0, $foundStackItemId);
+            $snippet = utf8_substr($snippet, 0, $foundOffset);
         }
 
+        // close any remaining tags
+        while (!empty($stack)) {
+            $stackItem = array_pop($stack);
+            $snippet .= sprintf('</%s>', $stackItem['tag']);
+        }
+    }
+
+    public static function snippetPostProcess(&$snippet, array &$options)
+    {
         // strip all empty body tags
         $snippetBinaryLength = 0;
         while (strlen($snippet) !== $snippetBinaryLength) {
@@ -210,43 +284,23 @@ class WidgetFramework_ShippableHelper_Html
             $snippet = preg_replace('#<(\w+)(\s[^>]+)?>\s*<\/\\1>#', '', $snippet);
         }
 
-        if (!!$options['stripLastParagraph']) {
-            $paragraphs = preg_split('#(\n|<div[^>]+>|</div>|<\/?p>)#',
-                trim($snippet), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-            if (count($paragraphs) > 4) {
-                $snippet = implode('', array_slice($paragraphs, 0, count($paragraphs) - 2));
-            }
+        // restore replacements
+        foreach ($options['replacements'] as $replacement) {
+            $snippet = str_replace($replacement['replacement'], $replacement['original'], $snippet);
         }
 
-        if (count($replacements) > 0) {
-            foreach ($replacements as $replacement) {
-                $snippet = str_replace($replacement['replacement'], $replacement['original'], $snippet);
-            }
-        }
-
-        // post-processing
+        // strip off invisible character at the end
         $snippet = preg_replace('#(\.|\s)+\z#', '', $snippet);
+
+        // restore line breaks
         $snippet = nl2br($snippet);
 
-        if (!preg_match('#</(div|iframe|img|p|script)>\z#', $snippet)) {
+        // append ellipsis
+        if (!preg_match('#<\/?(div|iframe|img|li|ol|p|script|ul)[^>]*>\z#', $snippet)) {
             $snippet .= $options['ellipsis'];
         }
 
         $snippet = utf8_trim($snippet);
-        if ($snippet === '') {
-            // this is bad...
-            // happens if the $maxLength is too low and for some reason the very first tag cannot finish
-            $snippet = utf8_trim(strip_tags($string));
-            if ($snippet !== '') {
-                $snippet = XenForo_Template_Helper_Core::callHelper('snippet', array($snippet, $maxLength, $options));
-            } else {
-                // this is super bad...
-                // the string is one big html tag and it is too damn long
-                $snippet = $options['ellipsis'];
-            }
-        }
-
-        return $snippet;
     }
 
     public static function stripFont($html)
