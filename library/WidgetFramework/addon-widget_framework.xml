@@ -500,6 +500,7 @@
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_threads}"}</xen:explain>
 </xen:spinboxunit>
 
+<xen:if is="!{$hideThreadsFilter}">
 <xen:hook name="wf_widget_options_threads_filter" params="{xen:array 'widget={$widget}', 'options={$options}', 'options_loaded={$options_loaded}'}">
 <xen:selectunit label="{xen:phrase wf_widget_threads_type}:" name="{$namePrefix}type" value="{$options.type}">
 	<xen:option value="new">{xen:phrase wf_widget_threads_type_new}</xen:option>
@@ -536,8 +537,15 @@
 
 <xen:if is="{$contentTaggingFound}">
 	<xen:textboxunit label="{xen:phrase tags}:" name="{$namePrefix}tags[]" value="{$tags}" inputclass="AutoComplete" data-acurl="{xen:link misc/tag-auto-complete}">
+		<xen:html>
+			<div class="explain">
+				<xen:checkbox label="">
+					<xen:option name="{$namePrefix}tags_all" value="1" selected="{$options.tags_all}">{xen:phrase wf_threads_tags_all}</xen:option>
+				</xen:checkbox>
+			</div>
+		</xen:html>
 		<xen:explain>{xen:phrase wf_threads_tags_explain}</xen:explain>
-	</xen:textboxunit>
+	</xen:textboxunit>	
 </xen:if>
 
 <xen:checkboxunit label="">
@@ -545,6 +553,7 @@
 </xen:checkboxunit>
 
 </xen:hook>
+</xen:if>
 
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}as_guest" value="1" selected="{$options.as_guest}">{xen:phrase wf_use_guest_permissions}</xen:option>
@@ -552,6 +561,7 @@
 	<xen:option name="{$namePrefix}order_reverted" value="1" selected="{$options.order_reverted}">{xen:phrase wf_order_reverted}</xen:option>
 </xen:checkboxunit>
 
+<xen:if is="!{$hideThreadsLayout}">
 <xen:hook name="wf_widget_options_threads_layout" params="{xen:array 'widget={$widget}', 'options={$options}', 'options_loaded={$options_loaded}'}">
 <xen:radiounit label="{xen:phrase layout}:" name="{$namePrefix}layout" value="{$options.layout}">
 	<xen:option value="">{xen:phrase default}</xen:option>
@@ -735,7 +745,8 @@
 		</xen:disabled>
 	</xen:option>
 </xen:radiounit>
-</xen:hook>]]></template>
+</xen:hook>
+</xen:if>]]></template>
     <template title="wf_widget_options_threads_radio_default_yes_no"><![CDATA[<xen:radiounit label="{xen:raw $label}:"
 	name="{$namePrefix}layout_options[{$layout}][{$layoutOptionsKey}]"
 	value="{xen:if 'isset({$options.layout_options.{$layoutOptionsKey}})',
@@ -1366,7 +1377,8 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_threads_layout_sidebar_snippet" version_id="63" version_string="2.3.4"><![CDATA[Sidebar with snippet from post]]></phrase>
     <phrase title="wf_threads_prefixes_explain" version_id="2060208" version_string="2.6.2"><![CDATA[Select the prefixes you want to filter the threads with.]]></phrase>
     <phrase title="wf_threads_sticky_threads_only" version_id="83" version_string="2.4.6e"><![CDATA[Sticky Threads Only]]></phrase>
-    <phrase title="wf_threads_tags_explain" version_id="2060208" version_string="2.6.2"><![CDATA[Enter the tags you want to filter the threads with.]]></phrase>
+    <phrase title="wf_threads_tags_all" version_id="2060316" version_string="2.6.3"><![CDATA[must have all tags]]></phrase>
+    <phrase title="wf_threads_tags_explain" version_id="2060316" version_string="2.6.3"><![CDATA[Enter the tags you want to filter with. Threads with one of the specified tags will show up unless you check the box above.]]></phrase>
     <phrase title="wf_thread_open_only" version_id="87" version_string="2.4.8"><![CDATA[Unlocked threads only.]]></phrase>
     <phrase title="wf_thread_with_poll" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Thread with Poll]]></phrase>
     <phrase title="wf_title" version_id="1" version_string="0.9"><![CDATA[Title]]></phrase>

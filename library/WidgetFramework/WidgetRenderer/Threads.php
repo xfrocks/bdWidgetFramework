@@ -66,6 +66,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 'sticky' => XenForo_Input::STRING,
                 'prefixes' => XenForo_Input::ARRAY_SIMPLE,
                 'tags' => XenForo_Input::ARRAY_SIMPLE,
+                'tags_all' => XenForo_Input::UINT,
                 'open_only' => XenForo_Input::UINT,
                 'as_guest' => XenForo_Input::UINT,
                 'is_new' => XenForo_Input::UINT,
@@ -471,16 +472,25 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         ) {
             $threadIds = array();
 
-            /** @var XenForo_Model_Tag $tagModel */
-            $tagModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Tag');
+            /* @var $searchModel XenForo_Model_Search */
+            $searchModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Search');
+            $constraintsKey = !empty($widget['options']['tags_all']) ? 'tag' : 'tag_any';
+            $constraints = array($constraintsKey => implode(' ', array_keys($widget['options']['tags'])));
 
-            foreach ($widget['options']['tags'] as $tag) {
-                $contentIds = $tagModel->getContentIdsByTagId($tag['tag_id'], $widget['options']['limit'] * 3);
-                foreach ($contentIds as $contentId) {
-                    if ($contentId[0] === 'thread') {
-                        $threadIds[] = $contentId[1];
-                    }
+            $searcher = new XenForo_Search_Searcher($searchModel);
+            $searchQuery = '';
+            $order = 'date';
+
+            $typeHandler = $searchModel->getSearchDataHandler('thread');
+            $results = $searcher->searchType($typeHandler, $searchQuery, $constraints,
+                $order, false, $widget['options']['limit'] * 10);
+            foreach ($results as $result) {
+                if ($result[0] === 'thread') {
+                    $threadIds[] = $result[1];
                 }
+            }
+            if (empty($threadIds)) {
+                return array();
             }
 
             WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
@@ -689,7 +699,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             }
 
             $bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
-                $bbCodeParser = XenForo_BbCode_Parser::create($bbCodeFormatter);
+            $bbCodeParser = XenForo_BbCode_Parser::create($bbCodeFormatter);
             $bbCodeOptions = array(
                 'states' => array(),
                 'contentType' => 'post',
