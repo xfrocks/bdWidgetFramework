@@ -138,7 +138,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
         $response = parent::actionValidateField();
 
         if (XenForo_Application::isRegistered('nodesAsTabsAPI')) {
-            call_user_func(array('NodesAsTabs_API', 'actionValidateField'), $response, $this);
+            call_user_func_array(array('NodesAsTabs_API', 'actionValidateField'), array(&$response, $this));
         }
 
         return $response;
