@@ -236,8 +236,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         } else {
             $layout = $widget['options']['layout'];
         }
-        $renderTemplateObject->setParam('layout', $layout);
         $layoutOptions = $this->_getLayoutOptions($widget, $positionCode, $params, $layout);
+        $renderTemplateObject->setParam('layout', $layoutOptions['layout']);
         $renderTemplateObject->setParam('layoutOptions', $layoutOptions);
 
         $threads = $this->_getThreads($widget, $positionCode, $params, $renderTemplateObject);
@@ -332,6 +332,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
     protected function _getLayoutOptions($widget, $positionCode, $params, $layout)
     {
         $layoutOptions = array(
+            'layout' => $layout,
             'getPosts' => false,
         );
 
@@ -351,6 +352,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $stylePropertyIds[] = 'titleMaxLength';
                 $stylePropertyIds[] = 'snippetMaxLength';
                 $stylePropertyIds[] = 'showPrefix';
+                $layoutOptions['layout'] = 'sidebar';
                 $layoutOptions['getPosts'] = true;
                 break;
             case 'list':
