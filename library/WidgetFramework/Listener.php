@@ -45,12 +45,12 @@ class WidgetFramework_Listener
 				'WidgetFramework_Template_Helper_Layout',
 				'getWidgetPositionAndSize'
 			);
-
-			XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_getoption'] = array(
-				'WidgetFramework_Option',
-				'get'
-			);
 		}
+
+		XenForo_Template_Helper_Core::$helperCallbacks['widgetframework_getoption'] = array(
+			'WidgetFramework_Option',
+			'get'
+		);
 
 		$indexNodeId = WidgetFramework_Option::get('indexNodeId');
 		if ($indexNodeId > 0)
