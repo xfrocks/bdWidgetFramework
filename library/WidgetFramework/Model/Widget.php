@@ -2,198 +2,175 @@
 
 class WidgetFramework_Model_Widget extends XenForo_Model
 {
-	const SIMPLE_CACHE_KEY = 'widgets';
+    const SIMPLE_CACHE_KEY = 'widgets';
 
-	public function importFromFile($fileName, $deleteAll = false)
-	{
-		if (!file_exists($fileName) || !is_readable($fileName))
-		{
-			throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'), true);
-		}
+    public function importFromFile($fileName, $deleteAll = false)
+    {
+        if (!file_exists($fileName) || !is_readable($fileName)) {
+            throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'),
+                true);
+        }
 
-		try
-		{
-			$document = new SimpleXMLElement($fileName, 0, true);
-		}
-		catch (Exception $e)
-		{
-			throw new XenForo_Exception(new XenForo_Phrase('provided_file_was_not_valid_xml_file'), true);
-		}
+        try {
+            $document = new SimpleXMLElement($fileName, 0, true);
+        } catch (Exception $e) {
+            throw new XenForo_Exception(new XenForo_Phrase('provided_file_was_not_valid_xml_file'), true);
+        }
 
-		if ($document->getName() != 'widget_framework')
-		{
-			throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_not_an_widgets_xml_file'), true);
-		}
+        if ($document->getName() != 'widget_framework') {
+            throw new XenForo_Exception(new XenForo_Phrase('wf_provided_file_is_not_an_widgets_xml_file'), true);
+        }
 
-		$widgets = XenForo_Helper_DevelopmentXml::fixPhpBug50670($document->widget);
+        $widgets = XenForo_Helper_DevelopmentXml::fixPhpBug50670($document->widget);
 
-		XenForo_Db::beginTransaction();
+        XenForo_Db::beginTransaction();
 
-		if ($deleteAll)
-		{
-			// get global widgets from database and delete them all!
-			// NOTE: ignore widget page widgets
-			$existingWidgets = $this->getGlobalWidgets(false, false);
-			foreach ($existingWidgets as $existingWidget)
-			{
-				$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-				$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+        if ($deleteAll) {
+            // get global widgets from database and delete them all!
+            // NOTE: ignore widget page widgets
+            $existingWidgets = $this->getGlobalWidgets(false, false);
+            foreach ($existingWidgets as $existingWidget) {
+                $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+                $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
 
-				$dw->setExistingData($existingWidget);
+                $dw->setExistingData($existingWidget);
 
-				$dw->delete();
-			}
-		}
+                $dw->delete();
+            }
+        }
 
-		foreach ($widgets as $widget)
-		{
-			$dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-			$dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+        foreach ($widgets as $widget) {
+            $dw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
+            $dw->setExtraData(WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
 
-			$dw->set('title', $widget['title']);
-			$dw->set('class', $widget['class']);
-			$dw->set('position', $widget['position']);
-			$dw->set('display_order', $widget['display_order']);
-			$dw->set('active', intval($widget['active']));
+            $dw->set('title', $widget['title']);
+            $dw->set('class', $widget['class']);
+            $dw->set('position', $widget['position']);
+            $dw->set('display_order', $widget['display_order']);
+            $dw->set('active', intval($widget['active']));
 
-			$dw->set('options', unserialize(XenForo_Helper_DevelopmentXml::processSimpleXmlCdata($widget->options)));
+            $dw->set('options', unserialize(XenForo_Helper_DevelopmentXml::processSimpleXmlCdata($widget->options)));
 
-			$dw->save();
-		}
+            $dw->save();
+        }
 
-		$this->buildCache();
+        $this->buildCache();
 
-		XenForo_Db::commit();
-	}
+        XenForo_Db::commit();
+    }
 
-	public function getGlobalWidgets($useCached = true, $prepare = true)
-	{
-		$widgets = false;
+    public function getGlobalWidgets($useCached = true, $prepare = true)
+    {
+        $widgets = false;
 
-		/* try to use cached data */
-		if ($useCached)
-		{
-			$widgets = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY);
-		}
+        /* try to use cached data */
+        if ($useCached) {
+            $widgets = XenForo_Application::getSimpleCacheData(self::SIMPLE_CACHE_KEY);
+        }
 
-		/* fallback to database */
-		if ($widgets === false)
-		{
-			$widgets = $this->fetchAllKeyed("
+        /* fallback to database */
+        if ($widgets === false) {
+            $widgets = $this->fetchAllKeyed("
 					SELECT *
 					FROM `xf_widget`
 					WHERE `widget_page_id` = 0
 					ORDER BY display_order ASC
 					", 'widget_id');
-		}
+        }
 
-		foreach ($widgets as &$widget)
-		{
-			$this->_prepareWidgetMandatory($widget);
+        foreach ($widgets as &$widget) {
+            $this->_prepareWidgetMandatory($widget);
 
-			if ($prepare)
-			{
-				$this->prepareWidget($widget);
-			}
-		}
+            if ($prepare) {
+                $this->prepareWidget($widget);
+            }
+        }
 
-		return $widgets;
-	}
+        return $widgets;
+    }
 
-	public function getWidgetPageWidgets($widgetPageId, $prepare = true)
-	{
-		$widgets = false;
-		$widgets = $this->fetchAllKeyed("
+    public function getWidgetPageWidgets($widgetPageId, $prepare = true)
+    {
+        $widgets = false;
+        $widgets = $this->fetchAllKeyed("
 				SELECT *
 				FROM `xf_widget`
 				WHERE `widget_page_id` = ?
 				ORDER BY display_order ASC
 				", 'widget_id', array($widgetPageId));
 
-		foreach ($widgets as &$widget)
-		{
-			$this->_prepareWidgetMandatory($widget);
+        foreach ($widgets as &$widget) {
+            $this->_prepareWidgetMandatory($widget);
 
-			if ($prepare)
-			{
-				$this->prepareWidget($widget);
-			}
-		}
+            if ($prepare) {
+                $this->prepareWidget($widget);
+            }
+        }
 
-		return $widgets;
-	}
+        return $widgets;
+    }
 
-	public function getWidgetById($widgetId)
-	{
-		$widget = $this->_getDb()->fetchRow("
+    public function getWidgetById($widgetId)
+    {
+        $widget = $this->_getDb()->fetchRow("
 				SELECT *
 				FROM `xf_widget`
 				WHERE widget_id = ?
 				", array($widgetId));
 
-		$this->_prepareWidgetMandatory($widget);
+        $this->_prepareWidgetMandatory($widget);
 
-		return $widget;
-	}
+        return $widget;
+    }
 
-	public function buildCache()
-	{
-		$widgets = $this->getGlobalWidgets(false, false);
-		XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
-	}
+    public function buildCache()
+    {
+        $widgets = $this->getGlobalWidgets(false, false);
+        XenForo_Application::setSimpleCacheData(self::SIMPLE_CACHE_KEY, $widgets);
+    }
 
-	public function prepareWidget(array &$widget)
-	{
-		if (empty($widget))
-		{
-			return $widget;
-		}
+    public function prepareWidget(array &$widget)
+    {
+        if (empty($widget)) {
+            return $widget;
+        }
 
-		$renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
+        $renderer = WidgetFramework_Core::getRenderer($widget['class'], false);
 
-		if ($renderer)
-		{
-			$widget['renderer'] = &$renderer;
-			$widget['rendererName'] = $renderer->getName();
-			$configuration = $renderer->getConfiguration();
-			$options = &$configuration['options'];
-			foreach ($options as $optionKey => $optionType)
-			{
-				if (!isset($widget['options'][$optionKey]))
-				{
-					$widget['options'][$optionKey] = '';
-				}
-			}
-		}
-		else
-		{
-			$widget['rendererName'] = new XenForo_Phrase('xf_unknown_renderer', array('class' => $widget['class']));
-			$widget['rendererNotFound'] = true;
-			$widget['active'] = false;
-		}
+        if ($renderer) {
+            $widget['renderer'] = &$renderer;
+            $widget['rendererName'] = $renderer->getName();
+            $configuration = $renderer->getConfiguration();
+            $options = &$configuration['options'];
+            foreach ($options as $optionKey => $optionType) {
+                if (!isset($widget['options'][$optionKey])) {
+                    $widget['options'][$optionKey] = '';
+                }
+            }
+        } else {
+            $widget['rendererName'] = new XenForo_Phrase('xf_unknown_renderer', array('class' => $widget['class']));
+            $widget['rendererNotFound'] = true;
+            $widget['active'] = false;
+        }
 
-		return $widget;
-	}
+        return $widget;
+    }
 
-	protected function _prepareWidgetMandatory(array &$widget)
-	{
-		if (!is_array($widget['options']))
-		{
-			$widget['options'] = @unserialize($widget['options']);
-		}
-		if (empty($widget['options']))
-		{
-			$widget['options'] = array();
-		}
+    protected function _prepareWidgetMandatory(array &$widget)
+    {
+        if (!is_array($widget['options'])) {
+            $widget['options'] = @unserialize($widget['options']);
+        }
+        if (empty($widget['options'])) {
+            $widget['options'] = array();
+        }
 
-		if (!is_array($widget['template_for_hooks']))
-		{
-			$widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
-		}
-		if (empty($widget['template_for_hooks']))
-		{
-			$widget['template_for_hooks'] = array();
-		}
-	}
+        if (!is_array($widget['template_for_hooks'])) {
+            $widget['template_for_hooks'] = @unserialize($widget['template_for_hooks']);
+        }
+        if (empty($widget['template_for_hooks'])) {
+            $widget['template_for_hooks'] = array();
+        }
+    }
 
 }
