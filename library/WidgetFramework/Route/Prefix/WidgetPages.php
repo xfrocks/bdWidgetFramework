@@ -29,7 +29,7 @@ class WidgetFramework_Route_Prefix_WidgetPages implements XenForo_Route_Interfac
                 && preg_match('#^page-(\d+)$#i', $action)
             ) {
                 // support http://domain.com/xenforo/page-2/ uris
-                return WidgetFramework_Helper_Index::buildBasicLink($action, '', $extension);
+                return XenForo_Link::buildBasicLink($action, '', $extension);
             } elseif (empty($action)) {
                 return new XenForo_Link(XenForo_Link::buildPublicLink('widget-page-index', null, $extraParams));
             }

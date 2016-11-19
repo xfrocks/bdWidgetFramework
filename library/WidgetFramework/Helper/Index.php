@@ -2,44 +2,13 @@
 
 class WidgetFramework_Helper_Index
 {
-    protected static $_setup11x = false;
-    protected static $_setup11x_forumsWasHit = false;
-
     public static function setup()
     {
         XenForo_Link::setIndexRoute('widget-page-index/');
     }
 
-    public static function buildBasicLink($prefix, $action, $extension)
-    {
-        if (self::$_setup11x) {
-            switch ($prefix) {
-                case 'widget-page-index':
-                    $prefix = 'index';
-                    break;
-                case 'index':
-                    $prefix = 'forums';
-                    break;
-            }
-
-        }
-
-        return XenForo_Link::buildBasicLink($prefix, $action, $extension);
-    }
-
     public static function getControllerResponse(XenForo_ControllerPublic_Abstract $controller)
     {
-        if (self::$_setup11x) {
-            if ($controller instanceof XenForo_ControllerPublic_Index) {
-                if (!self::$_setup11x_forumsWasHit) {
-                    return $controller->responseReroute('WidgetFramework_ControllerPublic_WidgetPage', 'as-index');
-                }
-            } elseif ($controller instanceof XenForo_ControllerPublic_Forum) {
-                self::$_setup11x_forumsWasHit = true;
-                return $controller->responseReroute('XenForo_ControllerPublic_Index', 'index');
-            }
-        }
-
         return false;
     }
 

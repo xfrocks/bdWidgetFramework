@@ -293,8 +293,6 @@ class WidgetFramework_Listener
             'XenForo_BbCode_Formatter_HtmlEmail',
             'XenForo_BbCode_Formatter_Text',
 
-            'XenForo_ControllerPublic_Forum',
-            'XenForo_ControllerPublic_Index',
             'XenForo_ControllerPublic_Misc',
             'XenForo_ControllerPublic_Thread',
 
@@ -302,8 +300,6 @@ class WidgetFramework_Listener
             'XenForo_Model_ProfilePost',
             'XenForo_Model_Thread',
             'XenForo_Model_User',
-
-            'XenForo_Route_Prefix_Index',
 
             'bdCache_Model_Cache',
         );
