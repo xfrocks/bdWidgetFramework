@@ -122,10 +122,6 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
 
     protected function _dispatch($controllerName, $controllerAction)
     {
-        if (empty(WidgetFramework_Listener::$fc)) {
-            return null;
-        }
-
         $routeMatch = new XenForo_RouteMatch($controllerName, $controllerAction);
 
         // do not use `html` response type to avoid being redirected by
@@ -133,7 +129,7 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
         $routeMatch->setResponseType(get_class($this));
 
         try {
-            $controllerResponse = WidgetFramework_Listener::$fc->dispatch($routeMatch);
+            $controllerResponse = XenForo_Application::getFc()->dispatch($routeMatch);
 
             return $controllerResponse;
         } catch (Exception $e) {
@@ -169,18 +165,17 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
 
     protected function _renderView(array $widget, XenForo_ControllerResponse_Abstract $controllerResponse)
     {
-        if (empty(WidgetFramework_Listener::$fc)) {
-            return null;
-        }
+        $fc = XenForo_Application::getFc();
+        $dependencies = $fc->getDependencies();
 
-        $response = WidgetFramework_Listener::$fc->getResponse();
-        $request = WidgetFramework_Listener::$fc->getRequest();
-        $viewRenderer = WidgetFramework_Listener::$fc->getDependencies()->getViewRenderer($response, 'html', $request);
+        $response = $fc->getResponse();
+        $request = $fc->getRequest();
+        $viewRenderer = $dependencies->getViewRenderer($response, 'html', $request);
+
         $viewRenderer->setNeedsContainer(false);
+        $renderedView = strval($fc->renderView($controllerResponse, $viewRenderer));
 
-        $renderedView = strval(WidgetFramework_Listener::$fc->renderView($controllerResponse, $viewRenderer));
-
-        self::$_extraContainerDatas[$widget['widget_id']] = WidgetFramework_Listener::$fc->getDependencies()->getExtraContainerData();
+        self::$_extraContainerDatas[$widget['widget_id']] = $dependencies->getExtraContainerData();
 
         return $renderedView;
     }

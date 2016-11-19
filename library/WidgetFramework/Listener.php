@@ -5,17 +5,7 @@ class WidgetFramework_Listener
     const UPDATER_URL = 'https://xfrocks.com/api/index.php?updater';
 
     /**
-     * @var XenForo_Dependencies_Abstract
-     */
-    public static $dependencies = null;
-
-    /**
-     * @var XenForo_FrontController
-     */
-    public static $fc = null;
-
-    /**
-     * @var XenForo_ViewRenderer_Abstract
+     * @var XenForo_ViewRenderer_HtmlPublic
      */
     public static $viewRenderer = null;
 
@@ -23,13 +13,8 @@ class WidgetFramework_Listener
     protected static $_saveLayoutEditorRendered = false;
     protected static $_layoutEditorRendered = array();
 
-    public static function init_dependencies(
-        XenForo_Dependencies_Abstract $dependencies,
-        /** @noinspection PhpUnusedParameterInspection */
-        array $data
-    ) {
-        self::$dependencies = $dependencies;
-
+    public static function init_dependencies(XenForo_Dependencies_Abstract $dependencies, array $data)
+    {
         XenForo_Template_Helper_Core::$helperCallbacks[strtolower('WidgetFramework_snippet')] = array(
             'WidgetFramework_Template_Helper_Core',
             'snippet'
@@ -244,10 +229,10 @@ class WidgetFramework_Listener
         /** @noinspection PhpUnusedParameterInspection */
         array &$containerParams
     ) {
-        self::$fc = $fc;
-        self::$viewRenderer = $viewRenderer;
-
-        if ($fc->getDependencies() instanceof XenForo_Dependencies_Public) {
+        if (self::$viewRenderer === null
+            && $viewRenderer instanceof XenForo_ViewRenderer_HtmlPublic
+        ) {
+            self::$viewRenderer = $viewRenderer;
             WidgetFramework_Core::getInstance()->bootstrap();
         }
 
@@ -308,24 +293,6 @@ class WidgetFramework_Listener
 
     public static function load_class_view($class, array &$extend)
     {
-        static $extended1 = false;
-        static $extended2 = false;
-
-        if (defined('WIDGET_FRAMEWORK_LOADED')
-            && !empty($class)
-        ) {
-            // check for empty($class) to avoid a bug with XenForo 1.2.0
-            // http://xenforo.com/community/threads/57064/
-
-            if (empty($extended1)) {
-                $extend[] = 'WidgetFramework_XenForo_View1';
-                $extended1 = $class;
-            } elseif (empty($extended2)) {
-                $extend[] = 'WidgetFramework_XenForo_View2';
-                $extended2 = $class;
-            }
-        }
-
         if ($class === 'XenForo_ViewAdmin_StyleProperty_List') {
             $extend[] = 'WidgetFramework_' . $class;
         }

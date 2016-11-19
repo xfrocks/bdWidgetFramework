@@ -31,7 +31,6 @@ class WidgetFramework_Core
     const PARAM_GROUP_ID = '_WidgetFramework_groupId';
     const PARAM_PARENT_GROUP_ID = '_WidgetFramework_parentGroupId';
     const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
-    const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
     const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
     const PARAM_CURRENT_WIDGET_ID = '_WidgetFramework_currentWidgetId';
 

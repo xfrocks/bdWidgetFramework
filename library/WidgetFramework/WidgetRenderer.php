@@ -11,7 +11,6 @@ abstract class WidgetFramework_WidgetRenderer
     const PARAM_GROUP_NAME = '_WidgetFramework_groupId';
     const PARAM_PARENT_GROUP_NAME = '_WidgetFramework_parentGroupId';
     const PARAM_PARENT_TEMPLATE = '_WidgetFramework_parentTemplate';
-    const PARAM_VIEW_OBJECT = '_WidgetFramework_viewObj';
     const PARAM_TEMPLATE_OBJECTS = '_WidgetFramework_templateObjects';
     // please use constants from WidgetFramework_Core from now on
 
@@ -912,26 +911,13 @@ abstract class WidgetFramework_WidgetRenderer
 
     public static function getViewObject(array $params, XenForo_Template_Abstract $templateObj)
     {
-        if (isset($params[WidgetFramework_Core::PARAM_VIEW_OBJECT])) {
-            return $params[WidgetFramework_Core::PARAM_VIEW_OBJECT];
-        }
-
-        $viewObj = $templateObj->getParam(WidgetFramework_Core::PARAM_VIEW_OBJECT);
-        if (!empty($viewObj)) {
-            return $viewObj;
-        }
-
-        if (empty(self::$_pseudoViewObj)) {
-            if (!empty(WidgetFramework_Listener::$fc)
-                && !empty(WidgetFramework_Listener::$viewRenderer)
-            ) {
-                if (WidgetFramework_Listener::$viewRenderer instanceof XenForo_ViewRenderer_HtmlPublic) {
-                    self::$_pseudoViewObj = new XenForo_ViewPublic_Base(
-                        WidgetFramework_Listener::$viewRenderer,
-                        WidgetFramework_Listener::$fc->getResponse()
-                    );
-                }
-            }
+        if (empty(self::$_pseudoViewObj)
+            && WidgetFramework_Listener::$viewRenderer !== null
+        ) {
+            self::$_pseudoViewObj = new XenForo_ViewPublic_Base(
+                WidgetFramework_Listener::$viewRenderer,
+                XenForo_Application::getFc()->getResponse()
+            );
         }
 
         if (!empty(self::$_pseudoViewObj)) {
