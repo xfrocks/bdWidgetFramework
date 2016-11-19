@@ -5,6 +5,12 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
+            if ((empty($widget['options']['order']) || $widget['options']['order'] == 'register_date')
+                && (empty($widget['options']['direction']) || strtoupper($widget['options']['direction']) == 'DESC')
+            ) {
+                return new XenForo_Phrase('wf_newest_members');
+            }
+
             return new XenForo_Phrase('wf_users');
         }
 
@@ -40,29 +46,6 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
         return parent::_renderOptions($template);
     }
 
-    protected function _validateOptionValue($optionKey, &$optionValue)
-    {
-        switch ($optionKey) {
-            case 'limit':
-                if (empty($optionValue)) {
-                    $optionValue = 5;
-                }
-                break;
-            case 'order':
-                if (empty($optionValue)) {
-                    $optionValue = 'register_date';
-                }
-                break;
-            case 'direction':
-                if (empty($optionValue)) {
-                    $optionValue = 'DESC';
-                }
-                break;
-        }
-
-        return parent::_validateOptionValue($optionKey, $optionValue);
-    }
-
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
         return 'wf_widget_users';
@@ -75,7 +58,7 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
         XenForo_Template_Abstract $renderTemplateObject
     ) {
         if (empty($widget['options']['limit'])) {
-            $widget['options']['limit'] = 5;
+            $widget['options']['limit'] = 12;
         }
         if (empty($widget['options']['order'])) {
             $widget['options']['order'] = 'register_date';
@@ -83,46 +66,47 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
         if (empty($widget['options']['direction'])) {
             $widget['options']['direction'] = 'DESC';
         }
-
-        $users = false;
-
-        // try to be smart and get the users data if they happen to be available
-        if ($positionCode == 'member_list') {
-            if ($widget['options']['limit'] == 12
-                && $widget['options']['order'] == 'message_count'
-                && !empty($params['activeUsers'])
-            ) {
-                $users = $params['activeUsers'];
-            }
-
-            if ($widget['options']['limit'] == 8
-                && $widget['options']['order'] == 'register_date'
-                && !empty($params['latestUsers'])
-            ) {
-                $users = $params['latestUsers'];
-            }
+        if (empty($widget['options']['displayMode'])) {
+            $widget['options']['displayMode'] = 'avatarOnlyBigger';
         }
 
-        if ($users === false) {
-            /** @var XenForo_Model_User $userModel */
-            $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
-            $conditions = array(
-                // sondh@2012-09-13
-                // do not display not confirmed or banned users
-                'user_state' => 'valid',
-                'is_banned' => 0
-            );
-            $fetchOptions = array(
-                'limit' => $widget['options']['limit'],
-                'order' => $widget['options']['order'],
-                'direction' => $widget['options']['direction'],
-            );
-            $users = $userModel->getUsers($conditions, $fetchOptions);
-        }
+        $users = $this->_getUsers($widget, $positionCode, $params, $renderTemplateObject);
 
+        $renderTemplateObject->setParam('widget', $widget);
         $renderTemplateObject->setParam('users', $users);
 
         return $renderTemplateObject->render();
     }
 
+    protected function _getUsers(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        // try to be smart and get the users data if they happen to be available
+        if ($positionCode == 'member_notable'
+            && isset($params['latestUsers'])
+            && $widget['options']['limit'] == 12
+            && $widget['options']['order'] == 'register_date'
+            && strtoupper($widget['options']['direction']) == 'DESC'
+        ) {
+            return $params['latestUsers'];
+        }
+
+        /** @var XenForo_Model_User $userModel */
+        $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
+        $conditions = array(
+            // sondh@2012-09-13
+            // do not display not confirmed or banned users
+            'user_state' => 'valid',
+            'is_banned' => 0
+        );
+        $fetchOptions = array(
+            'limit' => $widget['options']['limit'],
+            'order' => $widget['options']['order'],
+            'direction' => $widget['options']['direction'],
+        );
+        return $userModel->getUsers($conditions, $fetchOptions);
+    }
 }

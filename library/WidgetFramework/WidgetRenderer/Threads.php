@@ -412,7 +412,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
     protected function _getThreads($widget, $positionCode, $params, $renderTemplateObject)
     {
         if ($positionCode === 'forum_list'
-            && XenForo_Application::$versionId > 1050000
             && isset($params['threads'])
             && empty($layoutOptions['getPosts'])
             && $widget['options']['type'] === 'recent'

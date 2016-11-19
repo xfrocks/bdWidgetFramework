@@ -74,19 +74,6 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
         return parent::_renderOptions($template);
     }
 
-    protected function _validateOptionValue($optionKey, &$optionValue)
-    {
-        switch ($optionKey) {
-            case 'limit':
-                if (empty($optionValue)) {
-                    $optionValue = 0;
-                }
-                break;
-        }
-
-        return parent::_validateOptionValue($optionKey, $optionValue);
-    }
-
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
         return 'wf_widget_birthday';
@@ -98,43 +85,20 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
         array $params,
         XenForo_Template_Abstract $renderTemplateObject
     ) {
+        if (empty($widget['options']['limit'])) {
+            $widget['options']['limit'] = 12;
+        }
+
+        $users = $this->_getUsers($widget, $positionCode, $params, $renderTemplateObject);
+        if (empty($users)) {
+            return '';
+        }
+
         $core = WidgetFramework_Core::getInstance();
         /** @var XenForo_Model_User $userModel */
         $userModel = $core->getModelFromCache('XenForo_Model_User');
         /** @var XenForo_Model_UserProfile $userProfileModel */
         $userProfileModel = $core->getModelFromCache('XenForo_Model_UserProfile');
-
-        $todayStart = XenForo_Locale::getDayStartTimestamps();
-        $todayStart = $todayStart['today'];
-        $day = XenForo_Locale::getFormattedDate($todayStart, 'd');
-        $month = XenForo_Locale::getFormattedDate($todayStart, 'm');
-
-        $conditions = array(
-            WidgetFramework_XenForo_Model_User::CONDITIONS_DOB => array(
-                'd' => $day,
-                'm' => $month
-            ),
-
-            // checks for user state and banned status
-            // since 1.1.2
-            'user_state' => 'valid',
-            'is_banned' => false,
-        );
-        $fetchOptions = array(
-            'order' => 'username',
-            'join' => XenForo_Model_User::FETCH_USER_PROFILE + XenForo_Model_User::FETCH_USER_OPTION,
-        );
-
-        if (!empty($widget['options']['limit'])) {
-            $fetchOptions['limit'] = $widget['options']['limit'];
-        }
-
-        if (!empty($widget['options']['avatar_only'])) {
-            $conditions[WidgetFramework_XenForo_Model_User::CONDITIONS_HAS_AVATAR] = true;
-        }
-
-        $users = $userModel->getUsers($conditions, $fetchOptions);
-
         foreach (array_keys($users) as $userId) {
             $user = &$users[$userId];
 
@@ -170,4 +134,58 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
         return parent::_getCacheId($widget, $positionCode, $params, $suffix);
     }
 
+    protected function _getUsers(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        // try to be smart and get the users data if they happen to be available
+        if ($positionCode == 'member_notable'
+            && isset($params['birthdays'])
+            && $widget['options']['limit'] == 12
+            && empty($widget['options']['avatar_only'])
+            && empty($widget['options']['whitelist_user_groups'])
+            && empty($widget['options']['blacklist_user_groups'])
+        ) {
+            return $params['birthdays'];
+        }
+
+        /** @var XenForo_Model_User $userModel */
+        $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
+        $todayStart = XenForo_Locale::getDayStartTimestamps();
+        $todayStart = $todayStart['today'];
+        $day = XenForo_Locale::getFormattedDate($todayStart, 'd');
+        $month = XenForo_Locale::getFormattedDate($todayStart, 'm');
+
+        $conditions = array(
+            WidgetFramework_XenForo_Model_User::CONDITIONS_DOB => array(
+                'd' => $day,
+                'm' => $month
+            ),
+
+            // checks for user state and banned status
+            // since 1.1.2
+            'user_state' => 'valid',
+            'is_banned' => false,
+
+            // only include users who are active recently
+            // since 2.6.3
+            'active_recently' => true
+        );
+        $fetchOptions = array(
+            'order' => 'username',
+            'join' => XenForo_Model_User::FETCH_USER_PROFILE + XenForo_Model_User::FETCH_USER_OPTION,
+        );
+
+        if (!empty($widget['options']['limit'])) {
+            $fetchOptions['limit'] = $widget['options']['limit'];
+        }
+
+        if (!empty($widget['options']['avatar_only'])) {
+            $conditions[WidgetFramework_XenForo_Model_User::CONDITIONS_HAS_AVATAR] = true;
+        }
+
+        return $userModel->getUsers($conditions, $fetchOptions);
+    }
 }

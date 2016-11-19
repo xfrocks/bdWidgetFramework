@@ -133,43 +133,20 @@ class WidgetFramework_Installer
         if (empty($existingAddOn)) {
             $db->query("
 				INSERT INTO `xf_widget`
-					(title, class, options, position, display_order)
+					(position, display_order, class, options)
 				VALUES
-					('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'forum_list', 10),
-					('', 'WidgetFramework_WidgetRenderer_OnlineStaff', 0x613A303A7B7D, 'forum_list', 20),
-					('', 'WidgetFramework_WidgetRenderer_OnlineUsers', 0x613A303A7B7D, 'forum_list', 30),
-					('', 'WidgetFramework_WidgetRenderer_Stats', 0x613A303A7B7D, 'forum_list', 40),
-					('', 'WidgetFramework_WidgetRenderer_ShareThisPage', 0x613A303A7B7D, 'forum_list', 50)
+				    ('forum_list',     10, 'WidgetFramework_WidgetRenderer_Empty',         'a:0:{}'),
+				    ('forum_list',     20, 'WidgetFramework_WidgetRenderer_OnlineStaff',   'a:0:{}'),
+				    ('forum_list',     30, 'WidgetFramework_WidgetRenderer_OnlineUsers',   'a:0:{}'),
+				    ('forum_list',     40, 'WidgetFramework_WidgetRenderer_Threads',       'a:2:{s:4:\"type\";s:6:\"recent\";s:5:\"limit\";i:5;}'),
+				    ('forum_list',     50, 'WidgetFramework_WidgetRenderer_ProfilePosts',  'a:1:{s:16:\"show_update_form\";s:1:\"1\";}'),
+				    ('forum_list',     60, 'WidgetFramework_WidgetRenderer_Stats',         'a:0:{}'),
+				    ('forum_list',     70, 'WidgetFramework_WidgetRenderer_ShareThisPage', 'a:0:{}'),
+				    ('member_notable', 10, 'WidgetFramework_WidgetRenderer_Empty',         'a:0:{}'),
+				    ('member_notable', 20, 'WidgetFramework_WidgetRenderer_UsersFind',     'a:0:{}'),
+				    ('member_notable', 30, 'WidgetFramework_WidgetRenderer_Birthday',      'a:0:{}'),
+				    ('member_notable', 40, 'WidgetFramework_WidgetRenderer_Users',         'a:0:{}')
 			");
-
-            if (XenForo_Application::$versionId > 1040000) {
-                $db->query("
-					INSERT INTO `xf_widget`
-						(title, class, options, position, display_order)
-					VALUES
-						('', 'WidgetFramework_WidgetRenderer_ProfilePosts', 'a:1:{s:16:\"show_update_form\";s:1:\"1\";}', 'forum_list', 30)
-				");
-            }
-
-            if (XenForo_Application::$versionId > 1050000) {
-                $db->query("
-					INSERT INTO `xf_widget`
-						(title, class, options, position, display_order)
-					VALUES
-						('', 'WidgetFramework_WidgetRenderer_Threads', 'a:2:{s:4:\"type\";s:6:\"recent\";s:5:\"limit\";i:5;}', 'forum_list', 20)
-				");
-            }
-
-            $db->query("
-                INSERT INTO `xf_widget`
-                    (title, class, options, position, display_order)
-                VALUES
-                    ('', 'WidgetFramework_WidgetRenderer_Empty', 0x613A303A7B7D, 'member_notable', 10),
-                    ('', 'WidgetFramework_WidgetRenderer_UsersFind', 0x613A303A7B7D, 'member_notable', 20),
-                    ('', 'WidgetFramework_WidgetRenderer_Birthday', 0x613A303A7B7D, 'member_notable', 30),
-                    ('', 'WidgetFramework_WidgetRenderer_UsersStaff', 0x613A303A7B7D, 'member_notable', 40),
-                    ('', 'WidgetFramework_WidgetRenderer_FacebookFacepile', 0x613A303A7B7D, 'member_notable', 50)
-            ");
 
             /** @var WidgetFramework_Model_Widget $widgetModel */
             $widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');

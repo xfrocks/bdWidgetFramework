@@ -96,11 +96,10 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
         XenForo_Template_Abstract $renderTemplateObject
     ) {
         if ($positionCode == 'forum_list'
+            && isset($params['profilePosts'])
             && $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewProfilePosts')
         ) {
-            if (!empty($params['profilePosts'])) {
-                return $params['profilePosts'];
-            }
+            return $params['profilePosts'];
         }
 
         $core = WidgetFramework_Core::getInstance();

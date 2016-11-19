@@ -29,19 +29,6 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
         return 'wf_widget_options_users_staff';
     }
 
-    protected function _validateOptionValue($optionKey, &$optionValue)
-    {
-        switch ($optionKey) {
-            case 'limit':
-                if (empty($optionValue)) {
-                    $optionValue = 0;
-                }
-                break;
-        }
-
-        return parent::_validateOptionValue($optionKey, $optionValue);
-    }
-
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
         return 'wf_widget_users';
@@ -53,29 +40,17 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
         array $params,
         XenForo_Template_Abstract $renderTemplateObject
     ) {
-        if (empty($widget['options']['limit'])) {
-            $widget['options']['limit'] = 5;
+        if (!isset($widget['options']['limit'])) {
+            $widget['options']['limit'] = 0;
         }
 
-        $users = false;
-
-        // try to be smart and get the users data if they happen to be available
-        if ($positionCode == 'member_notable'
-            && $widget['options']['limit'] == 0
-            && !empty($params['staff'])
-        ) {
-            $users = $params['staff'];
-        }
-
-        if ($users === false) {
-            /** @var XenForo_Model_User $userModel */
-            $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
-            $users = $userModel->getUsers(array('is_staff' => true), array(
-                'join' => XenForo_Model_User::FETCH_USER_FULL,
-                'limit' => $widget['options']['limit'],
-                'order' => 'username',
-            ));
-        }
+        /** @var XenForo_Model_User $userModel */
+        $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
+        $users = $userModel->getUsers(array('is_staff' => true), array(
+            'join' => XenForo_Model_User::FETCH_USER_FULL,
+            'limit' => $widget['options']['limit'],
+            'order' => 'username',
+        ));
 
         $renderTemplateObject->setParam('users', $users);
 

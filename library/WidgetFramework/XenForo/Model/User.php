@@ -36,7 +36,8 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
 
             $tmp = array();
             foreach ($conditions[self::CONDITIONS_DOB] as $pair) {
-                $tmp[] = '(user_profile.dob_day = ' . $db->quote($pair['d']) . ' AND user_profile.dob_month = ' . $db->quote($pair['m']) . ')';
+                $tmp[] = '(user_profile.dob_day = ' . intval($pair['d'])
+                    . ' AND user_profile.dob_month = ' . intval($pair['m']) . ')';
             }
             $sqlConditions[] = '(' . implode(' OR ', $tmp) . ')';
             $sqlConditions[] = 'user_option.show_dob_date = 1';
