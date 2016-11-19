@@ -307,14 +307,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                 $link = XenForo_Link::buildAdminLink('widget-pages/edit', array('node_id' => $widgetPageId));
             }
 
-            if (!empty($widget)) {
-                $notLink = XenForo_Link::buildAdminLink('full:widgets/edit', $widget);
-            } else {
-                $notLink = XenForo_Link::buildAdminLink('full:widgets/add');
-            }
-
-            $link = $this->getDynamicRedirectIfNot($notLink, $link);
-
             return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
         }
     }
@@ -421,10 +413,6 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             if (!empty($widgetPageId)) {
                 $link = XenForo_Link::buildAdminLink('widget-pages/edit', array('node_id' => $widgetPageId));
             }
-
-            $notLink = XenForo_Link::buildAdminLink('full:widgets/delete', $widget);
-
-            $link = $this->getDynamicRedirectIfNot($notLink, $link);
 
             if ($this->_input->filterSingle('_layoutEditor', XenForo_Input::UINT)) {
                 $viewParams = array(
