@@ -225,7 +225,7 @@ class WidgetFramework_Core
         $positionRef = &$this->_positions[$positionCode];
         $positionRef['prepared'] = true;
 
-        if (substr($positionCode, 0, 5) !== 'hook:'
+        if (strpos($positionCode, 'hook:') !== 0
             && !empty($this->_positions['all']['widgets'])
         ) {
             // only append `all` widgets for template position code
@@ -235,7 +235,9 @@ class WidgetFramework_Core
                 $this->_prepareWidgetsFor_prepareWidgetsFromAll($widgetsFromAll, $_widget, $positionCode);
             }
 
-            $this->addWidgets($widgetsFromAll);
+            if (count($widgetsFromAll) > 0) {
+                $this->addWidgets($widgetsFromAll);
+            }
         }
 
         if (!empty($positionRef['widgets'])) {
@@ -279,7 +281,7 @@ class WidgetFramework_Core
                 // found content template params, merge it
                 /** @var XenForo_Template_Abstract $templateObj */
                 $templateObj = $params[self::PARAM_TEMPLATE_OBJECTS][$params['contentTemplate']];
-                $params = array_merge($templateObj->getParams(), $params);
+                $params += $templateObj->getParams();
             }
         }
 

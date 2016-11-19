@@ -233,9 +233,9 @@ class WidgetFramework_Template_Helper_Layout
         }
 
         foreach ($params as $key => &$value) {
-            if (in_array($key, $exclude, true) OR substr($key, 0, 1) === '_') {
+            if (in_array($key, $exclude, true) || $key[0] === '_') {
                 // excluded
-            } elseif (is_object($value) OR empty($value)) {
+            } elseif (is_object($value) || empty($value)) {
                 // ignore
             } elseif (is_array($value)) {
                 $valueKeys = array_keys($value);

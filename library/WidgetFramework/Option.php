@@ -2,17 +2,10 @@
 
 class WidgetFramework_Option
 {
-    /** @var XenForo_Options */
-    protected static $_options = null;
-
     protected static $_layoutEditorEnabled = null;
 
     public static function get($key)
     {
-        if (self::$_options === null) {
-            self::$_options = XenForo_Application::get('options');
-        }
-
         switch ($key) {
             case 'applicationVersionId':
                 return XenForo_Application::$versionId;
@@ -45,7 +38,7 @@ class WidgetFramework_Option
                 return XenForo_Visitor::getInstance()->hasAdminPermission('style');
         }
 
-        return self::$_options->get('wf_' . $key);
+        return XenForo_Application::getOptions()->get('wf_' . $key);
     }
 
     public static function setIndexNodeId($nodeId)

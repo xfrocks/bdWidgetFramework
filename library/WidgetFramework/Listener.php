@@ -35,8 +35,10 @@ class WidgetFramework_Listener
             WidgetFramework_Helper_Index::setup();
         }
 
-        WidgetFramework_ShippableHelper_Updater::onInitDependencies($dependencies,
-            self::UPDATER_URL, 'widget_framework');
+        if (isset($data['routesAdmin'])) {
+            WidgetFramework_ShippableHelper_Updater::onInitDependencies($dependencies,
+                self::UPDATER_URL, 'widget_framework');
+        }
     }
 
     public static function navigation_tabs(
@@ -271,33 +273,6 @@ class WidgetFramework_Listener
         }
     }
 
-    public static function load_class($class, array &$extend)
-    {
-        static $classesNeedsExtending = array(
-            'XenForo_BbCode_Formatter_Base',
-            'XenForo_BbCode_Formatter_HtmlEmail',
-            'XenForo_BbCode_Formatter_Text',
-
-            'XenForo_ControllerPublic_Misc',
-            'XenForo_ControllerPublic_Thread',
-
-            'XenForo_Model_Permission',
-
-            'bdCache_Model_Cache',
-        );
-
-        if (in_array($class, $classesNeedsExtending)) {
-            $extend[] = 'WidgetFramework_' . $class;
-        }
-    }
-
-    public static function load_class_view($class, array &$extend)
-    {
-        if ($class === 'XenForo_ViewAdmin_StyleProperty_List') {
-            $extend[] = 'WidgetFramework_' . $class;
-        }
-    }
-
     public static function file_health_check(
         /** @noinspection PhpUnusedParameterInspection */
         XenForo_ControllerAdmin_Abstract $controller,
@@ -340,4 +315,59 @@ class WidgetFramework_Listener
         }
     }
 
+    public static function load_class_bdCache_Model_Cache($class, array &$extend)
+    {
+        if ($class === 'bdCache_Model_Cache') {
+            $extend[] = 'WidgetFramework_bdCache_Model_Cache';
+        }
+    }
+
+    public static function load_class_XenForo_BbCode_Formatter_Base($class, array &$extend)
+    {
+        if ($class === 'XenForo_BbCode_Formatter_Base') {
+            $extend[] = 'WidgetFramework_XenForo_BbCode_Formatter_Base';
+        }
+    }
+
+    public static function load_class_XenForo_BbCode_Formatter_HtmlEmail($class, array &$extend)
+    {
+        if ($class === 'XenForo_BbCode_Formatter_HtmlEmail') {
+            $extend[] = 'WidgetFramework_XenForo_BbCode_Formatter_HtmlEmail';
+        }
+    }
+
+    public static function load_class_XenForo_BbCode_Formatter_Text($class, array &$extend)
+    {
+        if ($class === 'XenForo_BbCode_Formatter_Text') {
+            $extend[] = 'WidgetFramework_XenForo_BbCode_Formatter_Text';
+        }
+    }
+
+    public static function load_class_XenForo_ControllerPublic_Misc($class, array &$extend)
+    {
+        if ($class === 'XenForo_ControllerPublic_Misc') {
+            $extend[] = 'WidgetFramework_XenForo_ControllerPublic_Misc';
+        }
+    }
+
+    public static function load_class_XenForo_ControllerPublic_Thread($class, array &$extend)
+    {
+        if ($class === 'XenForo_ControllerPublic_Thread') {
+            $extend[] = 'WidgetFramework_XenForo_ControllerPublic_Thread';
+        }
+    }
+
+    public static function load_class_XenForo_Model_Permission($class, array &$extend)
+    {
+        if ($class === 'XenForo_Model_Permission') {
+            $extend[] = 'WidgetFramework_XenForo_Model_Permission';
+        }
+    }
+
+    public static function load_class_XenForo_ViewAdmin_StyleProperty_List($class, array &$extend)
+    {
+        if ($class === 'XenForo_ViewAdmin_StyleProperty_List') {
+            $extend[] = 'WidgetFramework_XenForo_ViewAdmin_StyleProperty_List';
+        }
+    }
 }

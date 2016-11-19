@@ -1075,10 +1075,14 @@ Arguments:
     <listener event_id="front_controller_pre_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="front_controller_pre_view" active="1" hint="" description=""/>
     <listener event_id="init_dependencies" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_dependencies" active="1" hint="" description=""/>
     <listener event_id="init_router_public" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="init_router_public" active="1" hint="" description=""/>
-    <listener event_id="load_class_bb_code" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
-    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
-    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class" active="1" hint="" description=""/>
-    <listener event_id="load_class_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_view" active="1" hint="" description=""/>
+    <listener event_id="load_class_bb_code" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_XenForo_BbCode_Formatter_Base" active="1" hint="XenForo_BbCode_Formatter_Base" description="XenForo_BbCode_Formatter_Base"/>
+    <listener event_id="load_class_bb_code" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_XenForo_BbCode_Formatter_HtmlEmail" active="1" hint="XenForo_BbCode_Formatter_HtmlEmail" description="XenForo_BbCode_Formatter_HtmlEmail"/>
+    <listener event_id="load_class_bb_code" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_XenForo_BbCode_Formatter_Text" active="1" hint="XenForo_BbCode_Formatter_Text" description="XenForo_BbCode_Formatter_Text"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_XenForo_ControllerPublic_Misc" active="1" hint="XenForo_ControllerPublic_Misc" description="XenForo_ControllerPublic_Misc"/>
+    <listener event_id="load_class_controller" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_XenForo_ControllerPublic_Thread" active="1" hint="XenForo_ControllerPublic_Thread" description="XenForo_ControllerPublic_Thread"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_XenForo_Model_Permission" active="1" hint="XenForo_Model_Permission" description="XenForo_Model_Permission"/>
+    <listener event_id="load_class_model" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_bdCache_Model_Cache" active="1" hint="bdCache_Model_Cache" description="bdCache_Model_Cache"/>
+    <listener event_id="load_class_view" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="load_class_XenForo_ViewAdmin_StyleProperty_List" active="1" hint="XenForo_ViewAdmin_StyleProperty_List" description="XenForo_ViewAdmin_StyleProperty_List"/>
     <listener event_id="navigation_tabs" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="navigation_tabs" active="1" hint="" description=""/>
     <listener event_id="template_create" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_create" active="1" hint="" description=""/>
     <listener event_id="template_hook" execute_order="10" callback_class="WidgetFramework_Listener" callback_method="template_hook" active="1" hint="" description=""/>
@@ -1373,8 +1377,6 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_whitelist_user_groups_explain" version_id="96" version_string="2.5.0d"><![CDATA[If specified, only user of selected user groups will be show.]]></phrase>
     <phrase title="wf_widget" version_id="2060305" version_string="2.6.3"><![CDATA[Widget]]></phrase>
     <phrase title="wf_widgets" version_id="1" version_string="0.9"><![CDATA[Widgets]]></phrase>
-    <phrase title="wf_widget_birthday_today_is_xs_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {username}'s birthday.]]></phrase>
-    <phrase title="wf_widget_birthday_today_is_x_peoples_birthday" version_id="17" version_string="1.0.9"><![CDATA[Today is {count} people's birthday.]]></phrase>
     <phrase title="wf_widget_callback_callback_explain" version_id="17" version_string="1.0.9"><![CDATA[Enter the callback to render this widget. Callback signature:<br/>
 array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTemplateObject]]></phrase>
     <phrase title="wf_widget_class_cannot_changed_from_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Group cannot be saved.]]></phrase>

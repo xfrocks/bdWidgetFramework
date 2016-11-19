@@ -71,7 +71,7 @@ class WidgetFramework_DataWriter_Helper_Widget
 
             // sondh@2012-08-25
             // added support for hook:hook_name
-            if (substr($positionCode, 0, 5) == 'hook:') {
+            if (strpos($positionCode, 'hook:') === 0) {
                 // accept all kind of hooks, just need to get parent templates for them
                 $templates = $db->fetchAll('
                     SELECT title
