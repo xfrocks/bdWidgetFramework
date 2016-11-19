@@ -30,19 +30,6 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
         return 'wf_widget_options_feed_reader';
     }
 
-    protected function _validateOptionValue($optionKey, &$optionValue)
-    {
-        switch ($optionKey) {
-            case 'limit':
-                if (empty($optionValue)) {
-                    $optionValue = 5;
-                }
-                break;
-        }
-
-        return parent::_validateOptionValue($optionKey, $optionValue);
-    }
-
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
         return 'wf_widget_feed_reader';

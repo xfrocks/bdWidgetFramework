@@ -39,19 +39,6 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
         return 'wf_widget_options_profile_posts';
     }
 
-    protected function _validateOptionValue($optionKey, &$optionValue)
-    {
-        switch ($optionKey) {
-            case 'limit':
-                if (empty($optionValue)) {
-                    $optionValue = 5;
-                }
-                break;
-        }
-
-        return parent::_validateOptionValue($optionKey, $optionValue);
-    }
-
     protected function _getExtraDataLink(array $widget)
     {
         if (XenForo_Application::$versionId > 1040000) {

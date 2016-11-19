@@ -74,24 +74,6 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         return parent::_renderOptions($template);
     }
 
-    protected function _validateOptionValue($optionKey, &$optionValue)
-    {
-        switch ($optionKey) {
-            case 'limit':
-                if (empty($optionValue)) {
-                    $optionValue = 5;
-                }
-                break;
-            case 'type':
-                if (empty($optionValue)) {
-                    $optionValue = 'new';
-                }
-                break;
-        }
-
-        return parent::_validateOptionValue($optionKey, $optionValue);
-    }
-
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
         return 'wf_widget_xfrm_resources';

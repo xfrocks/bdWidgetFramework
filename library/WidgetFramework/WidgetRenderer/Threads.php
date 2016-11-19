@@ -154,17 +154,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
     protected function _validateOptionValue($optionKey, &$optionValue)
     {
         switch ($optionKey) {
-            case 'limit':
-            case 'cutoff':
-                if (empty($optionValue)) {
-                    $optionValue = 5;
-                }
-                break;
-            case 'type':
-                if (empty($optionValue)) {
-                    $optionValue = 'new';
-                }
-                break;
             case 'tags':
                 if (WidgetFramework_Core::contentTaggingFound()
                     && !empty($optionValue[0])
