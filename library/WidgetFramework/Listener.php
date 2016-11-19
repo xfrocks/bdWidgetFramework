@@ -297,9 +297,6 @@ class WidgetFramework_Listener
             'XenForo_ControllerPublic_Thread',
 
             'XenForo_Model_Permission',
-            'XenForo_Model_ProfilePost',
-            'XenForo_Model_Thread',
-            'XenForo_Model_User',
 
             'bdCache_Model_Cache',
         );

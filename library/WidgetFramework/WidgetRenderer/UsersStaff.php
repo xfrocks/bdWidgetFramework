@@ -44,13 +44,13 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
             $widget['options']['limit'] = 0;
         }
 
-        /** @var XenForo_Model_User $userModel */
-        $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
-        $users = $userModel->getUsers(array('is_staff' => true), array(
-            'join' => XenForo_Model_User::FETCH_USER_FULL,
+        /** @var WidgetFramework_Model_User $wfUserModel */
+        $wfUserModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_User');
+        $userIds = $wfUserModel->getUserIds(array('is_staff' => true), array(
             'limit' => $widget['options']['limit'],
             'order' => 'username',
         ));
+        $users = $wfUserModel->getUsersByIdsInOrder($userIds, XenForo_Model_User::FETCH_USER_FULL);
 
         $renderTemplateObject->setParam('users', $users);
 

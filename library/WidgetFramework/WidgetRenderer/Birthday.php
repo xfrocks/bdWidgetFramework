@@ -151,15 +151,15 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
             return $params['birthdays'];
         }
 
-        /** @var XenForo_Model_User $userModel */
-        $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
+        /** @var WidgetFramework_Model_User $wfUserModel */
+        $wfUserModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_User');
         $todayStart = XenForo_Locale::getDayStartTimestamps();
         $todayStart = $todayStart['today'];
         $day = XenForo_Locale::getFormattedDate($todayStart, 'd');
         $month = XenForo_Locale::getFormattedDate($todayStart, 'm');
 
         $conditions = array(
-            WidgetFramework_XenForo_Model_User::CONDITIONS_DOB => array(
+            WidgetFramework_Model_User::CONDITIONS_DOB => array(
                 'd' => $day,
                 'm' => $month
             ),
@@ -175,7 +175,6 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
         );
         $fetchOptions = array(
             'order' => 'username',
-            'join' => XenForo_Model_User::FETCH_USER_PROFILE + XenForo_Model_User::FETCH_USER_OPTION,
         );
 
         if (!empty($widget['options']['limit'])) {
@@ -183,9 +182,10 @@ class WidgetFramework_WidgetRenderer_Birthday extends WidgetFramework_WidgetRend
         }
 
         if (!empty($widget['options']['avatar_only'])) {
-            $conditions[WidgetFramework_XenForo_Model_User::CONDITIONS_HAS_AVATAR] = true;
+            $conditions[WidgetFramework_Model_User::CONDITIONS_HAS_AVATAR] = true;
         }
 
-        return $userModel->getUsers($conditions, $fetchOptions);
+        $userIds = $wfUserModel->getUserIds($conditions, $fetchOptions);
+        return $wfUserModel->getUsersByIdsInOrder($userIds);
     }
 }

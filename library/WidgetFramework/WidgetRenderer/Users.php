@@ -94,8 +94,8 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
             return $params['latestUsers'];
         }
 
-        /** @var XenForo_Model_User $userModel */
-        $userModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_User');
+        /** @var WidgetFramework_Model_User $wfUserModel */
+        $wfUserModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_User');
         $conditions = array(
             // sondh@2012-09-13
             // do not display not confirmed or banned users
@@ -107,6 +107,8 @@ class WidgetFramework_WidgetRenderer_Users extends WidgetFramework_WidgetRendere
             'order' => $widget['options']['order'],
             'direction' => $widget['options']['direction'],
         );
-        return $userModel->getUsers($conditions, $fetchOptions);
+
+        $userIds = $wfUserModel->getUserIds($conditions, $fetchOptions);
+        return $wfUserModel->getUsersByIdsInOrder($userIds);
     }
 }

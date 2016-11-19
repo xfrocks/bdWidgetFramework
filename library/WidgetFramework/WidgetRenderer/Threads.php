@@ -432,7 +432,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         if (!empty($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])) {
             WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
-            $conditions[WidgetFramework_XenForo_Model_Thread::CONDITIONS_THREAD_ID_NOT]
+            $conditions[WidgetFramework_Model_Thread::CONDITIONS_THREAD_ID_NOT]
                 = $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS];
         }
 
@@ -484,7 +484,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             }
 
             WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
-            $conditions[WidgetFramework_XenForo_Model_Thread::CONDITIONS_THREAD_ID] = $threadIds;
+            $conditions[WidgetFramework_Model_Thread::CONDITIONS_THREAD_ID] = $threadIds;
         }
 
         return $this->_getThreadsWithConditions($conditions, $widget, $positionCode, $params, $renderTemplateObject);
@@ -505,117 +505,83 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $params,
         $renderTemplateObject
     ) {
-        /* @var $threadModel XenForo_Model_Thread */
-        $threadModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
-
         // note: `limit` is set to 3 times of configured limit to account for the threads
         // that get hidden because of deep permissions like viewOthers or viewContent
         $fetchOptions = array(
             'limit' => $widget['options']['limit'] * 3,
-            'join' => XenForo_Model_Thread::FETCH_USER | XenForo_Model_Thread::FETCH_FORUM,
+            'order' => 'post_date',
+            'direction' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
         );
+
+        $fetchLastPost = false;
+        $readUserId = 0;
 
         // include is_new if option is turned on
         // since 2.5.1
         if (!empty($widget['options']['is_new'])) {
-            $fetchOptions['readUserId'] = XenForo_Visitor::getUserId();
+            $readUserId = XenForo_Visitor::getUserId();
         }
 
         switch ($widget['options']['type']) {
             case 'recent':
-                $threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
-                    'order' => 'last_post_date',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                    'join' => 0,
-                    WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => $fetchOptions['join'],
-                )));
+                $fetchOptions['order'] = 'last_post_date';
+                $fetchLastPost = true;
                 break;
             case 'recent_first_poster':
-                $threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
-                    'order' => 'last_post_date',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                )));
+                $fetchOptions['order'] = 'last_post_date';
                 break;
             case 'latest_replies':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(
-                    'reply_count' => array(
-                        '>',
-                        0
-                    ),
-                )), array_merge($fetchOptions, array(
-                    'order' => 'last_post_date',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                    'join' => 0,
-                    WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_LAST_POST_JOIN => $fetchOptions['join'],
-                )));
+                $conditions['reply_count'] = array('>', 0);
+                $fetchOptions['order'] = 'last_post_date';
+                $fetchLastPost = true;
                 break;
             case 'popular':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(
-                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
-                        '>',
-                        XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                    )
-                )), array_merge($fetchOptions, array(
-                    'order' => 'view_count',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                )));
+                $conditions['post_date'] = array(
+                    '>',
+                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+                );
+                $fetchOptions['order'] = 'view_count';
                 break;
             case 'most_replied':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(
-                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
-                        '>',
-                        XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                    )
-                )), array_merge($fetchOptions, array(
-                    'order' => 'reply_count',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                )));
-
-                foreach (array_keys($threads) as $threadId) {
-                    if ($threads[$threadId]['reply_count'] == 0) {
-                        // remove threads with zero reply_count
-                        unset($threads[$threadId]);
-                    }
-                }
+                $conditions['reply_count'] = array('>', 0);
+                $conditions['post_date'] = array(
+                    '>',
+                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+                );
+                $fetchOptions['order'] = 'reply_count';
                 break;
             case 'most_liked':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(
-                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_POST_DATE => array(
-                        '>',
-                        XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                    )
-                )), array_merge($fetchOptions, array(
-                    'order' => 'first_post_likes',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                )));
-
-                foreach (array_keys($threads) as $threadId) {
-                    if ($threads[$threadId]['first_post_likes'] == 0) {
-                        // remove threads with zero first_post_likes
-                        unset($threads[$threadId]);
-                    }
-                }
+                $conditions['first_post_likes'] = array('>', 0);
+                $conditions['post_date'] = array(
+                    '>',
+                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+                );
+                $fetchOptions['order'] = 'first_post_likes';
                 break;
             case 'polls':
-                $threads = $threadModel->getThreads(array_merge($conditions, array(
-                    WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll'
-                )), array_merge($fetchOptions, array(
-                    'order' => 'post_date',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                )));
-                break;
-            case 'new':
-            default:
-                $threads = $threadModel->getThreads($conditions, array_merge($fetchOptions, array(
-                    'order' => 'post_date',
-                    'orderDirection' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
-                )));
+                $conditions['discussion_type'] = 'poll';
+                $fetchOptions['order'] = 'post_date';
                 break;
         }
 
-        if (!empty($threads)) {
-            $this->_prepareThreads($widget, $positionCode, $params, $renderTemplateObject, $threads);
+        /** @var WidgetFramework_Model_Thread $wfThreadModel */
+        $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
+        $threadIds = $wfThreadModel->getThreadIds($conditions, $fetchOptions);
+        if (empty($threadIds)) {
+            return array();
         }
+
+        $threads = $wfThreadModel->getThreadsByIdsInOrder($threadIds, 0, $readUserId);
+        if (empty($threads)) {
+            return array();
+        }
+
+        if ($fetchLastPost) {
+            foreach ($threads as &$threadRef) {
+                $threadRef['wf_requested_last_post'] = true;
+            }
+        }
+        $this->_prepareThreads($widget, $positionCode, $params, $renderTemplateObject, $threads);
 
         if (count($threads) > $widget['options']['limit']) {
             // too many threads (because we fetched 3 times as needed)
@@ -640,11 +606,15 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $renderTemplateObject,
         array &$threads
     ) {
+        if (empty($threads)) {
+            return;
+        }
+
         $core = WidgetFramework_Core::getInstance();
         $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
         $getPosts = !empty($layoutOptions['getPosts']);
 
-        /** @var WidgetFramework_XenForo_Model_Thread $threadModel */
+        /** @var XenForo_Model_Thread $threadModel */
         $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
         /** @var XenForo_Model_Node $nodeModel */
         $nodeModel = $core->getModelFromCache('XenForo_Model_Node');
@@ -654,39 +624,37 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $userModel = $core->getModelFromCache('XenForo_Model_User');
         /** @var XenForo_Model_Post $postModel */
         $postModel = $core->getModelFromCache('XenForo_Model_Post');
+        /** @var WidgetFramework_Model_Thread $wfThreadModel */
+        $wfThreadModel = $core->getModelFromCache('WidgetFramework_Model_Thread');
 
         $permissionCombinationId = empty($widget['options']['as_guest']) ? null : 1;
         $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination($permissionCombinationId);
         $viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
         $viewingUserId = $viewingUser === null ? XenForo_Visitor::getUserId() : $viewingUser['user_id'];
 
+        $forumIds = array();
+        $userIds = array();
+        $postIds = array();
+        foreach ($threads as &$threadRef) {
+            $forumIds[] = intval($threadRef['node_id']);
+            if (!empty($threadRef['wf_requested_last_post'])) {
+                $threadRef['wf_requested_user_id'] = intval($threadRef['last_post_user_id']);
+                $threadRef['wf_requested_post_id'] = intval($threadRef['last_post_id']);
+            } else {
+                $threadRef['wf_requested_user_id'] = intval($threadRef['user_id']);
+                $threadRef['wf_requested_post_id'] = intval($threadRef['first_post_id']);
+            }
+            $userIds[] = $threadRef['wf_requested_user_id'];
+            $postIds[] = $threadRef['wf_requested_post_id'];
+        }
+        $forums = $forumModel->getForumsByIds(array_unique($forumIds));
+        $users = $userModel->getUsersByIds(array_unique($userIds));
+
+        $posts = array();
         $viewObj = self::getViewObject($params, $renderTemplateObject);
         if ($getPosts && !empty($viewObj)) {
-            $postIds = array();
-            foreach ($threads as &$threadRef) {
-                if (!empty($threadRef['wf_requested_last_post'])) {
-                    $postIds[] = $threadRef['last_post_id'];
-                } else {
-                    $postIds[] = $threadRef['first_post_id'];
-                }
-            }
-            $posts = $postModel->getPostsByIds($postIds, array(
-                'likeUserId' => $viewingUserId,
-            ));
-
+            $posts = $postModel->getPostsByIds($postIds, array('likeUserId' => $viewingUserId));
             $posts = $postModel->getAndMergeAttachmentsIntoPosts($posts);
-            foreach ($posts as &$postRef) {
-                // mimics XenForo_Model_Thread::FETCH_FIRSTPOST behavior
-                // for full post data, keep it within $threadRef.post
-                $threadRef =& $threads[$postRef['thread_id']];
-                $threadRef['post_id'] = $postRef['post_id'];
-                $threadRef['attach_count'] = $postRef['attach_count'];
-                $threadRef['message'] = $postRef['message'];
-                if (isset($postRef['attachments'])) {
-                    $threadRef['attachments'] = $postRef['attachments'];
-                }
-                $threadRef['post'] = $postRef;
-            }
 
             $bbCodeFormatter = XenForo_BbCode_Formatter_Base::create('Base', array('view' => $viewObj));
             $bbCodeParser = XenForo_BbCode_Parser::create($bbCodeFormatter);
@@ -696,12 +664,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 'contentIdKey' => 'post_id'
             );
         }
-
-        $threadForumIds = array();
-        foreach ($threads as $thread) {
-            $threadForumIds[] = $thread['node_id'];
-        }
-        $forums = $forumModel->getForumsByIds($threadForumIds);
 
         foreach (array_keys($threads) as $threadId) {
             $threadRef = &$threads[$threadId];
@@ -729,6 +691,23 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 continue;
             }
 
+            if (isset($users[$threadRef['wf_requested_user_id']])) {
+                $userRef =& $users[$threadRef['wf_requested_user_id']];
+                $threadRef = array_merge($threadRef, $userRef);
+            }
+
+            if (isset($posts[$threadRef['wf_requested_post_id']])) {
+                // mimics XenForo_Model_Thread::FETCH_FIRSTPOST behavior
+                // for full post data, keep it within $threadRef.post
+                $postRef =& $posts[$threadRef['wf_requested_post_id']];
+                $threadRef['post_id'] = $postRef['post_id'];
+                $threadRef['attach_count'] = $postRef['attach_count'];
+                $threadRef['message'] = $postRef['message'];
+                if (isset($postRef['attachments'])) {
+                    $threadRef['attachments'] = $postRef['attachments'];
+                }
+                $threadRef['post'] = $postRef;
+            }
             if (!empty($bbCodeParser)
                 && !empty($bbCodeOptions)
                 && isset($threadRef['post'])
@@ -743,8 +722,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                     $threadRef, $forumRef, $permissionsRef, $viewingUser);
             }
 
-            $threadRef = $threadModel->WidgetFramework_prepareThreadForRendererThreads($threadRef, $forumRef,
-                $permissionsRef, $viewingUser);
+            $threadRef = $wfThreadModel->prepareThreadForRendererThreads($threadRef,
+                $forumRef, $permissionsRef, $viewingUser);
         }
     }
 

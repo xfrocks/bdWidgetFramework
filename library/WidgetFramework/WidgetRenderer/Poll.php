@@ -17,6 +17,9 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
             'name' => 'Thread with Poll',
             'options' => array(
                 'thread_id' => XenForo_Input::STRING,
+                'cutoff' => XenForo_Input::UINT,
+                'forums' => XenForo_Input::ARRAY_SIMPLE,
+                'sticky' => XenForo_Input::STRING,
                 'open_only' => XenForo_Input::UINT,
             ),
             'useWrapper' => false,
@@ -26,6 +29,17 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
     protected function _getOptionsTemplate()
     {
         return 'wf_widget_options_poll';
+    }
+
+    protected function _renderOptions(XenForo_Template_Abstract $template)
+    {
+        $params = $template->getParams();
+
+        $forums = empty($params['options']['forums']) ? array() : $params['options']['forums'];
+        $forums = $this->_helperPrepareForumsOptionSource($forums, true);
+        $template->setParam('forums', $forums);
+
+        return parent::_renderOptions($template);
     }
 
     protected function _validateOptionValue($optionKey, &$optionValue)
@@ -66,89 +80,109 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
         array $params,
         XenForo_Template_Abstract $renderTemplateObject
     ) {
+        if (empty($widget['options']['cutoff'])) {
+            $widget['options']['cutoff'] = 5;
+        }
+
+        $thread = $this->_getThread($widget, $positionCode, $params, $renderTemplateObject);
+        if (empty($thread['node_id'])) {
+            return '';
+        }
+
         $core = WidgetFramework_Core::getInstance();
-        /** @var XenForo_Model_Thread $threadModel */
-        $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
+        /** @var XenForo_Model_Forum $forumModel */
+        $forumModel = $core->getModelFromCache('XenForo_Model_Forum');
         /** @var XenForo_Model_Poll $pollModel */
         $pollModel = $core->getModelFromCache('XenForo_Model_Poll');
-        /** @var XenForo_Model_Node $nodeModel */
-        $nodeModel = $core->getModelFromCache('XenForo_Model_Node');
+        /** @var XenForo_Model_Thread $threadModel */
+        $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
 
-        $thread = array();
-        $poll = array();
-
-        if (empty($widget['options']['thread_id']) OR $widget['options']['thread_id'] === 'random') {
-            $forumIds = array_keys($this->_helperGetViewableNodeList(false));
-
-            $conditions = array(
-                'node_id' => $forumIds,
-                WidgetFramework_XenForo_Model_Thread::CONDITIONS_DISCUSSION_TYPE => 'poll',
-                'deleted' => false,
-                'moderated' => false,
-            );
-
-            if (!empty($widget['options']['open_only'])) {
-                $conditions['discussion_open'] = true;
-            }
-
-            $fetchOptions = array(
-                'order' => ($widget['options']['thread_id'] === 'random'
-                    ? WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_ORDER_RANDOM
-                    : 'post_date'),
-                'orderDirection' => 'desc',
-                WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
-                WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
-                'limit' => 3,
-            );
-
-            $threads = $threadModel->getThreads($conditions, $fetchOptions);
-
-            if (!empty($threads)) {
-                $thread = array();
-                $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination();
-
-                foreach ($threads as $_thread) {
-                    if ($threadModel->canViewThread($_thread, $_thread, $null, $nodePermissions[$_thread['node_id']])) {
-                        $thread = $_thread;
-                        break;
-                    }
-                }
-            }
-        } else {
-            $thread = $threadModel->getThreadById($widget['options']['thread_id'], array(
-                WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_POLL_JOIN => true,
-                WidgetFramework_XenForo_Model_Thread::FETCH_OPTIONS_FORUM_FULL_JOIN => true,
-            ));
-
-            if ($thread['discussion_type'] != 'poll') {
-                $thread = array();
-            }
-
-            if (!empty($widget['options']['open_only'])) {
-                if (empty($thread['discussion_open'])) {
-                    $thread = array();
-                }
-            }
+        $forum = $forumModel->getForumById($thread['node_id']);
+        if (empty($forum)) {
+            return '';
         }
 
-        if (!empty($thread)) {
-            if (XenForo_Application::$versionId < 1040000) {
-                /** @noinspection PhpParamsInspection */
-                $canVoteOnPoll = $threadModel->canVoteOnPoll($thread, $thread);
-                $poll = $pollModel->preparePoll($thread, $canVoteOnPoll);
-            } else {
-                $poll = $pollModel->getPollByContent('thread', $thread['thread_id']);
-                if (!empty($poll)) {
-                    $canVoteOnPoll = $threadModel->canVoteOnPoll($poll, $thread, $thread);
-                    $poll = $pollModel->preparePoll($poll, $canVoteOnPoll);
-                }
-            }
+        $poll = $pollModel->getPollByContent('thread', $thread['thread_id']);
+        if (empty($poll)) {
+            return '';
         }
+        $canVoteOnPoll = $threadModel->canVoteOnPoll($poll, $thread, $forum);
+        $poll = $pollModel->preparePoll($poll, $canVoteOnPoll);
 
         $renderTemplateObject->setParam('thread', $thread);
         $renderTemplateObject->setParam('poll', $poll);
 
         return $renderTemplateObject->render();
+    }
+
+    protected function _getThread(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        $core = WidgetFramework_Core::getInstance();
+        /** @var XenForo_Model_Thread $threadModel */
+        $threadModel = $core->getModelFromCache('XenForo_Model_Thread');
+
+        if (!empty($widget['options']['thread_id'])
+            && intval($widget['options']['thread_id']) > 0
+        ) {
+            // one specific thread
+            return $threadModel->getThreadById($widget['options']['thread_id']);
+        }
+
+        $forumIds = $this->_helperGetForumIdsFromOption(empty($widget['options']['forums'])
+            ? array() : $widget['options']['forums'], $params);
+
+        $conditions = array(
+            'node_id' => $forumIds,
+            'discussion_type' => 'poll',
+            'deleted' => false,
+            'moderated' => false,
+        );
+
+        $fetchOptions = array(
+            'order' => 'post_date',
+            'orderDirection' => 'desc',
+        );
+
+        if (isset($widget['options']['sticky'])
+            && is_numeric($widget['options']['sticky'])
+        ) {
+            $conditions['sticky'] = intval($widget['options']['sticky']);
+        }
+
+        if (!empty($widget['options']['open_only'])) {
+            $conditions['discussion_open'] = true;
+        }
+
+        if ($widget['options']['thread_id'] === 'random') {
+            $conditions['post_date'] = array(
+                '>',
+                XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+            );
+            $fetchOptions['order'] = WidgetFramework_Model_Thread::FETCH_OPTIONS_ORDER_RANDOM;
+        }
+
+        /** @var WidgetFramework_Model_Thread $wfThreadModel */
+        $wfThreadModel = $core->getModelFromCache('WidgetFramework_Model_Thread');
+        $threadIds = $wfThreadModel->getThreadIds($conditions, $fetchOptions);
+        $threads = $wfThreadModel->getThreadsByIdsInOrder($threadIds);
+
+        if (!empty($threads)) {
+            /** @var XenForo_Model_Node $nodeModel */
+            $nodeModel = $core->getModelFromCache('XenForo_Model_Node');
+            $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination();
+
+            foreach ($threads as $_thread) {
+                if ($threadModel->canViewThread($_thread, $_thread, $null, $nodePermissions[$_thread['node_id']])) {
+                    return $_thread;
+                }
+            }
+        }
+
+        return null;
     }
 
 }

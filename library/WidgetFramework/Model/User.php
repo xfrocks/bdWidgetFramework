@@ -1,17 +1,56 @@
 <?php
 
-class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Model_User
+class WidgetFramework_Model_User extends XenForo_Model
 {
-
     const CONDITIONS_STATUS_DATE = 'WidgetFramework_status_date';
     const CONDITIONS_DOB = 'WidgetFramework_dob';
     const CONDITIONS_HAS_AVATAR = 'WidgetFramework_has_avatar';
     const ORDER_STATUS_DATE = 'WidgetFramework_status_date';
     const ORDER_RESOURCE_COUNT = 'WidgetFramework_resource_count';
 
+    public function getUserIds(array $conditions, array $fetchOptions = array())
+    {
+        if (isset($fetchOptions['join'])) {
+            throw new XenForo_Exception(sprintf('%s does not support `join` in $fetchOptions', __METHOD__));
+        }
+
+        $whereClause = $this->prepareUserConditions($conditions, $fetchOptions);
+        $orderClause = $this->_getUserModel()->prepareUserOrderOptions($fetchOptions, 'user.user_id');
+        $joinOptions = $this->_getUserModel()->prepareUserFetchOptions($fetchOptions);
+        $limitOptions = $this->prepareLimitFetchOptions($fetchOptions);
+
+        return $this->_getDb()->fetchCol($this->limitQueryResults('
+			SELECT user.user_id
+			FROM xf_user AS user
+			' . $joinOptions['joinTables'] . '
+			WHERE ' . $whereClause . '
+			' . $orderClause . '
+		', $limitOptions['limit'], $limitOptions['offset']));
+    }
+
+    public function getUsersByIdsInOrder(array $userIds, $fetchOptionsJoin = 0)
+    {
+        if (empty($userIds)) {
+            return array();
+        }
+
+        /** @var XenForo_Model_User $userModel */
+        $userModel = $this->getModelFromCache('XenForo_Model_User');
+        $users = $userModel->getUsersByIds($userIds, array('join' => $fetchOptionsJoin));
+
+        $ordered = array();
+        foreach ($userIds as $userId) {
+            if (isset($users[$userId])) {
+                $ordered[$userId] = $users[$userId];
+            }
+        }
+
+        return $ordered;
+    }
+
     public function prepareUserConditions(array $conditions, array &$fetchOptions)
     {
-        $result = parent::prepareUserConditions($conditions, $fetchOptions);
+        $result = $this->_getUserModel()->prepareUserConditions($conditions, $fetchOptions);
         $db = $this->_getDb();
         $sqlConditions = array($result);
 
@@ -22,6 +61,11 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
 
             $this->assertValidCutOffOperator($operator);
             $sqlConditions[] = "user_profile.status_date $operator " . $db->quote($cutOff);
+
+            if (!isset($fetchOptions['join'])) {
+                $fetchOptions['join'] = 0;
+            }
+            $fetchOptions['join'] |= XenForo_Model_User::FETCH_USER_PROFILE;
         }
 
         if (isset($conditions[self::CONDITIONS_DOB])
@@ -41,6 +85,12 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
             }
             $sqlConditions[] = '(' . implode(' OR ', $tmp) . ')';
             $sqlConditions[] = 'user_option.show_dob_date = 1';
+
+            if (!isset($fetchOptions['join'])) {
+                $fetchOptions['join'] = 0;
+            }
+            $fetchOptions['join'] |= XenForo_Model_User::FETCH_USER_PROFILE;
+            $fetchOptions['join'] |= XenForo_Model_User::FETCH_USER_OPTION;
         }
 
         if (!empty($conditions[self::CONDITIONS_HAS_AVATAR])) {
@@ -63,4 +113,11 @@ class WidgetFramework_XenForo_Model_User extends XFCP_WidgetFramework_XenForo_Mo
         return parent::getOrderByClause($choices, $fetchOptions, $defaultOrderSql);
     }
 
+    /**
+     * @return XenForo_Model_User
+     */
+    protected function _getUserModel()
+    {
+        return $this->getModelFromCache('XenForo_Model_User');
+    }
 }

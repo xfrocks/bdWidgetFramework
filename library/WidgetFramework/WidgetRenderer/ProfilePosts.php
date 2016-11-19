@@ -92,10 +92,12 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
         $core = WidgetFramework_Core::getInstance();
         $visitor = XenForo_Visitor::getInstance();
 
-        /** @var WidgetFramework_XenForo_Model_ProfilePost $profilePostModel */
+        /** @var WidgetFramework_Model_ProfilePost $wfProfilePostModel */
+        $wfProfilePostModel = $core->getModelFromCache('WidgetFramework_Model_ProfilePost');
+        /** @var XenForo_Model_ProfilePost $profilePostModel */
         $profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
 
-        $profilePosts = $profilePostModel->WidgetFramework_getLatestProfilePosts(array(
+        $profilePosts = $wfProfilePostModel->getLatestProfilePosts(array(
             'deleted' => false,
             'moderated' => false
         ), array(

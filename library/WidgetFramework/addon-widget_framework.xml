@@ -385,7 +385,7 @@
 		</xen:if>
 	</xen:foreach>
 </xen:if>]]></template>
-    <template title="wf_widget_options_birthday"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{xen:if '!empty({$options.limit})', $options.limit, 12}">
+    <template title="wf_widget_options_birthday"><![CDATA[<xen:spinboxunit label="{xen:phrase wf_limit}:" name="{$namePrefix}limit" value="{$options.limit}">
 	<xen:explain>
 		{xen:phrase wf_limit_explain, "items={xen:phrase wf_users_lowercase}"}
 		{xen:phrase wf_limit_zero_explain}
@@ -435,6 +435,21 @@
     <template title="wf_widget_options_poll"><![CDATA[<xen:textboxunit label="{xen:phrase wf_poll_thread_id}:" name="{$namePrefix}thread_id" value="{$options.thread_id}">
 	<xen:explain>{xen:phrase wf_poll_thread_id_explain}</xen:explain>
 </xen:textboxunit>
+
+<xen:spinboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{xen:if '!empty({$options.cutoff})', $options.cutoff, 5}">
+	<xen:explain>{xen:phrase wf_widget_poll_cutoff_explain}</xen:explain>
+</xen:spinboxunit>
+
+<xen:selectunit label="{xen:phrase wf_threads_forums}:" name="{$namePrefix}forums" value="" size="5" multiple="true" inputclass="textCtrl">
+	<xen:options source="$forums" />
+	<xen:explain>{xen:phrase wf_threads_forums_explain} {xen:phrase wf_special_forums_explain}</xen:explain>
+</xen:selectunit>
+
+<xen:selectunit label="{xen:phrase wf_threads_sticky_threads_only}" name="{$namePrefix}sticky" value="{$options.sticky}" inputclass="textCtrl">
+	<xen:option value=""></xen:option>
+	<xen:option value="1">{xen:phrase yes}</xen:option>
+	<xen:option value="0">{xen:phrase no}</xen:option>
+</xen:selectunit>
 
 <xen:checkboxunit label="">
 	<xen:option name="{$namePrefix}open_only" value="1" selected="{$options.open_only}">{xen:phrase wf_thread_open_only}</xen:option>
@@ -1374,6 +1389,8 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <phrase title="wf_widget_online_users_following" version_id="47" version_string="2.1.1"><![CDATA[Show people you follow]]></phrase>
     <phrase title="wf_widget_page" version_id="112" version_string="2.6.0-dev"><![CDATA[Widget Page]]></phrase>
     <phrase title="wf_widget_page_layout" version_id="54" version_string="2.2.3"><![CDATA[Layout]]></phrase>
+    <phrase title="wf_widget_poll_cutoff_explain" version_id="2060317" version_string="2.6.3"><![CDATA[Threads older than this number of days won't be included in "random" candidate list.
+]]></phrase>
     <phrase title="wf_widget_profile_posts_type_recent" global_cache="1" version_id="96" version_string="2.5.0d"><![CDATA[New Profile Posts]]></phrase>
     <phrase title="wf_widget_saved_successfully" version_id="1" version_string="0.9"><![CDATA[Widget saved successfully]]></phrase>
     <phrase title="wf_widget_threads_popular_cutoff" version_id="26" version_string="1.3.1"><![CDATA[Threads Cutoff]]></phrase>

@@ -39,6 +39,8 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
         XenForo_Template_Abstract $renderTemplateObject
     ) {
         $core = WidgetFramework_Core::getInstance();
+        /** @var WidgetFramework_Model_User $wfUserModel */
+        $wfUserModel = $core->getModelFromCache('WidgetFramework_Model_User');
         /** @var XenForo_Model_User $userModel */
         $userModel = $core->getModelFromCache('XenForo_Model_User');
         /** @var XenForo_Model_UserProfile $userProfileModel */
@@ -49,21 +51,15 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
         if (XenForo_Visitor::getUserId() == 0 OR empty($widget['options']['friends_only'])) {
             // get statuses from all users if friends_only option is not used
             // also do it if current user is guest (guest has no friend list, lol)
-            $conditions = array(
-                WidgetFramework_XenForo_Model_User::CONDITIONS_STATUS_DATE => array(
-                    '>',
-                    0
-                )
-            );
+            $conditions = array(WidgetFramework_Model_User::CONDITIONS_STATUS_DATE => array('>', 0));
             $fetchOptions = array(
-                'join' => XenForo_Model_User::FETCH_USER_PROFILE,
-                'order' => WidgetFramework_XenForo_Model_User::ORDER_STATUS_DATE,
+                'order' => WidgetFramework_Model_User::ORDER_STATUS_DATE,
                 'direction' => 'desc',
-
                 'limit' => $widget['options']['limit'] * 3,
             );
 
-            $users = $userModel->getUsers($conditions, $fetchOptions);
+            $userIds = $wfUserModel->getUserIds($conditions, $fetchOptions);
+            $users = $wfUserModel->getUsersByIdsInOrder($userIds, XenForo_Model_User::FETCH_USER_PROFILE);
 
             // remove users if current user has no permission
             foreach (array_keys($users) as $userId) {
@@ -90,11 +86,10 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
         if (!empty($widget['options']['show_duplicates'])
             && !empty($users)
         ) {
-            $userIds = array_keys($users);
-            /** @var WidgetFramework_XenForo_Model_ProfilePost $profilePostModel */
-            $profilePostModel = $core->getModelFromCache('XenForo_Model_ProfilePost');
-            $profilePostIds = $profilePostModel->WidgetFramework_getProfilePostIdsOfUserStatuses(
-                $userIds, intval($widget['options']['limit']));
+            /** @var WidgetFramework_Model_ProfilePost $wfProfilePostModel */
+            $wfProfilePostModel = $core->getModelFromCache('WidgetFramework_Model_ProfilePost');
+            $profilePostIds = $wfProfilePostModel->getProfilePostIdsOfUserStatuses(
+                array_keys($users), intval($widget['options']['limit']));
         } else {
             foreach ($users as $user) {
                 $profilePostIds[] = $user['status_profile_post_id'];
