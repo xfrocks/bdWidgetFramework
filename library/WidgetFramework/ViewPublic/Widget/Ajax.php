@@ -25,7 +25,6 @@ class WidgetFramework_ViewPublic_Widget_Ajax extends XenForo_ViewPublic_Base
 
         $widgets = array($widget['widget_id'] => $widget);
         $core = WidgetFramework_Core::getInstance();
-//        $core->removeAllWidgets();
         $core->addWidgets($widgets);
 
         $_REQUEST['_getRender'] = 1;

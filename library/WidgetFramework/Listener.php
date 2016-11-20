@@ -231,9 +231,7 @@ class WidgetFramework_Listener
         /** @noinspection PhpUnusedParameterInspection */
         array &$containerParams
     ) {
-        if (self::$viewRenderer === null
-            && $viewRenderer instanceof XenForo_ViewRenderer_HtmlPublic
-        ) {
+        if ($fc->getDependencies() instanceof XenForo_Dependencies_Public) {
             self::$viewRenderer = $viewRenderer;
             WidgetFramework_Core::getInstance()->bootstrap();
         }
