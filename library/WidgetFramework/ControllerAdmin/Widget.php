@@ -568,6 +568,18 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         );
     }
 
+    public function actionUpgrade102()
+    {
+        $this->assertAdminPermission('addOn');
+
+        XenForo_Application::defer('WidgetFramework_Deferred_Upgrade102', array());
+
+        return $this->responseRedirect(
+            XenForo_ControllerResponse_Redirect::SUCCESS,
+            XenForo_Link::buildAdminLink('widgets')
+        );
+    }
+
     protected function _getWidgetOrError($widgetId)
     {
         $info = $this->_getWidgetModel()->getWidgetById($widgetId);

@@ -38,25 +38,44 @@ class WidgetFramework_Helper_OldPageLayout
             'cols' => $cols,
         );
 
-        $layout = new _Layout_Vertical($widgets, $options, $widgetIds);
+        $layout = new _Layout_Columns($widgets, $options, $widgetIds);
+
+        self::log('%s/buildLayoutTree(%s): layout=%s',
+            __CLASS__, implode(', ', $widgetIds), $layout);
 
         return $layout;
     }
 
+    public static function log()
+    {
+        if (!defined('DEFERRED_CMD')
+            || !XenForo_Application::debugMode()
+        ) {
+            return;
+        }
+
+        $args = func_get_args();
+        $args[0] .= "\n";
+        call_user_func_array('printf', $args);
+    }
 }
 
-class _Layout_Vertical extends _Layout_Multiple
+class _Layout_Columns extends _Layout_Multiple
 {
-    protected function _doLayout_finishedGroup($groupIdsOrdered)
+    protected function _doLayout_postSplitGroups($groupIdsOrdered)
     {
-        if (count($groupIdsOrdered) > 1) {
-            $firstWidget = reset($this->_widgets);
-            $firstWidget['position'] = $this->_options['position'];
-            $firstWidget['group_id'] = $this->_options['group_id'];
-            $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget);
-
-            $this->_options['group_id'] = $groupWidget['widget_id'];
+        if (count($groupIdsOrdered) < 2) {
+            return;
         }
+
+        $firstWidget = reset($this->_widgets);
+        $firstWidget['position'] = $this->_options['position'];
+        $firstWidget['group_id'] = $this->_options['group_id'];
+        $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget, array('layout' => 'columns'));
+
+        $this->_options['group_id'] = $groupWidget['widget_id'];
+        WidgetFramework_Helper_OldPageLayout::log('%s/_doLayout_finishedGroup: new `group_id`=%s',
+            get_class($this), $this->_options['group_id']);
     }
 
     protected function _getFieldIndex()
@@ -76,21 +95,16 @@ class _Layout_Vertical extends _Layout_Multiple
 
     protected function _newSubLayout(array &$widgets, array $widgetIds, $depth)
     {
-        return new _Layout_Horizontal($widgets, $this->_options, $widgetIds, $depth);
+        return new _Layout_Rows($widgets, $this->_options, $widgetIds, $depth);
     }
 
 }
 
-class _Layout_Horizontal extends _Layout_Multiple
+class _Layout_Rows extends _Layout_Multiple
 {
-    protected function _doLayout_finishedGroup($groupIdsOrdered)
+    protected function _doLayout_postSplitGroups($groupIdsOrdered)
     {
-        $firstWidget = reset($this->_widgets);
-        $firstWidget['position'] = $this->_options['position'];
-        $firstWidget['group_id'] = $this->_options['group_id'];
-        $groupWidget = $this->_getWidgetModel()->createGroupContaining($firstWidget, array('layout' => 'columns'));
-
-        $this->_options['group_id'] = $groupWidget['widget_id'];
+        // intentionally left blank
     }
 
     protected function _getFieldIndex()
@@ -110,7 +124,7 @@ class _Layout_Horizontal extends _Layout_Multiple
 
     protected function _newSubLayout(array &$widgets, array $widgetIds, $depth)
     {
-        return new _Layout_Vertical($widgets, $this->_options, $widgetIds, $depth);
+        return new _Layout_Columns($widgets, $this->_options, $widgetIds, $depth);
     }
 
 }
@@ -137,6 +151,12 @@ abstract class _Layout_Multiple
         }
     }
 
+    public function __toString()
+    {
+        return sprintf('%s(group #%d): [%s]', get_class($this),
+            $this->_options['group_id'], implode(', ', $this->_subLayouts));
+    }
+
     public function getOption($key)
     {
         if (isset($this->_options[$key])) {
@@ -153,11 +173,17 @@ abstract class _Layout_Multiple
 
     protected function _doLayout(array $widgetIds)
     {
+        WidgetFramework_Helper_OldPageLayout::log('%s/_doLayout: widgetIds=%s',
+            get_class($this), implode(', ', $widgetIds));
+
         $groups = array();
         $mapping = array();
 
         $fieldIndex = $this->_getFieldIndex();
         $fieldSize = $this->_getFieldSize();
+
+        WidgetFramework_Helper_OldPageLayout::log('%s/_doLayout: fieldIndex=%s, fieldSize=%s',
+            get_class($this), $fieldIndex, $fieldSize);
 
         foreach ($widgetIds as $widgetId) {
             $widgetRef = &$this->_widgets[$widgetId];
@@ -174,7 +200,10 @@ abstract class _Layout_Multiple
             }
         }
 
-        $this->_doLayout_finishedGroup($groupIdsOrdered);
+        WidgetFramework_Helper_OldPageLayout::log('%s/_doLayout(%s): groupIds=%s',
+            get_class($this), implode(', ', $widgetIds), implode(', ', $groupIdsOrdered));
+
+        $this->_doLayout_postSplitGroups($groupIdsOrdered);
 
         foreach ($groupIdsOrdered as $groupId) {
             $indeces = $groups[$groupId];
@@ -191,6 +220,8 @@ abstract class _Layout_Multiple
                     $subLayoutWidgetIds[] = $widgetId;
                 }
             }
+            WidgetFramework_Helper_OldPageLayout::log('%s/_doLayout: groupId=%d, widgetIds=%s',
+                get_class($this), $groupId, implode(', ', $subLayoutWidgetIds));
 
             if (empty($subLayoutWidgetIds)) {
                 // really?
@@ -255,24 +286,32 @@ abstract class _Layout_Multiple
 
     abstract protected function _newSubLayout(array &$widgets, array $widgetIds, $depth);
 
-    abstract protected function _doLayout_finishedGroup($groupIdsOrdered);
+    abstract protected function _doLayout_postSplitGroups($groupIdsOrdered);
 }
 
 class _Layout_Single
 {
-    protected $_options;
+    protected static $widgetCount = 0;
+    protected $_widget;
 
     public function __construct(array &$widget, array $options)
     {
-        $this->_options = $options;
-
         $widget['position'] = $options['position'];
         $widget['group_id'] = $options['group_id'];
+        $widget['display_order'] = (++self::$widgetCount) * 10;
         $widget['template_for_hooks'] = array(
             $options['position'] => array(
                 'wf_widget_page',
             ),
         );
+
+        $this->_widget = $widget;
+    }
+
+    public function __toString()
+    {
+        return sprintf('%s(#%d, group #%d, order #%d)', get_class($this),
+            $this->_widget['widget_id'], $this->_widget['group_id'], $this->_widget['display_order']);
     }
 
 }

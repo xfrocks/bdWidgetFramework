@@ -187,12 +187,7 @@ class WidgetFramework_Installer
             if ($effectiveVersionId <= 102) {
                 // update widget within widget pages to use group/display order
                 // instead of layout row/column
-                self::_updatePositionGroupAndDisplayOrderForWidgetsOfPages();
-            }
-
-            if ($effectiveVersionId <= 112) {
-                // update widget tab_group option to use group_id instead
-                self::_updateWidgetGroupIds();
+                XenForo_Application::defer('WidgetFramework_Deferred_Upgrade102', array());
             }
         }
     }
@@ -214,63 +209,6 @@ class WidgetFramework_Installer
             WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS, false);
 
         WidgetFramework_ShippableHelper_Updater::onUninstall(WidgetFramework_Listener::UPDATER_URL, 'widget_framework');
-    }
-
-    protected static function _updatePositionGroupAndDisplayOrderForWidgetsOfPages()
-    {
-        /** @var WidgetFramework_Model_Widget $widgetModel */
-        $widgetModel = XenForo_Model::create('WidgetFramework_Model_Widget');
-        /** @var WidgetFramework_Model_WidgetPage $widgetPageModel */
-        $widgetPageModel = $widgetModel->getModelFromCache('WidgetFramework_Model_WidgetPage');
-
-        $widgetPages = $widgetPageModel->getWidgetPages();
-
-        foreach ($widgetPages as $widgetPage) {
-            $widgets = $widgetModel->getWidgets(array('widget_page_id' => $widgetPage['node_id']));
-
-            foreach (array_keys($widgets) as $widgetId) {
-                if ($widgets[$widgetId]['position'] == 'sidebar') {
-                    // update sidebar widgets
-                    $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-                    $widgetDw->setImportMode(true);
-                    $widgetDw->setExistingData($widgets[$widgetId], true);
-                    $widgetDw->set('position', 'wf_widget_page', '', array(
-                        'runVerificationCallback' => false,
-                    ));
-
-                    $widgetDw->save();
-                    unset($widgets[$widgetId]);
-                } elseif (!empty($widgets[$widgetId]['position'])) {
-                    // in older versions, page widgets' positions are either "sidebar" or empty
-                    // it looks like this widget has been converted or something, ignore it
-                    unset($widgets[$widgetId]);
-                }
-            }
-
-            if (!empty($widgets)) {
-                $widgetsCloned = $widgets;
-                WidgetFramework_Helper_OldPageLayout::buildLayoutTree($widgetsCloned);
-
-                foreach (array_keys($widgets) as $widgetId) {
-                    // update layout widgets
-                    $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
-                    $widgetDw->setImportMode(true);
-                    $widgetDw->setExistingData($widgets[$widgetId], true);
-                    $widgetDw->bulkSet($widgetsCloned[$widgetId], array(
-                        'runVerificationCallback' => false,
-                        'ignoreInvalidFields' => true,
-                    ));
-                    $widgetDw->save();
-                }
-            }
-        }
-
-        $widgetModel->buildCache();
-    }
-
-    protected static function _updateWidgetGroupIds()
-    {
-        // TODO
     }
 
 }
