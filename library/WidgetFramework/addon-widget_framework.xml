@@ -2149,7 +2149,7 @@ All customization should go to wf_default_EXTRA.css
 	resize: vertical;
 	overflow: hidden;
 }]]></template>
-    <template title="wf_threads.css" version_id="2060317" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
+    <template title="wf_threads.css" version_id="2060318" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
 {
 	font-weight: bold;
 }
@@ -2178,6 +2178,7 @@ All customization should go to wf_default_EXTRA.css
 	.WidgetFramework_WidgetRenderer_Threads_ListCompact > ol > li { display: table-row; }
 	.WidgetFramework_WidgetRenderer_Threads_ListCompact > ol > li > div { display: table-cell; vertical-align: middle; }
 
+	.WidgetFramework_WidgetRenderer_Threads_ListCompact .unread { font-weight: bold; }
 	.WidgetFramework_WidgetRenderer_Threads_ListCompact div.avatar { width: 20px; }
 	.WidgetFramework_WidgetRenderer_Threads_ListCompact .avatar img
 	{
