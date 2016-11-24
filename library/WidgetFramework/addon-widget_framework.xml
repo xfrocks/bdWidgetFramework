@@ -2291,7 +2291,7 @@ All customization should go to wf_default_EXTRA.css
 	<xen:container var="$facebookSdk">1</xen:container>
 	<fb:facepile width="{xen:property sidebar.width}" size="small" colorscheme="{xen:property fbColorScheme}"></fb:facepile>
 </xen:if>]]></template>
-    <template title="wf_widget_feed_reader" version_id="44" version_string="2.0.6"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_feed_reader" version_id="2060318" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if hascontent="true">
 	<ul class="WidgetFramework_WidgetRenderer_FeedReader_Entries">
@@ -2304,9 +2304,12 @@ All customization should go to wf_default_EXTRA.css
 						<a href="{xen:raw $entry.link}" target="_blank">{$entry.title}</a><xen:if is="{$entry.author}"> {xen:phrase wf_posted_by_lowercase} {$entry.author}</xen:if>.
 						{xen:helper snippet, $entry.content, 200, {xen:array 'stripQuote=1'}}
 					<xen:else />
-						<xen:if is="{$entry.bdImage_image}">
+						<xen:if is="{$entry.image}">
+							<xen:set var="$thumbnailUrl"><xen:callback class="WidgetFramework_Template_Helper_Core"
+								method="getThumbnailUrl" params="{xen:array
+								'width=100', 'height=100'}">{xen:raw $entry.image}</xen:callback></xen:set>
 							<a href="{xen:raw $entry.link}" target="_blank">
-								<img src="{xen:helper bdImage_thumbnail, $entry.bdImage_image, 100}" class="WidgetFramework_WidgetRenderer_FeedReader_Thumbnail limitedHeight" />
+								<img src="{$thumbnailUrl}" class="WidgetFramework_WidgetRenderer_FeedReader_Thumbnail limitedHeight" />
 							</a>
 						</xen:if>
 						

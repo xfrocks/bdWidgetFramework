@@ -67,14 +67,7 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
                 $entry['author'] = $entryRaw['author'];
                 $entry['title'] = $entryRaw['title'];
                 $entry['content'] = $entryRaw['content'];
-
-                if (defined('BDIMAGE_IS_WORKING')) {
-                    // outsource the image processing + handling to [bd] Image
-                    $entry['bdImage_image'] = call_user_func(array('bdImage_Integration', 'getBbCodeImage'),
-                        $entryRaw['content']);
-                } else {
-                    // TODO: support other method?
-                }
+                $entry['image'] = $this->_extractImage($entryRaw['content']);
 
                 $entries[] = $entry;
 
@@ -90,4 +83,13 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
         return $renderTemplateObject->render();
     }
 
+    protected function _extractImage($bbCode)
+    {
+        if (preg_match('#\[img\](?<url>.+?)\[/img\]#i', $bbCode, $matches)) {
+            $url = $matches['url'];
+            return $url;
+        }
+
+        return '';
+    }
 }

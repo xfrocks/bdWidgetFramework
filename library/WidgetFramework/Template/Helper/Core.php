@@ -22,4 +22,8 @@ class WidgetFramework_Template_Helper_Core
         return strpos($widget['position'], ',') === false;
     }
 
+    public static function getThumbnailUrl($url, array $params)
+    {
+        return WidgetFramework_ShippableHelper_Image::getThumbnailUrl($url, $params['width'], $params['height']);
+    }
 }
