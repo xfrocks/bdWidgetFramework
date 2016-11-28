@@ -32,6 +32,9 @@ class WidgetFramework_XenForo_ControllerPublic_Misc extends XFCP_WidgetFramework
 
         $ajaxLoadParams = $this->_input->filterSingle('alp', XenForo_Input::STRING);
         $ajaxLoadParams = @json_decode($ajaxLoadParams, true);
+        if (empty($ajaxLoadParams)) {
+            $ajaxLoadParams = array();
+        }
 
         $viewParams = array(
             'widget' => $widget,
