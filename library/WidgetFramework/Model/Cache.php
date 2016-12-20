@@ -29,8 +29,6 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             return array();
         }
 
-        self::_modifyCacheId($cacheId);
-
         if (isset(self::$_queriedData[$cacheId][$widgetId])) {
             return self::$_queriedData[$cacheId][$widgetId];
         }
@@ -89,8 +87,6 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             return array();
         }
 
-        self::_modifyCacheId($cacheId);
-
         $html = $this->_cleanUpHtml($html);
 
         $data = array(
@@ -130,16 +126,16 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         }
 
         if ($cacheStore === self::OPTION_CACHE_STORE_FILE) {
-            $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
-            $dirPath = dirname($filePath);
-            if (!XenForo_Helper_File::createDirectory($dirPath)) {
-                return false;
-            }
+        $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
+        $dirPath = dirname($filePath);
+        if (!XenForo_Helper_File::createDirectory($dirPath)) {
+            return false;
+        }
 
-            $fh = fopen($filePath, 'w');
-            if (flock($fh, LOCK_EX | LOCK_NB)) {
-                return $fh;
-            }
+        $fh = fopen($filePath, 'w');
+        if (flock($fh, LOCK_EX | LOCK_NB)) {
+            return $fh;
+        }
         } else {
             $lockId = sprintf('%s_lock', $cacheId);
             $lockOptions = $options;
@@ -411,41 +407,6 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         $html = preg_replace('#(\s)\s+#', '$1', $html);
 
         return $html;
-    }
-
-    protected static function _modifyCacheId(&$cacheId)
-    {
-        static $modifiers = false;
-
-        if ($modifiers === false) {
-            $modifiers = '';
-            $modifiersArray = array();
-            $visitor = XenForo_Visitor::getInstance();
-            $options = XenForo_Application::getOptions();
-
-            if (!empty($visitor['language_id'])
-                && $visitor['language_id'] != $options->get('defaultLanguageId')
-            ) {
-                $modifiersArray[] = sprintf('l%d', $visitor['language_id']);
-            }
-
-            if ($visitor['style_id'] > 0) {
-                $modifiersArray[] = sprintf('s%d', $visitor['style_id']);
-            }
-
-            if (!empty($visitor['timezone'])
-                && $visitor['timezone'] != $options->get('guestTimeZone')
-            ) {
-                $modifiersArray[] = sprintf('tz%s', $visitor['timezone']);
-            }
-
-            if (!empty($modifiersArray)) {
-                $modifiers = '_' . implode('_', $modifiersArray);
-                $modifiers = preg_replace('#[^0-9a-zA-Z_]#', '', $modifiers);
-            }
-        }
-
-        $cacheId .= $modifiers;
     }
 
     protected static function _serialize($data)

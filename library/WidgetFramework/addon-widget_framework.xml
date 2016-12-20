@@ -158,7 +158,7 @@
 
 		</xen:if>
 
-		<xen:if is="{$options.expression}">
+		<xen:if is="{$options.expression} || {$debugMode}">
 		<xen:textboxunit name="{$namePrefix}expression" label="{xen:phrase wf_expression}" value="{$options.expression}" rows="3">
 			<xen:explain>{xen:phrase wf_expression_explain}</xen:explain>
 		</xen:textboxunit>
@@ -180,7 +180,8 @@
 		<xen:else />
 		<xen:checkboxunit label="">
 			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
-			<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
+			<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}"
+						displayif="{$options.deactivate_for_mobile} || {$debugMode}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
 		</xen:checkboxunit>
 		</xen:if>
 	</fieldset>
@@ -1232,11 +1233,11 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_categories" version_id="112" version_string="2.6.0-dev"><![CDATA[Categories]]></phrase>
     <phrase title="wf_comments_lowercase" version_id="111" version_string="2.6.0-dev"><![CDATA[comments]]></phrase>
     <phrase title="wf_conditional" version_id="96" version_string="2.5.0d"><![CDATA[Conditional]]></phrase>
-    <phrase title="wf_conditional_explain" version_id="100" version_string="2.5.0d"><![CDATA[Enter widget conditionals to control when the widget is shown. The syntax is similar to template conditional for &lt;xen:if /&gt; tag. You can also use <a href="{link}" target="_blank" tabindex="-1">Layout Editor</a> to learn which variables are available in which positions. Some commonly used conditionals:<br />
+    <phrase title="wf_conditional_explain" version_id="2060318" version_string="2.6.3"><![CDATA[Enter widget conditionals to control when the widget is shown. The syntax is similar to template conditional for &lt;xen:if /&gt; tag. You can also use <a href="{link}" target="_blank" tabindex="-1">Layout Editor</a> to learn which variables are available in which positions. Examples:<br />
 <br />
-{$visitor.user_id} > 0 (show up for logged in users only)<br />
-<br />
-{xen:helper ismemberof, $visitor, 3} (show up for users of user group #3 only, which is the admin group)]]></phrase>
+{$visitor.user_id} > 0 = logged in users<br />
+{xen:helper ismemberof, $visitor, 3} = members of user group #3 (admin group)<br />
+{$visitorIsBrowsingWithMobile} = mobile browsers; <span style="color: black; font-weight: bold">!</span>{$visitorIsBrowsingWithMobile} = desktop browsers<br />]]></phrase>
     <phrase title="wf_confirm_deletion_of_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Confirm Deletion of Widget Page]]></phrase>
     <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
     <phrase title="wf_contents_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Contents Widgets]]></phrase>
@@ -1244,7 +1245,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="wf_current_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum]]></phrase>
     <phrase title="wf_current_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum + its children]]></phrase>
-    <phrase title="wf_deactivate_for_mobile" version_id="49" version_string="2.2.1"><![CDATA[Deactivate for mobile]]></phrase>
+    <phrase title="wf_deactivate_for_mobile" version_id="2060318" version_string="2.6.3"><![CDATA[Deactivate for mobile (<span style="color: red; text-decoration: underline" title="please switch to use Conditional with &quot;!{$visitorIsBrowsingWithMobile}&quot; as soon as possible, this check box will be removed completely in the near future." class="Tooltip">deprecated</span>)]]></phrase>
     <phrase title="wf_delete_all_before_import" version_id="24" version_string="1.2.2.2"><![CDATA[Delete all existing widgets before importing]]></phrase>
     <phrase title="wf_delete_all_before_import_explain" version_id="24" version_string="1.2.2.2"><![CDATA[Select this option to make an exact copy of widgets from the XML file. All existing widgets will be deleted completely. This action can not be undone.]]></phrase>
     <phrase title="wf_delete_widget" version_id="1" version_string="0.9"><![CDATA[Delete Widget]]></phrase>
@@ -1257,7 +1258,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_edit_widget" version_id="1" version_string="0.9"><![CDATA[Edit Widget]]></phrase>
     <phrase title="wf_edit_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Edit Widget Page]]></phrase>
     <phrase title="wf_export_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Export Widgets]]></phrase>
-    <phrase title="wf_expression" version_id="1" version_string="0.9"><![CDATA[Expression]]></phrase>
+    <phrase title="wf_expression" version_id="2060318" version_string="2.6.3"><![CDATA[Expression (<span style="color: red">deprecated</span>)]]></phrase>
     <phrase title="wf_expression_explain" version_id="96" version_string="2.5.0d"><![CDATA[Expression has been deprecated for security reason. Please switch to use Conditional as soon as possible, Expression will be removed completely in the near future.]]></phrase>
     <phrase title="wf_feed_entry" version_id="44" version_string="2.0.6"><![CDATA[feed entries]]></phrase>
     <phrase title="wf_feed_reader" global_cache="1" version_id="65" version_string="2.3.6"><![CDATA[Feed Reader]]></phrase>
