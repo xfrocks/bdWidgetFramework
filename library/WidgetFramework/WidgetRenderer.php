@@ -404,10 +404,13 @@ abstract class WidgetFramework_WidgetRenderer
                 $this->_configuration['options']['cache_seconds'] = XenForo_Input::STRING;
             }
 
+            // `expression` has been deprecated, use `conditional` instead
             $this->_configuration['options']['expression'] = XenForo_Input::STRING;
             $this->_configuration['options']['conditional'] = XenForo_Input::ARRAY_SIMPLE;
+
+            // `deactivate_for_mobile` has been deprecated,
+            // use `conditional` with {$visitorIsBrowsingWithMobile} instead
             $this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
-            $this->_configuration['options']['deactivate_for_desktop'] = XenForo_Input::UINT;
         }
 
         return $this->_configuration;
@@ -595,6 +598,7 @@ abstract class WidgetFramework_WidgetRenderer
                 return WidgetFramework_Helper_Conditional::test($conditional['raw'], $conditional['parsed'], $params);
             }
         } elseif (!empty($widget['options']['expression'])) {
+            // legacy support
             return $this->_executeExpression($widget['options']['expression'], $params);
         }
 
@@ -608,16 +612,43 @@ abstract class WidgetFramework_WidgetRenderer
         array $params,
         array $suffix = array()
     ) {
-        $permissionCombination = 1;
+        $parts = array($positionCode);
+
+        $visitor = XenForo_Visitor::getInstance();
+        $xenOptions = XenForo_Application::getOptions();
+
         if ($this->useUserCache($widget)) {
-            $permissionCombination = XenForo_Visitor::getInstance()->get('permission_combination_id');
+            $parts[] = sprintf('pc%d', $visitor->get('permission_combination_id'));
         }
 
-        if (empty($suffix)) {
-            return sprintf('%s_pc%d', $positionCode, $permissionCombination);
-        } else {
-            return sprintf('%s_pc%d_s%s', $positionCode, $permissionCombination, implode('_', $suffix));
+        if (isset($params['visitorStyle'])
+            && intval($params['visitorStyle']['style_id']) !== intval($xenOptions->get('defaultStyleId'))
+        ) {
+            $parts[] = sprintf('vs%d', $params['visitorStyle']['style_id']);
         }
+
+        if (isset($params['visitorLanguage'])
+            && intval($params['visitorLanguage']['language_id']) !== intval($xenOptions->get('defaultLanguageId'))
+        ) {
+            $parts[] = sprintf('vl%d', $params['visitorLanguage']['language_id']);
+        }
+
+        $visitorTimezone = strval($visitor['timezone']);
+        if ($visitorTimezone !== ''
+            && $visitorTimezone !== strval($xenOptions->get('guestTimeZone'))
+        ) {
+            $parts[] = sprintf('vt%s', $visitorTimezone);
+        }
+
+        if ($visitor->isBrowsingWith('mobile')) {
+            $parts[] = 'vm';
+        }
+
+        if (!empty($suffix)) {
+            $parts[] = 's' . implode('_', $suffix);
+        }
+
+        return implode('_', $parts);
     }
 
     protected function _restoreFromCache($cached, &$html, &$containerData, &$requiredExternals)
@@ -665,12 +696,11 @@ abstract class WidgetFramework_WidgetRenderer
 
         // add check for mobile (user agent spoofing)
         // since 2.2.2
-        if (!empty($widgetRef['options']['deactivate_for_mobile']) || !empty($widgetRef['options']['deactivate_for_desktop'])) {
-            $isMobile = XenForo_Visitor::isBrowsingWith('mobile');
-            if ($isMobile && !empty($widgetRef['options']['deactivate_for_mobile']) ||
-                !$isMobile && !empty($widgetRef['options']['deactivate_for_desktop'])) {
-                $html = '';
-            }
+        if (!empty($widgetRef['options']['deactivate_for_mobile'])
+            && XenForo_Visitor::isBrowsingWith('mobile')
+        ) {
+            // legacy support
+            $html = '';
         }
 
         // check for cache

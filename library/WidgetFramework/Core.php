@@ -293,6 +293,8 @@ class WidgetFramework_Core
             $params['_classInnerSection'] = 'secondaryContent widget sidebar-widget';
         }
 
+        $params['visitorIsBrowsingWithMobile'] = XenForo_Visitor::isBrowsingWith('mobile');
+
         return $params;
     }
 
