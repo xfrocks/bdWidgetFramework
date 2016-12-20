@@ -181,6 +181,7 @@
 		<xen:checkboxunit label="">
 			<xen:option name="active" selected="{$widget.active}">{xen:phrase wf_widget_is_active}</xen:option>
 			<xen:option name="{$namePrefix}deactivate_for_mobile" selected="{$options.deactivate_for_mobile}">{xen:phrase wf_deactivate_for_mobile}</xen:option>
+			<xen:option name="{$namePrefix}deactivate_for_desktop" selected="{$options.deactivate_for_desktop}">{xen:phrase wf_deactivate_for_desktop}</xen:option>
 		</xen:checkboxunit>
 		</xen:if>
 	</fieldset>
@@ -1244,6 +1245,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="wf_current_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum]]></phrase>
     <phrase title="wf_current_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum + its children]]></phrase>
+    <phrase title="wf_deactivate_for_desktop" version_id="2060318" version_string="2.6.3"><![CDATA[Deactivate for desktop]]></phrase>
     <phrase title="wf_deactivate_for_mobile" version_id="49" version_string="2.2.1"><![CDATA[Deactivate for mobile]]></phrase>
     <phrase title="wf_delete_all_before_import" version_id="24" version_string="1.2.2.2"><![CDATA[Delete all existing widgets before importing]]></phrase>
     <phrase title="wf_delete_all_before_import_explain" version_id="24" version_string="1.2.2.2"><![CDATA[Select this option to make an exact copy of widgets from the XML file. All existing widgets will be deleted completely. This action can not be undone.]]></phrase>

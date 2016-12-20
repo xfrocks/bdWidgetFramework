@@ -407,6 +407,7 @@ abstract class WidgetFramework_WidgetRenderer
             $this->_configuration['options']['expression'] = XenForo_Input::STRING;
             $this->_configuration['options']['conditional'] = XenForo_Input::ARRAY_SIMPLE;
             $this->_configuration['options']['deactivate_for_mobile'] = XenForo_Input::UINT;
+            $this->_configuration['options']['deactivate_for_desktop'] = XenForo_Input::UINT;
         }
 
         return $this->_configuration;
@@ -664,8 +665,10 @@ abstract class WidgetFramework_WidgetRenderer
 
         // add check for mobile (user agent spoofing)
         // since 2.2.2
-        if (!empty($widgetRef['options']['deactivate_for_mobile'])) {
-            if (XenForo_Visitor::isBrowsingWith('mobile')) {
+        if (!empty($widgetRef['options']['deactivate_for_mobile']) || !empty($widgetRef['options']['deactivate_for_desktop'])) {
+            $isMobile = XenForo_Visitor::isBrowsingWith('mobile');
+            if ($isMobile && !empty($widgetRef['options']['deactivate_for_mobile']) ||
+                !$isMobile && !empty($widgetRef['options']['deactivate_for_desktop'])) {
                 $html = '';
             }
         }
