@@ -406,7 +406,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             && $widget['options']['type'] === 'recent'
             && $widget['options']['limit'] == XenForo_Application::getOptions()->get('forumListNewPosts')
         ) {
-            return $params['threads'];
+            return $this->_prepareForumListNewPosts($params['threads']);
         }
 
         if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
@@ -725,6 +725,19 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $threadRef = $wfThreadModel->prepareThreadForRendererThreads($threadRef,
                 $forumRef, $permissionsRef, $viewingUser);
         }
+    }
+
+    protected function _prepareForumListNewPosts($threads)
+    {
+        foreach ($threads as &$threadRef) {
+            if (!isset($threadRef['lastPostInfo'])) {
+                continue;
+            }
+
+            $threadRef += $threadRef['lastPostInfo'];
+        }
+
+        return $threads;
     }
 
     protected function _getAjaxLoadParams(
