@@ -66,7 +66,6 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
             'display_order' => XenForo_Input::UINT,
             'display_in_list' => XenForo_Input::UINT,
             'style_id' => XenForo_Input::UINT,
-            'options' => XenForo_Input::ARRAY_SIMPLE,
         ));
 
         if (!$this->_input->filterSingle('style_override', XenForo_Input::UINT)) {
@@ -74,6 +73,14 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
         }
 
         $nodeId = $this->_input->filterSingle('node_id', XenForo_Input::UINT);
+
+        $optionsRaw = $this->_input->filterSingle('options', XenForo_Input::ARRAY_SIMPLE);
+        $optionsInput = new XenForo_Input($optionsRaw);
+        $data['options'] = $optionsInput->filter(array(
+            'container_template' => XenForo_Input::STRING,
+            'body_classes' => XenForo_Input::STRING,
+            'break_container' => XenForo_Input::BOOLEAN,
+        ));
 
         // save page
         $dw = $this->_getNodeDataWriter();

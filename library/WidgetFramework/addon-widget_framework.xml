@@ -979,8 +979,21 @@
 
 				<!-- before options -->
 
+				<xen:textboxunit label="{xen:phrase wf_container_template}:"
+								 name="options[container_template]"
+								 value="{$widgetPage.options.container_template}"
+								 placeholder="PAGE_CONTAINER" />
+				
+				<xen:textboxunit label="{xen:phrase wf_body_classes}:"
+								 name="options[body_classes]"
+								 value="{$widgetPage.options.body_classes}" />
+
 				<xen:checkboxunit label="">
-					<xen:option name="options[break_container]" value="1" selected="{$widgetPage.options.break_container}">{xen:phrase wf_break_container}</xen:option>
+					<xen:option name="options[break_container]"
+								value="1"
+								selected="{$widgetPage.options.break_container}">
+						{xen:phrase wf_break_container}
+					</xen:option>
 				</xen:checkboxunit>
 
 				<!-- after options -->
@@ -1223,6 +1236,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_birthday_avatar_only_explain" version_id="92" version_string="2.4.9e"><![CDATA[Enable this option to hide users who haven't uploaded an avatar. ]]></phrase>
     <phrase title="wf_blacklist_user_groups" version_id="96" version_string="2.5.0d"><![CDATA[Blacklist Groups]]></phrase>
     <phrase title="wf_blacklist_user_groups_explain" version_id="96" version_string="2.5.0d"><![CDATA[If specified, users who are member of selected user group will not show up.]]></phrase>
+    <phrase title="wf_body_classes" version_id="2060318" version_string="2.6.3"><![CDATA[Extra Body Classes]]></phrase>
     <phrase title="wf_break_container" version_id="77" version_string="2.4.5b"><![CDATA[Break out of content container]]></phrase>
     <phrase title="wf_by" version_id="96" version_string="2.5.0d"><![CDATA[by]]></phrase>
     <phrase title="wf_cache_seconds" version_id="69" version_string="2.4.1"><![CDATA[Cache TTL]]></phrase>
@@ -1240,6 +1254,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
 {$visitorIsBrowsingWithMobile} = mobile browsers; <span style="color: black; font-weight: bold">!</span>{$visitorIsBrowsingWithMobile} = desktop browsers<br />]]></phrase>
     <phrase title="wf_confirm_deletion_of_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Confirm Deletion of Widget Page]]></phrase>
     <phrase title="wf_confirm_removal_of_widget" version_id="1" version_string="0.9"><![CDATA[Confirm Removal of Widget]]></phrase>
+    <phrase title="wf_container_template" version_id="2060318" version_string="2.6.3"><![CDATA[Container Template]]></phrase>
     <phrase title="wf_contents_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Contents Widgets]]></phrase>
     <phrase title="wf_create_new_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Create New Group]]></phrase>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
@@ -1482,10 +1497,41 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="2060312" version_string="2.6.3"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="2060318" version_string="2.6.3"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
+
+.wf-container-simple #content > .pageWidth,
+.wf-container-simple #content > .pageWidth > .pageContent
+{
+	background: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+}
+
+.wf-no-logo-block #logoBlock { display: none !important; }
+	.wf-no-logo-block #header { padding: 10px 0 !important; }
+
+.wf-no-header-proxy #headerProxy { display: none !important; }
+	.wf-no-header-proxy #header { background: none !important; }
+	.wf-no-header-proxy .tabLinks { display: none !important; }
+	.wf-no-header-proxy #navigation .pageContent { height: auto !important; }
+	.wf-no-header-proxy .navTabs
+	{
+		background: none !important;
+		border: none !important;
+		border-radius: 0 !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+	.wf-no-header-proxy .navTabs .navTab
+	{
+		background: none !important;
+		border: none !important;
+		border-radius: 0 !important;
+	}
+	.wf-no-header-proxy .navTabs .navLink { color: {xen:property contentBackground} !important; }
 
 .widget-container.sidebar.act-as-sidebar
 {
@@ -2092,6 +2138,30 @@ All customization should go to wf_default_EXTRA.css
 	margin: -3px 0;
 	padding: 2px 6px;
 }]]></template>
+    <template title="wf_PAGE_CONTAINER_simple" version_id="2060318" version_string="2.6.3"><![CDATA[<xen:set var="$bodyClassesOrignal">{$bodyClasses}</xen:set><xen:set var="$bodyClasses">{xen:if
+	$bodyClassesOrignal, '{$bodyClassesOrignal} '}wf-container-simple</xen:set><xen:comment>
+
+</xen:comment><xen:set var="$canSearch"></xen:set><xen:comment>            Search bar
+</xen:comment><xen:set var="$extraTabs.end"></xen:set><xen:comment>        Extra tabs at `end` position
+</xen:comment><xen:set var="$extraTabs.home"></xen:set><xen:comment>       Extra tabs at `home` position
+</xen:comment><xen:set var="$extraTabs.middle"></xen:set><xen:comment>     Extra tabs at `middle` position
+</xen:comment><xen:set var="$selectedTab"></xen:set><xen:comment>          "No selection" tab links
+</xen:comment><xen:set var="$sidebar"></xen:set><xen:comment>              Sidebar
+</xen:comment><xen:set var="$tabs.forums"></xen:set><xen:comment>          "Forums" built-in tab
+</xen:comment><xen:set var="$tabs.members"></xen:set><xen:comment>         "Members" built-in tab
+</xen:comment><xen:set var="$visitor.is_admin"></xen:set><xen:comment>     Moderator bar
+</xen:comment><xen:set var="$visitor.is_moderator"></xen:set><xen:comment> Moderator bar
+
+</xen:comment><xen:require css="wf_default.css" /><xen:comment>
+</xen:comment><xen:include template="PAGE_CONTAINER" /><xen:comment>
+
+<xen:edithint template="moderator_bar" />
+<xen:edithint template="header" />
+<xen:edithint template="navigation" />
+<xen:edithint template="search_bar" />
+
+<xen:edithint template="wf_widget_page" />
+</xen:comment>]]></template>
     <template title="wf_profile_posts.css" version_id="102" version_string="2.5.0d"><![CDATA[.WidgetFramework_WidgetRenderer_ProfilePosts_ProfilePostItem
 {
 	overflow: hidden; zoom: 1;
@@ -2532,7 +2602,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_widget_page" version_id="2060316" version_string="2.6.3"><![CDATA[<xen:require css="wf_widget_page.css" />
+    <template title="wf_widget_page" version_id="2060318" version_string="2.6.3"><![CDATA[<xen:require css="wf_widget_page.css" />
 
 <xen:title>{$widgetPage.title}{xen:helper pagenumber, $page}</xen:title>
 <xen:h1>{xen:if '{$page} > 1', '{xen:phrase page} {xen:number $page}', $widgetPage.title}</xen:h1>
@@ -2550,7 +2620,8 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:container var="$quickNavSelected">node-{$widgetPage.node_id}</xen:container>
 
-<xen:container var="$bodyClasses">{xen:helper nodeClasses, $nodeBreadCrumbs, $widgetPage}</xen:container>
+<xen:container var="$bodyClasses">{xen:if $widgetPage.options.body_classes,
+	'{$widgetPage.options.body_classes} '}{xen:helper nodeClasses, $nodeBreadCrumbs, $widgetPage}</xen:container>
 
 <xen:container var="$head.canonical">
 	<link rel="canonical" href="{xen:link 'canonical:widget-pages', $widgetPage, 'page={$page}'}" /></xen:container>

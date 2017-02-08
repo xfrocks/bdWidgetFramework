@@ -184,8 +184,9 @@ class WidgetFramework_Listener
             }
 
             if (in_array($hookName, array(
+                'page_container_breadcrumb_bottom',
                 'page_container_breadcrumb_top',
-                'page_container_content_title_bar'
+                'page_container_content_title_bar',
             ), true)) {
                 if (!!$template->getParam('widgetPageOptionsBreakContainer')) {
                     $contents = '';

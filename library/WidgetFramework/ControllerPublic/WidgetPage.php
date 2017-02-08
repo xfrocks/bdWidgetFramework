@@ -40,6 +40,11 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
             'page' => $page,
         );
 
+        $containerParams = array();
+        if (!empty($widgetPage['options']['container_template'])) {
+            $containerParams['containerTemplate'] = $widgetPage['options']['container_template'];
+        }
+
         if (class_exists('bdCache_ControllerHelper_Cache')) {
             /** @var bdCache_ControllerHelper_Cache $cacheHelper */
             $cacheHelper = $this->getHelper('bdCache_ControllerHelper_Cache');
@@ -53,7 +58,12 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
             $this->_routeMatch->setSections(WidgetFramework_Option::get('indexTabId'));
         }
 
-        return $this->responseView('WidgetFramework_ViewPublic_WidgetPage_View', 'wf_widget_page', $viewParams);
+        return $this->responseView(
+            'WidgetFramework_ViewPublic_WidgetPage_View',
+            'wf_widget_page',
+            $viewParams,
+            $containerParams
+        );
     }
 
     public function actionAsIndex()
