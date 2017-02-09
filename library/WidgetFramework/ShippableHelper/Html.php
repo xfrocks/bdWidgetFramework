@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2016-10-08T15:33:27+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2017-01-23T07:29:22+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_Html
- * @version 11
+ * @version 14
  * @see DevHelper_Helper_ShippableHelper_Html
  */
 class WidgetFramework_ShippableHelper_Html
@@ -62,7 +62,6 @@ class WidgetFramework_ShippableHelper_Html
     public static function snippet($string, $maxLength = 0, array $options = array())
     {
         $options = array_merge(array(
-            'blockTag' => array('div', 'ul', 'li'),
             'ellipsis' => '…',
             'fromStart' => true,
             'previewBreakBbCode' => 'prbreak',
@@ -76,10 +75,16 @@ class WidgetFramework_ShippableHelper_Html
             'stripFrame' => false,
             'stripScript' => false,
             'stripSpacing' => true,
+
+            // WARNING: options below are for internal usage only
+            '_isPreview' => false,
         ), $options);
         $options['maxLength'] = $maxLength;
 
         self::snippetPreProcess($string, $options);
+        if (!empty($options['_isPreview'])) {
+            return $string;
+        }
 
         $snippet = self::snippetCallHelper($string, $options);
 
@@ -111,6 +116,8 @@ class WidgetFramework_ShippableHelper_Html
                 // preview text specified, use it directly
                 $string = $matches['preview'][0];
                 $options['maxLength'] = 0;
+                $options['_isPreview'] = true;
+                return $string;
             } else {
                 // use content before the found bbcode to continue
                 $string = substr($string, 0, $matches[0][1]);
@@ -242,36 +249,24 @@ class WidgetFramework_ShippableHelper_Html
             }
         }
 
-        // strip block level stack if left opened
-        foreach ($options['blockTag'] as $blockTag) {
-            if (count($stack) === 0) {
-                break;
-            }
-            $stack = array_values($stack);
-
-            $foundStackItemId = null;
-            $foundOffset = null;
-            foreach ($stack as $stackItemId => $stackItem) {
-                if ($stackItem['tag'] !== $blockTag) {
-                    continue;
-                }
-
-                $foundStackItemId = $stackItemId;
-                $foundOffset = $stackItem['offset'];
-                break;
-            }
-            if ($foundStackItemId === null) {
-                continue;
-            }
-
-            $stack = array_slice($stack, 0, $foundStackItemId);
-            $snippet = utf8_substr($snippet, 0, $foundOffset);
-        }
-
         // close any remaining tags
         while (!empty($stack)) {
             $stackItem = array_pop($stack);
+
+            self::snippetAppendEllipsis($snippet, $options);
             $snippet .= sprintf('</%s>', $stackItem['tag']);
+        }
+    }
+
+    public static function snippetAppendEllipsis(&$snippet, array &$options)
+    {
+        if (empty($options['ellipsis'])) {
+            return;
+        }
+
+        if (!preg_match('#<\/?(div|iframe|img|li|ol|p|script|ul)[^>]*>\z#', $snippet)) {
+            $snippet .= $options['ellipsis'];
+            $options['ellipsis'] = '';
         }
     }
 
@@ -289,16 +284,13 @@ class WidgetFramework_ShippableHelper_Html
             $snippet = str_replace($replacement['replacement'], $replacement['original'], $snippet);
         }
 
-        // strip off invisible character at the end
-        $snippet = preg_replace('#(\.|\s)+\z#', '', $snippet);
+        // remove invisible characters
+        $snippet = utf8_trim($snippet);
 
         // restore line breaks
         $snippet = nl2br($snippet);
 
-        // append ellipsis
-        if (!preg_match('#<\/?(div|iframe|img|li|ol|p|script|ul)[^>]*>\z#', $snippet)) {
-            $snippet .= $options['ellipsis'];
-        }
+        self::snippetAppendEllipsis($snippet, $options);
 
         $snippet = utf8_trim($snippet);
     }
