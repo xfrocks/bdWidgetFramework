@@ -1497,24 +1497,36 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     </group>
   </style_properties>
   <templates>
-    <template title="wf_default.css" version_id="2060318" version_string="2.6.3"><![CDATA[<xen:comment>
+    <template title="wf_default.css" version_id="2060319" version_string="2.6.3"><![CDATA[<xen:comment>
 Please do not edit this template.
 All customization should go to wf_default_EXTRA.css
 </xen:comment>
 
+.wf-container-simple .mainContainer_noSidebar, <xen:comment>UI.X styles</xen:comment>
+.wf-container-simple #content,
 .wf-container-simple #content > .pageWidth,
 .wf-container-simple #content > .pageWidth > .pageContent
 {
 	background: none !important;
+	border: 0 !important;
 	margin: 0 !important;
+	max-width: initial !important;
 	padding: 0 !important;
+	width: 100% !important;
 }
 
 .wf-no-logo-block #logoBlock { display: none !important; }
-	.wf-no-logo-block #header { padding: 10px 0 !important; }
+	.wf-no-logo-block #headerMover #header {
+		padding: 10px 0 !important;
+	}
 
 .wf-no-header-proxy #headerProxy { display: none !important; }
-	.wf-no-header-proxy #header { background: none !important; }
+	.wf-no-header-proxy #headerMover #header {
+		background: none !important;
+		position: absolute;
+		width: 100%;
+		z-index: 1;
+	}
 	.wf-no-header-proxy .tabLinks { display: none !important; }
 	.wf-no-header-proxy #navigation .pageContent { height: auto !important; }
 	.wf-no-header-proxy .navTabs
