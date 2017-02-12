@@ -90,6 +90,7 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
                 && !empty($renderer)
                 && $renderer->canAjaxLoad($widgetRef)
             ) {
+                $widgetRef['_runtime']['delayedRenderingToAjax'] = true;
                 $widgetRef['_runtime']['ajaxLoadUrl']
                     = $renderer->getAjaxLoadUrl($widgetRef, $positionCode, $params, $template);
                 $widgetRef['_runtime']['title']

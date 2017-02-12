@@ -636,9 +636,9 @@
 				<xen:set var="$layoutOptionsKey">listCompactTitleMaxLength</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_textboxunit">
-				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactMore_master}</xen:set>
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_listCompactLoadMoreTimes_master}</xen:set>
 				<xen:set var="$layout">list_compact</xen:set>
-				<xen:set var="$layoutOptionsKey">listCompactMore</xen:set>
+				<xen:set var="$layoutOptionsKey">listCompactLoadMoreTimes</xen:set>
 			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
@@ -695,6 +695,11 @@
 				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullMaxLength</xen:set>
 			</xen:include>
+			<xen:include template="wf_widget_options_threads_textboxunit">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullLoadMoreTimes_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
+				<xen:set var="$layoutOptionsKey">fullLoadMoreTimes</xen:set>
+			</xen:include>
 			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
 				<xen:set var="$label">{xen:phrase style_property_wf_threads_rich_master}</xen:set>
 				<xen:set var="$layout">full</xen:set>
@@ -735,6 +740,13 @@
 				<xen:set var="$layout">full</xen:set>
 				<xen:set var="$layoutOptionsKey">fullReplyCount</xen:set>
 			</xen:include>
+			<xen:if is="{$supportPageNav}">
+			<xen:include template="wf_widget_options_threads_radio_default_yes_no">
+				<xen:set var="$label">{xen:phrase style_property_wf_threads_fullPageNav_master}</xen:set>
+				<xen:set var="$layout">full</xen:set>
+				<xen:set var="$layoutOptionsKey">fullPageNav</xen:set>
+			</xen:include>
+			</xen:if>
 			<!-- wf_threads_layout_full -->
 		</xen:disabled>
 	</xen:option>
@@ -757,6 +769,18 @@
 				<xen:option value="1">{xen:phrase yes}</xen:option>
 				<xen:option value="0">{xen:phrase no}</xen:option>
 			</xen:radiounit>
+
+			<xen:radiounit label="{xen:phrase style_property_wf_threads_fullPageNav_master}:"
+				name="{$namePrefix}layout_options[custom][pageNav]"
+				value="{xen:if $options.layout_options.pageNav,
+					'{$options.layout_options.pageNav}', 0}">
+				<xen:option value="1">{xen:phrase yes}</xen:option>
+				<xen:option value="0">{xen:phrase no}</xen:option>
+			</xen:radiounit>
+
+			<xen:textboxunit label="{xen:phrase style_property_wf_threads_fullLoadMoreTimes_master}:"
+				name="{$namePrefix}layout_options[custom][loadMoreTimes]"
+				value="{$options.layout_options.loadMoreTimes}" />
 
 			<!-- wf_threads_layout_custom -->
 		</xen:disabled>
@@ -1184,8 +1208,12 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="style_property_wf_threads_fullForum_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Forum Origin]]></phrase>
     <phrase title="style_property_wf_threads_fullInfoBottom_description_master" version_id="77" version_string="2.4.5b"><![CDATA[By default, thread information (poster, date, counters) is shown right below title. Enable this option to move it to the bottom of the box. This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullInfoBottom_master" version_id="77" version_string="2.4.5b"><![CDATA[Show information at bottom]]></phrase>
+    <phrase title="style_property_wf_threads_fullLoadMoreTimes_description_master" version_id="2060319" version_string="2.6.3"><![CDATA[Enter the number of pages to auto load for infinity scrolling. Special values: -1 = indefinitely, 0 = disabled. This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullLoadMoreTimes_master" version_id="2060319" version_string="2.6.3"><![CDATA[Auto Load Pages]]></phrase>
     <phrase title="style_property_wf_threads_fullMaxLength_description_master" version_id="2060300" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullMaxLength_master" version_id="2060315" version_string="2.6.3"><![CDATA[Post Max Length]]></phrase>
+    <phrase title="style_property_wf_threads_fullPageNav_description_master" version_id="2060319" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
+    <phrase title="style_property_wf_threads_fullPageNav_master" version_id="2060319" version_string="2.6.3"><![CDATA[Show Page Navigation]]></phrase>
     <phrase title="style_property_wf_threads_fullReplyCount_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
     <phrase title="style_property_wf_threads_fullReplyCount_master" version_id="77" version_string="2.4.5b"><![CDATA[Show Reply Count]]></phrase>
     <phrase title="style_property_wf_threads_fullUser_description_master" version_id="77" version_string="2.4.5b"><![CDATA[This property will be applied to all Threads widgets with full layout.]]></phrase>
@@ -1200,8 +1228,8 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="style_property_wf_threads_listCompactFirstPostLikes_master" version_id="2060314" version_string="2.6.3"><![CDATA[Show Like Count]]></phrase>
     <phrase title="style_property_wf_threads_listCompactForum_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with list compact layout.]]></phrase>
     <phrase title="style_property_wf_threads_listCompactForum_master" version_id="2060314" version_string="2.6.3"><![CDATA[Show Forum Origin]]></phrase>
-    <phrase title="style_property_wf_threads_listCompactMore_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[Enter the number of pages which is available to load more via AJAX via a link at the bottom of the thread list. This property will be applied to all Threads widgets with list compact layout.]]></phrase>
-    <phrase title="style_property_wf_threads_listCompactMore_master" version_id="2060314" version_string="2.6.3"><![CDATA[Load More]]></phrase>
+    <phrase title="style_property_wf_threads_listCompactLoadMoreTimes_description_master" version_id="2060319" version_string="2.6.3"><![CDATA[Enter the number of pages which is available to load more via AJAX. Special values: -1 = indefinitely, 0 = disabled. This property will be applied to all Threads widgets with list compact layout.]]></phrase>
+    <phrase title="style_property_wf_threads_listCompactLoadMoreTimes_master" version_id="2060319" version_string="2.6.3"><![CDATA[Load More]]></phrase>
     <phrase title="style_property_wf_threads_listCompactReplyCount_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with list compact layout.]]></phrase>
     <phrase title="style_property_wf_threads_listCompactReplyCount_master" version_id="2060314" version_string="2.6.3"><![CDATA[Show Reply Count]]></phrase>
     <phrase title="style_property_wf_threads_listCompactShowPrefix_description_master" version_id="2060314" version_string="2.6.3"><![CDATA[This property will be applied to all Threads widgets with list compact layout.]]></phrase>
@@ -1482,7 +1510,9 @@ array $widget, $positionCode, array $params, XenForo_Template_Abstract $renderTe
     <property property_name="wf_threads_listCompactViewCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show View Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1110" sub_group="listCompact"><![CDATA[1]]></property>
     <property property_name="wf_threads_listCompactFirstPostLikes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Like Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1120" sub_group="listCompact"><![CDATA[0]]></property>
     <property property_name="wf_threads_listCompactReplyCount" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Reply Count" description="This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="1130" sub_group="listCompact"><![CDATA[0]]></property>
-    <property property_name="wf_threads_listCompactMore" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Load More" description="Enter the number of pages which is available to load more via AJAX via a link at the bottom of the thread list. This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="number" scalar_parameters="" display_order="2010" sub_group="listCompact"><![CDATA[3]]></property>
+    <property property_name="wf_threads_listCompactLoadMoreTimes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Load More" description="Enter the number of pages which is available to load more via AJAX. Special values: -1 = indefinitely, 0 = disabled. This property will be applied to all Threads widgets with list compact layout." css_components="" scalar_type="number" scalar_parameters="" display_order="2010" sub_group="listCompact"><![CDATA[3]]></property>
+    <property property_name="wf_threads_fullPageNav" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Show Page Navigation" description="This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="boolean" scalar_parameters="" display_order="9000" sub_group="full"><![CDATA[1]]></property>
+    <property property_name="wf_threads_fullLoadMoreTimes" property_type="scalar" definition="1" group_name="WidgetFramework_Threads" title="Auto Load Pages" description="Enter the number of pages to auto load for infinity scrolling. Special values: -1 = indefinitely, 0 = disabled. This property will be applied to all Threads widgets with full layout." css_components="" scalar_type="number" scalar_parameters="" display_order="9010" sub_group="full"><![CDATA[3]]></property>
     <group group_name="WidgetFramework" display_order="9999">
       <title>[bd] Widget Framework</title>
       <description>Controls how widgets appear.</description>
@@ -2232,7 +2262,7 @@ All customization should go to wf_default_EXTRA.css
 	resize: vertical;
 	overflow: hidden;
 }]]></template>
-    <template title="wf_threads.css" version_id="2060318" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
+    <template title="wf_threads.css" version_id="2060319" version_string="2.6.3"><![CDATA[.WidgetFramework_WidgetRenderer_Threads_Sidebar .unread > a
 {
 	font-weight: bold;
 }
@@ -2293,51 +2323,51 @@ All customization should go to wf_default_EXTRA.css
 }
 </xen:if>
 
-.WidgetFramework_WidgetRenderer_Threads_FullThreadList
+.WidgetFramework_WidgetRenderer_Threads.fullThreadList
 {
 }
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .subHeading
+	.WidgetFramework_WidgetRenderer_Threads.fullThreadList .subHeading
 	{
 		font-size: 1.3em;
 	}
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info
+	.WidgetFramework_WidgetRenderer_Threads.fullThreadList .info
 	{
 		padding: 5px 10px;
 	}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info.info-top
+		.WidgetFramework_WidgetRenderer_Threads.fullThreadList .info.info-top
 		{
 			border-bottom: 1px dashed {xen:property primaryLighterStill};
 		}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .info.info-bottom
+		.WidgetFramework_WidgetRenderer_Threads.fullThreadList .info.info-bottom
 		{
 			border-top: 1px dashed {xen:property primaryLighterStill};
 		}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .counters
+		.WidgetFramework_WidgetRenderer_Threads.fullThreadList .counters
 		{
 			float: right;
 		}
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message
+	.WidgetFramework_WidgetRenderer_Threads.fullThreadList .message
 	{
 		margin-bottom: 10px;
 	}
-	{xen:helper clearfix, '.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message'}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageInfo
+	{xen:helper clearfix, '.WidgetFramework_WidgetRenderer_Threads.fullThreadList .message'}
+		.WidgetFramework_WidgetRenderer_Threads.fullThreadList .messageInfo
 		{
 			margin: 0;
 			padding: 5px 10px;
 		}
-		.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator
+		.WidgetFramework_WidgetRenderer_Threads.fullThreadList .message .newIndicator
 		{
 			{xen:property messageNewIndicator}
 
 			margin-right: -{xen:calc 'floor({xen:property content.padding-right}) + 5'}px;
 		}
-			.WidgetFramework_WidgetRenderer_Threads_FullThreadList .message .newIndicator span
+			.WidgetFramework_WidgetRenderer_Threads.fullThreadList .message .newIndicator span
 			{
 				{xen:property messageNewIndicatorInner}
 			}
 
-	.WidgetFramework_WidgetRenderer_Threads_FullThreadList .messageText .readMoreLink
+	.WidgetFramework_WidgetRenderer_Threads.fullThreadList .messageText .readMoreLink
 	{
 		display: block;
 		text-align: right;
@@ -2843,7 +2873,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="2060317" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="2060319" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 <xen:if hascontent="true">
 <div class="WidgetFramework_WidgetRenderer_Threads_Sidebar avatarList">
@@ -2960,13 +2990,16 @@ All customization should go to wf_default_EXTRA.css
 <xen:elseif is="{$layout} == 'full'" />
 
 <xen:if hascontent="true">
-<div class="WidgetFramework_WidgetRenderer_Threads_FullThreadList">
+<div class="WidgetFramework_WidgetRenderer_Threads fullThreadList"{xen:if $loadMoreUrl,
+	 ' data-content-selector=".fullThreadList" data-load-more-url="{xen:jsescape $loadMoreUrl}" data-times="{$layoutOptions.loadMoreTimes}"'}>
 	<xen:contentcheck>
 	<xen:foreach loop="$threads" value="$thread">
 	<xen:include template="wf_widget_threads_thread_full" />
 	<xen:edithint template="wf_widget_threads_thread_full_info" />
 	</xen:foreach>
 	</xen:contentcheck>
+	
+	<xen:include template="wf_widget_threads_pagenav" />
 </div>
 
 </xen:if>
@@ -2975,7 +3008,20 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:edithint template="message" />
 <xen:edithint template="wf_threads.css" />]]></template>
-    <template title="wf_widget_threads_thread_full" version_id="2060315" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_threads_pagenav" version_id="2060319" version_string="2.6.3"><![CDATA[<xen:if is="{$widget.options.limit} > 0
+			&& {$threadsCount} > 0
+			&& {$_WidgetFramework_WidgetFramework_Threads_pageNumber} > 0
+			&& {$_WidgetFramework_WidgetFramework_Threads_widgetPage}">
+	<xen:require js="js/WidgetFramework/default.min.js" />
+
+	<xen:pagenav perpage="{$widget.options.limit}"
+				 total="{$threadsCount}"
+				 page="{$_WidgetFramework_WidgetFramework_Threads_pageNumber}"
+				 link="widget-pages"
+				 linkdata="{$_WidgetFramework_WidgetFramework_Threads_widgetPage}"
+				 linkparams="{$pageNavLinkParams}" />
+</xen:if>]]></template>
+    <template title="wf_widget_threads_thread_full" version_id="2060319" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 <xen:edithint template="wf_threads.css" />
 <xen:require css="bb_code.css" />
 
@@ -2995,8 +3041,8 @@ All customization should go to wf_default_EXTRA.css
 	<div class="messageInfo">
 		<xen:if is="{$thread.isNew}"><strong class="newIndicator"><span></span>{xen:phrase new}</strong></xen:if>
 
-		<xen:hook name="message_content" params="{xen:array 'message={$thread}', 'WidgetFramework_WidgetRenderer_Threads_FullThreadList=1'}">
-		<div class="messageContent">		
+		<xen:hook name="message_content" params="{xen:array 'message={$thread}', 'wf_widget_threads_thread_full=1'}">
+		<div class="messageContent">
 			<article>
 				<blockquote class="messageText ugc baseHtml">
 					{xen:helper WidgetFramework_snippet, $thread.messageHtml, {$layoutOptions.fullMaxLength}, {xen:array 'link={xen:raw $link}'}}

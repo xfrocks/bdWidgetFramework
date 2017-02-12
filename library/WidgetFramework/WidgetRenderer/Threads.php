@@ -2,9 +2,14 @@
 
 class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRenderer
 {
-    const TEMPLATE_PARAM_IGNORED_THREAD_IDS = '_WidgetFramework_WidgetFramework_Threads_ignoredThreadIds';
+    const AJAX_PARAM_FORUM_IDS = '_forumIds';
     const AJAX_PARAM_IGNORED_THREAD_IDS = '_ignoredThreadIds';
-    const AJAX_PARAM_CURRENT_PAGE = '_currentPage';
+    const AJAX_PARAM_PAGE_NUMBER = '_pageNumber';
+    const AJAX_PARAM_WIDGET_PAGE_ID = '_widgetPageId';
+    const TEMPLATE_PARAM_FORUM_IDS = '_WidgetFramework_WidgetFramework_Threads_forumIds';
+    const TEMPLATE_PARAM_IGNORED_THREAD_IDS = '_WidgetFramework_WidgetFramework_Threads_ignoredThreadIds';
+    const TEMPLATE_PARAM_PAGE_NUMBER = '_WidgetFramework_WidgetFramework_Threads_pageNumber';
+    const TEMPLATE_PARAM_WIDGET_PAGE = '_WidgetFramework_WidgetFramework_Threads_widgetPage';
 
     public function useCache(array $widget)
     {
@@ -124,6 +129,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $template->setParam('tags', implode(', ', $tags));
         }
 
+        $template->setParam('supportPageNav', $this->_supportPageNav());
+
         /** @var XenForo_Model_Style $styleModel */
         $styleModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Style');
         /** @var XenForo_Model_StyleProperty $stylePropertyModel */
@@ -199,58 +206,16 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         array $params,
         XenForo_Template_Abstract $renderTemplateObject
     ) {
-        if (empty($widget['options']['limit'])) {
-            $widget['options']['limit'] = 5;
-        }
-        if (empty($widget['options']['cutoff'])) {
-            $widget['options']['cutoff'] = 5;
-        }
-        if (empty($widget['options']['type'])) {
-            $widget['options']['type'] = 'new';
-        }
+        $widget = $this->_beforeThreads($widget, $positionCode, $params, $renderTemplateObject);
 
-        $ignoredThreadIds = array();
-        if (isset($widget['_ajaxLoadParams'][self::AJAX_PARAM_IGNORED_THREAD_IDS])) {
-            $ignoredThreadIds = array_map('intval', preg_split('#[^0-9]#',
-                $widget['_ajaxLoadParams'][self::AJAX_PARAM_IGNORED_THREAD_IDS], -1, PREG_SPLIT_NO_EMPTY));
-        }
-        $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS] = $ignoredThreadIds;
-
-        if (empty($widget['options']['layout'])) {
-            if (!empty($params[WidgetFramework_Core::PARAM_IS_HOOK])) {
-                $layout = 'list';
-            } else {
-                $layout = 'sidebar';
-            }
-        } else {
-            $layout = $widget['options']['layout'];
-        }
-        $layoutOptions = $this->_getLayoutOptions($widget, $positionCode, $params, $layout);
+        $layoutOptions = $this->_getLayoutOptions($widget, $positionCode, $params, $renderTemplateObject);
         $renderTemplateObject->setParam('layout', $layoutOptions['layout']);
         $renderTemplateObject->setParam('layoutOptions', $layoutOptions);
 
         $threads = $this->_getThreads($widget, $positionCode, $params, $renderTemplateObject);
         $renderTemplateObject->setParam('threads', $threads);
 
-        if ($layout === 'list_compact'
-            && $layoutOptions['listCompactMore'] > 0
-            && count($threads) >= $widget['options']['limit']
-            && $this->_supportIgnoredThreadIds()
-        ) {
-            foreach ($threads as $thread) {
-                $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS][] = $thread['thread_id'];
-            }
-
-            $currentPage = 0;
-            if (isset($widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE])) {
-                $currentPage = $widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE];
-            }
-
-            if ($currentPage < $layoutOptions['listCompactMore']) {
-                $loadMoreUrl = $this->getAjaxLoadUrl($widget, $positionCode, $params, $renderTemplateObject);
-                $renderTemplateObject->setParam('loadMoreUrl', $loadMoreUrl);
-            }
-        }
+        $this->_afterThreads($widget, $positionCode, $params, $renderTemplateObject);
 
         return $renderTemplateObject->render();
     }
@@ -313,13 +278,86 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
     /**
      * @param array $widget
+     * @param $positionCode
+     * @param array $params
+     * @param XenForo_Template_Abstract $renderTemplateObject
+     * @return array $widget
+     */
+    protected function _beforeThreads(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        if (empty($widget['options']['limit'])) {
+            $widget['options']['limit'] = 5;
+        }
+        if (empty($widget['options']['cutoff'])) {
+            $widget['options']['cutoff'] = 5;
+        }
+        if (empty($widget['options']['type'])) {
+            $widget['options']['type'] = 'new';
+        }
+
+        $alp = array();
+        if (!empty($widget['_ajaxLoadParams'])) {
+            $alp = $widget['_ajaxLoadParams'];
+        }
+
+        if (isset($alp[self::AJAX_PARAM_FORUM_IDS])) {
+            $forumIds = $alp[self::AJAX_PARAM_FORUM_IDS];
+            $renderTemplateObject->setParam(self::TEMPLATE_PARAM_FORUM_IDS, $forumIds);
+        }
+
+        $ignoredThreadIds = array();
+        if (isset($alp[self::AJAX_PARAM_IGNORED_THREAD_IDS])) {
+            $ignoredThreadIds = array_map('intval', preg_split('#[^0-9]#',
+                $alp[self::AJAX_PARAM_IGNORED_THREAD_IDS], -1, PREG_SPLIT_NO_EMPTY));
+        }
+        $renderTemplateObject->setParam(self::TEMPLATE_PARAM_IGNORED_THREAD_IDS, $ignoredThreadIds);
+
+        if (isset($alp[self::AJAX_PARAM_PAGE_NUMBER])) {
+            $pageNumber = intval($alp[self::AJAX_PARAM_PAGE_NUMBER]);
+            $renderTemplateObject->setParam(self::TEMPLATE_PARAM_PAGE_NUMBER, $pageNumber);
+        }
+
+        $widgetPage = null;
+        if (isset($alp[self::AJAX_PARAM_WIDGET_PAGE_ID])) {
+            /** @var WidgetFramework_Model_WidgetPage $widgetPageModel */
+            $widgetPageModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_WidgetPage');
+            $pageId = $alp[self::AJAX_PARAM_WIDGET_PAGE_ID];
+            $widgetPage = $widgetPageModel->getWidgetPageById($pageId);
+        } elseif (!empty($params['widgetPage'])) {
+            $widgetPage = $params['widgetPage'];
+        }
+        $renderTemplateObject->setParam(self::TEMPLATE_PARAM_WIDGET_PAGE, $widgetPage);
+
+        return $widget;
+    }
+
+    /**
+     * @param array $widget
      * @param string $positionCode
      * @param array $params
-     * @param string $layout
+     * @param XenForo_Template_Abstract $renderTemplateObject
      * @return array
      */
-    protected function _getLayoutOptions($widget, $positionCode, $params, $layout)
-    {
+    protected function _getLayoutOptions(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        if (empty($widget['options']['layout'])) {
+            if (!empty($params[WidgetFramework_Core::PARAM_IS_HOOK])) {
+                $layout = 'list';
+            } else {
+                $layout = 'sidebar';
+            }
+        } else {
+            $layout = $widget['options']['layout'];
+        }
+
         $layoutOptions = array(
             'layout' => $layout,
             'getPosts' => false,
@@ -358,7 +396,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $stylePropertyIds[] = 'listCompactViewCount';
                 $stylePropertyIds[] = 'listCompactFirstPostLikes';
                 $stylePropertyIds[] = 'listCompactReplyCount';
-                $stylePropertyIds[] = 'listCompactMore';
+                $stylePropertyIds['listCompactLoadMoreTimes'] = 'loadMoreTimes';
                 break;
             case 'full':
                 $stylePropertyIds[] = 'rich';
@@ -370,6 +408,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $stylePropertyIds[] = 'fullViewCount';
                 $stylePropertyIds[] = 'fullFirstPostLikes';
                 $stylePropertyIds[] = 'fullReplyCount';
+                $stylePropertyIds['fullPageNav'] = 'pageNav';
+                $stylePropertyIds['fullLoadMoreTimes'] = 'loadMoreTimes';
                 $layoutOptions['getPosts'] = true;
                 break;
             case 'custom':
@@ -378,14 +418,24 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 break;
         }
 
-        foreach ($stylePropertyIds as $stylePropertyId) {
-            $layoutOptions[$stylePropertyId] = XenForo_Template_Helper_Core::styleProperty('wf_threads_' . $stylePropertyId);
-            if (isset($rawLayoutOptions[$stylePropertyId])
-                && is_string($rawLayoutOptions[$stylePropertyId])
-                && $rawLayoutOptions[$stylePropertyId] !== ''
-            ) {
-                $layoutOptions[$stylePropertyId] = $rawLayoutOptions[$stylePropertyId];
+        foreach ($stylePropertyIds as $fromId => $toId) {
+            if (is_numeric($fromId)) {
+                $fromId = $toId;
             }
+            $layoutOptions[$toId] = XenForo_Template_Helper_Core::styleProperty('wf_threads_' . $fromId);
+
+            if (isset($rawLayoutOptions[$fromId])
+                && is_string($rawLayoutOptions[$fromId])
+                && $rawLayoutOptions[$fromId] !== ''
+            ) {
+                $layoutOptions[$toId] = $rawLayoutOptions[$fromId];
+            }
+        }
+
+        if (!$this->_supportPageNav()
+            || $this->_getCurrentPage($widget, $params, $renderTemplateObject) === 0
+        ) {
+            $layoutOptions['pageNav'] = false;
         }
 
         return $layoutOptions;
@@ -398,8 +448,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
      * @param XenForo_Template_Abstract $renderTemplateObject
      * @return array $threads
      */
-    protected function _getThreads($widget, $positionCode, $params, $renderTemplateObject)
-    {
+    protected function _getThreads(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
         if ($positionCode === 'forum_list'
             && isset($params['threads'])
             && empty($layoutOptions['getPosts'])
@@ -409,9 +463,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             return $this->_prepareForumListNewPosts($params['threads']);
         }
 
-        if (!empty($widget['_ajaxLoadParams']['forumIds'])) {
-            $forumIds = $widget['_ajaxLoadParams']['forumIds'];
-        } else {
+        $forumIds = $renderTemplateObject->getParam(self::TEMPLATE_PARAM_FORUM_IDS);
+        if (!is_array($forumIds)) {
             $forumIds = $this->_helperGetForumIdsFromOption(empty($widget['options']['forums'])
                 ? array() : $widget['options']['forums'], $params,
                 empty($widget['options']['as_guest']) ? false : true);
@@ -430,10 +483,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             'moderated' => false,
         );
 
-        if (!empty($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])) {
+        $ignoredThreadIds = $renderTemplateObject->getParam(self::TEMPLATE_PARAM_IGNORED_THREAD_IDS);
+        if (is_array($ignoredThreadIds) && count($ignoredThreadIds) > 0) {
             WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
-            $conditions[WidgetFramework_Model_Thread::CONDITIONS_THREAD_ID_NOT]
-                = $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS];
+            $conditions[WidgetFramework_Model_Thread::CONDITIONS_THREAD_ID_NOT] = $ignoredThreadIds;
         }
 
         // process sticky
@@ -500,18 +553,29 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
      */
     protected function _getThreadsWithConditions(
         array $conditions,
-        $widget,
+        array $widget,
         $positionCode,
-        $params,
-        $renderTemplateObject
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
     ) {
-        // note: `limit` is set to 3 times of configured limit to account for the threads
-        // that get hidden because of deep permissions like viewOthers or viewContent
+        $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
         $fetchOptions = array(
-            'limit' => $widget['options']['limit'] * 3,
+            'limit' => $widget['options']['limit'],
             'order' => 'post_date',
             'direction' => empty($widget['options']['order_reverted']) ? 'desc' : 'asc',
         );
+
+        if (empty($layoutOptions['pageNav'])) {
+            // set `limit` to 3 times of configured limit to account for the threads
+            // that get hidden because of deep permissions like `viewOthers` or `viewContent`
+            $fetchOptions['limit'] *= 3;
+        } else {
+            $page = $this->_getCurrentPage($widget, $params, $renderTemplateObject);
+            if ($page > 0) {
+                $fetchOptions['page'] = $page;
+                $renderTemplateObject->setParam(self::TEMPLATE_PARAM_PAGE_NUMBER, $page);
+            }
+        }
 
         $fetchLastPost = false;
         $readUserId = 0;
@@ -588,6 +652,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $threads = array_slice($threads, 0, $widget['options']['limit'], true);
         }
 
+        if (!empty($layoutOptions['pageNav'])) {
+            $threadsCount = $wfThreadModel->countThreads($conditions, $fetchOptions);
+            $renderTemplateObject->setParam('threadsCount', $threadsCount);
+        }
+
         return $threads;
     }
 
@@ -599,7 +668,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
      * @param array $threads
      */
     protected function _prepareThreads(
-        /** @noinspection PhpUnusedParameterInspection */
         array $widget,
         $positionCode,
         array $params,
@@ -727,7 +795,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         }
     }
 
-    protected function _prepareForumListNewPosts($threads)
+    /**
+     * @param array $threads
+     * @return array
+     */
+    protected function _prepareForumListNewPosts(array $threads)
     {
         foreach ($threads as &$threadRef) {
             if (!isset($threadRef['lastPostInfo'])) {
@@ -740,38 +812,119 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         return $threads;
     }
 
+    /**
+     * @param array $widget
+     * @param string $positionCode
+     * @param array $params
+     * @param XenForo_Template_Abstract $renderTemplateObject
+     */
+    protected function _afterThreads(
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        $layoutOptions = $renderTemplateObject->getParam('layoutOptions');
+
+        $page = $this->_getCurrentPage($widget, $params, $renderTemplateObject);
+        $prepareLoadMoreUrl = false;
+        if (isset($layoutOptions['loadMoreTimes'])) {
+            $loadMoreTimes = intval($layoutOptions['loadMoreTimes']);
+            if ($loadMoreTimes !== 0
+                && ($loadMoreTimes < 0 || $page < $loadMoreTimes)
+            ) {
+                $prepareLoadMoreUrl = true;
+
+                if (empty($layoutOptions['pageNav']) || $page === 0) {
+                    $threads = $renderTemplateObject->getParam('threads');
+                    if ($this->_supportIgnoredThreadIds()
+                        && is_array($threads)
+                    ) {
+                        $ignoredThreadIds = $renderTemplateObject->getParam(self::TEMPLATE_PARAM_IGNORED_THREAD_IDS);
+                        if (!is_array($ignoredThreadIds)) {
+                            $ignoredThreadIds = array();
+                        }
+                        foreach ($threads as $thread) {
+                            $ignoredThreadIds[] = $thread['thread_id'];
+                        }
+
+                        $renderTemplateObject->setParam(self::TEMPLATE_PARAM_IGNORED_THREAD_IDS, $ignoredThreadIds);
+                    } else {
+                        $prepareLoadMoreUrl = false;
+                    }
+                }
+            }
+
+            if ($prepareLoadMoreUrl) {
+                $loadMoreUrl = $this->getAjaxLoadUrl($widget, $positionCode, $params, $renderTemplateObject);
+                $renderTemplateObject->setParam('loadMoreUrl', $loadMoreUrl);
+            }
+        }
+    }
+
     protected function _getAjaxLoadParams(
         array $widget,
         $positionCode,
         array $params,
         XenForo_Template_Abstract $template
     ) {
-        $ajaxLoadParams = parent::_getAjaxLoadParams($widget, $positionCode, $params, $template);
+        $alp = parent::_getAjaxLoadParams($widget, $positionCode, $params, $template);
 
-        if (isset($widget['options']['forums']) && $this->_helperDetectSpecialForums($widget['options']['forums'])) {
+        $forumIds = $template->getParam(self::TEMPLATE_PARAM_FORUM_IDS);
+        if (!is_array($forumIds)
+            && isset($widget['options']['forums'])
+            && $this->_helperDetectSpecialForums($widget['options']['forums'])
+        ) {
             $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params,
                 empty($widget['options']['as_guest']) ? false : true);
-            $ajaxLoadParams['forumIds'] = $forumIds;
+        }
+        $alp[self::AJAX_PARAM_FORUM_IDS] = $forumIds;
+
+        $ignoredThreadIds = $template->getParam(self::TEMPLATE_PARAM_IGNORED_THREAD_IDS);
+        if (is_array($ignoredThreadIds)) {
+            $str = implode(',', array_unique(array_map('intval', $ignoredThreadIds)));
+            $alp[self::AJAX_PARAM_IGNORED_THREAD_IDS] = $str;
         }
 
-        if (isset($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])
-            && is_array($params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])
-        ) {
-            $ajaxLoadParams[self::AJAX_PARAM_IGNORED_THREAD_IDS] = implode(',',
-                array_unique(array_map('intval', $params[self::TEMPLATE_PARAM_IGNORED_THREAD_IDS])));
+        $widgetPage = $template->getParam(self::TEMPLATE_PARAM_WIDGET_PAGE);
+        if (!empty($widgetPage['node_id'])) {
+            $alp[self::AJAX_PARAM_WIDGET_PAGE_ID] = $widgetPage['node_id'];
         }
 
-        if (isset($widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE])) {
-            $ajaxLoadParams[self::AJAX_PARAM_CURRENT_PAGE] = $widget['_ajaxLoadParams'][self::AJAX_PARAM_CURRENT_PAGE] + 1;
-        } else {
-            $ajaxLoadParams[self::AJAX_PARAM_CURRENT_PAGE] = 1;
+        $page = $this->_getCurrentPage($widget, $params, $template);
+        if ($page > 0) {
+            if (empty($widget['_runtime']['delayedRenderingToAjax'])) {
+                // normal rendering but still requesting ajax load url?
+                // must be for the next page, increase page number by one
+                $page++;
+            }
+            $alp[self::AJAX_PARAM_PAGE_NUMBER] = $page;
         }
 
-        return $ajaxLoadParams;
+        return $alp;
     }
 
     protected function _supportIgnoredThreadIds()
     {
-        return get_class($this) === 'WidgetFramework_WidgetRenderer_Threads';
+        return get_class($this) === __CLASS__;
+    }
+
+    protected function _supportPageNav()
+    {
+        return get_class($this) === __CLASS__;
+    }
+
+    protected function _getCurrentPage(array $widget, array $params, XenForo_Template_Abstract $renderTemplateObject)
+    {
+        $pageNumber = $renderTemplateObject->getParam(self::TEMPLATE_PARAM_PAGE_NUMBER);
+        if (is_int($pageNumber)) {
+            return $pageNumber;
+        }
+
+        if (!empty($params['widgetPage']) && isset($params['page'])) {
+            return max($params['page'], 1);
+        }
+
+        return 0;
     }
 }

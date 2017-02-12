@@ -32,9 +32,7 @@ class WidgetFramework_Model_Thread extends XenForo_Model
             return array();
         }
 
-        /** @var XenForo_Model_Thread $threadModel */
-        $threadModel = $this->getModelFromCache('XenForo_Model_Thread');
-        $threads = $threadModel->getThreadsByIds($threadIds, array(
+        $threads = $this->_getThreadModel()->getThreadsByIds($threadIds, array(
             'join' => $fetchOptionsJoin,
             'readUserId' => $readUserId,
         ));
@@ -47,6 +45,19 @@ class WidgetFramework_Model_Thread extends XenForo_Model
         }
 
         return $ordered;
+    }
+
+    public function countThreads(array $conditions, array $fetchOptions = array())
+    {
+        $whereConditions = $this->prepareThreadConditions($conditions, $fetchOptions);
+        $sqlClauses = $this->prepareThreadFetchOptions($fetchOptions);
+
+        return $this->_getDb()->fetchOne('
+			SELECT COUNT(*)
+			FROM xf_thread AS thread
+			' . $sqlClauses['joinTables'] . '
+			WHERE ' . $whereConditions . '
+		');
     }
 
     public function prepareThreadForRendererThreads(

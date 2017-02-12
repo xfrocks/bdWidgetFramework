@@ -30,11 +30,7 @@ class WidgetFramework_XenForo_ControllerPublic_Misc extends XFCP_WidgetFramework
             return $this->responseNoPermission();
         }
 
-        $ajaxLoadParams = $this->_input->filterSingle('alp', XenForo_Input::STRING);
-        $ajaxLoadParams = @json_decode($ajaxLoadParams, true);
-        if (empty($ajaxLoadParams)) {
-            $ajaxLoadParams = array();
-        }
+        $ajaxLoadParams = WidgetFramework_Helper_AjaxLoadParams::filterInput($widgetId, $this->_input);
 
         $viewParams = array(
             'widget' => $widget,

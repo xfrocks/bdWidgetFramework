@@ -814,10 +814,7 @@ abstract class WidgetFramework_WidgetRenderer
     public function getAjaxLoadUrl(array $widget, $positionCode, array $params, XenForo_Template_Abstract $template)
     {
         $ajaxLoadParams = $this->_getAjaxLoadParams($widget, $positionCode, $params, $template);
-        return XenForo_Link::buildPublicLink('full:misc/wf-widget', null, array(
-            'widget_id' => $widget['widget_id'],
-            'alp' => json_encode($ajaxLoadParams),
-        ));
+        return WidgetFramework_Helper_AjaxLoadParams::buildLink($widget['widget_id'], $ajaxLoadParams);
     }
 
     protected function _getAjaxLoadParams(
@@ -827,9 +824,17 @@ abstract class WidgetFramework_WidgetRenderer
         array $params,
         XenForo_Template_Abstract $template
     ) {
-        return array(
-            self::PARAM_IS_HOOK => !empty($params[self::PARAM_IS_HOOK]),
-        );
+        $ajaxLoadParams = array();
+
+        if (isset($widget['_ajaxLoadParams'])
+            && is_array($widget['_ajaxLoadParams'])
+        ) {
+            $ajaxLoadParams = $widget['_ajaxLoadParams'];
+        } else {
+            $ajaxLoadParams[self::PARAM_IS_HOOK] = !empty($params[self::PARAM_IS_HOOK]);
+        }
+
+        return $ajaxLoadParams;
     }
 
     public function extraPrepare(
