@@ -520,15 +520,6 @@ abstract class WidgetFramework_WidgetRenderer
             }
         }
 
-        if (!empty($widget['widget_page_id'])) {
-            if (empty($options['layout_sizeRow'])) {
-                $options['layout_sizeRow'] = 1;
-            }
-            if (empty($options['layout_sizeCol'])) {
-                $options['layout_sizeCol'] = 1;
-            }
-        }
-
         if (!empty($options['conditional'])
             && !empty($options['expression'])
         ) {
