@@ -7,19 +7,29 @@ class WidgetFramework_Helper_AjaxLoadParams
 
     public static function buildLink($widgetId, array $ajaxLoadParams)
     {
+        $linkParams = array('widget_id' => $widgetId);
         $encoded = json_encode($ajaxLoadParams);
 
         if (WidgetFramework_Core::debugMode()) {
-            $encrypted = $encoded;
+            $linkParams[self::LINK_PARAM_NAME] = $encoded;
         } else {
             $key = self::_getKey($widgetId);
             $encrypted = base64_encode(WidgetFramework_ShippableHelper_Crypt::encrypt($encoded, $key));
+            $linkParams[self::LINK_PARAM_NAME] = $encrypted;
         }
 
-        return XenForo_Link::buildPublicLink('full:misc/wf-widget', null, array(
-            'widget_id' => $widgetId,
-            self::LINK_PARAM_NAME => $encrypted,
-        ));
+        foreach (array(
+                     'page',
+                     '_page',
+                     '_pageNumber',
+                 ) as $possiblePageParamKey) {
+            if (!empty($ajaxLoadParams[$possiblePageParamKey])) {
+                // prepare page number for show only, this parameter is used by the rendering routine
+                $linkParams['page'] = $ajaxLoadParams[$possiblePageParamKey];
+            }
+        }
+
+        return XenForo_Link::buildPublicLink('full:misc/wf-widget', null, $linkParams);
     }
 
     public static function filterInput($widgetId, XenForo_Input $input)
