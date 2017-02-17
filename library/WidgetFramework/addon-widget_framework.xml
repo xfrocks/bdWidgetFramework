@@ -2644,7 +2644,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_widget_page" version_id="2060318" version_string="2.6.3"><![CDATA[<xen:require css="wf_widget_page.css" />
+    <template title="wf_widget_page" version_id="2060319" version_string="2.6.3"><![CDATA[<xen:require css="wf_widget_page.css" />
 
 <xen:title>{$widgetPage.title}{xen:helper pagenumber, $page}</xen:title>
 <xen:h1>{xen:if '{$page} > 1', '{xen:phrase page} {xen:number $page}', $widgetPage.title}</xen:h1>
@@ -2662,7 +2662,7 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:container var="$quickNavSelected">node-{$widgetPage.node_id}</xen:container>
 
-<xen:container var="$bodyClasses">{xen:if $widgetPage.options.body_classes,
+<xen:container var="$bodyClasses">{$widgetPage.node_name} {xen:if $widgetPage.options.body_classes,
 	'{$widgetPage.options.body_classes} '}{xen:helper nodeClasses, $nodeBreadCrumbs, $widgetPage}</xen:container>
 
 <xen:container var="$head.canonical">
