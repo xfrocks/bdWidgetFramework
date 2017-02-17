@@ -2,7 +2,8 @@
 
 class WidgetFramework_Helper_AjaxLoadParams
 {
-    const LINK_PARAM_NAME = 'alp';
+    const LINK_PARAM_NAME_LEGACY = 'alp';
+    const LINK_PARAM_NAME = '_alp';
 
     public static function buildLink($widgetId, array $ajaxLoadParams)
     {
@@ -25,7 +26,10 @@ class WidgetFramework_Helper_AjaxLoadParams
     {
         $inputValue = $input->filterSingle(self::LINK_PARAM_NAME, XenForo_Input::STRING);
         if (empty($inputValue)) {
-            return array();
+            $inputValue = $input->filterSingle(self::LINK_PARAM_NAME_LEGACY, XenForo_Input::STRING);
+            if (empty($inputValue)) {
+                return array();
+            }
         }
 
         $key = self::_getKey($widgetId);
