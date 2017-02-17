@@ -856,6 +856,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             }
 
             if ($prepareLoadMoreUrl) {
+                if ($page === 0) {
+                    $renderTemplateObject->setParam(self::TEMPLATE_PARAM_PAGE_NUMBER, 1);
+                }
+
                 $loadMoreUrl = $this->getAjaxLoadUrl($widget, $positionCode, $params, $renderTemplateObject);
                 $renderTemplateObject->setParam('loadMoreUrl', $loadMoreUrl);
             }
