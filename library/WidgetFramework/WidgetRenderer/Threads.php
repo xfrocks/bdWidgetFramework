@@ -292,10 +292,10 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
         }
-        if (empty($widget['options']['cutoff'])) {
-            $widget['options']['cutoff'] = 5;
+        if (!isset($widget['options']['cutoff'])) {
+            $widget['options']['cutoff'] = 7;
         }
-        if (empty($widget['options']['type'])) {
+        if (!isset($widget['options']['type'])) {
             $widget['options']['type'] = 'new';
         }
 
@@ -586,9 +586,13 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $readUserId = XenForo_Visitor::getUserId();
         }
 
+        if ($widget['options']['cutoff'] > 0) {
+            $conditions['post_date'] = array('>', XenForo_Application::$time - $widget['options']['cutoff'] * 86400);
+        }
+
         switch ($widget['options']['type']) {
             case 'recent':
-                $fetchOptions['order'] = 'last_post_date';
+                $fetchOptions['order'] = 'post_date';
                 $fetchLastPost = true;
                 break;
             case 'recent_first_poster':
@@ -600,26 +604,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $fetchLastPost = true;
                 break;
             case 'popular':
-                $conditions['post_date'] = array(
-                    '>',
-                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                );
                 $fetchOptions['order'] = 'view_count';
                 break;
             case 'most_replied':
                 $conditions['reply_count'] = array('>', 0);
-                $conditions['post_date'] = array(
-                    '>',
-                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                );
                 $fetchOptions['order'] = 'reply_count';
                 break;
             case 'most_liked':
                 $conditions['first_post_likes'] = array('>', 0);
-                $conditions['post_date'] = array(
-                    '>',
-                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-                );
                 $fetchOptions['order'] = 'first_post_likes';
                 break;
             case 'polls':
@@ -628,13 +620,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 break;
         }
 
-        /** @var WidgetFramework_Model_Thread $wfThreadModel */
-        $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
-        $threadIds = $wfThreadModel->getThreadIds($conditions, $fetchOptions);
+        $threadIds = $this->_getThreadIdsWithConditionsAndFetchOptions($conditions, $fetchOptions,
+            $widget, $positionCode, $params, $renderTemplateObject);
         if (empty($threadIds)) {
             return array();
         }
 
+        /** @var WidgetFramework_Model_Thread $wfThreadModel */
+        $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
         $threads = $wfThreadModel->getThreadsByIdsInOrder($threadIds, 0, $readUserId);
         if (empty($threads)) {
             return array();
@@ -658,6 +651,28 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         }
 
         return $threads;
+    }
+
+    /**
+     * @param array $conditions
+     * @param array $fetchOptions
+     * @param array $widget
+     * @param string $positionCode
+     * @param array $params
+     * @param XenForo_Template_Abstract $renderTemplateObject
+     * @return array $threads
+     */
+    protected function _getThreadIdsWithConditionsAndFetchOptions(
+        array $conditions,
+        array $fetchOptions,
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        /** @var WidgetFramework_Model_Thread $wfThreadModel */
+        $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
+        return $wfThreadModel->getThreadIds($conditions, $fetchOptions);
     }
 
     /**
