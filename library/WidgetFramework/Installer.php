@@ -49,6 +49,7 @@ class WidgetFramework_Installer
             'field' => 'template_for_hooks',
             'checkQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'template_for_hooks\'',
             'addQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `template_for_hooks` MEDIUMBLOB',
+            'modifyQuery' => 'ALTER TABLE `xf_widget` MODIFY COLUMN `template_for_hooks` MEDIUMBLOB',
             'dropQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `template_for_hooks`',
         ),
         array(
@@ -57,6 +58,7 @@ class WidgetFramework_Installer
             'field' => 'widget_page_id',
             'checkQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'widget_page_id\'',
             'addQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'modifyQuery' => 'ALTER TABLE `xf_widget` MODIFY COLUMN `widget_page_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
             'dropQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `widget_page_id`',
         ),
         array(
@@ -65,6 +67,7 @@ class WidgetFramework_Installer
             'field' => 'group_id',
             'checkQuery' => 'SHOW COLUMNS FROM `xf_widget` LIKE \'group_id\'',
             'addQuery' => 'ALTER TABLE `xf_widget` ADD COLUMN `group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
+            'modifyQuery' => 'ALTER TABLE `xf_widget` MODIFY COLUMN `group_id` INT(10) UNSIGNED NOT NULL DEFAULT \'0\'',
             'dropQuery' => 'ALTER TABLE `xf_widget` DROP COLUMN `group_id`',
         ),
     );
@@ -86,6 +89,8 @@ class WidgetFramework_Installer
             $existed = $db->fetchOne($patch['checkQuery']);
             if (empty($existed)) {
                 $db->query($patch['addQuery']);
+            } else {
+                $db->query($patch['modifyQuery']);
             }
         }
 
@@ -155,7 +160,7 @@ class WidgetFramework_Installer
             $effectiveVersionId = $existingAddOn['version_id'];
         }
 
-        if ($effectiveVersionId < 55) {
+        if (!$db->fetchOne('SELECT * FROM `xf_node_type` WHERE node_type_id = ?', 'WF_WidgetPage')) {
             // node type definition
             // since 2.3
             // new XenForo_Phrase('node_type_WF_WidgetPage')
