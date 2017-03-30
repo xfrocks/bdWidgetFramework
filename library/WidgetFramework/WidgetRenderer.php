@@ -644,7 +644,11 @@ abstract class WidgetFramework_WidgetRenderer
 
     protected function _restoreFromCache($cached, &$html, &$containerData, &$requiredExternals)
     {
-        $html = $cached[WidgetFramework_Model_Cache::KEY_HTML];
+        $html = sprintf('<!-- %2$s -->%1$s<!-- /%2$s (%3$ds) -->',
+            $cached[WidgetFramework_Model_Cache::KEY_HTML],
+            md5($cached[WidgetFramework_Model_Cache::KEY_HTML]),
+            XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME]
+        );
 
         if (!empty($cached[WidgetFramework_Model_Cache::KEY_EXTRA_DATA][self::EXTRA_CONTAINER_DATA])) {
             $containerData = $cached[WidgetFramework_Model_Cache::KEY_EXTRA_DATA][self::EXTRA_CONTAINER_DATA];
