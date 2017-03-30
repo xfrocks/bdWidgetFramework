@@ -8,6 +8,16 @@ class WidgetFramework_Core
     const CONFIG_DEBUG = 'wfDebug';
 
     /**
+     * By default, widget that has `useCache` turned on will only be cached
+     * if the visitor is not an admin. This is done to allow admin to make changes
+     * in AdminCP (e.g. templates, phrases, etc.) and see the results immediately.
+     * Generally this is fine because there are not many admins but if you have to,
+     * it's possible to set this config value to `true` in config.php and disable
+     * admin cache bypass.
+     */
+    const CONFIG_CACHE_ADMIN = 'wfCacheAdmin';
+
+    /**
      * By default, widget that has `useUserCache` turned on will only be cached
      * if the visitor permission combination is a group one (e.g. normal users
      * having no specific user permission). This is done to reduce the number of
