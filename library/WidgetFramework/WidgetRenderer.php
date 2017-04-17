@@ -654,6 +654,10 @@ abstract class WidgetFramework_WidgetRenderer
 
     protected function _restoreFromCache($cached, &$html, &$containerData, &$requiredExternals)
     {
+        if (strlen($cached[WidgetFramework_Model_Cache::KEY_HTML]) === 0) {
+            return;
+        }
+
         $html = sprintf('<!-- %2$s -->%1$s<!-- /%2$s (%3$ds) -->',
             $cached[WidgetFramework_Model_Cache::KEY_HTML],
             md5($cached[WidgetFramework_Model_Cache::KEY_HTML]),

@@ -405,6 +405,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
     protected function _cleanUpHtml($html)
     {
         $html = preg_replace('#(\s)\s+#', '$1', $html);
+        $html = utf8_trim($html);
 
         return $html;
     }
