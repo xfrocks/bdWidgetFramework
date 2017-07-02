@@ -51,7 +51,7 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
         if (XenForo_Visitor::getUserId() == 0 OR empty($widget['options']['friends_only'])) {
             // get statuses from all users if friends_only option is not used
             // also do it if current user is guest (guest has no friend list, lol)
-            $conditions = array(WidgetFramework_Model_User::CONDITIONS_STATUS_DATE => array('>', 0));
+            $conditions = array(WidgetFramework_Model_User::CONDITIONS_STATUS_DATE => array('>', (XenForo_Application::$time - 604800)));
             $fetchOptions = array(
                 'order' => WidgetFramework_Model_User::ORDER_STATUS_DATE,
                 'direction' => 'desc',
