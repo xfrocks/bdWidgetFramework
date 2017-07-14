@@ -485,7 +485,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         $ignoredThreadIds = $renderTemplateObject->getParam(self::TEMPLATE_PARAM_IGNORED_THREAD_IDS);
         if (is_array($ignoredThreadIds) && count($ignoredThreadIds) > 0) {
-            WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
             $conditions[WidgetFramework_Model_Thread::CONDITIONS_THREAD_ID_NOT] = $ignoredThreadIds;
         }
 
@@ -645,7 +644,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $threads = array_slice($threads, 0, $widget['options']['limit'], true);
         }
 
-        if (!empty($layoutOptions['pageNav'])) {
+        if (!empty($layoutOptions['pageNav']) && !$renderTemplateObject->getParam('threadsCount')) {
             $threadsCount = $wfThreadModel->countThreads($conditions, $fetchOptions);
             $renderTemplateObject->setParam('threadsCount', $threadsCount);
         }
