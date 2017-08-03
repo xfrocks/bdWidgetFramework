@@ -4,6 +4,8 @@ class WidgetFramework_Model_Thread extends XenForo_Model
 {
     const CONDITIONS_THREAD_ID = 'WidgetFramework_thread_id';
     const CONDITIONS_THREAD_ID_NOT = 'WidgetFramework_thread_id_not';
+    const CONDITIONS_TAG_ID = 'WidgetFramework_tag_id';
+    const FETCH_OPTIONS_JOIN_XF_TAG_CONTENT = 'WidgetFramework_join_xfTagContent';
     const FETCH_OPTIONS_ORDER_RANDOM = 'WidgetFramework_random';
 
     public function getThreadIds(array $conditions, array $fetchOptions = array())
@@ -112,6 +114,19 @@ class WidgetFramework_Model_Thread extends XenForo_Model
             }
         }
 
+        if (isset($conditions[self::CONDITIONS_TAG_ID])) {
+            $fetchOptions[self::FETCH_OPTIONS_JOIN_XF_TAG_CONTENT] = true;
+
+            $sqlConditions[] = 'tagged.tag_id = '
+                . $this->_getDb()->quote($conditions[self::CONDITIONS_TAG_ID]);
+
+            if (isset($conditions['post_date'])
+                && is_array($conditions['post_date'])
+            ) {
+                $sqlConditions[] = $this->getCutOffCondition('tagged.content_date', $conditions['post_date']);
+            }
+        }
+
         if (count($sqlConditions) > 1) {
             // some of our conditions have been found
             return $this->getConditionsForClause($sqlConditions);
@@ -123,6 +138,13 @@ class WidgetFramework_Model_Thread extends XenForo_Model
     public function prepareThreadFetchOptions(array $fetchOptions)
     {
         $result = $this->_getThreadModel()->prepareThreadFetchOptions($fetchOptions);
+
+        if (!empty($fetchOptions[self::FETCH_OPTIONS_JOIN_XF_TAG_CONTENT])) {
+            $result['joinTables'] .= '
+                LEFT JOIN xf_tag_content AS tagged
+                    ON (tagged.content_type = "thread"
+                    AND tagged.content_id = thread.thread_id)';
+        }
 
         if (!empty($fetchOptions['order'])
             && $fetchOptions['order'] === self::FETCH_OPTIONS_ORDER_RANDOM

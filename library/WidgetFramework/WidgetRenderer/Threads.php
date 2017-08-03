@@ -512,31 +512,41 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         if (WidgetFramework_Core::contentTaggingFound()
             && !empty($widget['options']['tags'])
         ) {
-            $threadIds = array();
+            if (!empty($widget['options']['tags_all']) && count($widget['options']['tags']) === 1) {
+                // strategy #1 (beta@20170803): join xf_tag_content in thread id query
+                $tagIds = array_keys($widget['options']['tags']);
+                $conditions[WidgetFramework_Model_Thread::CONDITIONS_TAG_ID] = reset($tagIds);
+            } else {
+                // strategy #2: use search to get thread ids
+                $threadIds = array();
 
-            /* @var $searchModel XenForo_Model_Search */
-            $searchModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Search');
-            $constraintsKey = !empty($widget['options']['tags_all']) ? 'tag' : 'tag_any';
-            $constraints = array($constraintsKey => implode(' ', array_keys($widget['options']['tags'])));
-
-            $searcher = new XenForo_Search_Searcher($searchModel);
-            $searchQuery = '';
-            $order = 'date';
-
-            $typeHandler = $searchModel->getSearchDataHandler('thread');
-            $results = $searcher->searchType($typeHandler, $searchQuery, $constraints,
-                $order, false, $widget['options']['limit'] * 10);
-            foreach ($results as $result) {
-                if ($result[0] === 'thread') {
-                    $threadIds[] = $result[1];
+                /* @var $searchModel XenForo_Model_Search */
+                $searchModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Search');
+                $constraintsKey = !empty($widget['options']['tags_all']) ? 'tag' : 'tag_any';
+                $constraints = array($constraintsKey => implode(' ', array_keys($widget['options']['tags'])));
+                if (count($forumIds) > 0) {
+                    $constraints['node'] = implode(' ', $forumIds);
                 }
-            }
-            if (empty($threadIds)) {
-                return array();
-            }
 
-            WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
-            $conditions[WidgetFramework_Model_Thread::CONDITIONS_THREAD_ID] = $threadIds;
+                $searcher = new XenForo_Search_Searcher($searchModel);
+                $searchQuery = '';
+                $order = 'date';
+
+                $typeHandler = $searchModel->getSearchDataHandler('thread');
+                $results = $searcher->searchType($typeHandler, $searchQuery, $constraints,
+                    $order, false, $widget['options']['limit'] * 10);
+                foreach ($results as $result) {
+                    if ($result[0] === 'thread') {
+                        $threadIds[] = $result[1];
+                    }
+                }
+                if (empty($threadIds)) {
+                    return array();
+                }
+
+                WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Thread');
+                $conditions[WidgetFramework_Model_Thread::CONDITIONS_THREAD_ID] = $threadIds;
+            }
         }
 
         return $this->_getThreadsWithConditions($conditions, $widget, $positionCode, $params, $renderTemplateObject);
