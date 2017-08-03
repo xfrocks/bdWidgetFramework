@@ -478,11 +478,6 @@ abstract class WidgetFramework_WidgetRenderer
         return !empty($configuration['canAjaxLoad']);
     }
 
-    public function requireLock(array $widget)
-    {
-        return $this->useCache($widget);
-    }
-
     public function renderOptions(XenForo_ViewRenderer_Abstract $viewRenderer, array &$templateParams)
     {
         $templateParams['namePrefix'] = self::getNamePrefix();
@@ -630,16 +625,15 @@ abstract class WidgetFramework_WidgetRenderer
 
     protected function _restoreFromCache($cached, &$html, &$containerData, &$requiredExternals)
     {
-        if (strlen($cached[WidgetFramework_Model_Cache::KEY_HTML]) === 0) {
-            return;
+        $html = $cached[WidgetFramework_Model_Cache::KEY_HTML];
+        if (strlen($html) > 0) {
+            $html = sprintf(
+                '<!-- %2$s -->%1$s<!-- /%2$s (%3$ds) -->',
+                $html,
+                md5($html),
+                XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME]
+            );
         }
-
-        $html = sprintf(
-            '<!-- %2$s -->%1$s<!-- /%2$s (%3$ds) -->',
-            $cached[WidgetFramework_Model_Cache::KEY_HTML],
-            md5($cached[WidgetFramework_Model_Cache::KEY_HTML]),
-            XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME]
-        );
 
         if (!empty($cached[WidgetFramework_Model_Cache::KEY_EXTRA_DATA][self::EXTRA_CONTAINER_DATA])) {
             $containerData = $cached[WidgetFramework_Model_Cache::KEY_EXTRA_DATA][self::EXTRA_CONTAINER_DATA];
@@ -691,45 +685,17 @@ abstract class WidgetFramework_WidgetRenderer
         // check for cache
         // since 1.2.1
         $cacheId = false;
-        $lockId = null;
-
-        if ($html === false
-            && $this->useCache($widgetRef)
-        ) {
+        if ($html === false && $this->useCache($widgetRef)) {
             $cacheId = $this->_getCacheId($widgetRef, $positionCode, $params);
             $cached = $this->_getCacheModel()->getCache($widgetRef['widget_id'], $cacheId);
 
-            if (!empty($cached)
-                && is_array($cached)
-            ) {
-                if ($this->isCacheUsable($cached, $widgetRef)) {
-                    // found fresh cached html, use it asap
-                    $this->_restoreFromCache($cached, $html, $containerData, $requiredExternals);
-                } else {
-                    // cached html has expired: try to acquire lock
-                    $lockId = $this->_getCacheModel()->acquireLock($widgetRef['widget_id'], $cacheId);
-
-                    if ($lockId === false) {
-                        // a lock cannot be acquired, an expired cached html is the second best choice
-                        $this->_restoreFromCache($cached, $html, $containerData, $requiredExternals);
-                    }
-                }
+            if ($this->isCacheUsable($cached, $widgetRef)) {
+                $this->_restoreFromCache($cached, $html, $containerData, $requiredExternals);
             } else {
-                // no cache found
-                $lockId = $this->_getCacheModel()->acquireLock($widgetRef['widget_id'], $cacheId);
+                $this->_getCacheModel()->bumpCache($widgetRef['widget_id'], $cacheId, $cached);
             }
         }
 
-        if ($html === false
-            && $lockId === false
-        ) {
-            // a lock is required but we failed to acquired it
-            // also, a cached could not be found
-            // stop rendering
-            $html = '';
-        }
-
-        // conditional executed just fine
         if ($html === false) {
             $renderTemplate = $this->_getRenderTemplate($widgetRef, $positionCode, $params);
             if (!empty($renderTemplate)) {
@@ -771,13 +737,9 @@ abstract class WidgetFramework_WidgetRenderer
                     $extraData[self::EXTRA_REQUIRED_EXTERNALS] = $requiredExternals;
                 }
 
-                $this->_getCacheModel()->setCache($widgetRef['widget_id'], $cacheId, $html, $extraData, array(
-                    WidgetFramework_Model_Cache::OPTION_LOCK_ID => $lockId,
-                ));
+                $this->_getCacheModel()->setCache($widgetRef['widget_id'], $cacheId, $html, $extraData);
             }
         }
-
-        $this->_getCacheModel()->releaseLock($lockId);
 
         if (!empty($containerData)) {
             // apply container data
@@ -878,17 +840,19 @@ abstract class WidgetFramework_WidgetRenderer
         }
 
         $cacheSeconds = $configuration['cacheSeconds'];
-
         if (!empty($widget['options']['cache_seconds'])) {
             $cacheSeconds = intval($widget['options']['cache_seconds']);
         }
-
         if ($cacheSeconds < 0) {
             return true;
         }
 
-        $seconds = XenForo_Application::$time - $cached['time'];
-        if ($seconds > $cacheSeconds) {
+        if (!isset($cached[WidgetFramework_Model_Cache::KEY_TIME])) {
+            return false;
+        }
+
+        $elapsedSeconds = XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME];
+        if ($elapsedSeconds > $cacheSeconds) {
             return false;
         }
 
