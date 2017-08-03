@@ -851,6 +851,10 @@ abstract class WidgetFramework_WidgetRenderer
             return false;
         }
 
+        if (XenForo_Application::isRegistered('_bdCloudServerHelper_readonly')) {
+            return true;
+        }
+
         $elapsedSeconds = XenForo_Application::$time - $cached[WidgetFramework_Model_Cache::KEY_TIME];
         if ($elapsedSeconds > $cacheSeconds) {
             return false;
