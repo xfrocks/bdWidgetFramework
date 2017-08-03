@@ -14,5 +14,4 @@ class WidgetFramework_XenForo_ControllerPublic_Thread extends XFCP_WidgetFramewo
 
         return $response;
     }
-
 }

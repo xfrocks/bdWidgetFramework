@@ -22,9 +22,11 @@ class WidgetFramework_Deferred_Upgrade102 extends XenForo_Deferred_Abstract
             SELECT * FROM `xf_widget`
         ');
 
-        XenForo_Error::logError(sprintf('xf_widget table has been backed up to %s during upgrade. '
+        XenForo_Error::logError(sprintf(
+            'xf_widget table has been backed up to %s during upgrade. '
             . 'Please verify updated widget position and rendering then clean up the backup table afterwards.',
-            $backupTableName));
+            $backupTableName
+        ));
     }
 
     protected function _upgradeWidgetPageWidgets(WidgetFramework_Model_Widget $widgetModel)

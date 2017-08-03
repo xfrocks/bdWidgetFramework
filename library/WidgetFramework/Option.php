@@ -73,5 +73,4 @@ class WidgetFramework_Option
             'editLink' => $editLink,
         ));
     }
-
 }

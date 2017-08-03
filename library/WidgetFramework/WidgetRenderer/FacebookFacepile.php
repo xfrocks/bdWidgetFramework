@@ -30,5 +30,4 @@ class WidgetFramework_WidgetRenderer_FacebookFacepile extends WidgetFramework_Wi
 
         return $renderTemplateObject->render();
     }
-
 }

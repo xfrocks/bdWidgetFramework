@@ -12,5 +12,4 @@ class WidgetFramework_XenForo_ViewAdmin_StyleProperty_List extends XFCP_WidgetFr
             ksort($this->_params['scalars']);
         }
     }
-
 }

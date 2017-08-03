@@ -30,5 +30,4 @@ class WidgetFramework_WidgetRenderer_VisitorPanel extends WidgetFramework_Widget
 
         return $renderTemplateObject->render();
     }
-
 }

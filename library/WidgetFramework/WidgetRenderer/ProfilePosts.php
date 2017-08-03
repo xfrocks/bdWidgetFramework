@@ -123,5 +123,4 @@ class WidgetFramework_WidgetRenderer_ProfilePosts extends WidgetFramework_Widget
 
         return $profilePosts;
     }
-
 }

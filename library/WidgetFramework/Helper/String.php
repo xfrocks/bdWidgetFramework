@@ -21,7 +21,6 @@ class WidgetFramework_Helper_String
     {
         return preg_replace('/[^a-zA-Z0-9\-]/', '', $string);
     }
-
 }
 
 class _WidgetFramework_ArrayOfString
@@ -72,7 +71,6 @@ class _WidgetFramework_ArrayOfString
 
         return implode($this->_glue, $strings);
     }
-
 }
 
 class _WidgetFramework_WidgetTitleDelayed
@@ -127,5 +125,4 @@ class _WidgetFramework_WidgetTitleDelayed
 
         return $this->_prepared;
     }
-
 }

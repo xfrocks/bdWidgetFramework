@@ -51,5 +51,4 @@ class WidgetFramework_WidgetRenderer_Stats extends WidgetFramework_WidgetRendere
 
         return $renderTemplateObject->render();
     }
-
 }

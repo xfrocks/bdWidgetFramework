@@ -320,8 +320,12 @@ class WidgetFramework_Core
 
         $originalHtml = isset($containerData['sidebar']) ? $containerData['sidebar'] : '';
 
-        $html = $this->_renderWidgetsFor($templateName,
-            array_merge($params, array(self::PARAM_POSITION_CODE => $templateName)), $template, $originalHtml);
+        $html = $this->_renderWidgetsFor(
+            $templateName,
+            array_merge($params, array(self::PARAM_POSITION_CODE => $templateName)),
+            $template,
+            $originalHtml
+        );
 
         if (defined(self::NO_VISITOR_PANEL_FLAG)) {
             // the flag is used to avoid string searching as much as possible
@@ -340,9 +344,12 @@ class WidgetFramework_Core
             if (!empty($containerData['sidebar'])
                 && self::debugMode()
             ) {
-                $containerData['sidebar'] .= sprintf('<div>Widget Framework is in debug mode<br/>'
+                $containerData['sidebar'] .= sprintf(
+                    '<div>Widget Framework is in debug mode<br/>'
                     . 'Renderers: %d<br/>Widgets: %d<br/></div>',
-                    count($this->_renderers), $this->_widgetCount);
+                    count($this->_renderers),
+                    $this->_widgetCount
+                );
             }
         }
 

@@ -78,6 +78,7 @@ class WidgetFramework_Model_WidgetRenderer_Template extends XenForo_Model
      */
     protected function _getTemplateModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('XenForo_Model_Template');
     }
 }

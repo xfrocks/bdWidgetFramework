@@ -18,5 +18,4 @@ class WidgetFramework_ViewPublic_WidgetPage_View extends XenForo_ViewPublic_Base
         $core = WidgetFramework_Core::getInstance();
         $core->addWidgets($this->_params['widgets']);
     }
-
 }

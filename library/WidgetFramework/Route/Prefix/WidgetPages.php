@@ -12,7 +12,6 @@ class WidgetFramework_Route_Prefix_WidgetPages implements XenForo_Route_Interfac
     }
 
     public function buildLink(
-        /** @noinspection PhpUnusedParameterInspection */
         $originalPrefix,
         $outputPrefix,
         $action,
@@ -37,5 +36,4 @@ class WidgetFramework_Route_Prefix_WidgetPages implements XenForo_Route_Interfac
 
         return XenForo_Link::buildBasicLinkWithStringParam($outputPrefix, $action, $extension, $data, 'node_name');
     }
-
 }

@@ -18,11 +18,12 @@ class WidgetFramework_ViewAdmin_Widget_List extends XenForo_ViewAdmin_Base
             foreach ($positionRef['widgetsByIds'] as $widgetId => &$widgetRef) {
                 $renderer = WidgetFramework_WidgetRenderer::create($widgetRef['class']);
                 $widgetRef['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed(
-                    $renderer, $widgetRef);
+                    $renderer,
+                    $widgetRef
+                );
             }
         }
 
         $this->_params['positions'] = $positions;
     }
-
 }

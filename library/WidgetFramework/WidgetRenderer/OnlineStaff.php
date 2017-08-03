@@ -42,13 +42,16 @@ class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetR
                 /** @var XenForo_Model_Session $sessionModel */
                 $sessionModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenForo_Model_Session');
 
-                $GLOBALS['WidgetFramework_onlineUsers'] = $sessionModel->getSessionActivityQuickList($visitor->toArray(),
+                $GLOBALS['WidgetFramework_onlineUsers'] = $sessionModel->getSessionActivityQuickList(
+                    $visitor->toArray(),
                     array(
                         'cutOff' => array(
                             '>',
                             $sessionModel->getOnlineStatusTimeout()
                         )
-                    ), ($visitor['user_id'] ? $visitor->toArray() : null));
+                    ),
+                    ($visitor['user_id'] ? $visitor->toArray() : null)
+                );
             }
 
             $renderTemplateObject->setParam('onlineUsers', $GLOBALS['WidgetFramework_onlineUsers']);
@@ -56,5 +59,4 @@ class WidgetFramework_WidgetRenderer_OnlineStaff extends WidgetFramework_WidgetR
 
         return $renderTemplateObject->render();
     }
-
 }

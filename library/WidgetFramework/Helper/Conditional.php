@@ -22,7 +22,6 @@ class WidgetFramework_Helper_Conditional
         /** @noinspection PhpUndefinedVariableInspection */
         return $__output === md5($raw);
     }
-
 }
 
 class WidgetFramework_Helper_Conditional_Function_Helper extends XenForo_Template_Compiler_Function_Helper
@@ -31,8 +30,12 @@ class WidgetFramework_Helper_Conditional_Function_Helper extends XenForo_Templat
     {
         $result = parent::compile($compiler, $function, $arguments, $options);
 
-        $result = str_replace('XenForo_Template_Helper_Core', 'WidgetFramework_Template_Helper_Conditional',
-            $result, $count);
+        $result = str_replace(
+            'XenForo_Template_Helper_Core',
+            'WidgetFramework_Template_Helper_Conditional',
+            $result,
+            $count
+        );
 
         if ($count !== 1) {
             throw new XenForo_Exception('Unable to inject conditional helper methods.');

@@ -11,5 +11,4 @@ class WidgetFramework_WidgetRenderer_CallbackWithoutWrapper extends WidgetFramew
 
         return $configuration;
     }
-
 }

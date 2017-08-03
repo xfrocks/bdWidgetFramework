@@ -266,8 +266,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         if (!empty($widget['options']['forums'])
             && $this->_helperDetectSpecialForums($widget['options']['forums'])
         ) {
-            $forumId = $this->_helperGetForumIdForCache($widget['options']['forums'], $params,
-                !empty($widget['options']['as_guest']));
+            $forumId = $this->_helperGetForumIdForCache(
+                $widget['options']['forums'],
+                $params,
+                !empty($widget['options']['as_guest'])
+            );
             if (!empty($forumId)) {
                 $suffix[] = 'f' . $forumId;
             }
@@ -311,8 +314,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         $ignoredThreadIds = array();
         if (isset($alp[self::AJAX_PARAM_IGNORED_THREAD_IDS])) {
-            $ignoredThreadIds = array_map('intval', preg_split('#[^0-9]#',
-                $alp[self::AJAX_PARAM_IGNORED_THREAD_IDS], -1, PREG_SPLIT_NO_EMPTY));
+            $ignoredThreadIds = array_map('intval', preg_split(
+                '#[^0-9]#',
+                $alp[self::AJAX_PARAM_IGNORED_THREAD_IDS],
+                -1,
+                PREG_SPLIT_NO_EMPTY
+            ));
         }
         $renderTemplateObject->setParam(self::TEMPLATE_PARAM_IGNORED_THREAD_IDS, $ignoredThreadIds);
 
@@ -465,9 +472,12 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
 
         $forumIds = $renderTemplateObject->getParam(self::TEMPLATE_PARAM_FORUM_IDS);
         if (!is_array($forumIds)) {
-            $forumIds = $this->_helperGetForumIdsFromOption(empty($widget['options']['forums'])
-                ? array() : $widget['options']['forums'], $params,
-                empty($widget['options']['as_guest']) ? false : true);
+            $forumIds = $this->_helperGetForumIdsFromOption(
+                empty($widget['options']['forums'])
+                ? array() : $widget['options']['forums'],
+                $params,
+                empty($widget['options']['as_guest']) ? false : true
+            );
         }
         if (empty($forumIds)) {
             // no forum ids?! Save the effort and return asap
@@ -533,8 +543,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $order = 'date';
 
                 $typeHandler = $searchModel->getSearchDataHandler('thread');
-                $results = $searcher->searchType($typeHandler, $searchQuery, $constraints,
-                    $order, false, $widget['options']['limit'] * 10);
+                $results = $searcher->searchType(
+                    $typeHandler,
+                    $searchQuery,
+                    $constraints,
+                    $order,
+                    false,
+                    $widget['options']['limit'] * 10
+                );
                 foreach ($results as $result) {
                     if ($result[0] === 'thread') {
                         $threadIds[] = $result[1];
@@ -629,8 +645,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 break;
         }
 
-        $threadIds = $this->_getThreadIdsWithConditionsAndFetchOptions($conditions, $fetchOptions,
-            $widget, $positionCode, $params, $renderTemplateObject);
+        $threadIds = $this->_getThreadIdsWithConditionsAndFetchOptions(
+            $conditions,
+            $fetchOptions,
+            $widget,
+            $positionCode,
+            $params,
+            $renderTemplateObject
+        );
         if (empty($threadIds)) {
             return array();
         }
@@ -806,16 +828,33 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             ) {
                 $threadBbCodeOptions = $bbCodeOptions;
                 $threadBbCodeOptions['states']['viewAttachments'] =
-                    $threadModel->canViewAttachmentsInThread($threadRef, $forumRef, $null,
-                        $permissionsRef, $viewingUser);
+                    $threadModel->canViewAttachmentsInThread(
+                        $threadRef,
+                        $forumRef,
+                        $null,
+                        $permissionsRef,
+                        $viewingUser
+                    );
                 $threadRef['messageHtml'] = WidgetFramework_ShippableHelper_Html::preSnippet(
-                    $threadRef, $bbCodeParser, $threadBbCodeOptions);
-                $threadRef['post'] = $postModel->preparePost($threadRef['post'],
-                    $threadRef, $forumRef, $permissionsRef, $viewingUser);
+                    $threadRef,
+                    $bbCodeParser,
+                    $threadBbCodeOptions
+                );
+                $threadRef['post'] = $postModel->preparePost(
+                    $threadRef['post'],
+                    $threadRef,
+                    $forumRef,
+                    $permissionsRef,
+                    $viewingUser
+                );
             }
 
-            $threadRef = $wfThreadModel->prepareThreadForRendererThreads($threadRef,
-                $forumRef, $permissionsRef, $viewingUser);
+            $threadRef = $wfThreadModel->prepareThreadForRendererThreads(
+                $threadRef,
+                $forumRef,
+                $permissionsRef,
+                $viewingUser
+            );
         }
     }
 
@@ -903,8 +942,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             && isset($widget['options']['forums'])
             && $this->_helperDetectSpecialForums($widget['options']['forums'])
         ) {
-            $forumIds = $this->_helperGetForumIdsFromOption($widget['options']['forums'], $params,
-                empty($widget['options']['as_guest']) ? false : true);
+            $forumIds = $this->_helperGetForumIdsFromOption(
+                $widget['options']['forums'],
+                $params,
+                empty($widget['options']['as_guest']) ? false : true
+            );
         }
         $alp[self::AJAX_PARAM_FORUM_IDS] = $forumIds;
 

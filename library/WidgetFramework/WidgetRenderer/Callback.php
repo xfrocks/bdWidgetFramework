@@ -59,5 +59,4 @@ class WidgetFramework_WidgetRenderer_Callback extends WidgetFramework_WidgetRend
             return '';
         }
     }
-
 }

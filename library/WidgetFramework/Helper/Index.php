@@ -56,7 +56,9 @@ class WidgetFramework_Helper_Index
                 $childNodes = $nodeModel->getChildNodes($widgetPage, true);
 
                 XenForo_Application::setSimpleCacheData(
-                    WidgetFramework_Core::SIMPLE_CACHE_CHILD_NODES, $childNodes);
+                    WidgetFramework_Core::SIMPLE_CACHE_CHILD_NODES,
+                    $childNodes
+                );
             }
         }
 

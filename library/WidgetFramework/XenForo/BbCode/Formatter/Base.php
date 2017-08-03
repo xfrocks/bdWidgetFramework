@@ -23,5 +23,4 @@ class WidgetFramework_XenForo_BbCode_Formatter_Base extends XFCP_WidgetFramework
 
         return $this->_wrapInHtml('<span class="prbreak" style="display: none">', '</span>', htmlentities($text));
     }
-
 }

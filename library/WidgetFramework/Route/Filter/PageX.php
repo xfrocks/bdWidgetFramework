@@ -18,5 +18,4 @@ class WidgetFramework_Route_Filter_PageX implements XenForo_Route_Interface
 
         return false;
     }
-
 }

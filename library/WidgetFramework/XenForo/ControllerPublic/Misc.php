@@ -39,5 +39,4 @@ class WidgetFramework_XenForo_ControllerPublic_Misc extends XFCP_WidgetFramework
 
         return $this->responseView('WidgetFramework_ViewPublic_Widget_Ajax', 'wf_widget_ajax', $viewParams);
     }
-
 }

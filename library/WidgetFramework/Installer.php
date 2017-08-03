@@ -122,11 +122,8 @@ class WidgetFramework_Installer
 
     /* End auto-generated lines of code. Feel free to make changes below */
 
-    public static function installCustomized(
-        /** @noinspection PhpUnusedParameterInspection */
-        $existingAddOn,
-        $addOnData
-    ) {
+    public static function installCustomized($existingAddOn, $addOnData)
+    {
         if (XenForo_Application::$versionId < 1020000) {
             throw new Exception('XenForo 1.2+ is required for this add-on.');
         }
@@ -211,9 +208,10 @@ class WidgetFramework_Installer
         XenForo_Application::setSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_INVALIDATED_WIDGETS, false);
         XenForo_Application::setSimpleCacheData(WidgetFramework_Core::SIMPLE_CACHE_CHILD_NODES, false);
         XenForo_Application::setSimpleCacheData(
-            WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS, false);
+            WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS,
+            false
+        );
 
         WidgetFramework_ShippableHelper_Updater::onUninstall(WidgetFramework_Listener::UPDATER_URL, 'widget_framework');
     }
-
 }

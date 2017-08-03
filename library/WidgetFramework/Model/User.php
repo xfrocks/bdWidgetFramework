@@ -118,6 +118,7 @@ class WidgetFramework_Model_User extends XenForo_Model
      */
     protected function _getUserModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('XenForo_Model_User');
     }
 }

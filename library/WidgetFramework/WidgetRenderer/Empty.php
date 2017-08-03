@@ -62,5 +62,4 @@ class WidgetFramework_WidgetRenderer_Empty extends WidgetFramework_WidgetRendere
 
         return $rendered;
     }
-
 }

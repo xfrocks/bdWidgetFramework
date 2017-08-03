@@ -69,6 +69,7 @@ class WidgetFramework_DataWriter_WidgetPage extends XenForo_DataWriter_Node
      */
     protected function _getWidgetModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
     }
 
@@ -77,7 +78,7 @@ class WidgetFramework_DataWriter_WidgetPage extends XenForo_DataWriter_Node
      */
     protected function _getWidgetPageModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_WidgetPage');
     }
-
 }

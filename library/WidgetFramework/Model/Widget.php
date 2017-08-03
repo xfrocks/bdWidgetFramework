@@ -184,7 +184,9 @@ class WidgetFramework_Model_Widget extends XenForo_Model
             || !is_readable($fileName)
         ) {
             throw new XenForo_Exception(
-                new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'), true);
+                new XenForo_Phrase('please_enter_valid_file_name_requested_file_not_read'),
+                true
+            );
         }
 
         try {
@@ -338,7 +340,9 @@ class WidgetFramework_Model_Widget extends XenForo_Model
                 FROM xf_widget AS widget
                 ' . $joinOptions['joinTables'] . '
                 WHERE ' . $whereClause . '
-            ', $limitOptions['limit'], $limitOptions['offset']
+            ',
+            $limitOptions['limit'],
+            $limitOptions['offset']
         ), 'widget_id');
 
         foreach ($widgets as &$widgetRef) {
@@ -385,11 +389,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $widgets;
     }
 
-    public function prepareWidgetConditions(
-        /** @noinspection PhpUnusedParameterInspection */
-        array $conditions,
-        array &$fetchOptions
-    ) {
+    public function prepareWidgetConditions(array $conditions, array &$fetchOptions)
+    {
         $db = $this->_getDb();
         $sqlConditions = array();
 
@@ -430,10 +431,8 @@ class WidgetFramework_Model_Widget extends XenForo_Model
         return $this->getConditionsForClause($sqlConditions);
     }
 
-    public function prepareWidgetFetchOptions(
-        /** @noinspection PhpUnusedParameterInspection */
-        array $fetchOptions
-    ) {
+    public function prepareWidgetFetchOptions(array $fetchOptions)
+    {
         $selectFields = '';
         $joinTables = '';
 

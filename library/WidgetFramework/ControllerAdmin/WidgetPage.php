@@ -40,7 +40,10 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
             'widgetPage' => $widgetPage,
             'widgets' => $widgets,
             'nodeParentOptions' => $this->_getNodeModel()->getNodeOptionsArray(
-                $this->_getNodeModel()->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true),
+                $this->_getNodeModel()->getPossibleParentNodes($widgetPage),
+                $widgetPage['parent_node_id'],
+                true
+            ),
             'styles' => $this->_getStyleModel()->getAllStylesAsFlattenedTree(),
             'natOptions' => (XenForo_Application::isRegistered('nodesAsTabsAPI') ?
                 call_user_func(array('NodesAsTabs_API', 'nodeOptionsRecord'), $nodeId) : false)
@@ -134,7 +137,10 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
             'widgetPage' => $widgetPage,
             'childNodes' => $childNodes,
             'nodeParentOptions' => $nodeModel->getNodeOptionsArray(
-                $nodeModel->getPossibleParentNodes($widgetPage), $widgetPage['parent_node_id'], true)
+                $nodeModel->getPossibleParentNodes($widgetPage),
+                $widgetPage['parent_node_id'],
+                true
+            )
         );
 
         return $this->responseView('WidgetFramework_ViewAdmin_WidgetPage_Delete', 'wf_widget_page_delete', $viewParams);
@@ -156,6 +162,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
      */
     protected function _getWidgetModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
     }
 
@@ -164,6 +171,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
      */
     protected function _getWidgetPageModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_WidgetPage');
     }
 
@@ -172,7 +180,7 @@ class WidgetFramework_ControllerAdmin_WidgetPage extends XenForo_ControllerAdmin
      */
     protected function _getNodeDataWriter()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return XenForo_DataWriter::create($this->_nodeDataWriterName);
     }
-
 }

@@ -2,8 +2,7 @@
 
 class WidgetFramework_WidgetRenderer_UserFollow extends WidgetFramework_WidgetRenderer
 {
-    public static /** @noinspection HtmlUnknownTarget */
-        $countFormat = '<a href="%2$s" class="count OverlayTrigger">%1$d</a>';
+    public static $countFormat = '<' . 'a href="%2$s" class="count OverlayTrigger">%1$d</' . 'a>';
 
     protected static $_links = array();
     protected static $_counts = array();
@@ -27,9 +26,11 @@ class WidgetFramework_WidgetRenderer_UserFollow extends WidgetFramework_WidgetRe
             ) {
                 return WidgetFramework_Helper_String::createArrayOfStrings(array(
                     $phrase,
-                    sprintf(self::$countFormat,
+                    sprintf(
+                        self::$countFormat,
                         self::$_counts[$widget['widget_id']][$countKey],
-                        self::$_links[$widget['widget_id']])
+                        self::$_links[$widget['widget_id']]
+                    )
                 ));
             } else {
                 return $phrase;

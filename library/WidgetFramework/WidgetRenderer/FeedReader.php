@@ -85,7 +85,7 @@ class WidgetFramework_WidgetRenderer_FeedReader extends WidgetFramework_WidgetRe
 
     protected function _extractImage($bbCode)
     {
-        if (preg_match('#\[img\](?<url>.+?)\[/img\]#i', $bbCode, $matches)) {
+        if (preg_match('#\[img\](?<u' . 'rl>.+?)\[/img\]#i', $bbCode, $matches)) {
             $url = $matches['url'];
             return $url;
         }

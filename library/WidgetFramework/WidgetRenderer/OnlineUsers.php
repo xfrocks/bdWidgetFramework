@@ -101,5 +101,4 @@ class WidgetFramework_WidgetRenderer_OnlineUsers extends WidgetFramework_WidgetR
 
         return $onlineUsers;
     }
-
 }

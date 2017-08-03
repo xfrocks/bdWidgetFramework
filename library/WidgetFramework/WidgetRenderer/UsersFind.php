@@ -42,5 +42,4 @@ class WidgetFramework_WidgetRenderer_UsersFind extends WidgetFramework_WidgetRen
     {
         return XenForo_Link::buildPublicLink('online');
     }
-
 }

@@ -89,14 +89,17 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
             /** @var WidgetFramework_Model_ProfilePost $wfProfilePostModel */
             $wfProfilePostModel = $core->getModelFromCache('WidgetFramework_Model_ProfilePost');
             $profilePostIds = $wfProfilePostModel->getProfilePostIdsOfUserStatuses(
-                array_keys($users), intval($widget['options']['limit']));
+                array_keys($users),
+                intval($widget['options']['limit'])
+            );
         } else {
             foreach ($users as $user) {
                 $profilePostIds[] = $user['status_profile_post_id'];
             }
         }
 
-        $profilePosts = $profilePostModel->getProfilePostsByIds($profilePostIds,
+        $profilePosts = $profilePostModel->getProfilePostsByIds(
+            $profilePostIds,
             array(
                 'join' => XenForo_Model_ProfilePost::FETCH_USER_POSTER
                     | XenForo_Model_ProfilePost::FETCH_USER_RECEIVER
@@ -124,5 +127,4 @@ class WidgetFramework_WidgetRenderer_RecentStatus extends WidgetFramework_Widget
     {
         return $b['post_date'] - $a['post_date'];
     }
-
 }

@@ -36,16 +36,16 @@ class WidgetFramework_Listener
         }
 
         if (isset($data['routesAdmin'])) {
-            WidgetFramework_ShippableHelper_Updater::onInitDependencies($dependencies,
-                self::UPDATER_URL, 'widget_framework');
+            WidgetFramework_ShippableHelper_Updater::onInitDependencies(
+                $dependencies,
+                self::UPDATER_URL,
+                'widget_framework'
+            );
         }
     }
 
-    public static function navigation_tabs(
-        array &$extraTabs,
-        /** @noinspection PhpUnusedParameterInspection */
-        $selectedTabId
-    ) {
+    public static function navigation_tabs(array &$extraTabs, $selectedTabId)
+    {
         $indexNodeId = WidgetFramework_Option::get('indexNodeId');
 
         if ($indexNodeId > 0
@@ -115,7 +115,11 @@ class WidgetFramework_Listener
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             if (!preg_match('#^wf_.+_wrapper$#', $templateName)) {
                 $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor(
-                    $templateName, $template->getParams(), $template, $containerData);
+                    $templateName,
+                    $template->getParams(),
+                    $template,
+                    $containerData
+                );
 
                 if ($rendered) {
                     if (!isset($containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS])) {
@@ -158,11 +162,13 @@ class WidgetFramework_Listener
                 WidgetFramework_Template_Extended::WidgetFramework_processLateExtraData($output, $template);
 
                 if (!empty(self::$_navigationTabsForums)) {
-                    $output = str_replace('<!-- navigation_tabs_forums for wf_home_navtab_links -->',
-                        self::$_navigationTabsForums, $output);
+                    $output = str_replace(
+                        '<!-- navigation_tabs_forums for wf_home_navtab_links -->',
+                        self::$_navigationTabsForums,
+                        $output
+                    );
                 }
             }
-
         }
     }
 
@@ -196,7 +202,6 @@ class WidgetFramework_Listener
     }
 
     public static function template_hook_navigation_tabs_forums(
-        /** @noinspection PhpUnusedParameterInspection */
         $hookName,
         &$contents,
         array $hookParams,
@@ -205,11 +210,8 @@ class WidgetFramework_Listener
         self::$_navigationTabsForums = $contents;
     }
 
-    public static function init_router_public(
-        /** @noinspection PhpUnusedParameterInspection */
-        XenForo_Dependencies_Abstract $dependencies,
-        XenForo_Router $router
-    ) {
+    public static function init_router_public(XenForo_Dependencies_Abstract $dependencies, XenForo_Router $router)
+    {
         if (WidgetFramework_Option::get('indexNodeId') > 0) {
             // one of our widget pages was selected as the index page
             // modify the router rules to serve http://domain.com/xenforo/page-x urls
@@ -229,7 +231,6 @@ class WidgetFramework_Listener
         XenForo_FrontController $fc,
         XenForo_ControllerResponse_Abstract &$controllerResponse,
         XenForo_ViewRenderer_Abstract &$viewRenderer,
-        /** @noinspection PhpUnusedParameterInspection */
         array &$containerParams
     ) {
         if ($fc->getDependencies() instanceof XenForo_Dependencies_Public) {
@@ -272,11 +273,8 @@ class WidgetFramework_Listener
         }
     }
 
-    public static function file_health_check(
-        /** @noinspection PhpUnusedParameterInspection */
-        XenForo_ControllerAdmin_Abstract $controller,
-        array &$hashes
-    ) {
+    public static function file_health_check(XenForo_ControllerAdmin_Abstract $controller, array &$hashes)
+    {
         $hashes += WidgetFramework_FileSums::getHashes();
     }
 

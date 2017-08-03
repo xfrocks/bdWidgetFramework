@@ -9,7 +9,6 @@ class WidgetFramework_Route_PrefixAdmin_Widgets implements XenForo_Route_Interfa
     }
 
     public function buildLink(
-        /** @noinspection PhpUnusedParameterInspection */
         $originalPrefix,
         $outputPrefix,
         $action,
@@ -19,5 +18,4 @@ class WidgetFramework_Route_PrefixAdmin_Widgets implements XenForo_Route_Interfa
     ) {
         return XenForo_Link::buildBasicLinkWithIntegerParam($outputPrefix, $action, $extension, $data, 'widget_id');
     }
-
 }

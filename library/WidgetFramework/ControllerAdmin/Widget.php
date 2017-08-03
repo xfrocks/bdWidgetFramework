@@ -60,7 +60,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
             $core = WidgetFramework_Core::getInstance();
             $core->addWidgets($widgets);
             $displayOrder = $this->_getWidgetModel()->getLastDisplayOrder(
-                $core->getWidgetsAtPosition($position), $groupJoin);
+                $core->getWidgetsAtPosition($position),
+                $groupJoin
+            );
         }
 
         $widget = array(
@@ -252,8 +254,10 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                 }
 
                 if (!empty($_widgetsToMerge)) {
-                    $_group = $this->_getWidgetModel()->createGroupContaining(reset($_widgetsToMerge),
-                        array('layout' => 'columns'));
+                    $_group = $this->_getWidgetModel()->createGroupContaining(
+                        reset($_widgetsToMerge),
+                        array('layout' => 'columns')
+                    );
 
                     foreach ($_widgetsToMerge as $_widgetToMerge) {
                         /** @var WidgetFramework_DataWriter_Widget $_widgetToMergeDw */
@@ -261,7 +265,9 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                         $_widgetToMergeDw->setExistingData($_widgetToMerge, true);
                         $_widgetToMergeDw->set('group_id', $_group['widget_id']);
                         $_widgetToMergeDw->setExtraData(
-                            WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD, true);
+                            WidgetFramework_DataWriter_Widget::EXTRA_DATA_SKIP_REBUILD,
+                            true
+                        );
                         $_widgetToMergeDw->save();
                     }
 
@@ -372,8 +378,12 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
                 $dw->set('display_order', $groupMergeWidget['display_order']);
             } else {
                 $dw->set('display_order', $this->_getWidgetModel()->getDisplayOrderFromRelative(
-                    $dw->get('widget_id'), $dw->get('group_id'), $relativeDisplayOrder,
-                    $core->getWidgetsAtPosition($dw->get('position')), $widgetsNeedUpdate));
+                    $dw->get('widget_id'),
+                    $dw->get('group_id'),
+                    $relativeDisplayOrder,
+                    $core->getWidgetsAtPosition($dw->get('position')),
+                    $widgetsNeedUpdate
+                ));
             }
         }
 
@@ -443,8 +453,10 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
         $link = XenForo_Link::buildAdminLink('widgets');
         if ($dw->get('widget_page_id') > 0) {
-            $link = XenForo_Link::buildAdminLink('widget-pages/edit',
-                array('node_id' => $dw->get('widget_page_id')));
+            $link = XenForo_Link::buildAdminLink(
+                'widget-pages/edit',
+                array('node_id' => $dw->get('widget_page_id'))
+            );
         }
 
         return $this->responseRedirect(XenForo_ControllerResponse_Redirect::SUCCESS, $link);
@@ -585,7 +597,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $info = $this->_getWidgetModel()->getWidgetById($widgetId);
         if (!$info) {
             throw $this->responseException(
-                $this->responseError(new XenForo_Phrase('wf_requested_widget_not_found'), 404));
+                $this->responseError(new XenForo_Phrase('wf_requested_widget_not_found'), 404)
+            );
         }
 
         return $info;
@@ -596,7 +609,8 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
         $info = $this->_getWidgetPageModel()->getWidgetPageById($nodeId);
         if (!$info) {
             throw $this->responseException(
-                $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404));
+                $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404)
+            );
         }
 
         return $info;
@@ -607,6 +621,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
      */
     protected function _getWidgetModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
     }
 
@@ -615,6 +630,7 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
      */
     protected function _getWidgetPageModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_WidgetPage');
     }
 
@@ -636,5 +652,4 @@ class WidgetFramework_ControllerAdmin_Widget extends XenForo_ControllerAdmin_Abs
 
         return $options;
     }
-
 }

@@ -56,16 +56,20 @@ class WidgetFramework_DataWriter_Helper_Widget
                     'hook:wf_widget_page_contents'
                 ), true) && !$dw->get('widget_page_id')
             ) {
-                $dw->error(new XenForo_Phrase('wf_position_x_requires_widget_page',
-                    array('position' => $positionCode)), $fieldName);
+                $dw->error(new XenForo_Phrase(
+                    'wf_position_x_requires_widget_page',
+                    array('position' => $positionCode)
+                ), $fieldName);
                 return false;
             }
 
             if (in_array($positionCode, array(
                 'wf_widget_ajax',
             ), true)) {
-                $dw->error(new XenForo_Phrase('wf_invalid_position_x',
-                    array('position' => $positionCode)), $fieldName);
+                $dw->error(new XenForo_Phrase(
+                    'wf_invalid_position_x',
+                    array('position' => $positionCode)
+                ), $fieldName);
                 return false;
             }
 
@@ -89,13 +93,17 @@ class WidgetFramework_DataWriter_Helper_Widget
                 } elseif ($positionCode === 'hook:wf_widget_page_contents') {
                     // ignore
                 } else {
-                    $dw->error(new XenForo_Phrase('wf_non_existent_hook_x',
-                        array('hook' => substr($positionCode, 5))), $fieldName);
+                    $dw->error(new XenForo_Phrase(
+                        'wf_non_existent_hook_x',
+                        array('hook' => substr($positionCode, 5))
+                    ), $fieldName);
                     return false;
                 }
             } elseif (!$templateModel->getTemplateInStyleByTitle($positionCode)) {
-                $dw->error(new XenForo_Phrase('wf_invalid_position_x',
-                    array('position' => $positionCode)), $fieldName);
+                $dw->error(new XenForo_Phrase(
+                    'wf_invalid_position_x',
+                    array('position' => $positionCode)
+                ), $fieldName);
                 return false;
             }
 
@@ -108,5 +116,4 @@ class WidgetFramework_DataWriter_Helper_Widget
 
         return true;
     }
-
 }

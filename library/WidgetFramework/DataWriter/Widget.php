@@ -182,7 +182,10 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
 
         if (!empty($this->_newData['xf_widget'])) {
             WidgetFramework_Helper_LayoutEditor::keepWidgetChanges(
-                $this->get('widget_id'), $this, $this->_newData['xf_widget']);
+                $this->get('widget_id'),
+                $this,
+                $this->_newData['xf_widget']
+            );
         }
     }
 
@@ -258,6 +261,7 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
      */
     protected function _getWidgetModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
     }
 
@@ -266,7 +270,7 @@ class WidgetFramework_DataWriter_Widget extends XenForo_DataWriter
      */
     protected function _getWidgetRendererTemplateModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_WidgetRenderer_Template');
     }
-
 }

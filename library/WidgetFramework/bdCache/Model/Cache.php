@@ -18,5 +18,4 @@ class WidgetFramework_bdCache_Model_Cache extends XFCP_WidgetFramework_bdCache_M
 
         return $supported;
     }
-
 }

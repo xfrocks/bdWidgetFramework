@@ -99,7 +99,6 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
     }
 
     protected function _getResources(
-        /** @noinspection PhpUnusedParameterInspection */
         array $widget,
         $positionCode,
         array $params,
@@ -136,7 +135,9 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
             );
             $fetchOptions = array(
                 'limit' => $widget['options']['limit'],
-                'join' => XenResource_Model_Resource::FETCH_USER | XenResource_Model_Resource::FETCH_CATEGORY | XenResource_Model_Resource::FETCH_DESCRIPTION,
+                'join' => XenResource_Model_Resource::FETCH_USER
+                    | XenResource_Model_Resource::FETCH_CATEGORY
+                    | XenResource_Model_Resource::FETCH_DESCRIPTION,
             );
 
             switch ($widget['options']['type']) {
@@ -172,5 +173,4 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 
         return $resources;
     }
-
 }

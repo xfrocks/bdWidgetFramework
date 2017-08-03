@@ -96,8 +96,10 @@ class WidgetFramework_Model_Thread extends XenForo_Model
 
         if (isset($conditions[self::CONDITIONS_THREAD_ID])) {
             if (is_array($conditions[self::CONDITIONS_THREAD_ID])) {
-                $sqlConditions[] = sprintf('thread.thread_id IN (%s)',
-                    $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID]));
+                $sqlConditions[] = sprintf(
+                    'thread.thread_id IN (%s)',
+                    $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID])
+                );
             } else {
                 $sqlConditions[] = 'thread.thread_id = '
                     . $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID]);
@@ -106,8 +108,10 @@ class WidgetFramework_Model_Thread extends XenForo_Model
 
         if (isset($conditions[self::CONDITIONS_THREAD_ID_NOT])) {
             if (is_array($conditions[self::CONDITIONS_THREAD_ID_NOT])) {
-                $sqlConditions[] = sprintf('thread.thread_id NOT IN (%s)',
-                    $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID_NOT]));
+                $sqlConditions[] = sprintf(
+                    'thread.thread_id NOT IN (%s)',
+                    $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID_NOT])
+                );
             } else {
                 $sqlConditions[] = 'thread.thread_id <> '
                     . $this->_getDb()->quote($conditions[self::CONDITIONS_THREAD_ID_NOT]);
@@ -160,6 +164,7 @@ class WidgetFramework_Model_Thread extends XenForo_Model
      */
     protected function _getThreadModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('XenForo_Model_Thread');
     }
 }

@@ -17,7 +17,9 @@ class WidgetFramework_Helper_PermissionCombination
         ');
 
         XenForo_Application::setSimpleCacheData(
-            WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS, $ids);
+            WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS,
+            $ids
+        );
 
         return $ids;
     }
@@ -25,7 +27,8 @@ class WidgetFramework_Helper_PermissionCombination
     public static function getGroupOnlyCombinationIds()
     {
         $ids = XenForo_Application::getSimpleCacheData(
-            WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS);
+            WidgetFramework_Core::SIMPLE_CACHE_GROUP_ONLY_PERMISSION_COMBINATION_IDS
+        );
         if (!is_array($ids)) {
             $ids = self::rebuildGroupOnlyCombinationIds();
         }

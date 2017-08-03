@@ -8,8 +8,14 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
         if (XenForo_Application::isRegistered('nodesAsTabsAPI')) {
             $nodeId = (isset($controllerResponse->params['widgetPage']['node_id']) ? $controllerResponse->params['widgetPage']['node_id'] : 0);
 
-            call_user_func(array('NodesAsTabs_API', 'postDispatch'),
-                $this, $nodeId, $controllerResponse, $controllerName, $action);
+            call_user_func(
+                array('NodesAsTabs_API', 'postDispatch'),
+                $this,
+                $nodeId,
+                $controllerResponse,
+                $controllerName,
+                $action
+            );
         }
     }
 
@@ -21,7 +27,8 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
 
         $page = max(1, $this->_input->filterSingle('page', XenForo_Input::UINT));
         $this->canonicalizeRequestUrl(
-            XenForo_Link::buildPublicLink('widget-pages', $widgetPage, array('page' => $page)));
+            XenForo_Link::buildPublicLink('widget-pages', $widgetPage, array('page' => $page))
+        );
 
         $widgetsConditions = array('widget_page_id' => $widgetPage['node_id']);
         if (!WidgetFramework_Option::get('layoutEditorEnabled')) {
@@ -176,7 +183,8 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
             || $widgetPage['node_type_id'] != 'WF_WidgetPage'
         ) {
             throw $this->responseException(
-                $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404));
+                $this->responseError(new XenForo_Phrase('wf_requested_widget_page_not_found'), 404)
+            );
         }
 
         if (isset($widgetPage['node_permission_cache'])) {
@@ -200,6 +208,7 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
      */
     protected function _getWidgetPageModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_WidgetPage');
     }
 
@@ -208,6 +217,7 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
      */
     protected function _getWidgetModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('WidgetFramework_Model_Widget');
     }
 
@@ -216,7 +226,7 @@ class WidgetFramework_ControllerPublic_WidgetPage extends XenForo_ControllerPubl
      */
     protected function _getNodeModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('XenForo_Model_Node');
     }
-
 }

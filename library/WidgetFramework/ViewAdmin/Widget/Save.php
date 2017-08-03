@@ -11,5 +11,4 @@ class WidgetFramework_ViewAdmin_Widget_Save extends XenForo_ViewAdmin_Base
             'saveMessage' => new XenForo_Phrase('wf_widget_saved_successfully'),
         ));
     }
-
 }

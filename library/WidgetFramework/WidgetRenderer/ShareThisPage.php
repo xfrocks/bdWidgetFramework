@@ -68,5 +68,4 @@ class WidgetFramework_WidgetRenderer_ShareThisPage extends WidgetFramework_Widge
 
         return $renderTemplateObject->render();
     }
-
 }

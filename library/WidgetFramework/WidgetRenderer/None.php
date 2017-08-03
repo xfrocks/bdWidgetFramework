@@ -36,5 +36,4 @@ class WidgetFramework_WidgetRenderer_None extends WidgetFramework_WidgetRenderer
     ) {
         throw new XenForo_Exception('not implemented');
     }
-
 }

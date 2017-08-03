@@ -97,8 +97,13 @@ class WidgetFramework_WidgetGroup extends WidgetFramework_WidgetRenderer
                     = WidgetFramework_Helper_String::createWidgetTitleDelayed($renderer, $widgetRef);
                 $widgetRef['_runtime']['html'] = $widgetRef['_runtime']['ajaxLoadUrl'];
             } else {
-                $widgetRef['_runtime']['html'] = WidgetFramework_Core::getInstance()->renderWidget($widgetRef,
-                    $positionCode, $widgetParams, $template, $widgetRef['_runtime']['html']);
+                $widgetRef['_runtime']['html'] = WidgetFramework_Core::getInstance()->renderWidget(
+                    $widgetRef,
+                    $positionCode,
+                    $widgetParams,
+                    $template,
+                    $widgetRef['_runtime']['html']
+                );
             }
 
             if (!empty($widgetRef['_runtime']['html'])

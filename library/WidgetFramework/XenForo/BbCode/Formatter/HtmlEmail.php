@@ -14,5 +14,4 @@ class WidgetFramework_XenForo_BbCode_Formatter_HtmlEmail extends XFCP_WidgetFram
 
         return $tags;
     }
-
 }

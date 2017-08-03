@@ -83,5 +83,4 @@ class WidgetFramework_WidgetRenderer_XFMG_Albums extends WidgetFramework_WidgetR
     {
         return XenForo_Link::buildPublicLink('xengallery/albums');
     }
-
 }

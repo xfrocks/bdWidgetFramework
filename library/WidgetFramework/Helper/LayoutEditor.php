@@ -41,5 +41,4 @@ class WidgetFramework_Helper_LayoutEditor
 
         return $changedWidgetIds;
     }
-
 }

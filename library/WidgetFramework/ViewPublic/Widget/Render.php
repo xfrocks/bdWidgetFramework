@@ -42,5 +42,4 @@ class WidgetFramework_ViewPublic_Widget_Render extends XenForo_ViewPublic_Base
 
         return $output;
     }
-
 }

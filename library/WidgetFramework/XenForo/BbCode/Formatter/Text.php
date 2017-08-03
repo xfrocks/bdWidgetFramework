@@ -14,5 +14,4 @@ class WidgetFramework_XenForo_BbCode_Formatter_Text extends XFCP_WidgetFramework
 
         return $tags;
     }
-
 }

@@ -10,8 +10,11 @@ class WidgetFramework_Template_Helper_Core
             && $string !== $snippet
         ) {
             /** @noinspection HtmlUnknownTarget */
-            $snippet .= sprintf('<div class="readMoreLink"><a href="%s">%s</a></div>',
-                $options['link'], new XenForo_Phrase('wf_read_more'));
+            $snippet .= sprintf(
+                '<div class="readMoreLink"><a href="%s">%s</a></div>',
+                $options['link'],
+                new XenForo_Phrase('wf_read_more')
+            );
         }
 
         return $snippet;

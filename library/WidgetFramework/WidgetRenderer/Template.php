@@ -94,7 +94,9 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
             && !empty($widget['options']['controller_action'])
         ) {
             $controllerResponse = $this->_dispatch(
-                $widget['options']['controller_name'], $widget['options']['controller_action']);
+                $widget['options']['controller_name'],
+                $widget['options']['controller_action']
+            );
 
             if (!empty($controllerResponse)) {
                 if ($controllerResponse instanceof XenForo_ControllerResponse_View
@@ -187,5 +189,4 @@ class WidgetFramework_WidgetRenderer_Template extends WidgetFramework_WidgetRend
     {
         return WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_WidgetRenderer_Template');
     }
-
 }

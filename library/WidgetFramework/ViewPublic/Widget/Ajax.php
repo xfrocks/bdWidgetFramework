@@ -32,5 +32,4 @@ class WidgetFramework_ViewPublic_Widget_Ajax extends XenForo_ViewPublic_Base
         $_REQUEST['_renderedIds'] = $widget['widget_id'];
         WidgetFramework_Listener::saveLayoutEditorRendered(true);
     }
-
 }

@@ -2,12 +2,8 @@
 
 class WidgetFramework_ViewAdmin_Helper_WidgetList
 {
-    public static function renderItems(
-        /** @noinspection PhpUnusedParameterInspection */
-        $contents,
-        array $params,
-        XenForo_Template_Abstract $template
-    ) {
+    public static function renderItems($contents, array $params, XenForo_Template_Abstract $template)
+    {
         $itemsTemplate = $template->create('wf_widget_list_items', $template->getParams());
 
         if (isset($params['widgets'])) {

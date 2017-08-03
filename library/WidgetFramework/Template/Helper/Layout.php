@@ -13,8 +13,11 @@ class WidgetFramework_Template_Helper_Layout
                 if (is_array($maxMediaWidth)) {
                     if ($maxMediaWidth[2]) {
                         // has sidebar
-                        $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)',
-                            $maxMediaWidth[0], $maxMediaWidth[1]);
+                        $mediaStatements[] = sprintf(
+                            'screen and (min-width: %dpx) and (max-width: %dpx)',
+                            $maxMediaWidth[0],
+                            $maxMediaWidth[1]
+                        );
                     } else {
                         $mediaStatements[] = sprintf('screen and (max-width: %dpx)', $maxMediaWidth[1]);
                     }
@@ -31,8 +34,11 @@ class WidgetFramework_Template_Helper_Layout
                         // has sidebar
                         $mediaStatements[] = sprintf('screen and (min-width: %dpx)', $minMediaWidth[1]);
                     } else {
-                        $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)',
-                            $minMediaWidth[0], $minMediaWidth[1]);
+                        $mediaStatements[] = sprintf(
+                            'screen and (min-width: %dpx) and (max-width: %dpx)',
+                            $minMediaWidth[0],
+                            $minMediaWidth[1]
+                        );
                     }
                 } else {
                     $mediaStatements[] = sprintf('screen and (min-width: %dpx)', $minMediaWidth);
@@ -94,8 +100,11 @@ class WidgetFramework_Template_Helper_Layout
 
             foreach ($ranges as $range) {
                 if ($range[0] > 0) {
-                    $mediaStatements[] = sprintf('screen and (min-width: %dpx) and (max-width: %dpx)',
-                        $range[0], $range[1]);
+                    $mediaStatements[] = sprintf(
+                        'screen and (min-width: %dpx) and (max-width: %dpx)',
+                        $range[0],
+                        $range[1]
+                    );
                 } else {
                     $mediaStatements[] = sprintf('screen and (max-width: %dpx)', $range[1]);
                 }
@@ -263,5 +272,4 @@ class WidgetFramework_Template_Helper_Layout
 
         return $prepared;
     }
-
 }

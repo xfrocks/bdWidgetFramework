@@ -54,7 +54,8 @@ class WidgetFramework_Model_WidgetPage extends XenForo_Model
         $joinOptions = $this->prepareWidgetPageFetchOptions($fetchOptions);
         $limitOptions = $this->prepareLimitFetchOptions($fetchOptions);
 
-        $all = $this->fetchAllKeyed($this->limitQueryResults("
+        $all = $this->fetchAllKeyed(
+            $this->limitQueryResults("
 				SELECT widget_page.*,
 				    node.*
 				    $joinOptions[selectFields]
@@ -150,5 +151,4 @@ class WidgetFramework_Model_WidgetPage extends XenForo_Model
 
         return $this->getOrderByClause($choices, $fetchOptions, $defaultOrderSql);
     }
-
 }

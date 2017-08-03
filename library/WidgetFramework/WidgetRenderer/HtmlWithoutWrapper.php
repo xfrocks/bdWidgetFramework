@@ -9,5 +9,4 @@ class WidgetFramework_WidgetRenderer_HtmlWithoutWrapper extends WidgetFramework_
 
         return $configuration;
     }
-
 }

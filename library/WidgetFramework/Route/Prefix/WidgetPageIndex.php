@@ -9,5 +9,4 @@ class WidgetFramework_Route_Prefix_WidgetPageIndex implements XenForo_Route_Inte
 
         return $router->getRouteMatch('WidgetFramework_ControllerPublic_WidgetPage', 'as-index');
     }
-
 }

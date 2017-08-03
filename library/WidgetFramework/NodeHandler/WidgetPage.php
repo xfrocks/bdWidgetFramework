@@ -2,7 +2,9 @@
 
 class WidgetFramework_NodeHandler_WidgetPage extends XenForo_NodeHandler_Abstract
 {
-
+    /**
+     * @var WidgetFramework_Model_WidgetPage
+     */
     protected $_widgetPageModel = null;
 
     public function isNodeViewable(array $node, array $nodePermissions)
@@ -37,5 +39,4 @@ class WidgetFramework_NodeHandler_WidgetPage extends XenForo_NodeHandler_Abstrac
 
         return $this->_widgetPageModel;
     }
-
 }

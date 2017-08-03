@@ -126,16 +126,16 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         }
 
         if ($cacheStore === self::OPTION_CACHE_STORE_FILE) {
-        $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
-        $dirPath = dirname($filePath);
-        if (!XenForo_Helper_File::createDirectory($dirPath)) {
-            return false;
-        }
+            $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
+            $dirPath = dirname($filePath);
+            if (!XenForo_Helper_File::createDirectory($dirPath)) {
+                return false;
+            }
 
-        $fh = fopen($filePath, 'w');
-        if (flock($fh, LOCK_EX | LOCK_NB)) {
-            return $fh;
-        }
+            $fh = fopen($filePath, 'w');
+            if (flock($fh, LOCK_EX | LOCK_NB)) {
+                return $fh;
+            }
         } else {
             $lockId = sprintf('%s_lock', $cacheId);
             $lockOptions = $options;
@@ -196,9 +196,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         $cached = $cache->load($this->_cache_getSafeCacheId($widgetId, $cacheId));
 
         if (XenForo_Application::debugMode()) {
-            XenForo_Helper_File::log(__CLASS__, sprintf('_cache_getCache: $widgetId=%d, $cacheId=%s, '
+            XenForo_Helper_File::log(__CLASS__, sprintf(
+                '_cache_getCache: $widgetId=%d, $cacheId=%s, '
                 . 'is_string($cached)=%s',
-                $widgetId, $cacheId, is_string($cached)));
+                $widgetId,
+                $cacheId,
+                is_string($cached)
+            ));
         }
 
         if (is_string($cached)) {
@@ -219,9 +223,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         $cache->save($dataSerialized, $this->_cache_getSafeCacheId($widgetId, $cacheId));
 
         if (XenForo_Application::debugMode()) {
-            XenForo_Helper_File::log(__CLASS__, sprintf('_cache_setCache: $widgetId=%d, $cacheId=%s, '
+            XenForo_Helper_File::log(__CLASS__, sprintf(
+                '_cache_setCache: $widgetId=%d, $cacheId=%s, '
                 . 'strlen($dataSerialized)=%d',
-                $widgetId, $cacheId, strlen($dataSerialized)));
+                $widgetId,
+                $cacheId,
+                strlen($dataSerialized)
+            ));
         }
 
         return true;
@@ -262,9 +270,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         ));
 
         if (XenForo_Application::debugMode()) {
-            XenForo_Helper_File::log(__CLASS__, sprintf('_db_setCache: $widgetId=%d, $cacheId=%s, '
+            XenForo_Helper_File::log(__CLASS__, sprintf(
+                '_db_setCache: $widgetId=%d, $cacheId=%s, '
                 . 'strlen($cacheRecordDataJson)=%d',
-                $widgetId, $cacheId, strlen($cacheRecordDataJson)));
+                $widgetId,
+                $cacheId,
+                strlen($cacheRecordDataJson)
+            ));
         }
 
         return true;
@@ -284,8 +296,11 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             }
 
             if (XenForo_Application::debugMode()) {
-                XenForo_Helper_File::log(__CLASS__, sprintf('_db_getCacheRecord: $cacheId=%s, $cacheIds=%s',
-                    $cacheId, implode(', ', $cacheIds)));
+                XenForo_Helper_File::log(__CLASS__, sprintf(
+                    '_db_getCacheRecord: $cacheId=%s, $cacheIds=%s',
+                    $cacheId,
+                    implode(', ', $cacheIds)
+                ));
             }
 
             $cacheRecords = $this->fetchAllKeyed('
@@ -351,9 +366,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
                 exit;
             }
 
-            XenForo_Helper_File::log(__CLASS__, sprintf('_file_setCache: $widgetId=%d, $cacheId=%s, '
+            XenForo_Helper_File::log(__CLASS__, sprintf(
+                '_file_setCache: $widgetId=%d, $cacheId=%s, '
                 . 'strlen($dataSerialized)=%d',
-                $widgetId, $cacheId, strlen($dataSerialized)));
+                $widgetId,
+                $cacheId,
+                strlen($dataSerialized)
+            ));
         }
 
         return true;
@@ -371,9 +390,12 @@ class WidgetFramework_Model_Cache extends XenForo_Model
         $filePath = preg_replace('#[^0-9a-zA-Z\/]#', '', $filePath);
         $filePath = trim($filePath, '/');
 
-        return sprintf('%s/WidgetFramework/cache/%s.%s',
-            XenForo_Helper_File::getInternalDataPath(), $filePath,
-            function_exists('igbinary_serialize') ? 'ibn' : 'bin');
+        return sprintf(
+            '%s/WidgetFramework/cache/%s.%s',
+            XenForo_Helper_File::getInternalDataPath(),
+            $filePath,
+            function_exists('igbinary_serialize') ? 'ibn' : 'bin'
+        );
     }
 
     public function invalidateCache($widgetId)
@@ -399,7 +421,9 @@ class WidgetFramework_Model_Cache extends XenForo_Model
     protected function _setInvalidatedCache(array $invalidatedCache)
     {
         XenForo_Application::setSimpleCacheData(
-            WidgetFramework_Core::SIMPLE_CACHE_INVALIDATED_WIDGETS, $invalidatedCache);
+            WidgetFramework_Core::SIMPLE_CACHE_INVALIDATED_WIDGETS,
+            $invalidatedCache
+        );
     }
 
     protected function _cleanUpHtml($html)
@@ -427,5 +451,4 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             return @unserialize($serialized);
         }
     }
-
 }

@@ -59,7 +59,9 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
                             throw new XenForo_Exception(new XenForo_Phrase('requested_thread_not_found'), true);
                         } elseif (empty($thread['discussion_type']) OR 'poll' != $thread['discussion_type']) {
                             throw new XenForo_Exception(
-                                new XenForo_Phrase('wf_requested_thread_does_not_have_poll'), true);
+                                new XenForo_Phrase('wf_requested_thread_does_not_have_poll'),
+                                true
+                            );
                         }
                     }
                 }
@@ -184,5 +186,4 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
 
         return null;
     }
-
 }

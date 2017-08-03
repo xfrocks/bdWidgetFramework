@@ -23,14 +23,20 @@
                 }
             }
 
-            XenForo.ajax(window.location.href, $.extend(data,
-                {
-                    _layoutEditor: 1,
-                    _xfResponseType: 'html'
-                }), $.context(this, 'renderSuccess'),
+            XenForo.ajax(
+                window.location.href,
+                $.extend(
+                    data,
+                    {
+                        _layoutEditor: 1,
+                        _xfResponseType: 'html'
+                    }
+                ),
+                $.context(this, 'renderSuccess'),
                 {
                     type: 'GET'
-                });
+                }
+            );
         },
 
         renderSuccess: function (ajaxData) {
@@ -154,7 +160,8 @@
     };
 
     XenForo.WidgetFramework_LayoutEditor_WidgetLink.prototype = $.extend(
-        {}, BasePrototype,
+        {},
+        BasePrototype,
         {
             __construct: function ($link) {
                 this.$link = $link;
@@ -192,8 +199,11 @@
                 }
 
                 if (this.$link.is('.NoOverlay')) {
-                    XenForo.ajax(this.$link.attr('href'),
-                        {}, $.context(this, 'renderStart'));
+                    XenForo.ajax(
+                        this.$link.attr('href'),
+                        {},
+                        $.context(this, 'renderStart')
+                    );
 
                     return true;
                 }
@@ -245,7 +255,8 @@
                                 }
                             }
                         }
-                    });
+                    }
+                );
             },
 
             deCache: function () {
@@ -253,9 +264,10 @@
                     this.OverlayLoader.overlay.getTrigger().removeData('overlay');
                     this.OverlayLoader.overlay.getOverlay().empty().remove();
                 }
-                delete (this.OverlayLoader);
+                delete(this.OverlayLoader);
             }
-        });
+        }
+    );
 
     // *********************************************************************
 
@@ -302,8 +314,7 @@
 
         if ($target.is('.widgets')) {
             $widgets = $target;
-        }
-        else {
+        } else {
             $dndHandle = $target;
             $widgets = $dndHandle.closest('.widgets');
             if ($widgets.length == 0) {
@@ -316,8 +327,7 @@
 
         if ($parent.is('.WidgetFramework_LayoutEditor_Area')) {
             isOkie = true;
-        }
-        else {
+        } else {
             if ($parent.is('.WidgetFramework_LayoutEditor_Group')) {
                 isOkie = true;
             }
@@ -336,7 +346,8 @@
     };
 
     XenForo.WidgetFramework_LayoutEditor_Widgets.prototype = $.extend(
-        {}, BasePrototype,
+        {},
+        BasePrototype,
         {
             __construct: function ($widgets, $parent) {
                 $widgets.addClass('dnd-widgets');
@@ -356,7 +367,8 @@
                         out: $.context(this, 'onOut'),
                         over: $.context(this, 'onOver'),
                         update: $.context(this, 'onUpdate')
-                    });
+                    }
+                );
 
                 return true;
             },
@@ -369,8 +381,7 @@
                 var $area = null;
                 if (!this.parentIsArea) {
                     $area = this.$parent.closest('.WidgetFramework_LayoutEditor_Area');
-                }
-                else {
+                } else {
                     $area = this.$parent;
                 }
 
@@ -438,7 +449,7 @@
                         relative_display_order: relativeDisplayOrder,
                         _layoutEditor: 1
                     },
-                    function(ajaxData) {
+                    function (ajaxData) {
                         // $item.empty().xfRemove();
                         saveSuccess(ajaxData);
                     }
@@ -448,7 +459,8 @@
             saveSuccess: function (ajaxData) {
                 this.renderStart(ajaxData);
             }
-        });
+        }
+    );
 
     // *********************************************************************
 

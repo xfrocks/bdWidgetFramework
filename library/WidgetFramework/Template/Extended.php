@@ -71,5 +71,4 @@ class WidgetFramework_Template_Extended extends XenForo_Template_Public
             }
         }
     }
-
 }

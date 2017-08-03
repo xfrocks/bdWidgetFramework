@@ -42,6 +42,7 @@ class WidgetFramework_Model_ProfilePost extends XenForo_Model
      */
     protected function _getProfilePostModel()
     {
+        /** @noinspection PhpIncompatibleReturnTypeInspection */
         return $this->getModelFromCache('XenForo_Model_ProfilePost');
     }
 }

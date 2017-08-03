@@ -9,5 +9,4 @@ class WidgetFramework_WidgetRenderer_Html extends WidgetFramework_WidgetRenderer
 
         return $configuration;
     }
-
 }

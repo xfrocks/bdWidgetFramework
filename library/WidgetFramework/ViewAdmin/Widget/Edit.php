@@ -25,9 +25,12 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
 
             $explains = array();
             foreach ($keyValuePairs as $pairKey => $pairValue) {
-                $explains[] = sprintf('<a href="#" title="{%1$s} == \'%2$s\'" '
+                $explains[] = sprintf(
+                    '<a href="#" title="{%1$s} == \'%2$s\'" '
                     . 'class="Tooltip">%1$s</a>',
-                    $pairKey, htmlspecialchars($pairValue));
+                    $pairKey,
+                    htmlspecialchars($pairValue)
+                );
             }
 
             $this->_params['conditionalParamsExplain'] = implode(' ', $explains);
@@ -37,8 +40,10 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
                     && empty($widgetRef['options']['expression'])
                     && empty($widgetRef['options']['conditional'])
                 ) {
-                    $widgetRef['options']['conditional']['raw'] = sprintf('{$contentTemplate} == \'%s\'',
-                        $keyValuePairs['$contentTemplate']);
+                    $widgetRef['options']['conditional']['raw'] = sprintf(
+                        '{$contentTemplate} == \'%s\'',
+                        $keyValuePairs['$contentTemplate']
+                    );
                 }
             }
         }
@@ -89,7 +94,9 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
             foreach ($this->_params['siblingWidgets'] as &$siblingWidgetRef) {
                 $siblingWidgetRenderer = WidgetFramework_WidgetRenderer::create($siblingWidgetRef['class']);
                 $siblingWidgetRef['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed(
-                    $siblingWidgetRenderer, $siblingWidgetRef);
+                    $siblingWidgetRenderer,
+                    $siblingWidgetRef
+                );
             }
         }
 
@@ -97,7 +104,9 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
             foreach ($this->_params['groups'] as &$groupRef) {
                 $groupRenderer = WidgetFramework_WidgetRenderer::create($groupRef['class']);
                 $groupRef['_runtime']['title'] = WidgetFramework_Helper_String::createWidgetTitleDelayed(
-                    $groupRenderer, $groupRef);
+                    $groupRenderer,
+                    $groupRef
+                );
             }
         }
     }
@@ -170,5 +179,4 @@ class WidgetFramework_ViewAdmin_Widget_Edit extends XenForo_ViewAdmin_Base
             $this->_params['widgetTitlePhrases'] = $widgetTitlePhrases;
         }
     }
-
 }

@@ -56,5 +56,4 @@ class WidgetFramework_WidgetRenderer_UsersStaff extends WidgetFramework_WidgetRe
 
         return $renderTemplateObject->render();
     }
-
 }
