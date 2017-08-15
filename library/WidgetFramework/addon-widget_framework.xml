@@ -36,7 +36,7 @@
 	<input type="hidden" name="_xfConfirm" value="1" />
 </xen:form>]]></template>
     <template title="wf_widget_edit"><![CDATA[<xen:require css="widget_framework.css" />
-<xen:require js="js/WidgetFramework/functions.js" />
+<xen:require js="js/WidgetFramework/edit.min.js" />
 
 <xen:title>{xen:if '{$widget.widget_id}', '{xen:phrase wf_edit_widget}', '{xen:phrase wf_add_widget}'}</xen:title>
 
@@ -562,13 +562,12 @@
 
 </xen:form>]]></template>
     <template title="wf_widget_page_layout"><![CDATA[<xen:require css="widget_framework.css" />
-<xen:require js="js/WidgetFramework/gridster.utils.js" />
-<xen:require js="js/WidgetFramework/jquery.collision.js" />
-<xen:require js="js/WidgetFramework/jquery.draggable.js" />
-<xen:require js="js/WidgetFramework/jquery.gcoords.js" />
-<xen:require js="js/WidgetFramework/jquery.gridster.js" />
-<xen:require js="js/WidgetFramework/functions.js" />
-<xen:require js="js/WidgetFramework/widget_page_layout.js" />
+<xen:require js="js/WidgetFramework/Lib/gridster.utils.js" />
+<xen:require js="js/WidgetFramework/Lib/jquery.collision.js" />
+<xen:require js="js/WidgetFramework/Lib/jquery.draggable.js" />
+<xen:require js="js/WidgetFramework/Lib/jquery.gcoords.js" />
+<xen:require js="js/WidgetFramework/Lib/jquery.gridster.js" />
+<xen:require js="js/WidgetFramework/edit.min.js" />
 
 <ul class="WidgetFramework_WidgetPage_LayoutEditor" style="{xen:helper WidgetFramework_LayoutContainerSize, $widgets}">
 	<xen:foreach loop="$widgets" value="$widget">
@@ -1651,9 +1650,9 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_profile_posts" version_id="98" version_string="2.5.0d"><![CDATA[<xen:if is="{$canUpdateStatus}">
+    <template title="wf_widget_profile_posts" version_id="2050900" version_string="2.5.9"><![CDATA[<xen:if is="{$canUpdateStatus}">
 	<xen:require js="js/xenforo/quick_reply_profile.js" />
-	<xen:require js="js/WidgetFramework/default.js" />
+	<xen:require js="js/WidgetFramework/script.min.js" />
 
 	<form action="LINK_MEMBER_POST_VISITOR" method="post"
 		  class="statusPoster AutoValidator"
