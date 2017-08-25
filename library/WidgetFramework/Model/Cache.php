@@ -311,19 +311,8 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             $set = @file_put_contents($filePath, $dataSerialized) !== false;
         }
 
-        if (XenForo_Application::debugMode()) {
-            if (empty($cacheId)) {
-                debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-                exit;
-            }
-
-            XenForo_Helper_File::log(__CLASS__, sprintf(
-                '_file_setCache: $widgetId=%d, $cacheId=%s, '
-                . 'strlen($dataSerialized)=%d',
-                $widgetId,
-                $cacheId,
-                strlen($dataSerialized)
-            ));
+        if ($set) {
+            XenForo_Helper_File::makeWritableByFtpUser($filePath);
         }
 
         return $set;
