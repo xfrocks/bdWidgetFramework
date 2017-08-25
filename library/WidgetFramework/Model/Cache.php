@@ -126,12 +126,10 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             $data[self::KEY_EXTRA_DATA] = $extraData;
         }
 
-        $cacheSet = $this->_setCache($widgetId, $cacheId, $data);
-        if ($cacheSet) {
-            self::$_queriedData[$cacheId][$widgetId] = $data;
-        }
+        $set = $this->_setCache($widgetId, $cacheId, $data);
+        self::$_queriedData[$cacheId][$widgetId] = $data;
 
-        return $cacheSet;
+        return $set;
     }
 
     protected function _setCache($widgetId, $cacheId, array $data)
@@ -304,12 +302,13 @@ class WidgetFramework_Model_Cache extends XenForo_Model
 
     protected function _file_setCache($widgetId, $cacheId, array $data)
     {
+        $set = false;
         $dataSerialized = self::_serialize($data);
 
         $filePath = $this->_file_getDataFilePath($widgetId, $cacheId);
         $dirPath = dirname($filePath);
         if (XenForo_Helper_File::createDirectory($dirPath)) {
-            file_put_contents($filePath, $dataSerialized);
+            $set = @file_put_contents($filePath, $dataSerialized) !== false;
         }
 
         if (XenForo_Application::debugMode()) {
@@ -327,7 +326,7 @@ class WidgetFramework_Model_Cache extends XenForo_Model
             ));
         }
 
-        return true;
+        return $set;
     }
 
     protected function _file_getDataFilePath($widgetId, $cacheId)
