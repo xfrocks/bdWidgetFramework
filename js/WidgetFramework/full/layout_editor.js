@@ -1,156 +1,156 @@
-//noinspection ThisExpressionReferencesGlobalObjectJS,JSUnusedLocalSymbols
-!function ($, window, document, _undefined) {
+// noinspection ThisExpressionReferencesGlobalObjectJS
+!function ($, window) {
     var BasePrototype =
-    {
-        renderStart: function (ajaxData) {
-            if (!ajaxData['_hasRenderData']) {
-                return false;
-            }
-
-            var data = {};
-            for (var i in ajaxData) {
-                if (!ajaxData.hasOwnProperty(i)) {
-                    continue;
+        {
+            renderStart: function (ajaxData) {
+                if (!ajaxData['_hasRenderData']) {
+                    return false;
                 }
 
-                var typeOf = typeof ajaxData[i];
-                switch (typeOf) {
-                    case 'object':
-                    case 'array':
-                        break;
-                    default:
-                        data[i] = ajaxData[i];
-                }
-            }
+                var data = {};
+                for (var i in ajaxData) {
+                    if (!ajaxData.hasOwnProperty(i)) {
+                        continue;
+                    }
 
-            XenForo.ajax(
-                window.location.href,
-                $.extend(
-                    data,
+                    var typeOf = typeof ajaxData[i];
+                    switch (typeOf) {
+                        case 'object':
+                        case 'array':
+                            break;
+                        default:
+                            data[i] = ajaxData[i];
+                    }
+                }
+
+                XenForo.ajax(
+                    window.location.href,
+                    $.extend(
+                        data,
+                        {
+                            _layoutEditor: 1,
+                            _xfResponseType: 'html'
+                        }
+                    ),
+                    $.context(this, 'renderSuccess'),
                     {
-                        _layoutEditor: 1,
-                        _xfResponseType: 'html'
+                        type: 'GET'
                     }
-                ),
-                $.context(this, 'renderSuccess'),
-                {
-                    type: 'GET'
-                }
-            );
-        },
+                );
+            },
 
-        renderSuccess: function (ajaxData) {
-            if (XenForo.hasResponseError(ajaxData)) {
-                return false;
-            }
-
-            if (!ajaxData['rendered']) {
-                return false;
-            }
-
-            var self = this;
-
-            new XenForo.ExtLoader(ajaxData, function () {
-                for (var tmp1 in ajaxData['rendered']) {
-                    if (!ajaxData['rendered'].hasOwnProperty(tmp1)) {
-                        continue;
-                    }
-
-                    self.renderSuccess_deleteById(tmp1);
-                }
-
-                for (var tmp2 in ajaxData['rendered']) {
-                    if (!ajaxData['rendered'].hasOwnProperty(tmp2)) {
-                        continue;
-                    }
-
-                    if (!!ajaxData['rendered'][tmp2]) {
-                        self.renderSuccess_insertRendered($(ajaxData['rendered'][tmp2]));
-                    }
-                }
-            });
-        },
-
-        renderSuccess_insertRendered: function ($rendered) {
-            var self = this;
-
-            var position = $rendered.data('position');
-            var $widgets = null;
-            $('.WidgetFramework_LayoutEditor_Area').each(function () {
-                var $area = $(this);
-
-                if ($area.data('position') == position) {
-                    //noinspection JSValidateTypes
-                    $widgets = $area.children('.widgets');
+            renderSuccess: function (ajaxData) {
+                if (XenForo.hasResponseError(ajaxData)) {
                     return false;
                 }
-            });
-            if ($widgets === null) {
-                return false;
-            }
 
-            var parentGroupId = $rendered.data('parentGroupId');
-            if (parentGroupId) {
-                var $parentGroup = $widgets.find('#layout-editor-' + parentGroupId);
-                if ($parentGroup.length == 1) {
-                    $widgets = $parentGroup.children('.widgets');
-                }
-            }
-
-            var thisId = parseInt($rendered.data('widgetId'));
-            var thisDisplayOrder = parseInt($rendered.data('displayOrder'));
-            var inserted = false;
-            $widgets.children().each(function () {
-                var $widget = $(this);
-
-                var widgetId = parseInt($widget.data('widgetId'));
-                var widgetDisplayOrder = parseInt($widget.data('displayOrder'));
-
-                if (widgetDisplayOrder > thisDisplayOrder
-                    || (widgetDisplayOrder == thisDisplayOrder
-                        && widgetId > thisId
-                    )
-                ) {
-                    // insert rendered element before the widget
-                    $rendered.xfInsert('insertBefore', $widget, 'show');
-                    inserted = true;
+                if (!ajaxData['rendered']) {
                     return false;
                 }
-            });
 
-            if (!inserted) {
-                // haven't inserted, append to the end of widgets list
-                $rendered.xfInsert('appendTo', $widgets, 'show');
-            }
+                var self = this;
 
-            return true;
-        },
+                new XenForo.ExtLoader(ajaxData, function () {
+                    for (var tmp1 in ajaxData['rendered']) {
+                        if (!ajaxData['rendered'].hasOwnProperty(tmp1)) {
+                            continue;
+                        }
 
-        renderSuccess_deleteById: function (renderedId) {
-            if (!renderedId) {
-                return false;
-            }
-            var $e = $('#layout-editor-' + renderedId);
-            if ($e.length == 0) {
-                return false;
-            }
+                        self.renderSuccess_deleteById(tmp1);
+                    }
 
-            var $widgets = $e.closest('.widgets');
-            $e.attr('id', '');
+                    for (var tmp2 in ajaxData['rendered']) {
+                        if (!ajaxData['rendered'].hasOwnProperty(tmp2)) {
+                            continue;
+                        }
 
-            // remove the widget/group
-            $e.empty().xfRemove('', function () {
-                if ($widgets.children('[id]').length == 0) {
-                    var $controlsParent = $widgets.closest('.controls-parent');
-                    if ($controlsParent.is('.WidgetFramework_LayoutEditor_Group')) {
-                        // also remove the parent group because it is empty
-                        $controlsParent.empty().xfRemove();
+                        if (!!ajaxData['rendered'][tmp2]) {
+                            self.renderSuccess_insertRendered($(ajaxData['rendered'][tmp2]));
+                        }
+                    }
+                });
+            },
+
+            renderSuccess_insertRendered: function ($rendered) {
+                var self = this;
+
+                var position = $rendered.data('position');
+                var $widgets = null;
+                $('.WidgetFramework_LayoutEditor_Area').each(function () {
+                    var $area = $(this);
+
+                    if ($area.data('position') == position) {
+                        //noinspection JSValidateTypes
+                        $widgets = $area.children('.widgets');
+                        return false;
+                    }
+                });
+                if ($widgets === null) {
+                    return false;
+                }
+
+                var parentGroupId = $rendered.data('parentGroupId');
+                if (parentGroupId) {
+                    var $parentGroup = $widgets.find('#layout-editor-' + parentGroupId);
+                    if ($parentGroup.length == 1) {
+                        $widgets = $parentGroup.children('.widgets');
                     }
                 }
-            });
 
-            return true;
-        }
+                var thisId = parseInt($rendered.data('widgetId'));
+                var thisDisplayOrder = parseInt($rendered.data('displayOrder'));
+                var inserted = false;
+                $widgets.children().each(function () {
+                    var $widget = $(this);
+
+                    var widgetId = parseInt($widget.data('widgetId'));
+                    var widgetDisplayOrder = parseInt($widget.data('displayOrder'));
+
+                    if (widgetDisplayOrder > thisDisplayOrder
+                        || (widgetDisplayOrder == thisDisplayOrder
+                            && widgetId > thisId
+                        )
+                    ) {
+                        // insert rendered element before the widget
+                        $rendered.xfInsert('insertBefore', $widget, 'show');
+                        inserted = true;
+                        return false;
+                    }
+                });
+
+                if (!inserted) {
+                    // haven't inserted, append to the end of widgets list
+                    $rendered.xfInsert('appendTo', $widgets, 'show');
+                }
+
+                return true;
+            },
+
+            renderSuccess_deleteById: function (renderedId) {
+                if (!renderedId) {
+                    return false;
+                }
+                var $e = $('#layout-editor-' + renderedId);
+                if ($e.length == 0) {
+                    return false;
+                }
+
+                var $widgets = $e.closest('.widgets');
+                $e.attr('id', '');
+
+                // remove the widget/group
+                $e.empty().xfRemove('', function () {
+                    if ($widgets.children('[id]').length == 0) {
+                        var $controlsParent = $widgets.closest('.controls-parent');
+                        if ($controlsParent.is('.WidgetFramework_LayoutEditor_Group')) {
+                            // also remove the parent group because it is empty
+                            $controlsParent.empty().xfRemove();
+                        }
+                    }
+                });
+
+                return true;
+            }
     };
 
     // *********************************************************************
@@ -214,9 +214,9 @@
                     this.$link.data('href', href);
 
                     var options =
-                    {
-                        onClose: $.context(this, 'deCache'),
-                        speed: XenForo.speed.fast
+                        {
+                            onClose: $.context(this, 'deCache'),
+                            speed: XenForo.speed.fast
                     };
 
                     this.OverlayLoader = new XenForo.OverlayLoader(this.$link, false, options);
@@ -469,4 +469,4 @@
     XenForo.register('a.dnd-handle', 'XenForo.WidgetFramework_LayoutEditor_Widgets');
     XenForo.register('.widgets', 'XenForo.WidgetFramework_LayoutEditor_Widgets');
 
-}(jQuery, this, document);
+}(jQuery, this);

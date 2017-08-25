@@ -21,7 +21,7 @@
             return;
         }
         var $olContainer = $container.parents(olContainerSelector);
-        if ($olContainer.length != 1) {
+        if ($olContainer.length !== 1) {
             return;
         }
 
@@ -171,7 +171,7 @@
             new XenForo.ExtLoader(ajaxData, function (data) {
                 var $newHtml = $('<div />').html(data.templateHtml);
                 var $newContent = $newHtml.find(that.contentSeletor);
-                if ($newContent.length == 0) {
+                if ($newContent.length === 0) {
                     return deactivateThenDone();
                 }
 

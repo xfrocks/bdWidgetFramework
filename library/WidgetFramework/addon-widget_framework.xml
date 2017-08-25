@@ -60,7 +60,7 @@
 	<input type="hidden" name="_layoutEditor" value="{$_layoutEditor}" />
 </xen:form>]]></template>
     <template title="wf_widget_edit"><![CDATA[<xen:require css="widget_framework.css" />
-<xen:require js="js/WidgetFramework/functions.min.js" />
+<xen:require js="js/WidgetFramework/admin.min.js" />
 
 <xen:set var="$widgetIsGroup">{xen:if '{$widget.class} === "WidgetFramework_WidgetGroup"', 1}</xen:set>
 
@@ -1900,8 +1900,8 @@ All customization should go to wf_default_EXTRA.css
 		background: {xen:property primaryDarker};
 		text-decoration: none;
 	}]]></template>
-    <template title="wf_layout_editor_area" version_id="2060314" version_string="2.6.3"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.min.js" />
-<xen:require js="js/WidgetFramework/jquery-ui.min.js" />
+    <template title="wf_layout_editor_area" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.min.js" />
+<xen:require js="js/WidgetFramework/Lib/jquery-ui.min.js" />
 <xen:require css="wf_layout_editor.css" />
 
 <div class="widget-container controls-parent WidgetFramework_LayoutEditor_Area"
@@ -1940,8 +1940,8 @@ All customization should go to wf_default_EXTRA.css
 				 '',
 				 '_params={$_areaSaveParams}',
 				 'conditionalParams={xen:helper json, $_areaConditionalParams}'}"></div>]]></template>
-    <template title="wf_layout_editor_widget" version_id="2060314" version_string="2.6.3"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.min.js" />
-<xen:require js="js/WidgetFramework/jquery-ui.min.js" />
+    <template title="wf_layout_editor_widget" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.min.js" />
+<xen:require js="js/WidgetFramework/Lib/jquery-ui.min.js" />
 <xen:require css="wf_layout_editor.css" />
 
 <div class="controls-parent<xen:comment>
@@ -1978,8 +1978,8 @@ All customization should go to wf_default_EXTRA.css
 		</xen:if>
 	</div>
 </div>]]></template>
-    <template title="wf_layout_editor_widget_add" version_id="2060314" version_string="2.6.3"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.min.js" />
-<xen:require js="js/WidgetFramework/jquery-ui.min.js" />
+    <template title="wf_layout_editor_widget_add" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:require js="js/WidgetFramework/layout_editor.min.js" />
+<xen:require js="js/WidgetFramework/Lib/jquery-ui.min.js" />
 <xen:require css="wf_layout_editor.css" />
 
 <div class="WidgetFramework_LayoutEditor_Widget">
@@ -2434,7 +2434,7 @@ All customization should go to wf_default_EXTRA.css
 		</xen:contentcheck>
 	</ul>
 </xen:if>]]></template>
-    <template title="wf_widget_group_wrapper" version_id="2060316" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
+    <template title="wf_widget_group_wrapper" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:require css="wf_default.css" />
 
 <xen:if is="{xen:count $widgets} === 1">
 
@@ -2517,7 +2517,7 @@ All customization should go to wf_default_EXTRA.css
 <xen:comment>We are rendering tabs</xen:comment>
 
 <xen:if hascontent="true">
-<xen:require js="js/WidgetFramework/default.min.js" />
+<xen:require js="js/WidgetFramework/script.min.js" />
 <div class="{$_classSection} widget-tabs" id="widget-tabs-{$groupId}">
 	<ul class="tabs Tabs" data-panes="#Widget{$groupId}Panes > li">
 		<xen:contentcheck>
@@ -2784,10 +2784,10 @@ All customization should go to wf_default_EXTRA.css
 		<xen:include template="wf_widget_poll_block_result" />
 	</xen:set>
 </xen:include>]]></template>
-    <template title="wf_widget_profile_posts" version_id="2060317" version_string="2.6.3"><![CDATA[<xen:if hascontent="true">
+    <template title="wf_widget_profile_posts" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:if hascontent="true">
 <xen:if is="{$canUpdateStatus}">
 	<xen:require js="js/xenforo/quick_reply_profile.js" />
-	<xen:require js="js/WidgetFramework/default.min.js" />
+	<xen:require js="js/WidgetFramework/script.min.js" />
 
 	<form action="LINK_MEMBER_POST_VISITOR" method="post"
 		  class="statusPoster AutoValidator"
@@ -2873,7 +2873,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="2060319" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 <xen:if hascontent="true">
 <div class="WidgetFramework_WidgetRenderer_Threads_Sidebar avatarList">
@@ -2976,7 +2976,7 @@ All customization should go to wf_default_EXTRA.css
 	</ol>
 	
 	<xen:if is="{$loadMoreUrl}">
-	<xen:require js="js/WidgetFramework/default.min.js" />
+	<xen:require js="js/WidgetFramework/script.min.js" />
 	<div class="WidgetFramework_WidgetRenderer_Threads_ListCompactMore"
 		data-selector=".WidgetFramework_WidgetRenderer_Threads_ListCompact">
 		<a href="{xen:link forums}" data-url="{xen:jsescape $loadMoreUrl}">{xen:phrase more}</a>
@@ -3008,11 +3008,11 @@ All customization should go to wf_default_EXTRA.css
 
 <xen:edithint template="message" />
 <xen:edithint template="wf_threads.css" />]]></template>
-    <template title="wf_widget_threads_pagenav" version_id="2060319" version_string="2.6.3"><![CDATA[<xen:if is="{$widget.options.limit} > 0
+    <template title="wf_widget_threads_pagenav" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:if is="{$widget.options.limit} > 0
 			&& {$threadsCount} > 0
 			&& {$_WidgetFramework_WidgetFramework_Threads_pageNumber} > 0
 			&& {$_WidgetFramework_WidgetFramework_Threads_widgetPage}">
-	<xen:require js="js/WidgetFramework/default.min.js" />
+	<xen:require js="js/WidgetFramework/script.min.js" />
 
 	<xen:pagenav perpage="{$widget.options.limit}"
 				 total="{$threadsCount}"
