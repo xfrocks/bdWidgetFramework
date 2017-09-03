@@ -9,6 +9,11 @@ class WidgetFramework_Listener
      */
     public static $viewRenderer = null;
 
+    /**
+     * @var bool
+     */
+    public static $renderSidebarWidgets = false;
+
     protected static $_navigationTabsForums = '';
     protected static $_saveLayoutEditorRendered = false;
     protected static $_layoutEditorRendered = array();
@@ -75,9 +80,13 @@ class WidgetFramework_Listener
     public static function template_create(&$templateName, array &$params, XenForo_Template_Abstract $template)
     {
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
-            WidgetFramework_Core::getInstance()->prepareWidgetsFor($templateName, $params, $template);
+            $core = WidgetFramework_Core::getInstance();
 
-            WidgetFramework_Core::getInstance()->prepareWidgetsForHooksIn($templateName, $params, $template);
+            if (self::$renderSidebarWidgets) {
+                $core->prepareWidgetsFor($templateName, $params, $template);
+            }
+
+            $core->prepareWidgetsForHooksIn($templateName, $params, $template);
 
             if ($templateName === 'PAGE_CONTAINER') {
                 if (WidgetFramework_Option::get('indexNodeId')) {
@@ -114,12 +123,16 @@ class WidgetFramework_Listener
     ) {
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             if (!preg_match('#^wf_.+_wrapper$#', $templateName)) {
-                $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor(
-                    $templateName,
-                    $template->getParams(),
-                    $template,
-                    $containerData
-                );
+                $rendered = false;
+
+                if (self::$renderSidebarWidgets) {
+                    $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor(
+                        $templateName,
+                        $template->getParams(),
+                        $template,
+                        $containerData
+                    );
+                }
 
                 if ($rendered) {
                     if (!isset($containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS])) {
@@ -233,6 +246,8 @@ class WidgetFramework_Listener
         XenForo_ViewRenderer_Abstract &$viewRenderer,
         array &$containerParams
     ) {
+        self::$renderSidebarWidgets = $fc->getRequest()->getMethod() === 'GET';
+
         if ($fc->getDependencies() instanceof XenForo_Dependencies_Public) {
             self::$viewRenderer = $viewRenderer;
             WidgetFramework_Core::getInstance()->bootstrap();
