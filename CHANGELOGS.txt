@@ -1,0 +1,218 @@
+Version 2.6.3 06-12-2017
+- PHP 7.2 compatibility
+- Redesigned Layout Editor
+- Performance improvements
+- Added: Profile Posts renderer
+- Added: Layouts in Threads renderer
+- Added: User Follow, User Info renderer
+- Added: XenForo Media Gallery support
+- Added: Widget page’s widgets import / export
+- Added: Cache Store option
+- Changed: Expression is deprecated, it’s recommended to use Conditionals
+
+Version 2.5.9 10-09-2014
+- XenForo 1.4 compatibility: Poll + Profile Posts renderer
+- Added Duplicate for widget
+- Added new thread indicator for Threads renderer
+- Added controller support for Template renderer
+- Bug fixes
+
+Version 2.5.0 27-04-2014
+- Added new avatar only option (Birthday renderer)
+- Improved "all" position widget display order
+- Improved memory usage
+- Bug fixes
+
+Version 2.4.9 26-03-2014
+- Added open_only option for Threads and Poll renderers
+- Added show_duplicates option for Recent Status renderer
+- Fixed bug Birthday renderer (limit)
+
+Version 2.4.8 26-02-2014
+- Added support for XenForo 1.3
+
+Version 2.4.7b 15-02-2014
+- Added new sticky option for Threads renderer
+- Bug fixes
+
+Version 2.4.6b 19-01-2014
+- Added new bb code PRBREAK to use Full layout (Threads renderer)
+- Added many new style properties
+- Streamlined memory usage
+- Improved Threads renderer to show threads with permission more effectively
+- Improved Widget Page layout editor and rendering
+- Bug fixes
+
+Version 2.4.3 27-10-2013
+- Added support for resource icon (XFRM 1.1)
+- Added support for style/language/timezone in caching
+- Improved HTML injection
+- Changed name for Trojan class
+- Fixed bug detecting template to get container data
+- Fixed bug rendering widget in widget page
+
+Version 2.4.2 12-10-2013
+- Added support for numbers in title of Online users renderer
+- Added support for "columns" widget group
+- Added support for custom node type
+- Added style property to control maximum character of snippet (Threads renderer)
+- Added random mode for Poll renderer
+- Added Callback (without wrapper) renderer
+- Added option to override default caching behavior
+- Updated Resources renderer to be compatible with XenForo Resource Manager 1.1 (backward compatible with 1.0)
+- Updated as index feature for widget page: navigation tab, correct highlighting, better integration
+- Updated widget rendering for widget page: title came back, tab interface is working again
+- Fixed bug when widget page is deleted
+- Fixed bug for widget with multiple hook positions
+- Fixed bug invalid character for cache entry
+- Fixed bug widget title display incorrectly in AdminCP
+
+Version 2.4.1 15-09-2013
+- Added is_index option for widget page
+- Updated to throw view related exception when add-on debug mode is enabled only (instead of system debug mode)
+- Fixed bug with Threads renderer
+
+Version 2.4 10-09-2013
+- Added support for phrase in widget title
+- Added votes count in Resources renderer (top resources)
+- Added support for Nodes As Tabs 1.2.1+
+- Added layouts for Threads renderer
+- Added User: Staff, Facebook: Facepile renderers
+- Updated widget page layout editor
+- Removed <h3 /> from widget title in tabbed mode
+- Fixed HTML validation issue with wf_widget_wrapper
+- Fixed bug showing threads without no viewOthers permission
+- FIxed bug with cached HTML (in reveal mode)
+
+Version 2.3.5 09-08-2013
+- Fixed bug widget option for XenForo 1.1.5
+- Fixed bug incorrect render of hook positions
+- Added support for view object in widget rendering
+
+Version 2.3.4, 07-08-2013
+- Fixed compatibility issue with XenForo 1.2
+
+Version 2.3.3, 17-07-2013
+- Added widget page (new feature)
+- Added position code for all positions
+- Fixed compatibility issue with XenForo 1.2
+- Fixed uninstall bug
+
+Version 2.2.3b, 22-06-2013
+- Fixed bug for XenForo_DataWriter_Discussion_Thread
+- Updated phrase for online users widget
+
+Version 2.2.3, 20-04-2013
+- Fixed bug for Resources renderer: display in wrong order
+- Fixed bug for Resources renderer: rating stars do not show up
+- Added new widget option: deactivate for mobile
+- Added locking before rendering (cache enabled renderer only)
+- Removed widget option show debug message
+
+Version 2.2, 04-04-2013
+- Minor improvements
+- Fixed bug redirected threads show up twice
+- Fixed bug for Share This Page renderer
+- Fixed bug empty widget container
+- Fixed issues with "all" position
+- Added template params for hook positions
+- Added separated debug option (add to config.php: `$config['wfDebug'] = true;`)
+- Added new options to Online Users renderer: show people you follow; show rich usernames
+- Added support for XFRM: new renderer Resources (4 modes: new, updated, highest rating, most downloaded)
+- Added support for XFRM: new option for Users renderer: order by resource count
+
+Version 2.1.1, 20-10-2012
+- Added $visitor for hook positions
+
+Version 2.1, 13-10-2012
+- Added Feed Reader renderer
+
+Version 2.0.6, 13-09-2012
+- Fixed empty widget when using Clear Sidebar renderer with option hide visitor panel turned on
+
+Version 2.0.5, 13-09-2012
+- Fixed 3 columns bug
+- Fixed Users renderer
+
+Version 2.0.3, 28-05-2012
+- Fixed bug with mixed case template names
+- Fixed bug with getWidgetById
+- Added reveal mode
+
+Version 2.0.0-dev, 25-08-2012
+- Added negative display order support
+- Added hook direct output support
+
+Version 1.5.4, 20-08-2012
+- Fixed issue with "all" position in CSS templates
+- Fixed bug in Recent Status widget (posting to wrong user profile)
+
+Version 1.5, 21-04-2012
+- Improved Share This Page renderer (use first page link for threads, etc.)
+- Improved Threads renderer: as_guest mode, thread prefix support, etc.
+- New caching mechanism (Live Cache, bypass database completely)
+- New Display Mode for Users renderer: Avatar Only (Bigger)
+- New renderer (Users: Find)
+
+Version 1.3, 04-04-2012
+- Fixed Share This Page renderer bug in thread_view
+- Added Display Mode option for Users renderer
+- Improved caching mechanism
+- Added Import/Export features
+- Added special forum for renderers: Thread
+- Improved WidgetFramework_WidgetRenderer self-document
+
+Version 1.2.2, 26-03-2012
+- Fixed Clear Sidebar renderer bug (bypass expression test)
+- Fixed cached renderer bug (bypass expression test)
+- Added file health check
+
+Version 1.2, 24-02-2012
+- Updated Birthday renderer to not display invalid users or banned users
+- Added Template renderers
+
+Version 1.1, 20-02-2012
+- Added PHP Callback renderer
+- Added Birthday renderer
+
+Version 1.0.9
+- Added Recent Status renderer
+
+Version 1.0.8, 18-08-2011
+- Fixed moderated/deleted posts showing up in Threads widget (now Super Admin only)
+- Fixed avatar and link problem with Recent Threads widget
+
+Version 1.0.7, 17-04-2011
+- Added option to hide visitor panel in the Empty widget
+- Added option to show polls in the Threads widget
+- Added "random" group feature
+- Added Visitor Panel widget
+- Removed other add-on widgets
+- Changed Share widget to Share This Page. It can now be used with any position
+
+Version 1.0.4, 16-03-2011
+- Fix Threads widget cache issue
+- Added COMPATIBLE GUIDE
+
+Version 1.0.3, 11-02-2011
+- Fix tab group invalid characters
+
+Version 1.0.2, 11-02-2011
+- Fix Share widget
+- Fix Poll widget
+
+Version 1.0.1, 10-02-2011
+- Fix problem with "all" position
+
+Version 1.0, 10-02-2011
+- Expression for all widgets
+- Tabbed wrapper for all widgets
+- Now supports "all" position
+- Now supports multiple positions (comma separated)
+- Default widgets changed:
+	+ Threads: allow forums inclusion now
+	+ Forum Stats, Online Staff, Online Users: work across the forums now
+- Added new default widgets:
+	+ [Forum List Only] [GP] Donations
+	+ [Forum List Only] TaigaChat
+	+ xfShout
