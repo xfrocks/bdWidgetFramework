@@ -1,14 +1,61 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2017-01-23T07:29:22+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2017-11-14T02:47:32+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_Html
- * @version 14
+ * @version 20
  * @see DevHelper_Helper_ShippableHelper_Html
  */
 class WidgetFramework_ShippableHelper_Html
 {
+    public static function getDomElement($html, array $params)
+    {
+        if (empty($params['prefix']) ||
+            empty($params['tag'])) {
+            return '';
+        }
+
+        $offset = strpos($html, $params['prefix']);
+        if ($offset === false) {
+            return '';
+        }
+        $resultOffset = $offset;
+        $maxOffset = strlen($html);
+
+        $offset += strlen($params['prefix']);
+        $depth = 1;
+        while ($offset < $maxOffset) {
+            $nextOpen = strpos($html, '<' . $params['tag'], $offset);
+            $nextClose = strpos($html, '</' . $params['tag'], $offset);
+
+            if ($nextClose === false) {
+                // unbalanced
+                return '';
+            }
+            if ($nextOpen === false) {
+                $nextOpen = $maxOffset + 1;
+            }
+
+            if ($nextOpen < $nextClose) {
+                $depth++;
+            } else {
+                $depth--;
+
+                if ($depth === 0) {
+                    return substr($html, $resultOffset, $nextClose - $resultOffset) .
+                        sprintf('</%s>', $params['tag']);
+                }
+            }
+            $offset = min($nextOpen, $nextClose) + 1;
+        }
+    }
+
+    public static function viewSnippet($string, array $params)
+    {
+        return self::snippet($string, 0, $params);
+    }
+
     public static function preSnippet(array &$message, XenForo_BbCode_Parser $parser, array $options = array())
     {
         $options = array_merge(array(
@@ -62,6 +109,7 @@ class WidgetFramework_ShippableHelper_Html
     public static function snippet($string, $maxLength = 0, array $options = array())
     {
         $options = array_merge(array(
+            'context' => '',
             'ellipsis' => '…',
             'fromStart' => true,
             'previewBreakBbCode' => 'prbreak',
@@ -79,27 +127,30 @@ class WidgetFramework_ShippableHelper_Html
             // WARNING: options below are for internal usage only
             '_isPreview' => false,
         ), $options);
-        $options['maxLength'] = $maxLength;
+        if (!isset($options['maxLength'])) {
+            $options['maxLength'] = $maxLength;
+        }
 
         self::snippetPreProcess($string, $options);
         if (!empty($options['_isPreview'])) {
-            return $string;
+            $snippet = $string;
+        } else {
+            $snippet = self::snippetCallHelper($string, $options);
+            self::snippetFixBrokenHtml($snippet, $options);
         }
 
-        $snippet = self::snippetCallHelper($string, $options);
-
-        self::snippetFixBrokenHtml($snippet, $options);
-
-        self::snippetPostProcess($snippet, $options);
+        if (!empty($options['context'])) {
+            self::snippetOnContext($snippet, $options['context']);
+        }
 
         if ($snippet === '') {
             $plainTextString = utf8_trim(strip_tags($string));
             if ($plainTextString !== '') {
                 $snippet = self::snippetCallHelper($plainTextString, $options);
-            } else {
-                $snippet = $options['ellipsis'];
             }
         }
+
+        self::snippetPostProcess($snippet, $options);
 
         return $snippet;
     }
@@ -107,7 +158,7 @@ class WidgetFramework_ShippableHelper_Html
     public static function snippetPreProcess(&$string, array &$options)
     {
         if (!empty($options['previewBreakBbCode'])
-            && preg_match(sprintf('#\[%1$s\](?<' . 'preview>.*)\[/%1$s\]#',
+            && preg_match(sprintf('#\[%1$s\](?<' . 'preview>.*)\[/%1$s\]#si',
                 preg_quote($options['previewBreakBbCode'], '#')),
                 $string, $matches, PREG_OFFSET_CAPTURE)
         ) {
@@ -117,7 +168,6 @@ class WidgetFramework_ShippableHelper_Html
                 $string = $matches['preview'][0];
                 $options['maxLength'] = 0;
                 $options['_isPreview'] = true;
-                return $string;
             } else {
                 // use content before the found bbcode to continue
                 $string = substr($string, 0, $matches[0][1]);
@@ -125,8 +175,13 @@ class WidgetFramework_ShippableHelper_Html
             }
         }
 
+        $string = str_replace("\n", ' ', $string);
         $string = preg_replace('#<br\s?\/?>#', "\n", $string);
         $string = str_replace('&#8203;', '', $string);
+
+        if (!empty($options['_isPreview'])) {
+            return;
+        }
 
         $replacementsRef =& $options['replacements'];
         $replacementTags = array();
@@ -199,7 +254,7 @@ class WidgetFramework_ShippableHelper_Html
                 $endPos = utf8_strpos($snippet, '>', $startPos);
                 if ($endPos === false) {
                     // we found a partial open tag, best to delete the whole thing
-                    $snippet = utf8_substr($snippet, 0, $startPos);
+                    $snippet = utf8_rtrim(utf8_substr($snippet, 0, $startPos));
                     break;
                 }
 
@@ -241,7 +296,7 @@ class WidgetFramework_ShippableHelper_Html
                         // do nothing
                     } else {
                         // is opening tag
-                        $stack[] = array('tag' => $tag, 'offset' => $startPos);
+                        $stack[] = array('tag' => $tag, 'offset' => $startPos, 'till' => $endPos);
                     }
                 }
             } else {
@@ -252,6 +307,11 @@ class WidgetFramework_ShippableHelper_Html
         // close any remaining tags
         while (!empty($stack)) {
             $stackItem = array_pop($stack);
+            if (utf8_strlen($snippet) === $stackItem['till'] + 1) {
+                // the latest tag is empty, delete it
+                $snippet = utf8_substr($snippet, 0, $stackItem['offset']);
+                continue;
+            }
 
             self::snippetAppendEllipsis($snippet, $options);
             $snippet .= sprintf('</%s>', $stackItem['tag']);
@@ -267,6 +327,17 @@ class WidgetFramework_ShippableHelper_Html
         if (!preg_match('#<\/?(div|iframe|img|li|ol|p|script|ul)[^>]*>\z#', $snippet)) {
             $snippet .= $options['ellipsis'];
             $options['ellipsis'] = '';
+        }
+    }
+
+    public static function snippetOnContext(&$snippet, $context)
+    {
+        switch ($context) {
+            case 'link':
+                if (strpos($snippet, '<a ') !== false) {
+                    $snippet = '';
+                }
+                break;
         }
     }
 
