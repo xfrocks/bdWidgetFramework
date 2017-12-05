@@ -549,10 +549,16 @@ abstract class WidgetFramework_WidgetRenderer
             return true;
         }
 
-        $sandbox = @create_function('$params', 'extract($params); return (' . $expression . ');');
+        $sandbox = function ($params) use ($expression) {
+            extract($params);
+            eval(sprintf('$result = !!(%s);', $expression));
+
+            /** @noinspection PhpUndefinedVariableInspection */
+            return $result;
+        };
 
         if (!empty($sandbox)) {
-            return call_user_func($sandbox, $params);
+            return $sandbox($params);
         } else {
             throw new Exception('Syntax error');
         }

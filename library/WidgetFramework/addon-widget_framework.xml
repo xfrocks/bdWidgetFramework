@@ -201,7 +201,7 @@
 </xen:form>]]></template>
     <template title="wf_widget_edit_group"><![CDATA[<xen:if is="!{$widget.group_id}">
 
-<xen:if is="count({$siblingWidgets})">
+<xen:if is="is_array({$siblingWidgets}) && count({$siblingWidgets})">
 <xen:if is="{$groups}">
 	<xen:selectunit label="{xen:phrase wf_join_group}:" name="group_join">
 		<xen:option value="0"></xen:option>
