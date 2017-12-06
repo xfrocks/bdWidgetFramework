@@ -295,9 +295,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         if (empty($widget['options']['limit'])) {
             $widget['options']['limit'] = 5;
         }
-        if (!isset($widget['options']['cutoff'])) {
-            $widget['options']['cutoff'] = 7;
-        }
         if (!isset($widget['options']['type'])) {
             $widget['options']['type'] = 'new';
         }
@@ -611,7 +608,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             $readUserId = XenForo_Visitor::getUserId();
         }
 
-        if ($widget['options']['cutoff'] > 0) {
+        if (isset($widget['options']['cutoff']) && $widget['options']['cutoff'] > 0) {
             $conditions['post_date'] = array('>', XenForo_Application::$time - $widget['options']['cutoff'] * 86400);
         }
 

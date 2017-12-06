@@ -437,7 +437,7 @@
 	<xen:explain>{xen:phrase wf_poll_thread_id_explain}</xen:explain>
 </xen:textboxunit>
 
-<xen:spinboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{xen:if '!empty({$options.cutoff})', $options.cutoff, 5}">
+<xen:spinboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{xen:if 'isset({$options.cutoff})', $options.cutoff, 7}">
 	<xen:explain>{xen:phrase wf_widget_poll_cutoff_explain}</xen:explain>
 </xen:spinboxunit>
 
@@ -530,7 +530,7 @@
 	<xen:option value="polls">{xen:phrase wf_widget_threads_type_polls}</xen:option>
 </xen:selectunit>
 
-<xen:spinboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{xen:if 'isset({$options.cutoff})', $options.cutoff, 5}">
+<xen:spinboxunit label="{xen:phrase wf_widget_threads_popular_cutoff}:" name="{$namePrefix}cutoff" value="{xen:if 'isset({$options.cutoff})', $options.cutoff, 7}">
 	<xen:explain>{xen:phrase wf_widget_threads_popular_cutoff_explain}</xen:explain>
 </xen:spinboxunit>
 

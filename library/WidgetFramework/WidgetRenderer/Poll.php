@@ -82,10 +82,6 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
         array $params,
         XenForo_Template_Abstract $renderTemplateObject
     ) {
-        if (empty($widget['options']['cutoff'])) {
-            $widget['options']['cutoff'] = 5;
-        }
-
         $thread = $this->_getThread($widget, $positionCode, $params, $renderTemplateObject);
         if (empty($thread['node_id'])) {
             return '';
@@ -160,10 +156,12 @@ class WidgetFramework_WidgetRenderer_Poll extends WidgetFramework_WidgetRenderer
         }
 
         if ($widget['options']['thread_id'] === 'random') {
-            $conditions['post_date'] = array(
-                '>',
-                XenForo_Application::$time - $widget['options']['cutoff'] * 86400
-            );
+            if (isset($widget['options']['cutoff']) && $widget['options']['cutoff'] > 0) {
+                $conditions['post_date'] = array(
+                    '>',
+                    XenForo_Application::$time - $widget['options']['cutoff'] * 86400
+                );
+            }
             $fetchOptions['order'] = WidgetFramework_Model_Thread::FETCH_OPTIONS_ORDER_RANDOM;
         }
 
