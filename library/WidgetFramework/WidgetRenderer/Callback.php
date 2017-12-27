@@ -20,12 +20,14 @@ class WidgetFramework_WidgetRenderer_Callback extends WidgetFramework_WidgetRend
 
     public function parseOptionsInput(XenForo_Input $input, array $widget)
     {
-        $options = parent::parseOptionsInput($input, $widget);
+        $options = parent::parseOptionsInput($input, $widget);;;
 
-        $class = $options['callback_class'];
-        $method = $options['callback_method'];
-
-        if (!XenForo_Application::autoload($class) || !method_exists($class, $method)) {
+        if (($class = $options['callback_class']) &&
+            ($method = $options['callback_method']) &&
+            (
+                !XenForo_Application::autoload($class) ||
+                !method_exists($class, $method)
+            )) {
             throw new XenForo_Exception(new XenForo_Phrase('please_enter_valid_callback_method'), true);
         }
 
@@ -43,20 +45,27 @@ class WidgetFramework_WidgetRenderer_Callback extends WidgetFramework_WidgetRend
         array $params,
         XenForo_Template_Abstract $renderTemplateObject
     ) {
-        if (empty($widget['options']['callback_class']) OR empty($widget['options']['callback_method'])) {
+        if (empty($widget['options']['callback_class']) ||
+            empty($widget['options']['callback_method'])) {
             return '';
         }
 
-        $class = $widget['options']['callback_class'];
-        $method = $widget['options']['callback_method'];
+        $callback = array($widget['options']['callback_class'], $widget['options']['callback_method']);
+        $args = func_get_args();
+        return $this->callUserFuncArray($callback, $args);
+    }
 
-        if (XenForo_Application::autoload($class) && method_exists($class, $method)) {
-            return call_user_func(array(
-                $class,
-                $method
-            ), $widget, $positionCode, $params, $renderTemplateObject);
-        } else {
+    protected function callUserFuncArray($callback, array &$args)
+    {
+        if (!is_callable($callback) && !XenForo_Application::debugMode()) {
             return '';
         }
+
+        return call_user_func_array($callback, $args);
+    }
+
+    public static function dump($widget)
+    {
+        return XenForo_Template_Helper_Core::helperDump($widget);
     }
 }
