@@ -52,18 +52,6 @@ class WidgetFramework_DataWriter_Helper_Widget
             }
 
             if (in_array($positionCode, array(
-                    'wf_widget_page',
-                    'hook:wf_widget_page_contents'
-                ), true) && !$dw->get('widget_page_id')
-            ) {
-                $dw->error(new XenForo_Phrase(
-                    'wf_position_x_requires_widget_page',
-                    array('position' => $positionCode)
-                ), $fieldName);
-                return false;
-            }
-
-            if (in_array($positionCode, array(
                 'wf_widget_ajax',
             ), true)) {
                 $dw->error(new XenForo_Phrase(

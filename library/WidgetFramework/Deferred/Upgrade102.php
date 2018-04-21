@@ -45,9 +45,7 @@ class WidgetFramework_Deferred_Upgrade102 extends XenForo_Deferred_Abstract
                     $widgetDw = XenForo_DataWriter::create('WidgetFramework_DataWriter_Widget');
                     $widgetDw->setImportMode(true);
                     $widgetDw->setExistingData($widgets[$widgetId], true);
-                    $widgetDw->set('position', 'wf_widget_page', '', array(
-                        'runVerificationCallback' => false,
-                    ));
+                    $widgetDw->set('position', 'wf_widget_page');
 
                     $widgetDw->save();
                     unset($widgets[$widgetId]);
