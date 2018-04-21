@@ -20,7 +20,7 @@ class WidgetFramework_WidgetRenderer_Callback extends WidgetFramework_WidgetRend
 
     public function parseOptionsInput(XenForo_Input $input, array $widget)
     {
-        $options = parent::parseOptionsInput($input, $widget);;;
+        $options = parent::parseOptionsInput($input, $widget);
 
         if (($class = $options['callback_class']) &&
             ($method = $options['callback_method']) &&

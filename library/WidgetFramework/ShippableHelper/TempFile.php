@@ -1,10 +1,10 @@
 <?php
 
-// updated by DevHelper_Helper_ShippableHelper at 2017-12-05T23:18:10+00:00
+// updated by DevHelper_Helper_ShippableHelper at 2018-04-21T19:45:55+00:00
 
 /**
  * Class WidgetFramework_ShippableHelper_TempFile
- * @version 13
+ * @version 16
  * @see DevHelper_Helper_ShippableHelper_TempFile
  */
 class WidgetFramework_ShippableHelper_TempFile
@@ -125,36 +125,43 @@ class WidgetFramework_ShippableHelper_TempFile
         curl_close($ch);
         fclose($fh);
 
-        $downloaded = true;
+        $error = null;
         if (!isset($curlInfo['http_code'])
             || $curlInfo['http_code'] < 200
             || $curlInfo['http_code'] >= 300
         ) {
             // no http response status / non success status, must be an error
-            $downloaded = false;
+            $error = 'http_code';
         }
 
-        $fileSize = filesize($tempFile);
-        if ($downloaded && $fileSize === 0) {
-            clearstatcache();
+        $fileSize = 0;
+        if ($error === null) {
             $fileSize = filesize($tempFile);
+            if ($fileSize === 0) {
+                clearstatcache();
+                $fileSize = filesize($tempFile);
+            }
+        }
+        if ($error === null && $fileSize === 0) {
+            // no data written to disk, probably a disk error
+            $error = 'file size 0';
         }
 
-        if ($downloaded
+        if ($error === null
             && isset($curlInfo['size_download'])
             && $fileSize !== intval($curlInfo['size_download'])
         ) {
             // file size reported by our system seems to be off, probably a write error
-            $downloaded = false;
+            $error = sprintf('file size %d, size_download %d', $fileSize, $curlInfo['size_download']);
         }
 
-        if ($downloaded
+        if ($error === null
             && isset($curlInfo['download_content_length'])
             && $curlInfo['download_content_length'] > 0
             && $fileSize !== intval($curlInfo['download_content_length'])
         ) {
             // file size is different from Content-Length header, probably a cancelled download (or corrupted)
-            $downloaded = false;
+            $error = sprintf('file size %d, Content-Length %d', $fileSize, $curlInfo['download_content_length']);
         }
 
         if (XenForo_Application::debugMode()) {
@@ -162,12 +169,12 @@ class WidgetFramework_ShippableHelper_TempFile
                 'download %s -> %s, %s, %s',
                 $url,
                 $tempFile,
-                ($downloaded ? 'succeeded' : 'failed'),
+                ($error === null ? 'succeeded' : ('failed: ' . $error)),
                 json_encode($curlInfo),
             )));
         }
 
-        if ($downloaded) {
+        if ($error === null) {
             return $tempFile;
         } else {
             file_put_contents($tempFile, '');
