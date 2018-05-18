@@ -269,7 +269,10 @@ class WidgetFramework_Listener
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             $core = WidgetFramework_Core::getInstance();
 
-            if (!empty($_REQUEST['_getRender']) && !empty($_REQUEST['_renderedIds'])) {
+            if (!$fc->showDebugOutput() &&
+                !empty($_REQUEST['_getRender']) &&
+                !empty($_REQUEST['_renderedIds'])
+            ) {
                 $controllerResponse = new XenForo_ControllerResponse_View();
                 $controllerResponse->viewName = 'WidgetFramework_ViewPublic_Widget_Render';
                 $controllerResponse->params = $_REQUEST;
