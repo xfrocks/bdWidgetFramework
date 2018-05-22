@@ -28,16 +28,13 @@ class WidgetFramework_Model_Thread extends XenForo_Model
         ', $limitOptions['limit'], $limitOptions['offset']));
     }
 
-    public function getThreadsByIdsInOrder(array $threadIds, $fetchOptionsJoin = 0, $readUserId = 0)
+    public function getThreadsByIdsInOrder(array $threadIds, array $fetchOptions)
     {
         if (empty($threadIds)) {
             return array();
         }
 
-        $threads = $this->_getThreadModel()->getThreadsByIds($threadIds, array(
-            'join' => $fetchOptionsJoin,
-            'readUserId' => $readUserId,
-        ));
+        $threads = $this->_getThreadModel()->getThreadsByIds($threadIds, $fetchOptions);
 
         $ordered = array();
         foreach ($threadIds as $threadId) {

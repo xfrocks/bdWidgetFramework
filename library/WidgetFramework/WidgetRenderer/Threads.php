@@ -471,7 +471,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         if (!is_array($forumIds)) {
             $forumIds = $this->_helperGetForumIdsFromOption(
                 empty($widget['options']['forums'])
-                ? array() : $widget['options']['forums'],
+                    ? array() : $widget['options']['forums'],
                 $params,
                 empty($widget['options']['as_guest']) ? false : true
             );
@@ -654,9 +654,14 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             return array();
         }
 
-        /** @var WidgetFramework_Model_Thread $wfThreadModel */
-        $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
-        $threads = $wfThreadModel->getThreadsByIdsInOrder($threadIds, 0, $readUserId);
+        $threads = $this->_getThreadsByIdsInOrder(
+            $threadIds,
+            array('readUserId' => $readUserId),
+            $widget,
+            $positionCode,
+            $params,
+            $renderTemplateObject
+        );
         if (empty($threads)) {
             return array();
         }
@@ -674,6 +679,8 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         }
 
         if (!empty($layoutOptions['pageNav']) && !$renderTemplateObject->getParam('threadsCount')) {
+            /** @var WidgetFramework_Model_Thread $wfThreadModel */
+            $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
             $threadsCount = $wfThreadModel->countThreads($conditions, $fetchOptions);
             $renderTemplateObject->setParam('threadsCount', $threadsCount);
         }
@@ -701,6 +708,28 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         /** @var WidgetFramework_Model_Thread $wfThreadModel */
         $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
         return $wfThreadModel->getThreadIds($conditions, $fetchOptions);
+    }
+
+    /**
+     * @param array $threadIds
+     * @param array $fetchOptions ,
+     * @param array $widget
+     * @param $positionCode
+     * @param array $params
+     * @param XenForo_Template_Abstract $renderTemplateObject
+     * @return array
+     */
+    protected function _getThreadsByIdsInOrder(
+        array $threadIds,
+        array $fetchOptions,
+        array $widget,
+        $positionCode,
+        array $params,
+        XenForo_Template_Abstract $renderTemplateObject
+    ) {
+        /** @var WidgetFramework_Model_Thread $wfThreadModel */
+        $wfThreadModel = WidgetFramework_Core::getInstance()->getModelFromCache('WidgetFramework_Model_Thread');
+        return $wfThreadModel->getThreadsByIdsInOrder($threadIds, $fetchOptions);
     }
 
     /**
