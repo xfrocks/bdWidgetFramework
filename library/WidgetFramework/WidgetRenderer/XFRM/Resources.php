@@ -33,6 +33,8 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
                 'categories' => XenForo_Input::ARRAY_SIMPLE,
                 'limit' => XenForo_Input::UINT,
                 'type' => XenForo_Input::STRING,
+                'use_wrapper' => XenForo_Input::UINT,
+                'custom_template' => XenForo_Input::STRING
             ),
             'useCache' => true,
             'useUserCache' => true,
@@ -76,6 +78,10 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
 
     protected function _getRenderTemplate(array $widget, $positionCode, array $params)
     {
+        if (!empty($widget['options']['custom_template'])) {
+            return $widget['options']['custom_template'];
+        }
+
         return 'wf_widget_xfrm_resources';
     }
 
@@ -172,5 +178,14 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         }
 
         return $resources;
+    }
+
+    public function useWrapper(array $widget)
+    {
+        if (array_key_exists('use_wrapper', $widget['options'])) {
+            return $widget['options']['use_wrapper'];
+        }
+
+        return parent::useWrapper($widget);
     }
 }

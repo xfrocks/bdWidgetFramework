@@ -887,7 +887,16 @@
 <xen:selectunit label="{xen:phrase wf_categories}:" name="{$namePrefix}categories" value="" size="5" multiple="true" inputclass="textCtrl">
 	<xen:options source="$categories" />
 	<xen:explain>{xen:phrase wf_xfrm_resources_categories_explain}</xen:explain>
-</xen:selectunit>]]></template>
+</xen:selectunit>
+
+<xen:radiounit label="{xen:phrase wf_use_wrapper}:" name="{$namePrefix}use_wrapper"
+			   value="{xen:if 'isset({$options.use_wrapper})', {$options.use_wrapper}, 1}">
+	<xen:option value="1">{xen:phrase yes}</xen:option>
+	<xen:option value="0">{xen:phrase no}</xen:option>
+</xen:radiounit>
+
+<xen:textboxunit label="{xen:phrase wf_custom_template}:" name="{$namePrefix}custom_template"
+				 value="{$options.custom_template}" />]]></template>
     <template title="wf_widget_page_delete"><![CDATA[<xen:title>{xen:phrase wf_confirm_deletion_of_widget_page}: {$widgetPage.title}</xen:title>
 <xen:h1>{xen:phrase wf_confirm_deletion_of_widget_page}</xen:h1>
 
@@ -1288,6 +1297,7 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
     <phrase title="wf_current_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum]]></phrase>
     <phrase title="wf_current_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum + its children]]></phrase>
+    <phrase title="wf_custom_template" version_id="2060371" version_string="2.6.3"><![CDATA[Custom Template]]></phrase>
     <phrase title="wf_deactivate_for_mobile" version_id="2060318" version_string="2.6.3"><![CDATA[Deactivate for mobile (<span style="color: red; text-decoration: underline" title="please switch to use Conditional with &quot;!{$visitorIsBrowsingWithMobile}&quot; as soon as possible, this check box will be removed completely in the near future." class="Tooltip">deprecated</span>)]]></phrase>
     <phrase title="wf_delete_all_before_import" version_id="24" version_string="1.2.2.2"><![CDATA[Delete all existing widgets before importing]]></phrase>
     <phrase title="wf_delete_all_before_import_explain" version_id="24" version_string="1.2.2.2"><![CDATA[Select this option to make an exact copy of widgets from the XML file. All existing widgets will be deleted completely. This action can not be undone.]]></phrase>
