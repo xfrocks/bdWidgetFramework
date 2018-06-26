@@ -468,6 +468,11 @@
 	<xen:explain>{xen:phrase wf_limit_explain, "items={xen:phrase wf_profile_posts}"}</xen:explain>
 </xen:spinboxunit>
 
+<xen:spinboxunit label="{xen:phrase wf_status_cutoff}:" name="{$namePrefix}cutoff"
+				 value="{xen:if 'isset({$options.cutoff})', {$options.cutoff}, 7}">
+	<xen:explain>{xen:phrase wf_status_cutoff_explain}</xen:explain>
+</xen:spinboxunit>
+
 <xen:radiounit label="{xen:phrase wf_recent_status_friends_only}:" name="{$namePrefix}friends_only">
 	<xen:option value="1" selected="{$options.friends_only}">{xen:phrase yes}</xen:option>
 	<xen:option value="0" selected="!{$options.friends_only}">{xen:phrase no}</xen:option>
@@ -1394,6 +1399,8 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_share_this_page" global_cache="1" version_id="111" version_string="2.6.0-dev"><![CDATA[Share This Page]]></phrase>
     <phrase title="wf_sidebar_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Sidebar Widgets]]></phrase>
     <phrase title="wf_special_forums_explain" version_id="58" version_string="2.3.2b"><![CDATA[The "Special" selections are experimental, use with your own risk. Current forum is detected by the parameter "$forum" of the template, it should work as expected in thread_view or forum_view. The behavior is unexpected in other positions.]]></phrase>
+    <phrase title="wf_status_cutoff" version_id="2060371" version_string="2.6.3"><![CDATA[Status Cutoff]]></phrase>
+    <phrase title="wf_status_cutoff_explain" version_id="2060371" version_string="2.6.3"><![CDATA[Status older than this number of days won't make it to the list.]]></phrase>
     <phrase title="wf_template_controller" version_id="99" version_string="2.5.0d"><![CDATA[Controller]]></phrase>
     <phrase title="wf_template_controller_explain" version_id="99" version_string="2.5.0d"><![CDATA[Some template needs its data to render properly. Enter the controller name and action here to obtain the required data.]]></phrase>
     <phrase title="wf_threads" version_id="1" version_string="0.9"><![CDATA[threads]]></phrase>
