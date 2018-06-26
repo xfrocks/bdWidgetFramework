@@ -2883,7 +2883,7 @@ All customization should go to wf_default_EXTRA.css
 		<dd><xen:username user="$boardTotals.latestUser" /></dd></dl>
 	<!-- slot: forum_stats_extra -->
 </div>]]></template>
-    <template title="wf_widget_threads" version_id="2060320" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
+    <template title="wf_widget_threads" version_id="2060371" version_string="2.6.3"><![CDATA[<xen:if is="{$layout} == 'sidebar'">
 
 <xen:if hascontent="true">
 <div class="WidgetFramework_WidgetRenderer_Threads_Sidebar avatarList">
@@ -2892,7 +2892,7 @@ All customization should go to wf_default_EXTRA.css
 		<xen:if is="{$widget.options.type} == 'recent' OR {$widget.options.type} == 'latest_replies'">
 
 		<xen:foreach loop="$threads" value="$thread">
-		<xen:set var="$user"><xen:username user="$thread" rich="{$layoutOptions.rich}" /></xen:set>
+		<xen:set var="$user"><xen:username user="$thread.lastPostInfo" rich="{$layoutOptions.rich}" /></xen:set>
 		<xen:include template="wf_widget_threads_thread_sidebar">
 			<xen:set var="$_threadLink">{xen:if '{$visitor.user_id} > 0', {xen:link threads/unread, $thread}, {xen:link posts, {xen:array 'post_id={$thread.last_post_id}'}}}</xen:set>
 			<xen:set var="$_secondRow">
