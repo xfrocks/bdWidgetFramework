@@ -1300,6 +1300,8 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_contents_widgets" version_id="112" version_string="2.6.0-dev"><![CDATA[Contents Widgets]]></phrase>
     <phrase title="wf_create_new_group" version_id="112" version_string="2.6.0-dev"><![CDATA[Create New Group]]></phrase>
     <phrase title="wf_create_new_widget_page" version_id="54" version_string="2.2.3"><![CDATA[Create New Widget Page]]></phrase>
+    <phrase title="wf_current_category" version_id="2060470" version_string="2.6.4"><![CDATA[Current category]]></phrase>
+    <phrase title="wf_current_category_and_children" version_id="2060470" version_string="2.6.4"><![CDATA[Current category and it's children]]></phrase>
     <phrase title="wf_current_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum]]></phrase>
     <phrase title="wf_current_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Current Forum + its children]]></phrase>
     <phrase title="wf_custom_template" version_id="2060371" version_string="2.6.3"><![CDATA[Custom Template]]></phrase>
@@ -1360,6 +1362,8 @@ file = {xen:phrase wf_cache_store_file}</edit_format_params>
     <phrase title="wf_order_reverted" version_id="2060208" version_string="2.6.2"><![CDATA[Revert threads ordering]]></phrase>
     <phrase title="wf_original_contents" version_id="98" version_string="2.5.0d"><![CDATA[Original Contents]]></phrase>
     <phrase title="wf_or_enter_it_here" version_id="111" version_string="2.6.0-dev"><![CDATA[Or enter it here]]></phrase>
+    <phrase title="wf_parent_category" version_id="2060470" version_string="2.6.4"><![CDATA[Parent category]]></phrase>
+    <phrase title="wf_parent_category_and_children" version_id="2060470" version_string="2.6.4"><![CDATA[Parent category and it's children]]></phrase>
     <phrase title="wf_parent_forum" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum (of the current one)]]></phrase>
     <phrase title="wf_parent_forum_and_children" version_id="24" version_string="1.2.2.2"><![CDATA[Special: Parent Forum + its children]]></phrase>
     <phrase title="wf_please_confirm_that_you_want_to_delete_following_widget" version_id="1" version_string="0.9"><![CDATA[Please confirm that you want to delete the following widget]]></phrase>
