@@ -2,6 +2,11 @@
 
 class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_WidgetRenderer
 {
+    const CATEGORIES_OPTION_SPECIAL_CURRENT = 'current_category';
+    const CATEGORIES_OPTION_SPECIAL_CURRENT_AND_CHILDREN = 'current_category_and_children';
+    const CATEGORIES_OPTION_SPECIAL_PARENT = 'parent_category';
+    const CATEGORIES_OPTION_SPECIAL_PARENT_AND_CHILDREN = 'parent_category_and_children';
+
     public function extraPrepareTitle(array $widget)
     {
         if (empty($widget['title'])) {
@@ -55,6 +60,20 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         $categoryModel = WidgetFramework_Core::getInstance()->getModelFromCache('XenResource_Model_Category');
         $categoriesRaw = $categoryModel->getAllCategories();
         $categories = array();
+
+        foreach (array(
+                     self::CATEGORIES_OPTION_SPECIAL_CURRENT,
+                     self::CATEGORIES_OPTION_SPECIAL_CURRENT_AND_CHILDREN,
+                     self::CATEGORIES_OPTION_SPECIAL_PARENT,
+                     self::CATEGORIES_OPTION_SPECIAL_PARENT_AND_CHILDREN,
+                 ) as $specialId) {
+            $categories[] = array(
+                'value' => $specialId,
+                'label' => new XenForo_Phrase(sprintf('wf_%s', $specialId)),
+                'selected' => in_array($specialId, $params['options']['categories']),
+            );
+        }
+
         foreach ($categoriesRaw as $categoryId => &$categoryRaw) {
             $category = array(
                 'value' => $categoryId,
@@ -111,27 +130,16 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         XenForo_Template_Abstract $renderTemplateObject
     ) {
         $core = WidgetFramework_Core::getInstance();
-        /** @var XenResource_Model_Category $categoryModel */
-        $categoryModel = $core->getModelFromCache('XenResource_Model_Category');
+
         /** @var XenResource_Model_Resource $resourceModel */
         $resourceModel = $core->getModelFromCache('XenResource_Model_Resource');
         $visitor = XenForo_Visitor::getInstance();
 
-        $categoryIds = array();
+        $categoryIds = $this->_getCategoryIds(
+            $widget,
+            !empty($params['category']) ? $params['category'] : array()
+        );
         $resources = array();
-
-        $viewableCategories = $categoryModel->getViewableCategories();
-        foreach ($viewableCategories as $category) {
-            if (!empty($widget['options']['categories'])) {
-                if (in_array($category['resource_category_id'], $widget['options']['categories'])) {
-                    // configured with some category id
-                    // only include those that were selected
-                    $categoryIds[] = $category['resource_category_id'];
-                }
-            } else {
-                $categoryIds[] = $category['resource_category_id'];
-            }
-        }
 
         if (!empty($categoryIds)) {
             $conditions = array(
@@ -178,6 +186,74 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         }
 
         return $resources;
+    }
+
+    protected function _getCategoryIds(array $widget, array $currentCategory = array())
+    {
+        $core = WidgetFramework_Core::getInstance();
+        /** @var XenResource_Model_Category $categoryModel */
+        $categoryModel = $core->getModelFromCache('XenResource_Model_Category');
+
+        $categoryIds = array();
+        $viewableCategories = $categoryModel->getViewableCategories();
+
+        foreach ($viewableCategories as $category) {
+            if (!empty($widget['options']['categories'])) {
+                if (in_array($category['resource_category_id'], $widget['options']['categories'])) {
+                    // configured with some category id
+                    // only include those that were selected
+                    $categoryIds[] = $category['resource_category_id'];
+                }
+            } else {
+                $categoryIds[] = $category['resource_category_id'];
+            }
+        }
+
+        foreach ($widget['options']['categories'] as $categoryId) {
+            switch ($categoryId) {
+                case self::CATEGORIES_OPTION_SPECIAL_CURRENT:
+                    $categoryIds[] = isset($currentCategory['resource_category_id']) ? $currentCategory['resource_category_id'] : 0;
+                    break;
+                case self::CATEGORIES_OPTION_SPECIAL_CURRENT_AND_CHILDREN:
+                    if (isset($currentCategory['resource_category_id'])) {
+                        $categoryIds[] = $currentCategory['resource_category_id'];
+                        $categoryIds = array_merge($categoryIds, $this->_getChildrenCategoryIds($currentCategory, $viewableCategories));
+                    }
+                    break;
+                case self::CATEGORIES_OPTION_SPECIAL_PARENT:
+                    $categoryIds[] = isset($currentCategory['parent_category_id']) ? $currentCategory['parent_category_id'] : 0;
+                    break;
+                case self::CATEGORIES_OPTION_SPECIAL_PARENT_AND_CHILDREN:
+                    if (isset($currentCategory['parent_category_id'])
+                        && isset($viewableCategories[$currentCategory['parent_category_id']])
+                    ) {
+                        $categoryIds[] = $currentCategory['parent_category_id'];
+                        $categoryIds = array_merge(
+                            $categoryIds,
+                            $this->_getChildrenCategoryIds($viewableCategories[$currentCategory['parent_category_id']], $viewableCategories)
+                        );
+                    }
+                    break;
+            }
+        }
+
+        $categoryIds = array_unique($categoryIds);
+
+        return $categoryIds;
+    }
+
+    protected function _getChildrenCategoryIds(array $category, array $viewableCategories)
+    {
+        $categoryIds = array();
+        foreach ($viewableCategories as $viewableCategory) {
+            if ($viewableCategory['lft'] > $category['lft']
+                && $viewableCategory['lft'] < $category['rgt']
+            ) {
+                $categoryIds[] = $viewableCategory['resource_category_id'];
+            }
+        }
+
+        return $categoryIds;
     }
 
     public function useWrapper(array $widget)
