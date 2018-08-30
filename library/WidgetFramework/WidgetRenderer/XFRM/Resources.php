@@ -267,7 +267,7 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
                     case self::CATEGORIES_OPTION_SPECIAL_PARENT:
                     case self::CATEGORIES_OPTION_SPECIAL_PARENT_AND_CHILDREN:
                         $hasSpecialCategories = true;
-                        break;
+                        break(2);
                 }
             }
 
