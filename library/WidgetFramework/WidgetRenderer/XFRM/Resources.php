@@ -256,6 +256,29 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
         return $categoryIds;
     }
 
+    protected function _getCacheId(array $widget, $positionCode, array $params, array $suffix = array())
+    {
+        if (!empty($widget['options']['categories'])) {
+            $hasSpecialCategories = false;
+            foreach ($widget['options']['categories'] as $categoryId) {
+                switch ($categoryId) {
+                    case self::CATEGORIES_OPTION_SPECIAL_CURRENT:
+                    case self::CATEGORIES_OPTION_SPECIAL_CURRENT_AND_CHILDREN:
+                    case self::CATEGORIES_OPTION_SPECIAL_PARENT:
+                    case self::CATEGORIES_OPTION_SPECIAL_PARENT_AND_CHILDREN:
+                        $hasSpecialCategories = true;
+                        break(2);
+                }
+            }
+
+            if ($hasSpecialCategories && !empty($params['category'])) {
+                $suffix[] = 'c' . $params['category']['resource_category_id'];
+            }
+        }
+
+        return parent::_getCacheId($widget, $positionCode, $params, $suffix);
+    }
+
     public function useWrapper(array $widget)
     {
         if (array_key_exists('use_wrapper', $widget['options'])) {
