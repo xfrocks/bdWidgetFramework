@@ -67,6 +67,10 @@ class WidgetFramework_WidgetRenderer_XFRM_Resources extends WidgetFramework_Widg
                      self::CATEGORIES_OPTION_SPECIAL_PARENT,
                      self::CATEGORIES_OPTION_SPECIAL_PARENT_AND_CHILDREN,
                  ) as $specialId) {
+            // new XenForo_Phrase('wf_current_category')
+            // new XenForo_Phrase('wf_current_category_and_children')
+            // new XenForo_Phrase('wf_parent_category')
+            // new XenForo_Phrase('wf_parent_category_and_children')
             $categories[] = array(
                 'value' => $specialId,
                 'label' => new XenForo_Phrase(sprintf('wf_%s', $specialId)),
