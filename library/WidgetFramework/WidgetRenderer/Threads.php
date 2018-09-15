@@ -621,7 +621,6 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
                 $fetchOptions['order'] = 'last_post_date';
                 break;
             case 'latest_replies':
-                $conditions['reply_count'] = array('>', 0);
                 $fetchOptions['order'] = 'last_post_date';
                 $fetchLastPost = true;
                 break;
