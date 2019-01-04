@@ -773,7 +773,7 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
             // as guest.
             $viewingUser['permissions'] = XenForo_Permission::unserializePermissions($viewingUser['global_permission_cache']);
         }
-        
+
         $viewingUserId = $viewingUser === null ? XenForo_Visitor::getUserId() : $viewingUser['user_id'];
 
         $forumIds = array();
