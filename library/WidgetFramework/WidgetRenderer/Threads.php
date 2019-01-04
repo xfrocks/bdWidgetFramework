@@ -769,6 +769,11 @@ class WidgetFramework_WidgetRenderer_Threads extends WidgetFramework_WidgetRende
         $permissionCombinationId = empty($widget['options']['as_guest']) ? null : 1;
         $nodePermissions = $nodeModel->getNodePermissionsForPermissionCombination($permissionCombinationId);
         $viewingUser = (empty($widget['options']['as_guest']) ? null : $userModel->getVisitingGuestUser());
+        if (!empty($widget['options']['as_guest'])) {
+            // as guest.
+            $viewingUser['permissions'] = XenForo_Permission::unserializePermissions($viewingUser['global_permission_cache']);
+        }
+        
         $viewingUserId = $viewingUser === null ? XenForo_Visitor::getUserId() : $viewingUser['user_id'];
 
         $forumIds = array();
