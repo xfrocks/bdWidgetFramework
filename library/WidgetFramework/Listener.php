@@ -9,11 +9,6 @@ class WidgetFramework_Listener
      */
     public static $viewRenderer = null;
 
-    /**
-     * @var bool
-     */
-    public static $renderSidebarWidgets = false;
-
     protected static $_navigationTabsForums = '';
     protected static $_saveLayoutEditorRendered = false;
     protected static $_layoutEditorRendered = array();
@@ -81,10 +76,7 @@ class WidgetFramework_Listener
     {
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             $core = WidgetFramework_Core::getInstance();
-
-            if (self::$renderSidebarWidgets) {
-                $core->prepareWidgetsFor($templateName, $params, $template);
-            }
+            $core->prepareWidgetsFor($templateName, $params, $template);
 
             $core->prepareWidgetsForHooksIn($templateName, $params, $template);
 
@@ -123,16 +115,12 @@ class WidgetFramework_Listener
     ) {
         if (defined('WIDGET_FRAMEWORK_LOADED')) {
             if (!preg_match('#^wf_.+_wrapper$#', $templateName)) {
-                $rendered = false;
-
-                if (self::$renderSidebarWidgets) {
-                    $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor(
-                        $templateName,
-                        $template->getParams(),
-                        $template,
-                        $containerData
-                    );
-                }
+                $rendered = WidgetFramework_Core::getInstance()->renderWidgetsFor(
+                    $templateName,
+                    $template->getParams(),
+                    $template,
+                    $containerData
+                );
 
                 if ($rendered) {
                     if (!isset($containerData[WidgetFramework_Core::PARAM_TEMPLATE_OBJECTS])) {
@@ -246,8 +234,6 @@ class WidgetFramework_Listener
         XenForo_ViewRenderer_Abstract &$viewRenderer,
         array &$containerParams
     ) {
-        self::$renderSidebarWidgets = true;
-
         if ($fc->getDependencies() instanceof XenForo_Dependencies_Public) {
             self::$viewRenderer = $viewRenderer;
             WidgetFramework_Core::getInstance()->bootstrap();
