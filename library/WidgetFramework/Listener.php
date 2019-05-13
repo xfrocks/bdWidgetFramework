@@ -246,7 +246,7 @@ class WidgetFramework_Listener
         XenForo_ViewRenderer_Abstract &$viewRenderer,
         array &$containerParams
     ) {
-        self::$renderSidebarWidgets = $fc->getRequest()->getMethod() === 'GET';
+        self::$renderSidebarWidgets = true;
 
         if ($fc->getDependencies() instanceof XenForo_Dependencies_Public) {
             self::$viewRenderer = $viewRenderer;
