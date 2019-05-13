@@ -78,7 +78,7 @@ class _WidgetFramework_WidgetTitleDelayed
     /**
      * @var static[]
      */
-    static protected $_newInstances = array();
+    protected static $_newInstances = array();
 
     /**
      * @var WidgetFramework_WidgetRenderer

@@ -51,11 +51,11 @@ class WidgetFramework_WidgetRenderer_Callback extends WidgetFramework_WidgetRend
         }
 
         $callback = array($widget['options']['callback_class'], $widget['options']['callback_method']);
-        $args = func_get_args();
+        $args = array($widget, $positionCode, $params, $renderTemplateObject);
         return $this->callUserFuncArray($callback, $args);
     }
 
-    protected function callUserFuncArray($callback, array &$args)
+    protected function callUserFuncArray($callback, array $args)
     {
         if (!is_callable($callback) && !XenForo_Application::debugMode()) {
             return '';
