@@ -1,3 +1,10 @@
+Version 2.6.6 13-12-2019
+- Improve extensibility for Thread widget
+- Added: `use_wrapper` and `custom_template` options (XFRM Resources)
+- Added: cutoff option (Recent Status)
+- Changed: Include new threads for "Latest Replies" thread widget
+- Bug fixes
+
 Version 2.6.3 06-12-2017
 - PHP 7.2 compatibility
 - Redesigned Layout Editor
